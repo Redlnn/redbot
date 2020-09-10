@@ -60,18 +60,18 @@ def shell(message, logger):
         data.remove('')
     return data
 
-class fetch:
+class http:
     @staticmethod
-    async def http_post(url, data_map):
+    async def post(url, **k):
         async with aiohttp.ClientSession() as session:
-            async with session.post(url, json=data_map) as response:
+            async with session.post(url, **k) as response:
                 response.raise_for_status()
                 return await response.read()
 
     @staticmethod
-    async def http_get(url):
+    async def get(url, **k):
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
+            async with session.get(url, **k) as response:
                 response.raise_for_status()
                 return await response.read()
 
