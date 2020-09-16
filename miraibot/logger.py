@@ -24,7 +24,7 @@ class AbstractLogger(ABC):
 
 class LoggingLogger(AbstractLogger):
     def __init__(self, level: int = logging.INFO) -> None:
-        logging.basicConfig(format='[%(asctime)s][%(levelname)s]: %(message)s', level=logging.INFO)
+        logging.basicConfig(format='\r[%(asctime)s][%(levelname)s]: %(message)s', level=logging.INFO)
 
     @staticmethod
     def info(msg):

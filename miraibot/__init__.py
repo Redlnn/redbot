@@ -4,7 +4,10 @@ from typing import Any, Optional, Callable, Awaitable, Dict
 from aiohttp import ClientSession
 from graia.broadcast import Broadcast
 from graia.application import GraiaMiraiApplication, Session
+
 from .logger import LoggingLogger
+
+from . import sched as schedule
 
 
 class miraibot(GraiaMiraiApplication):
@@ -62,6 +65,7 @@ def init(config_object: Optional[Any] = None, **kwargs) -> None:
 
     _loop = asyncio.get_event_loop()
     _bcc = Broadcast(loop=_loop, debug_flag=debug)
+    schedule.init(_loop)
     _app = miraibot(
         config_dict=config_dict,
         logger=logger,
@@ -87,6 +91,13 @@ def get_bcc() -> object:
     if _bcc is None:
         raise ValueError('miraibot 实例尚未初始化')
     return _bcc
+
+
+def get_lbs(obj):
+    if obj in ("bot", "loop", "bcc"):
+        return getattr(miraibot, obj)
+    else:
+        raise ValueError("The object does not exist")
 
 
 def run():
