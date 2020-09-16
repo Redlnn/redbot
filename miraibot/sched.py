@@ -4,7 +4,8 @@ from graia.broadcast import Broadcast
 
 
 """
-
+# **各种范例**
+## 运行范例
 >>> import time
 >>> def job():
 >>>     times = time.strftime("%Y-%m-%d %a %H:%M:%S ", time.localtime())
@@ -24,7 +25,46 @@ from graia.broadcast import Broadcast
 >>> except KeyboardInterrupt:
 >>>     pass
 
+
+
+## 只跑一次的任务
+>>> def job_that_executes_once():
+>>>     # Do some work ...
+>>>     return schedule.CancelJob
+
+>>> schedule.every().day.at('22:30').do(job_that_executes_once)
+
+
+
+## 取消多个任务
+>>> # 通过 tag 函数给它们添加唯一标识符进行分组，取消时通过标识符进行取消相应组的任务
+>>> def greet(name):
+>>>     print('Hello {}'.format(name))
+
+>>> schedule.every().day.do(greet, 'Andrea').tag('daily-tasks', 'friend')
+>>> schedule.every().hour.do(greet, 'John').tag('hourly-tasks', 'friend')
+>>> schedule.every().hour.do(greet, 'Monica').tag('hourly-tasks', 'customer')
+>>> schedule.every().day.do(greet, 'Derek').tag('daily-tasks', 'guest')
+
+>>> schedule.clear('daily-tasks')
+
+
+
+## 给任务传递函数
+>>> def greet(name):
+>>>     print('Hello', name)
+
+>>> schedule.every(2).seconds.do(greet, name='Alice')
+>>> schedule.every(4).seconds.do(greet, name='Bob')
+
+
+
+# **说明**
+目前该调度器暂时不处理任何异常，一旦发生异常会导致整个调度器挂掉。
+因此建议在使用时充分考虑各种情况。
+
 具体信息也可以在 https://github.com/dbader/schedule 上查看
+想要更详细的使用方法? 推荐看看 https://www.jianshu.com/p/57d09d3c8998
 """
 
 class scheduler(Scheduler):
