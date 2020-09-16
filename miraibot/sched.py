@@ -1,6 +1,7 @@
 from schedule import *
 import time
 from graia.broadcast import Broadcast
+from .logger import LoggingLogger
 
 
 """
@@ -78,8 +79,7 @@ class scheduler(Scheduler):
 
         :param delay_seconds: A delay added between every executed job
         """
-        logger.debug('Running *all* %i jobs with %is delay inbetween',
-                    len(self.jobs), delay_seconds)
+        logger.debug(f'Running *all* %i jobs with %is delay inbetween {len(self.jobs)} {delay_seconds}')
         for job in self.jobs[:]:
             self._run_job(job)
             time.sleep(delay_seconds)
@@ -92,7 +92,7 @@ class Jobs(Job):
 
         :return: The return value returned by the `job_func`
         """
-        logger.debug('Running job %s', self)
+        logger.debug(f'Running job %s {self}')
         ret = self.job_func()
         self.last_run = datetime.datetime.now()
         self._schedule_next_run()
@@ -101,6 +101,7 @@ class Jobs(Job):
 
 Job.run = Jobs.run
 default_scheduler = scheduler()
+logger = LoggingLogger
 
 def job():
     import time
