@@ -25,6 +25,13 @@ async def job():
     data.set(time.strftime("%Y-%m-%d %a %H:%M:%S ", time.localtime()))
 
 
+for i in range(60):
+    if i < 10:
+        schedule.every().minute.at(f":0{i}").do(job)
+    else:
+        schedule.every().minute.at(f":{i}").do(job)
+
+
 async def jobs(app, group):
     await app.sendGroupMessage(group, MessageChain.create([
         Plain(data.get())]))
@@ -33,7 +40,7 @@ async def jobs(app, group):
 @bcc.receiver("GroupMessage")
 async def friend_message_listener(app: GraiaMiraiApplication, group: Group, member: Member, ctx: MessageChain):
     m = mirai_codes(ctx, app.logger)
-    if m.ctx == '#bing':
+    if m.ctx == '#time':
         if data.get() is None:
             msg = '暂未开启该功能'
         else:
@@ -42,14 +49,12 @@ async def friend_message_listener(app: GraiaMiraiApplication, group: Group, memb
             Plain(msg)
         ]))
     elif m.ctx == '#开始':
-        for i in range(60):
-            if i < 10:
-                schedule.every().minute.at(f":0{i}").do(job)
-            else:
-                schedule.every().minute.at(f":{i}").do(job)
-        schedule.every(1800).seconds.do(jobs, app=app, group=group).tag('daily-tasks', 'group')
+        schedule.every(3).seconds.do(jobs, app=app, group=group).tag('daily-tasks', 'group')
         await app.sendGroupMessage(group, MessageChain.create([
             Plain('发送指令: #结束 以结束报时')
         ]))
     elif m.ctx == '#结束':
         schedule.clear('daily-tasks')
+        await app.sendGroupMessage(group, MessageChain.create([
+            Plain('已结束')
+        ]))
