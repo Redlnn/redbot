@@ -68,7 +68,7 @@ from .logger import LoggingLogger
 想要更详细的使用方法? 推荐看看 https://www.jianshu.com/p/57d09d3c8998
 """
 
-class scheduler(Scheduler):
+class schedule(Scheduler):
     def run_all(self, delay_seconds=0):
         """
         Run all jobs regardless if they are scheduled to run or not.
@@ -83,6 +83,25 @@ class scheduler(Scheduler):
         for job in self.jobs[:]:
             self._run_job(job)
             time.sleep(delay_seconds)
+    
+    async def _run_job(self, job):
+        ret = await job.run()
+        if isinstance(ret, CancelJob) or ret is CancelJob:
+            self.cancel_job(job)
+    
+    async def run_pending(self):
+        """
+        Run all jobs that are scheduled to run.
+
+        Please note that it is *intended behavior that run_pending()
+        does not run missed jobs*. For example, if you've registered a job
+        that should run every minute and you only call run_pending()
+        in one hour increments then your job won't be run 60 times in
+        between but only once.
+        """
+        runnable_jobs = (job for job in self.jobs if job.should_run)
+        for job in sorted(runnable_jobs):
+            await self._run_job(job)
 
 
 class Jobs(Job):
@@ -100,8 +119,16 @@ class Jobs(Job):
 
 
 Job.run = Jobs.run
-default_scheduler = scheduler()
+Scheduler.run_all = schedule.run_all
+Scheduler._run_job = schedule._run_job
+Scheduler.run_pending = schedule.run_pending
 logger = LoggingLogger
+
+async def run_pending():
+    """Calls :meth:`run_pending <Scheduler.run_pending>` on the
+    :data:`default scheduler instance <default_scheduler>`.
+    """
+    await default_scheduler.run_pending()
 
 def job():
     import time
@@ -119,7 +146,7 @@ async def aio_run(time: [float, int]=0.4):
 
     try:
         while True:
-            run_pending()
+            await run_pending()
             await sleep(time)
     except KeyboardInterrupt:
         pass
@@ -128,9 +155,3 @@ async def aio_run(time: [float, int]=0.4):
 def init(loop=None):
     loop = loop or Broadcast.loop
     loop.create_task(aio_run())
-    
-    for i in range(60):
-        if i < 10:
-            every().minute.at(f":0{i}").do(job)
-        else:
-            every().minute.at(f":{i}").do(job)
