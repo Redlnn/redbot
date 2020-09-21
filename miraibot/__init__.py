@@ -1,9 +1,27 @@
-import asyncio
-from typing import Any, Optional, Callable, Awaitable, Dict
+"""
+用法:
 
-from aiohttp import ClientSession
+
+>>> from os import path
+
+>>> import config
+>>> import miraibot
+
+>>> if __name__ == "__main__":
+>>>     miraibot.init(config)
+>>>     miraibot.load_plugins(
+>>>         path.join(path.dirname(__file__), 'plugins'),
+>>>         'plugins'
+>>>     )
+>>>     miraibot.run()
+"""
+
+import asyncio
+from typing import Any, Optional, Dict
+
 from graia.broadcast import Broadcast
 from graia.application import GraiaMiraiApplication, Session
+from graia.scheduler import GraiaScheduler
 
 from .logger import LoggingLogger
 
@@ -27,9 +45,9 @@ class miraibot(GraiaMiraiApplication):
         # self.asgi.debug = self.config.DEBUG
 
 
-_app: Optional[miraibot] = None
-_loop: Optional[asyncio.get_event_loop] = None
-_bcc: Optional[Broadcast] = None
+app: Optional[miraibot] = None
+loop: Optional[asyncio.get_event_loop] = None
+bcc: Optional[Broadcast] = None
 
 
 def init(config_object: Optional[Any] = None, **kwargs) -> None:
@@ -41,7 +59,7 @@ def init(config_object: Optional[Any] = None, **kwargs) -> None:
     :param config_object: 包含框架所需的配置的对象
     """
     import logging
-    global _app, _loop, _bcc
+    global app, loop, bcc
 
     if config_object is None:
         from . import default_config as config_object
@@ -63,46 +81,41 @@ def init(config_object: Optional[Any] = None, **kwargs) -> None:
         logger = LoggingLogger(level=logging.INFO)
         debug = False
 
-    _loop = asyncio.get_event_loop()
-    _bcc = Broadcast(loop=_loop, debug_flag=debug)
-    schedule.init(_loop)
-    _app = miraibot(
+    loop = asyncio.get_event_loop()
+    bcc = Broadcast(loop=loop, debug_flag=debug)
+    loop.create_task(schedule.run_pending())
+    app = miraibot(
         config_dict=config_dict,
         logger=logger,
-        broadcast=_bcc,
+        broadcast=bcc,
         debug=debug,
         **kwargs
     )
 
 
-def get_bot() -> miraibot:
-    if _app is None:
-        raise ValueError('miraibot 实例尚未初始化')
-    return _app
-
-
-def get_loop() -> object:
-    if _loop is None:
-        raise ValueError('miraibot 实例尚未初始化')
-    return _loop
-
-
-def get_bcc() -> object:
-    if _bcc is None:
-        raise ValueError('miraibot 实例尚未初始化')
-    return _bcc
-
-
-def get_lbs(obj):
-    if obj in ("bot", "loop", "bcc"):
-        return getattr(miraibot, obj)
-    else:
-        raise ValueError("The object does not exist")
+class get:
+    @staticmethod
+    def bot() -> miraibot:
+        if app is None:
+            raise ValueError('miraibot 实例尚未初始化')
+        return app
+    @staticmethod
+    def loop() -> asyncio.get_event_loop:
+        if loop is None:
+            raise ValueError('loop 实例尚未初始化')
+        return loop
+    @staticmethod
+    def bcc() -> Broadcast:
+        if bcc is None:
+            raise ValueError('Broadcast 实例尚未初始化')
+        return bcc
 
 
 def run():
     try:
-        get_bot().launch_blocking()
+        get.bot().launch_blocking()
+    except Exception as e:
+        LoggingLogger.error(e)
     except KeyboardInterrupt:
         pass
 
@@ -113,13 +126,3 @@ from .plugin import (
     load_builtin_plugins,
     get_loaded_plugins
 )
-
-if __name__ == '__main__':
-    from . import default_config as config
-    from os import path
-
-    init(config)
-    load_plugins(
-        path.join(path.dirname(__file__), 'plugins'), 'plugins'
-    )
-    run()
