@@ -1,3 +1,4 @@
+from miraibot.default_config import *
 HOST: str = None # 必填
 PORT: str = None  # 必填 
 DEBUG: str = False
