@@ -1,6 +1,5 @@
 from miraibot import GraiaMiraiApplication, get
 from miraibot.message import Group, MessageChain, Plain
-from miraibot.tool import mirai_codes
 from config import QQ
 
 import re

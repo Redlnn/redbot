@@ -1,10 +1,8 @@
 from miraibot import GraiaMiraiApplication, get
 from miraibot import schedule
 from miraibot.message import Group, MessageChain, Plain, Member
-from miraibot.tool import mirai_codes
 
 bcc = get.bcc()
-
 
 class data:
     def __init__(self):
@@ -16,20 +14,12 @@ class data:
     def get(self):
         return self.__data
 
-
 data = data()
 
 
 async def job():
     import time
     data.set(time.strftime("%Y-%m-%d %a %H:%M:%S ", time.localtime()))
-
-
-for i in range(60):
-    if i < 10:
-        schedule.every().minute.at(f":0{i}").do(job)
-    else:
-        schedule.every().minute.at(f":{i}").do(job)
 
 
 async def jobs(app, group):
@@ -58,3 +48,13 @@ async def friend_message_listener(app: GraiaMiraiApplication, group: Group, memb
         await app.sendGroupMessage(group, MessageChain.create([
             Plain('已结束')
         ]))
+
+
+def __init__():
+    for i in range(60):
+        if i < 10:
+            schedule.every().minute.at(f":0{i}").do(job)
+        else:
+            schedule.every().minute.at(f":{i}").do(job)
+    
+    
