@@ -27,7 +27,7 @@ from . import schedule
 
 
 class miraibot(GraiaMiraiApplication):
-    def __init__(self, config_dict: Dict, **kwargs):
+    def __init__(self, config_dict: dict, **kwargs):
         super().__init__(
             connect_info=Session(
                 host=f"http://{config_dict['HOST']}:{config_dict['PORT']}",  # 填入 httpapi 服务运行的地址
@@ -43,9 +43,9 @@ class miraibot(GraiaMiraiApplication):
         # self.asgi.debug = self.config.DEBUG
 
 
-app: Optional[miraibot] = None
-loop: Optional[asyncio.get_event_loop] = None
-bcc: Optional[Broadcast] = None
+app: miraibot = None
+loop: asyncio.get_event_loop() = None
+bcc: Broadcast = None
 
 
 def init(config_object: Optional[Any] = None, **kwargs) -> None:
