@@ -1,19 +1,20 @@
 import importlib
 import os
 import re
+import traceback
 
-from .logger import LoggingLogger
+from .log import logger
 
 
 class Plugin:
     __slots__ = ('module', 'name', 'usage')
 
-    def __init__(self, module,
-                 name=None,
-                 usage=None):
-        self.module = module
-        self.name = name
-        self.usage = usage
+    def __init__(self, module, name=None, usage=None):
+        self.name = name # 模块名
+        self.usage = usage # 模块方法
+        if hasattr(module.__init__, "__annotations__"): # 如果模块有定义 __init__ 函数，则调用它以初始化模块
+            module.__init__(**module.__init__.__annotations__)
+        self.module = module # 模块对象
 
 
 _plugins = set()
@@ -23,19 +24,19 @@ def load_plugin(module_name: str) -> bool:
     """
     加载模块作为插件。
 
-    :变量 module_name: 导入模块的名称
+    :param module_name: 导入模块的名称
     :return: 成功与否
     """
     try:
         module = importlib.import_module(module_name)
-        name = getattr(module, '__plugin_name__', None)
-        usage = getattr(module, '__plugin_usage__', None)
+        name = getattr(module, '__plugin_name__', getattr(module, "__name__", None))
+        usage = getattr(module, '__plugin_usage__', getattr(module, "__usage__", None))
         _plugins.add(Plugin(module, name, usage))
-        LoggingLogger.info(f'成功导入 "{module_name}"')
+        logger.info(f'成功导入 "{module_name}"')
         return True
     except Exception as e:
-        LoggingLogger.error(f'导入失败 "{module_name}", error: {e}')
-        #logger.exception(e)
+        logger.error(f'导入失败 "{module_name}", error: ↓')
+        traceback.print_exc()
         return False
 
 
@@ -43,8 +44,8 @@ def load_plugins(plugin_dir: str, module_prefix: str) -> int:
     """
     在给定目录中查找所有非隐藏的模块或软件包，并使用给定的模块前缀将其导入。
 
-    :变量 plugin_dir: 搜索的插件目录
-    :变量 module_prefix: 导入时使用的模块前缀
+    :param plugin_dir: 搜索的插件目录
+    :param module_prefix: 导入时使用的模块前缀
     :return: 成功加载的插件数量
     """
     def fors(plugin_dir, module_prefix: str):
@@ -70,7 +71,7 @@ def load_plugins(plugin_dir: str, module_prefix: str) -> int:
     count = 0
     fors(plugin_dir, module_prefix)
     fors(os.path.join(os.path.dirname(__file__), 'plugins'), 'miraibot.plugins')
-    LoggingLogger.info(f'共导入了 {count} 个插件')
+    logger.info(f'共导入了 {count} 个插件')
     return count
 
 

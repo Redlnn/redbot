@@ -1,19 +1,20 @@
-from miraibot import GraiaMiraiApplication, get_bcc
+from miraibot import GraiaMiraiApplication, get
 from miraibot.message import Group, MessageChain, Plain
 from miraibot.tool import mirai_codes
+from config import QQ
 
 import re
 from urllib import parse
 
-bcc = get_bcc()
+bcc = get.bcc()
 
 
 @bcc.receiver("GroupMessage")
 async def friend_message_listener(app: GraiaMiraiApplication, group: Group, message: MessageChain):
-    m = mirai_codes(message, app.logger)
-    if m.ctx.endswith('帮楼上百度'):
-        if message.__root__[1].senderId != 2316298201:
-            red = re.search(r'^\[\[.+?]]', m.ctx)
+    m = message.asDisplay()
+    if m.endswith('帮楼上百度'):
+        if message.__root__[1].senderId != QQ:
+            red = re.search(r'^\[\[.+?]]', m)
             if red is not None:
                 red = re.search(r'(?<=text=).+?(?=]])', red.group())
                 if red is not None:

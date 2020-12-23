@@ -21,11 +21,9 @@ from typing import Any, Optional, Dict
 
 from graia.broadcast import Broadcast
 from graia.application import GraiaMiraiApplication, Session
-from graia.scheduler import GraiaScheduler
 
-from .logger import LoggingLogger
-
-from . import sched as schedule
+from .log import logger
+from . import schedule
 
 
 class miraibot(GraiaMiraiApplication):
@@ -75,10 +73,10 @@ def init(config_object: Optional[Any] = None, **kwargs) -> None:
             raise ValueError(f'配置文件中缺失 HOST 或 PORT 或 AUTHKEY 或 QQ: {i}')
 
     if config_dict['DEBUG']:
-        logger = LoggingLogger(level=logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
         debug = True
     else:
-        logger = LoggingLogger(level=logging.INFO)
+        logger.setLevel(logging.INFO)
         debug = False
 
     loop = asyncio.get_event_loop()
@@ -115,7 +113,7 @@ def run():
     try:
         get.bot().launch_blocking()
     except Exception as e:
-        LoggingLogger.error(e)
+        logger.error(e)
     except KeyboardInterrupt:
         pass
 
