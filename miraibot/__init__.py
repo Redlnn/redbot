@@ -145,3 +145,10 @@ from .plugin import (
     load_builtin_plugins,
     get_loaded_plugins
 )
+
+__all__ = [
+    "init", "run", "get", "miraibot",
+    "GraiaMiraiApplication",
+    "load_plugin", "load_plugins", "load_builtin_plugins", "get_loaded_plugins",
+    "schedule", "logger"
+]
