@@ -26,7 +26,7 @@ QQ: int = 123456
 
 
 # redis连接池配置
-REDIS = False
+REDIS = False # 如果需要启用 aioredis 请在自己的配置中将这项覆盖为 True
 REDIS_HOST = "127.0.0.1"
 REDIS_PORT = 6379
 REDIS_PASSWORD = None
