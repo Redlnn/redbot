@@ -1,47 +1,12 @@
-from abc import ABC, abstractmethod
 import logging
+import sys
 
-class AbstractLogger(ABC):
-    @abstractmethod
-    def info(self, msg):
-        pass
+logger = logging.getLogger()
+default_handler = logging.StreamHandler(sys.stdout)
+default_handler.setFormatter(
+    logging.Formatter('[%(asctime)s] %(levelname)s :  %(message)s', datefmt="%Y-%m-%d %H:%M:%S"))
+logger.addHandler(default_handler)
 
-    @abstractmethod
-    def error(self, msg):
-        pass
-
-    @abstractmethod
-    def debug(self, msg):
-        pass
-
-    @abstractmethod
-    def warn(self, msg):
-        pass
-
-    @abstractmethod
-    def exception(self, msg):
-        pass
-
-class LoggingLogger(AbstractLogger):
-    def __init__(self, level: int = logging.INFO) -> None:
-        logging.basicConfig(format='\r[%(asctime)s][%(levelname)s]: %(message)s', level=logging.INFO)
-
-    @staticmethod
-    def info(msg):
-        return logging.info(msg)
-
-    @staticmethod
-    def error(msg):
-        return logging.error(msg)
-
-    @staticmethod
-    def debug(msg):
-        return logging.debug(msg)
-
-    @staticmethod
-    def warn(msg):
-        return logging.warn(msg)
-
-    @staticmethod
-    def exception(msg):
-        return logging.exception(msg)
+__all__ = [
+    'logger',
+]
