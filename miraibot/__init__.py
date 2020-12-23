@@ -25,6 +25,11 @@ from graia.application import GraiaMiraiApplication, Session
 from .log import logger
 from . import schedule
 
+try:
+    import aioredis
+    import aioredis.abc
+except ModuleNotFoundError:
+    aioredis = None
 
 class miraibot(GraiaMiraiApplication):
     def __init__(self, config_dict: dict, **kwargs):
@@ -46,6 +51,7 @@ class miraibot(GraiaMiraiApplication):
 app: miraibot = None
 loop: asyncio.get_event_loop() = None
 bcc: Broadcast = None
+redis: aioredis.abc.AbcPool = None
 
 
 def init(config_object: Optional[Any] = None, **kwargs) -> None:
@@ -57,7 +63,7 @@ def init(config_object: Optional[Any] = None, **kwargs) -> None:
     :param config_object: 包含框架所需的配置的对象
     """
     import logging
-    global app, loop, bcc
+    global app, loop, bcc, redis
 
     if config_object is None:
         from . import default_config as config_object
@@ -90,6 +96,16 @@ def init(config_object: Optional[Any] = None, **kwargs) -> None:
         **kwargs
     )
 
+    if aioredis is not None and config_dict["REDIS"]:
+        redis = asyncio.get_event_loop().run_until_complete(
+            aioredis.create_pool(
+                f"redis://{config_dict['REDIS_HOST']}:{config_dict['REDIS_PORT']}",
+                db=config_dict["REDIS_DB"], password=config_dict["REDIS_PASSWORD"],
+                minsize=config_dict["REDIS_MINSIZE"], maxsize=config_dict["REDIS_MAXSIZE"],
+                loop = loop
+            )
+        )
+
 
 class get:
     @staticmethod
@@ -107,6 +123,11 @@ class get:
         if bcc is None:
             raise ValueError('Broadcast 实例尚未初始化')
         return bcc
+    @staticmethod
+    def redis() -> redis:
+        if redis is None:
+            raise ValueError("依赖模块 aioredis未正确安装或未正确初始化")
+        return redis
 
 
 def run():
