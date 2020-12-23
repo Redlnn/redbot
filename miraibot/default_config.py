@@ -23,3 +23,14 @@ HOST: str = '127.0.0.1'
 PORT: int = 8080
 DEBUG: bool = True
 QQ: int = 123456
+
+
+# redis连接池配置
+REDIS = False
+REDIS_HOST = "127.0.0.1"
+REDIS_PORT = 6379
+REDIS_PASSWORD = None
+REDIS_DB = 0
+REDIS_ENCODING = None
+REDIS_MINSIZE = 1
+REDIS_MAXSIZE = 10
