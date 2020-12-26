@@ -1,6 +1,6 @@
 import aiohttp
 
-def shell(message, logger):
+def shell(message):
     data = message.split(' ')
     if '' in data:
         data.remove('')
