@@ -42,5 +42,4 @@ async def friend_message_listener(app: GraiaMiraiApplication, group: Group, mess
                         Plain('竹竹知道自己说的是什么东西的啦~')
                     ]
                 )
-
             )
