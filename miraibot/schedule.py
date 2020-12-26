@@ -70,6 +70,7 @@ import random
 import re
 import time
 import asyncio
+import traceback
 
 
 class ScheduleError(Exception):
@@ -167,8 +168,8 @@ class Scheduler(object):
             ret = await job.run()
             if isinstance(ret, CancelJob) or ret is CancelJob:
                 self.cancel_job(job)
-        except Exception as e:
-            logger.configured
+        except:
+            logger.error(traceback.format_exc())
 
     @property
     def next_run(self):
