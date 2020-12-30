@@ -18,6 +18,7 @@
 
 import asyncio
 from typing import Any, Optional, Dict
+import traceback
 
 from graia.broadcast import Broadcast
 from graia.application import GraiaMiraiApplication, Session
@@ -28,7 +29,7 @@ from . import schedule
 try:
     import aioredis
     import aioredis.abc
-except ModuleNotFoundError:
+except (ModuleNotFoundError, AttributeError):
     aioredis = None
 
 class miraibot(GraiaMiraiApplication):
@@ -51,7 +52,7 @@ class miraibot(GraiaMiraiApplication):
 app: miraibot = None
 loop: asyncio.get_event_loop() = None
 bcc: Broadcast = None
-redis: aioredis.abc.AbcPool = None
+redis = None
 
 
 def init(config_object: Optional[Any] = None, **kwargs) -> None:
@@ -134,7 +135,7 @@ def run():
     try:
         get.bot().launch_blocking()
     except Exception as e:
-        logger.error(e)
+        logger.critical(traceback.format_exc())
     except KeyboardInterrupt:
         pass
 
