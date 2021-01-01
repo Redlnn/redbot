@@ -35,7 +35,7 @@ def load_plugin(module_name: str) -> bool:
         logger.info(f'成功导入 "{module_name}"')
         return True
     except Exception as e:
-        logger.error(f'导入失败 "{traceback.format_exc()}", error: ↓')
+        logger.error(f'导入失败: ↓ \n{traceback.format_exc()}')
         return False
 
 

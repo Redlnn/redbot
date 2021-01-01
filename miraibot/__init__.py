@@ -126,8 +126,8 @@ class get:
         return bcc
     @staticmethod
     def redis() -> redis:
-        if redis is None:
-            raise ValueError("依赖模块 aioredis未正确安装或未正确初始化")
+        if aioredis is None or redis is None:
+            raise ValueError("依赖模块 aioredis 未正确安装或未正确初始化")
         return redis
 
 
