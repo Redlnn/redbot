@@ -7,7 +7,7 @@ from .log import logger
 
 
 class Plugin:
-    __slots__ = ('module', 'name', 'usage')
+    __End__: bool = None
 
     def __init__(self, module, name=None, usage=None):
         self.name = name # 模块名
@@ -15,6 +15,16 @@ class Plugin:
         if hasattr(module.__init__, "__annotations__"): # 如果模块有定义 __init__ 函数，则调用它以初始化模块
             module.__init__(**module.__init__.__annotations__)
         self.module = module # 模块对象
+    def __end__(self, *args, **kwargs):
+        if hasattr(self.module, "__end__"):
+            try:
+                self.module.__end__(*args, **self.module.__end__.__annotations__)
+            except:
+                logger.error(f"插件异常关闭: ↓\n{traceback.format_exc()}")
+                self.__End__ = False
+            else:
+                logger.info(f"插件 {self.name} 正常关闭")
+                self.__End__ = True
 
 
 _plugins = set()
