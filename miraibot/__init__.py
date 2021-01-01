@@ -137,7 +137,8 @@ def run():
     except Exception as e:
         logger.critical(traceback.format_exc())
     except KeyboardInterrupt:
-        pass
+        for module in get_loaded_plugins():
+            module.__end__()
 
 
 from .plugin import (
