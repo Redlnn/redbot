@@ -139,6 +139,7 @@ def run():
     except KeyboardInterrupt:
         for module in get_loaded_plugins():
             module.__end__()
+        logger.info("Bye~")
 
 
 from .plugin import (
