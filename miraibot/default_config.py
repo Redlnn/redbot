@@ -17,10 +17,10 @@ from typing import Container, Union, Iterable, Pattern, Optional, Dict, Any
 
 
 API_ROOT: str = ''
-AUTHKEY: str = ''
+AUTHKEY: str = None
 SECRET: str = ''
-HOST: str = '127.0.0.1'
-PORT: int = 8080
+HOST: str = None
+PORT: int = None
 DEBUG: bool = True
 QQ: int = 123456
 
