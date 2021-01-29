@@ -12,10 +12,6 @@
 >>> NICKNAME = '小明'
 """
 
-from datetime import timedelta
-from typing import Container, Union, Iterable, Pattern, Optional, Dict, Any
-
-
 API_ROOT: str = ''
 AUTHKEY: str = None
 SECRET: str = ''
