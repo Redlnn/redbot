@@ -17,10 +17,11 @@
 """
 
 import asyncio
-from typing import Any, Optional, Dict
+from typing import Any, Optional
 import traceback
 
-from graia.broadcast import Broadcast
+# from graia.broadcast import Broadcast
+from .graia_Rewrite import Broc as Broadcast
 from graia.application import GraiaMiraiApplication, Session
 
 from .log import logger
@@ -32,11 +33,12 @@ try:
 except (ModuleNotFoundError, AttributeError):
     aioredis = None
 
+
 class miraibot(GraiaMiraiApplication):
     def __init__(self, config_dict: dict, **kwargs):
         super().__init__(
             connect_info=Session(
-                host=f"http://{config_dict['HOST']}:{config_dict['PORT']}",  # 填入 httpapi 服务运行的地址
+                host=f"http://{config_dict['HOST']}:{config_dict['PORT']}",  # 填入 httpapi 服务运行的地址 # noqa
                 authKey=config_dict['AUTHKEY'],  # 填入 authKey
                 account=config_dict['QQ'],  # 你的机器人的 qq 号
                 websocket=True  # Graia 已经可以根据所配置的消息接收的方式来保证消息接收部分的正常运作.
@@ -100,10 +102,10 @@ def init(config_object: Optional[Any] = None, **kwargs) -> None:
     if aioredis is not None and config_dict["REDIS"]:
         redis = asyncio.get_event_loop().run_until_complete(
             aioredis.create_pool(
-                f"redis://{config_dict['REDIS_HOST']}:{config_dict['REDIS_PORT']}",
-                db=config_dict["REDIS_DB"], password=config_dict["REDIS_PASSWORD"],
-                minsize=config_dict["REDIS_MINSIZE"], maxsize=config_dict["REDIS_MAXSIZE"],
-                loop = loop
+                f"redis://{config_dict['REDIS_HOST']}:{config_dict['REDIS_PORT']}", # noqa
+                db=config_dict["REDIS_DB"], password=config_dict["REDIS_PASSWORD"], # noqa
+                minsize=config_dict["REDIS_MINSIZE"], maxsize=config_dict["REDIS_MAXSIZE"], # noqa
+                loop = loop # noqa
             )
         )
 
@@ -114,16 +116,19 @@ class get:
         if app is None:
             raise ValueError('miraibot 实例尚未初始化')
         return app
+
     @staticmethod
     def loop() -> asyncio.get_event_loop:
         if loop is None:
             raise ValueError('loop 实例尚未初始化')
         return loop
+
     @staticmethod
     def bcc() -> Broadcast:
         if bcc is None:
             raise ValueError('Broadcast 实例尚未初始化')
         return bcc
+
     @staticmethod
     def redis() -> redis:
         if aioredis is None or redis is None:
@@ -134,7 +139,7 @@ class get:
 def run():
     try:
         get.bot().launch_blocking()
-    except Exception as e:
+    except Exception as e: # noqa
         logger.critical(traceback.format_exc())
     except KeyboardInterrupt:
         for module in get_loaded_plugins():
@@ -142,7 +147,7 @@ def run():
         logger.info("Bye~")
 
 
-from .plugin import (
+from .plugin import ( # noqa
     load_plugin,
     load_plugins,
     load_builtin_plugins,
@@ -152,6 +157,6 @@ from .plugin import (
 __all__ = [
     "init", "run", "get", "miraibot",
     "GraiaMiraiApplication",
-    "load_plugin", "load_plugins", "load_builtin_plugins", "get_loaded_plugins",
+    "load_plugin", "load_plugins", "load_builtin_plugins", "get_loaded_plugins", # noqa
     "schedule", "logger"
 ]
