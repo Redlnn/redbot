@@ -22,11 +22,11 @@ QQ: int = 123456
 
 
 # redis连接池配置
-REDIS = False # 如果需要启用 aioredis 请在自己的配置中将这项覆盖为 True
+REDIS = False  # 如果需要启用 aioredis 请在自己的配置中将这项覆盖为 True
 REDIS_HOST: str = "127.0.0.1"
 REDIS_PORT: int = 6379
 REDIS_PASSWORD: str or None = None
-REDIS_DB: int = 0
+REDIS_DB: int = None
 REDIS_ENCODING = None
 REDIS_MINSIZE: int = 1
 REDIS_MAXSIZE: int = 10
