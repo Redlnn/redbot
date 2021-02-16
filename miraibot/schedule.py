@@ -68,7 +68,6 @@ import datetime
 import functools
 import random
 import re
-import time
 import asyncio
 import traceback
 
@@ -126,7 +125,7 @@ class Scheduler(object):
 
         :param delay_seconds: 每个执行的作业之间增加了延迟
         """
-        logger.debug(f'Running *all* %i jobs with %is delay inbetween {len(self.jobs)} {delay_seconds}')
+        logger.debug(f'Running *all* %i jobs with %is delay inbetween {len(self.jobs)} {delay_seconds}') # noqa
         for job in self.jobs[:]:
             await self._run_job(job)
             await asyncio.sleep(delay_seconds)
@@ -483,7 +482,7 @@ class Job(object):
 
         :return: 由 `job_func` 返回的返回值
         """
-        #logger.info(f'Running job %s {self}')
+        # logger.info(f'Running job %s {self}')
         ret = self.job_func()
         self.last_run = datetime.datetime.now()
         self._schedule_next_run()
@@ -584,7 +583,6 @@ async def run_pending():
     while True:
         await default_scheduler.run_pending()
         await asyncio.sleep(1)
-        
 
 
 async def run_all(delay_seconds=0):
