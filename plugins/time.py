@@ -4,6 +4,7 @@ from miraibot.message import Group, MessageChain, Plain, Member
 
 bcc = get.bcc()
 
+
 class data:
     def __init__(self):
         self.__data = None
@@ -13,6 +14,7 @@ class data:
 
     def get(self):
         return self.__data
+
 
 data = data()
 
@@ -28,7 +30,9 @@ async def jobs(app, group):
 
 
 @bcc.receiver("GroupMessage")
-async def friend_message_listener(app: GraiaMiraiApplication, group: Group, member: Member, ctx: MessageChain):
+async def friend_message_listener(
+    app: GraiaMiraiApplication, group: Group, member: Member, ctx: MessageChain
+):
     m = ctx.asDisplay()
     if m == '#time':
         if data.get() is None:
@@ -39,7 +43,9 @@ async def friend_message_listener(app: GraiaMiraiApplication, group: Group, memb
             Plain(msg)
         ]))
     elif m == '#开始':
-        schedule.every(3).seconds.do(jobs, app=app, group=group).tag('daily-tasks', 'group')
+        schedule.every(3).seconds.do(
+            jobs, app=app, group=group
+        ).tag('daily-tasks', 'group')
         await app.sendGroupMessage(group, MessageChain.create([
             Plain('发送指令: #结束 以结束报时')
         ]))
@@ -56,5 +62,3 @@ def __init__():
             schedule.every().minute.at(f":0{i}").do(job)
         else:
             schedule.every().minute.at(f":{i}").do(job)
-    
-    
