@@ -11,7 +11,7 @@ class Plugin:
 
     def __init__(self, module, name=None, usage=None):
         self.name = name  # 模块名
-        self.usage = usage  # 模块方法
+        self.usage = usage  # 模块说明
         if hasattr(module.__init__, "__annotations__"):  # 如果模块有定义 __init__ 函数，则调用它以初始化模块 # noqa
             module.__init__(**module.__init__.__annotations__)
         self.module = module  # 模块对象
