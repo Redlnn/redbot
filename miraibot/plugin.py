@@ -10,16 +10,19 @@ class Plugin:
     __End__: bool = None
 
     def __init__(self, module, name=None, usage=None):
-        self.name = name # 模块名
-        self.usage = usage # 模块方法
-        if hasattr(module.__init__, "__annotations__"): # 如果模块有定义 __init__ 函数，则调用它以初始化模块
+        self.name = name  # 模块名
+        self.usage = usage  # 模块方法
+        if hasattr(module.__init__, "__annotations__"):  # 如果模块有定义 __init__ 函数，则调用它以初始化模块 # noqa
             module.__init__(**module.__init__.__annotations__)
-        self.module = module # 模块对象
+        self.module = module  # 模块对象
+
     def __end__(self, *args, **kwargs):
         if hasattr(self.module, "__end__"):
             try:
-                self.module.__end__(*args, **self.module.__end__.__annotations__)
-            except:
+                self.module.__end__(
+                    *args, **self.module.__end__.__annotations__
+                )
+            except: # noqa
                 logger.error(f"插件异常关闭: ↓\n{traceback.format_exc()}")
                 self.__End__ = False
             else:
@@ -39,12 +42,16 @@ def load_plugin(module_name: str) -> bool:
     """
     try:
         module = importlib.import_module(module_name)
-        name = getattr(module, '__plugin_name__', getattr(module, "__name__", None))
-        usage = getattr(module, '__plugin_usage__', getattr(module, "__usage__", None))
+        name = getattr(
+            module, '__plugin_name__', getattr(module, "__name__", None)
+        )
+        usage = getattr(
+            module, '__plugin_usage__', getattr(module, "__usage__", None)
+        )
         _plugins.add(Plugin(module, name, usage))
-        logger.info(f'成功导入 "{module_name}"')
+        logger.info(f'成功导入 "{ module_name if name is None else name }"')
         return True
-    except Exception as e:
+    except Exception as e: # noqa
         logger.error(f'导入失败: ↓ \n{traceback.format_exc()}')
         return False
 
@@ -79,7 +86,10 @@ def load_plugins(plugin_dir: str, module_prefix: str) -> int:
                     count += 1
     count = 0
     fors(plugin_dir, module_prefix)
-    fors(os.path.join(os.path.dirname(__file__), 'plugins'), 'miraibot.plugins')
+    fors(
+        os.path.join(os.path.dirname(__file__), 'plugins'),
+        'miraibot.plugins'
+    )
     logger.info(f'共导入了 {count} 个插件')
     return count
 
