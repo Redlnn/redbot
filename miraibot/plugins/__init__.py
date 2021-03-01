@@ -14,12 +14,17 @@ async def Group_instruction_processor(
     msesage: MessageChain,
     group: Group, member: Member
 ):
-    pass
+    for k, v in group_commands.items():
+        if msesage.asDisplay() == k:
+            v()
 
 
 @bcc.receiver("FriendMessage")
 async def f_instruction_processor(
     bot: GraiaMiraiApplication,
+    msesage: MessageChain,
     friend: Friend, member: Member
 ):
-    pass
+    for k, v in friend_commands.items():
+        if msesage.asDisplay() == k:
+            v()
