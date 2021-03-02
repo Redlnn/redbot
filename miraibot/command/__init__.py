@@ -14,7 +14,7 @@ def on_command(
 ):
     def command_decorator(func):
         @wraps(func)
-        def wrapped_function(*args, **kwargs):
+        async def wrapped_function(*args, **kwargs):
             pass  # 函数调用代码
             return func(*args, **kwargs)
         return wrapped_function
