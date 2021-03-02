@@ -16,7 +16,7 @@ async def Group_instruction_processor(
 ):
     for k, v in group_commands.items():
         if msesage.asDisplay() == k:
-            v()
+            await v()
 
 
 @bcc.receiver("FriendMessage")
@@ -27,4 +27,4 @@ async def f_instruction_processor(
 ):
     for k, v in friend_commands.items():
         if msesage.asDisplay() == k:
-            v()
+            await v()
