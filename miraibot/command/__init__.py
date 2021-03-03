@@ -38,7 +38,7 @@ def group_command(
             my_command = f"{command}_{group}" if command not in [
                 k for k, v in group_commands.items()
             ] else None
-    
+
             if not my_command:
                 global group_commands
                 group_commands[my_command] = ExecClass(
@@ -50,7 +50,9 @@ def group_command(
                 )
                 if len(aliases):
                     for i in aliases:
-                        group_commands[i] = group_commands[my_command]
+                        group_commands[
+                            f"{i}_{group}"
+                        ] = group_commands[my_command]
             else:
                 raise command_decorators(f"命令 \"{command}\" 已被占用")
         if len(group):
