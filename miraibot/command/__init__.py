@@ -11,12 +11,14 @@ class command_decorators(Exception):
 
 
 def group_command(
-    command: str,  # 命令名
-    aliases=(),  # 命令别名
-    group=[],
-    permission=MemberPerm.Member,  # 命令权限
-    at=False,  # 是否被 at
-    shell_like=False  # 是否使用类 shell 语法
+    command: str,
+    aliases: Tuple = (),
+    group: Union[Tuple, List] = [],
+    permission: Union[
+        MemberPerm.Administrator, MemberPerm.Owner, MemberPerm.Member
+    ] = MemberPerm.Member,  # 命令权限
+    at: bool = False,  # 是否被 at
+    shell_like: bool = False  # 是否使用类 shell 语法
 ):
 
     """命令处理器
@@ -32,30 +34,29 @@ def group_command(
     :param reutrn: None
     """
     def command_decorator(func):
-        my_command = command if command not in [
-            k for k, v in group_commands.items()
-        ] else None
-
-        if not my_command:
-            global group_commands
-            group_commands[my_command] = ExecClass(
-                target=func,
-                group=group,
-                permission=permission,
-                at=at,
-                shell_like=shell_like
-            )
-            if len(aliases):
-                for i in aliases:
-                    group_commands[i] = ExecClass(
-                        target=func,
-                        group=group,
-                        permission=permission,
-                        at=at,
-                        shell_like=shell_like
-                    )
+        def append(group):
+            my_command = f"{command}_{group}" if command not in [
+                k for k, v in group_commands.items()
+            ] else None
+    
+            if not my_command:
+                global group_commands
+                group_commands[my_command] = ExecClass(
+                    target=func,
+                    group=group,
+                    permission=permission,
+                    at=at,
+                    shell_like=shell_like
+                )
+                if len(aliases):
+                    for i in aliases:
+                        group_commands[i] = group_commands[my_command]
+            else:
+                raise command_decorators(f"命令 \"{command}\" 已被占用")
+        if len(group):
+            for group_id in group:
+                append(group_id)
         else:
-            raise command_decorators(f"命令 \"{command}\" 已被占用")
-
+            append("null")
         return func
     return command_decorator
