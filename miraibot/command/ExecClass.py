@@ -1,11 +1,11 @@
-from typing import List, Union
+from typing import List
 from ..event import MemberPerm
 from ..message import Group
 
 
 class ExecClass:
     Target: object
-    Group: List[Union[int, Group]]
+    Group: List[Group.id]
     Permission: List[MemberPerm]
     At: bool
     Shell_like: bool
@@ -23,9 +23,6 @@ class ExecClass:
         self.Permission = permission or []
         self.At = at
         self.Shell_like = shell_like
-
-    def run(self):
-        pass
 
     def _check_perm(self):
         pass

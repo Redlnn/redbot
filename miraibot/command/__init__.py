@@ -2,8 +2,13 @@ from typing import Dict, Union, Tuple, List
 from ..event import MemberPerm
 from .ExecClass import ExecClass
 
-group_commands: Dict = {}
+from .. import GraiaMiraiApplication, get
+from ..message import MessageChain, Group, Member, Friend, At
+
+
+group_commands: Dict[ExecClass] = {}
 friend_commands: Dict = {}
+bcc = get.bcc()
 
 
 class command_decorators(Exception):
@@ -12,15 +17,14 @@ class command_decorators(Exception):
 
 def group_command(
     command: str,
-    aliases: Tuple = (),
-    group: Union[Tuple, List] = [],
+    aliases: Tuple[str] = (),
+    group: Union[Tuple[int], List[int]] = [],
     permission: Union[
         MemberPerm.Administrator, MemberPerm.Owner, MemberPerm.Member
     ] = MemberPerm.Member,  # 命令权限
     at: bool = False,  # 是否被 at
     shell_like: bool = False  # 是否使用类 shell 语法
 ):
-
     """命令处理器
         将一个命令处理器装入指令池中
 
@@ -62,3 +66,42 @@ def group_command(
             append("null")
         return func
     return command_decorator
+
+
+@bcc.receiver("GroupMessage")
+async def Group_instruction_processor(
+    bot: GraiaMiraiApplication,
+    message: MessageChain,
+    group: Group, member: Member
+):
+    async with message.asDisplay() as m:
+        if m in group_commands:
+            if group_commands[m].Group:
+                if group.id in group_commands[m].Group:  # 检查指令是否适用当前群
+                    async with group_commands[m] as target:
+                        if member.permission not in target.Permission:  # 检查指令需求的权限 # noqa
+                            return
+                        if target.at:
+                            for i in message.get(At):
+                                if i.target == bot.connect_info.account:
+                                    await group_commands[m].Target(
+                                        **group_commands[m].Target.__annotations__() # noqa
+                                    )
+
+    for k, v in group_commands.items():
+        if message.asDisplay() == k:
+            await v()
+
+
+@bcc.receiver("FriendMessage")
+async def f_instruction_processor(
+    bot: GraiaMiraiApplication,
+    message: MessageChain,
+    friend: Friend, member: Member
+):
+    for k, v in friend_commands.items():
+        if message.asDisplay() == k:
+            await v()
+
+
+__all__ = ["group_command"]
