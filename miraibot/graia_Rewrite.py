@@ -1,6 +1,11 @@
-from graia.broadcast import Broadcast
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import traceback
-from .log import logger
+
+from graia.broadcast import Broadcast
+
+from .logger import logger
 
 
 def tracebacks():

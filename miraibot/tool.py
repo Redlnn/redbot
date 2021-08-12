@@ -1,4 +1,8 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import aiohttp
+
 
 def shell(message):
     data = message.split(' ')
@@ -6,7 +10,8 @@ def shell(message):
         data.remove('')
     return data
 
-class http:
+
+class Http:
     @staticmethod
     async def post(url, **k):
         async with aiohttp.ClientSession() as session:

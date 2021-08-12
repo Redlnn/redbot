@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
 # **各种范例**
 ## 运行范例
@@ -61,15 +64,15 @@
 想要更详细的使用方法? 推荐看看 https://www.jianshu.com/p/57d09d3c8998
 """
 
-from .log import logger
-
+import asyncio
 import collections
 import datetime
 import functools
 import random
 import re
-import asyncio
 import traceback
+
+from .logger import logger
 
 
 class ScheduleError(Exception):
@@ -100,6 +103,7 @@ class Scheduler(object):
     factories to create jobs, keep record of scheduled jobs and
     handle their execution.
     """
+
     def __init__(self):
         self.jobs = []
 
@@ -125,7 +129,7 @@ class Scheduler(object):
 
         :param delay_seconds: 每个执行的作业之间增加了延迟
         """
-        logger.debug(f'Running *all* %i jobs with %is delay inbetween {len(self.jobs)} {delay_seconds}') # noqa
+        logger.debug(f'Running *all* %i jobs with %is delay inbetween {len(self.jobs)} {delay_seconds}')  # noqa
         for job in self.jobs[:]:
             await self._run_job(job)
             await asyncio.sleep(delay_seconds)
@@ -167,7 +171,7 @@ class Scheduler(object):
             ret = await job.run()
             if isinstance(ret, CancelJob) or ret is CancelJob:
                 self.cancel_job(job)
-        except:
+        except:  # noqa
             logger.error(traceback.format_exc())
 
     @property
@@ -207,6 +211,7 @@ class Job(object):
     A job is usually created and returned by :meth:`Scheduler.every`
     method, which also defines its `interval`.
     """
+
     def __init__(self, interval, scheduler=None):
         self.interval = interval  # pause interval * unit between runs
         self.latest = None  # upper limit to the interval
@@ -232,7 +237,7 @@ class Job(object):
             return t.strftime('%Y-%m-%d %H:%M:%S') if t else '[never]'
 
         timestats = '(last run: %s, next run: %s)' % (
-                    format_time(self.last_run), format_time(self.next_run))
+            format_time(self.last_run), format_time(self.next_run))
 
         if hasattr(self.job_func, '__name__'):
             job_func_name = self.job_func.__name__
@@ -245,14 +250,14 @@ class Job(object):
 
         if self.at_time is not None:
             return 'Every %s %s at %s do %s %s' % (
-                   self.interval,
-                   self.unit[:-1] if self.interval == 1 else self.unit,
-                   self.at_time, call_repr, timestats)
+                self.interval,
+                self.unit[:-1] if self.interval == 1 else self.unit,
+                self.at_time, call_repr, timestats)
         else:
             fmt = (
-                'Every %(interval)s ' +
-                ('to %(latest)s ' if self.latest is not None else '') +
-                '%(unit)s do %(call_repr)s %(timestats)s'
+                    'Every %(interval)s ' +
+                    ('to %(latest)s ' if self.latest is not None else '') +
+                    '%(unit)s do %(call_repr)s %(timestats)s'
             )
 
             return fmt % dict(

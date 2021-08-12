@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
 默认配置。
 
@@ -17,9 +20,9 @@ AUTHKEY: str = None
 SECRET: str = ''
 HOST: str = None
 PORT: int = None
-DEBUG: bool = True
-QQ: int = 123456
-
+DEBUG: bool = False
+ACCOUNT: int = 123456
+ENABLE_CHAT_LOG: bool = False
 
 # redis连接池配置
 REDIS = False  # 如果需要启用 aioredis 请在自己的配置中将这项覆盖为 True

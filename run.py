@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from os import path
 
 import config
 import miraibot
-
 
 if __name__ == "__main__":
     miraibot.init(config)
