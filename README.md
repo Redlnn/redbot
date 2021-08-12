@@ -6,9 +6,17 @@
 ```
 
 ## 用法
-1. 使用 `pip install -r requirements.txt` 安装依赖的项目
-2. 在 config.py 中设置好配置
-3. 使用 `python3 run.py` 启动bot
+1. 使用 [Mirai Console Loader](https://github.com/iTXTech/mirai-console-loader) 配置好 [mirai](https://github.com/mamoe/mirai)、[mirai-console](https://github.com/mamoe/mirai-console)
+2. 在 Mirai Console Loader 的插件目录放入 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 插件并启动 Mirai Console Loader 一次
+```
+本项目使用 Graia 的版本为 0.19.2，需要使用 mirai-api-http 1
+请从 https://github.com/project-mirai/mirai-api-http/releases/tag/v1.12.0 下载 1.12.0 版本的 mirai-api-http
+```
+3. 修改 mirai-api-http 的配置（设置 AuthKey，开启 WebSocket），再次启动 Mirai Console Loader
+4. clone 本项目到新文件夹，cd 进入本项目文件夹内
+5. 使用 `pip install -r requirements.txt` 安装依赖的项目
+6. 在 config.py 中填写好配置
+7. 使用 `python3 run.py` 启动bot
 
 ## 插件
 [插件仓库 / 示例插件](https://github.com/Redlnn/redbot-plugin)
