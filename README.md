@@ -14,7 +14,7 @@
 ```
 3. 修改 mirai-api-http 的配置（设置 AuthKey，开启 WebSocket），再次启动 Mirai Console Loader
 4. clone 本项目到新文件夹，cd 进入本项目文件夹内
-5. 使用 `pip install -r requirements.txt` 安装依赖的项目
+5. 使用 `pip install -r requirements.txt` 安装依赖
 6. 在 config.py 中填写好配置
 7. 使用 `python3 run.py` 启动bot
 
