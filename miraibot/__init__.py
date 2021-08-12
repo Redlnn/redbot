@@ -58,9 +58,9 @@ class MiraiBot(GraiaMiraiApplication):
         self.config = config_dict
 
 
-app: MiraiBot = None
+app: MiraiBot = None  # noqa
 loop: asyncio.get_event_loop() = None
-bcc: Broadcast = None
+bcc: Broadcast = None  # noqa
 redis = None
 
 
@@ -155,7 +155,7 @@ def run():
             logger.critical('Graia 启动失败: 无法连接至mirai-api-http')
             logger.info("正在退出...")
     except KeyboardInterrupt:
-        for module in get_loaded_plugins():
+        for module in get_loaded_plugins():  # noqa
             module.__end__()
         logger.info("Bye~")
         log_shutdown()
