@@ -10,8 +10,8 @@
 2. 在 config.py 中设置好配置
 3. 使用 `python3 run.py` 启动bot
 
-## 插件列表
-[插件仓库](https://github.com/Redlnn/redbot-plugin)
+## 插件
+[插件仓库 / 示例插件](https://github.com/Redlnn/redbot-plugin)
 ```
 要禁用插件，请重命名插件文件夹或插件文件，请在('_', '!', '.', '#')中任选一个字符加入到文件名最前面
 如：
@@ -26,6 +26,3 @@ _SearchMinecraftWiki.py
 2. 把 `from miraibot import GraiaMiraiApplication` 改为 `from graia.application.entry import GraiaMiraiApplication`
 3. 不兼容 ieew/miraibot 的命令系统，需要自己实现
 4. 部分Graia模块要由 `from miraibot import` 改为 `from graia.application.entry`
-
-### 示范插件
-详见 [ieew/miraibot](https://github.com/ieew/miraibot)
