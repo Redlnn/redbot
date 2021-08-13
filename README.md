@@ -1,4 +1,4 @@
-﻿# 一个依赖 Graia 的 QQ Bot
+# 一个依赖 Graia 的 QQ Bot
 
 ```
 基于 ieew/miraibot 去除/修改部分功能自用，目前可用的插件会放在另一个仓库里
