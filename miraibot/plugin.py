@@ -54,7 +54,7 @@ def load_plugin(module_name: str) -> bool:
         )
         _plugins.add(Plugin(module, name, usage))
         logger.info(f'加载插件 "{module_name if name is None else name}" 成功')
-        return True
+        return name
     except Exception: # noqa
         logger.error(f'加载插件时出错: ↓\n{traceback.format_exc()}')
         return False
@@ -73,6 +73,7 @@ def load_plugins(plugin_dir: str, module_prefix: str) -> int:
         _plugin_dir = os.listdir(plugin_dir)
         if len(_plugin_dir) > 0:
             nonlocal count
+            tmp_modules = []
             for name in _plugin_dir:
                 path = os.path.join(plugin_dir, name)
                 if os.path.isfile(path) and \
@@ -86,8 +87,13 @@ def load_plugins(plugin_dir: str, module_prefix: str) -> int:
                 if not m:
                     continue
 
-                if load_plugin(f'{module_prefix}.{m.group(1)}'):
+                module_name = load_plugin(f'{module_prefix}.{m.group(1)}')
+                if module_name:
+                    if module_name in tmp_modules:
+                        logger.warning(f'发现重名插件 "{module_name}"，请检查')
+                    tmp_modules.append(module_name)
                     count += 1
+            del tmp_modules
 
     count = 0
     fors(plugin_dir, module_prefix)
