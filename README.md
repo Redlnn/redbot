@@ -9,8 +9,14 @@
 1. 使用 [Mirai Console Loader](https://github.com/iTXTech/mirai-console-loader) 配置好 [mirai](https://github.com/mamoe/mirai)、[mirai-console](https://github.com/mamoe/mirai-console)
 2. 在 Mirai Console Loader 的插件目录放入 [mirai-api-http](https://github.com/project-mirai/mirai-api-http) 插件并启动 Mirai Console Loader 一次
 ```
-本项目使用 Graia 的版本为 0.19.2，需要使用 mirai-api-http 1
+本项目使用经过修改的 0.19.2 版本的 Graia，需要使用 mirai-api-http 1 而不是 2
 请从 https://github.com/project-mirai/mirai-api-http/releases/tag/v1.12.0 下载 1.12.0 版本的 mirai-api-http
+魔改 Graia 步骤：
+1. pip install graia-application-mirai==0.19.2
+2. 打开 site-packages/graia/application/group.py，
+   按照 https://github.com/GraiaProject/Application/commit/b16188c9d4bd7c87953beb662e7a9ce202844181 修改
+3. 打开 site-packages/graia/application/event/lifecycle.py，
+   按照 https://github.com/GraiaProject/Application/commit/edf5c06c864361249189a03ef4e1a9e95246063f 修改
 ```
 3. 修改 mirai-api-http 的配置（设置 AuthKey，开启 WebSocket），再次启动 Mirai Console Loader
 4. clone 本项目到新文件夹，cd 进入本项目文件夹内
