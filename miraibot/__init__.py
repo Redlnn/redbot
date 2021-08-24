@@ -21,7 +21,6 @@
 
 import asyncio
 import traceback
-from logging import shutdown as log_shutdown
 from typing import Any, Optional
 
 from aiohttp.client_exceptions import ClientConnectorError
@@ -29,7 +28,7 @@ from graia.application.entry import (AccountNotFound, GraiaMiraiApplication, Ses
 
 from . import schedule
 from .graia_Rewrite import Broc as Broadcast
-from .logger import logger
+from .logger import (logger, stop_log_and_del_empty_log)
 from .plugin import (get_loaded_plugins, load_plugins, load_plugin)
 
 # from graia.broadcast import Broadcast
@@ -158,9 +157,10 @@ def run():
         for module in get_loaded_plugins():  # noqa
             module.__end__()
         logger.info("Bye~")
-        log_shutdown()
-    except Exception:  # noqa
+    except:  # noqa
         logger.critical(traceback.format_exc())
+    finally:
+        stop_log_and_del_empty_log()
 
 
 from .plugin import (  # noqa

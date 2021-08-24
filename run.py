@@ -9,7 +9,6 @@ import miraibot
 if __name__ == "__main__":
     miraibot.init(config)
     miraibot.load_plugins(
-        path.join(path.dirname(__file__), 'plugins'),
-        'plugins'
+        path.join(path.dirname(__file__), 'plugins'), 'plugins'
     )
     miraibot.run()
