@@ -1,14 +1,13 @@
 from typing import Dict, Union, Tuple, List
-from ..event import MemberPerm
+
+from graia.application.entry import GraiaMiraiApplication, MessageChain, Group, Member, Friend, At, Plain, MemberPerm
+
+from miraibot import GetCore
 from .ExecClass import ExecClass
-
-from .. import GraiaMiraiApplication, get
-from ..message import MessageChain, Group, Member, Friend, At, Plain
-
 
 group_commands: Dict[str, ExecClass] = {}
 friend_commands: Dict = {}
-bcc = get.bcc()
+bcc = GetCore.bcc()
 
 
 class CommandDecorators(Exception):
@@ -16,14 +15,14 @@ class CommandDecorators(Exception):
 
 
 def group_command(
-    command: str,
-    aliases: Tuple[str] = (),
-    group: Union[Tuple[int], List[int]] = [],  # noqa
-    permission: List[MemberPerm] = [  # noqa
-        MemberPerm.Member, MemberPerm.Administrator, MemberPerm.Owner
-    ],  # 命令权限
-    at: bool = False,  # 是否被 at
-    shell_like: bool = False  # 是否使用类 shell 语法
+        command: str,
+        aliases: Union[Tuple[str], List[str]] = (),
+        group: Union[Tuple[int], List[int]] = [],  # noqa
+        permission: List[MemberPerm] = [  # noqa
+            MemberPerm.Member, MemberPerm.Administrator, MemberPerm.Owner
+        ],  # 命令权限
+        at: bool = False,  # 是否被 at
+        shell_like: bool = False  # 是否使用类 shell 语法
 ):
     """命令处理器
         将一个命令处理器装入指令池中
@@ -37,6 +36,7 @@ def group_command(
     :param shell_like: 是否使用类 shell 语法
     :return: None
     """
+
     def command_decorator(func):
         def append(group):
             my_command = f"{command}_{group}" if command not in [
@@ -60,20 +60,22 @@ def group_command(
                         ] = group_commands[my_command]
             else:
                 raise CommandDecorators(f"命令 \"{command}\" 已被占用")
+
         if len(group):
             for group_id in group:
                 append(group_id)
         else:
             append("null")
         return func
+
     return command_decorator
 
 
 @bcc.receiver("GroupMessage")
 async def Group_instruction_processor(
-    bot: GraiaMiraiApplication,
-    message: MessageChain,
-    group: Group, member: Member
+        bot: GraiaMiraiApplication,
+        message: MessageChain,
+        group: Group, member: Member
 ):
     if message.has(At):
         m = message.get(Plain)[0].text.strip()
@@ -104,9 +106,9 @@ async def Group_instruction_processor(
 
 @bcc.receiver("FriendMessage")
 async def f_instruction_processor(
-    bot: GraiaMiraiApplication,
-    message: MessageChain,
-    friend: Friend, member: Member
+        bot: GraiaMiraiApplication,
+        message: MessageChain,
+        friend: Friend, member: Member
 ):
     for k, v in friend_commands.items():
         if message.asDisplay() == k:
