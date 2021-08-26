@@ -76,17 +76,17 @@ async def Group_instruction_processor(
     group: Group, member: Member
 ):
     m = message.asDisplay()
-    if m in group_commands:
-        if group_commands[m].Group:
-            if group.id in group_commands[m].Group:  # 检查指令是否适用当前群
-                target = group_commands[m]
+    if f"{m}_{group.id}" in group_commands:
+        if group_commands[f"{m}_{group.id}"].Group:
+            if group.id in group_commands[f"{m}_{group.id}"].Group:  # 检查指令是否适用当前群
+                target = group_commands[f"{m}_{group.id}"]
                 if member.permission not in target.Permission:  # 检查指令需求的权限 # noqa
                     return
                 if target.at:
                     for i in message.get(At):
                         if i.target == bot.connect_info.account:
-                            await group_commands[m].Target(
-                                **group_commands[m].Target.__annotations__ # noqa
+                            await group_commands[f"{m}_{group.id}"].Target(
+                                **group_commands[f"{m}_{group.id}"].Target.__annotations__ # noqa
                             )
                 del target
     del m
