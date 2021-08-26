@@ -43,4 +43,5 @@ __[插件仓库 / 示例插件](https://github.com/Redlnn/redbot-plugin)__
 1. 把 `from miraibot import get` 改为 `from miraibot import GetCore`
 2. 部分 Graia 的模块要由 `from miraibot import` 改为 `from graia.application.entry`。  
 例如，把 `from miraibot import GraiaMiraiApplication` 改为 `from graia.application.entry import GraiaMiraiApplication`
-3. ieew/miraibot 的命令系统暂时不够完善（至少我连启动都没法启动）。暂时去掉了，有需要的话要自己实现
+3. ~~ieew/miraibot 的命令系统暂时不够完善（至少我连启动都没法启动）。暂时去掉了，有需要的话要自己实现~~  
+  （目前基于 ieew/miraibot 原有的指令系统修改出了暂时可用的版本，示例插件见[这里](./miraibot/plugins/#group_command_test.py)）
