@@ -11,17 +11,17 @@ friend_commands: Dict = {}
 bcc = get.bcc()
 
 
-class command_decorators(Exception):
+class CommandDecorators(Exception):
     pass
 
 
 def group_command(
     command: str,
     aliases: Tuple[str] = (),
-    group: Union[Tuple[int], List[int]] = [],
-    permission: Union[
-        MemberPerm.Administrator, MemberPerm.Owner, MemberPerm.Member
-    ] = MemberPerm.Member,  # 命令权限
+    group: Union[Tuple[int], List[int]] = [],  # noqa
+    permission: List[MemberPerm] = [  # noqa
+        MemberPerm.Member, MemberPerm.Administrator, MemberPerm.Owner
+    ],  # 命令权限
     at: bool = False,  # 是否被 at
     shell_like: bool = False  # 是否使用类 shell 语法
 ):
@@ -35,7 +35,7 @@ def group_command(
     :param permission: 命令权限
     :param at: 机器人是否被 at
     :param shell_like: 是否使用类 shell 语法
-    :param reutrn: None
+    :return: None
     """
     def command_decorator(func):
         def append(group):
@@ -43,9 +43,10 @@ def group_command(
                 k for k, v in group_commands.items()
             ] else None
 
-            if not my_command:
-                global group_commands
+            if my_command is not None:
+                # global group_commands
                 group_commands[my_command] = ExecClass(
+                    name=my_command,
                     target=func,
                     group=group,
                     permission=permission,
@@ -58,7 +59,7 @@ def group_command(
                             f"{i}_{group}"
                         ] = group_commands[my_command]
             else:
-                raise command_decorators(f"命令 \"{command}\" 已被占用")
+                raise CommandDecorators(f"命令 \"{command}\" 已被占用")
         if len(group):
             for group_id in group:
                 append(group_id)
