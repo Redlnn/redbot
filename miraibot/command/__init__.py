@@ -3,7 +3,7 @@ from ..event import MemberPerm
 from .ExecClass import ExecClass
 
 from .. import GraiaMiraiApplication, get
-from ..message import MessageChain, Group, Member, Friend, At
+from ..message import MessageChain, Group, Member, Friend, At, Plain
 
 
 group_commands: Dict[str, ExecClass] = {}
@@ -75,7 +75,10 @@ async def Group_instruction_processor(
     message: MessageChain,
     group: Group, member: Member
 ):
-    m = message.asDisplay()
+    if message.has(At):
+        m = message.get(Plain)[0].text.strip()
+    else:
+        m = message.asDisplay().rstrip()
     if f"{m}_{group.id}" in group_commands:
         if group_commands[f"{m}_{group.id}"].Group:
             if group.id in group_commands[f"{m}_{group.id}"].Group:  # 检查指令是否适用当前群
