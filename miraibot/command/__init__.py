@@ -94,12 +94,12 @@ async def Group_instruction_processor(
                             await group_commands[f"{m}_{group.id}"].Target(
                                 **group_commands[f"{m}_{group.id}"].Target.__annotations__ # noqa
                             )
+                else:
+                    await group_commands[f"{m}_{group.id}"].Target(
+                        **group_commands[f"{m}_{group.id}"].Target.__annotations__
+                    )
                 del target
     del m
-
-    for k, v in group_commands.items():
-        if message.asDisplay() == k:
-            await v()
 
 
 @bcc.receiver("FriendMessage")
