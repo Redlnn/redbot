@@ -6,7 +6,7 @@ from .. import GraiaMiraiApplication, get
 from ..message import MessageChain, Group, Member, Friend, At
 
 
-group_commands: Dict[ExecClass] = {}
+group_commands: Dict[str, ExecClass] = {}
 friend_commands: Dict = {}
 bcc = get.bcc()
 
@@ -75,19 +75,21 @@ async def Group_instruction_processor(
     message: MessageChain,
     group: Group, member: Member
 ):
-    async with message.asDisplay() as m:
-        if m in group_commands:
-            if group_commands[m].Group:
-                if group.id in group_commands[m].Group:  # 检查指令是否适用当前群
-                    async with group_commands[m] as target:
-                        if member.permission not in target.Permission:  # 检查指令需求的权限 # noqa
-                            return
-                        if target.at:
-                            for i in message.get(At):
-                                if i.target == bot.connect_info.account:
-                                    await group_commands[m].Target(
-                                        **group_commands[m].Target.__annotations__() # noqa
-                                    )
+    m = message.asDisplay()
+    if m in group_commands:
+        if group_commands[m].Group:
+            if group.id in group_commands[m].Group:  # 检查指令是否适用当前群
+                target = group_commands[m]
+                if member.permission not in target.Permission:  # 检查指令需求的权限 # noqa
+                    return
+                if target.at:
+                    for i in message.get(At):
+                        if i.target == bot.connect_info.account:
+                            await group_commands[m].Target(
+                                **group_commands[m].Target.__annotations__ # noqa
+                            )
+                del target
+    del m
 
     for k, v in group_commands.items():
         if message.asDisplay() == k:
