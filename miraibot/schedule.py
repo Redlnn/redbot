@@ -103,7 +103,6 @@ class Scheduler(object):
     factories to create jobs, keep record of scheduled jobs and
     handle their execution.
     """
-
     def __init__(self):
         self.jobs = []
 
@@ -211,7 +210,6 @@ class Job(object):
     A job is usually created and returned by :meth:`Scheduler.every`
     method, which also defines its `interval`.
     """
-
     def __init__(self, interval, scheduler=None):
         self.interval = interval  # pause interval * unit between runs
         self.latest = None  # upper limit to the interval

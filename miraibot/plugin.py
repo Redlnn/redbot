@@ -68,7 +68,6 @@ def load_plugins(plugin_dir: str, module_prefix: str) -> int:
     :param module_prefix: 导入时使用的模块前缀
     :return: 成功加载的插件数量
     """
-
     def fors(plugin_dir, module_prefix: str):
         _plugin_dir = os.listdir(plugin_dir)
         if len(_plugin_dir) > 0:
@@ -97,20 +96,20 @@ def load_plugins(plugin_dir: str, module_prefix: str) -> int:
 
     count = 0
     fors(plugin_dir, module_prefix)
-    # fors(
-    #     os.path.join(os.path.dirname(__file__), 'plugins'),
-    #     'MiraiBot.plugins'
-    # )
+    fors(
+        os.path.join(os.path.dirname(__file__), 'plugins'),
+        'MiraiBot.plugins'
+    )
     logger.info(f'共加载 {count} 个插件')
     return count
 
 
-# def load_builtin_plugins() -> int:
-#     """
-#     加载与 "MiraiBot" 软件包一起分发的内置插件。
-#     """
-#     plugin_dir = os.path.join(os.path.dirname(__file__), 'plugins')
-#     return load_plugins(plugin_dir, 'MiraiBot.plugins')
+def load_builtin_plugins() -> int:
+    """
+    加载与 "MiraiBot" 软件包一起分发的内置插件。
+    """
+    plugin_dir = os.path.join(os.path.dirname(__file__), 'plugins')
+    return load_plugins(plugin_dir, 'MiraiBot.plugins')
 
 
 def get_loaded_plugins() -> object:
