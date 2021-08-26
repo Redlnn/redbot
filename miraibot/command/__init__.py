@@ -81,18 +81,18 @@ async def Group_instruction_processor(
         m = message.asDisplay().rstrip()
     if f"{m}_{group.id}" in group_commands:
         if group_commands[f"{m}_{group.id}"].Group:
-            if group.id in group_commands[f"{m}_{group.id}"].Group:  # 检查指令是否适用当前群
+            if group.id == group_commands[f"{m}_{group.id}"].Group:  # 检查指令是否适用当前群
                 target = group_commands[f"{m}_{group.id}"]
-                if member.permission not in target.Permission:  # 检查指令需求的权限 # noqa
+                if member.permission not in target.Permission:  # 检查指令需求的权限
                     await bot.sendGroupMessage(group, MessageChain.create([
                         Plain('你没有权限执行此命令')
                     ]))
                     return
-                if target.at:
+                if target.At:
                     for i in message.get(At):
                         if i.target == bot.connect_info.account:
                             await group_commands[f"{m}_{group.id}"].Target(
-                                **group_commands[f"{m}_{group.id}"].Target.__annotations__ # noqa
+                                **group_commands[f"{m}_{group.id}"].Target.__annotations__
                             )
                 else:
                     await group_commands[f"{m}_{group.id}"].Target(
