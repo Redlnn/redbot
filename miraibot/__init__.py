@@ -147,17 +147,16 @@ def run():
         logger.info("Bye~")
 
 
-from .plugin import ( # noqa
+from .plugin import (  # noqa
     load_plugin,
     load_plugins,
     load_builtin_plugins,
     get_loaded_plugins
 )
 
-from .command import on_command # noqa
 
 __all__ = [
-    "init", "run", "get", "miraibot", "on_command",
+    "init", "run", "get", "miraibot",
     "GraiaMiraiApplication",
     "load_plugin", "load_plugins", "load_builtin_plugins", "get_loaded_plugins", # noqa
     "schedule", "logger"
