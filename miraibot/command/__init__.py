@@ -24,7 +24,7 @@ def group_command(
             MemberPerm.Member, MemberPerm.Administrator, MemberPerm.Owner
         ],  # 命令权限
         at: bool = False,  # 是否被 at
-        shell_like: bool = True  # 是否使用类 shell 语法，暂时不可更改
+        shell_like: bool = True  # 是否使用类 shell 语法
 ):
     """命令处理器
         将一个命令处理器装入指令池中
@@ -34,7 +34,7 @@ def group_command(
     :param group: 命令适用的群, 可以是 list 或 tuple 但内部必须是 int
     :param permission: 命令权限
     :param at: 机器人是否被 at
-    :param shell_like: 是否使用类 shell 语法，暂时不可更改
+    :param shell_like: 是否使用类 shell 语法
     :return: None
     """
 
@@ -98,12 +98,20 @@ async def group_instruction_processor(
     for parm_key, parm_type in target_func.Target.__annotations__.items():
         target_keyword_parm.update({parm_key: parm[parm_type]})
 
-    if target_func.At:
-        for i in message.get(At):
-            if i.target == bot.connect_info.account:
+    if target_func.Shell_like:
+        if target_func.At:
+            for i in message.get(At):
+                if i.target == bot.connect_info.account:
+                    await target_func.Target(**target_keyword_parm)
+        elif m == message.asDisplay().strip().split()[0]:
+            await target_func.Target(**target_keyword_parm)
+    else:
+        if target_func.At:
+            if message.has(At) and m == message.get(Plain)[0].text.strip():
                 await target_func.Target(**target_keyword_parm)
-    elif m == message.asDisplay().strip().split()[0]:
-        await target_func.Target(**target_keyword_parm)
+        elif m == message.asDisplay().strip():
+            await target_func.Target(**target_keyword_parm)
+
     del target_func, target_keyword_parm
 
 

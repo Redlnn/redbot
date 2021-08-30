@@ -20,7 +20,8 @@ __plugin_usage__ = "群指令系统测试，可用命令：test、t、tt，需�
     aliases=['t', 'tt'],
     group=[123456789],
     permission=[MemberPerm.Administrator, MemberPerm.Owner],
-    at=True
+    at=True,
+    shell_like=False
 )
 async def group_command_listener(
         app: GraiaMiraiApplication,
