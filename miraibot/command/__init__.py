@@ -1,6 +1,6 @@
 from typing import Dict, Union, Tuple, List
 
-from graia.application.entry import GraiaMiraiApplication, MessageChain, Group, Member, Friend, At, Plain, MemberPerm
+from graia.application.entry import GraiaMiraiApplication, MessageChain, Group, Member, Friend, At, Plain, MemberPerm, GroupMessage
 
 from miraibot import GetCore
 from .ExecClass import ExecClass
@@ -76,25 +76,35 @@ async def group_instruction_processor(
         m: str, command: str,
         bot: GraiaMiraiApplication,
         message: MessageChain,
-        group: Group, member: Member
+        group: Group, member: Member,
+        event: GroupMessage
 ):
-    target = group_commands[command]
-    if member.permission not in target.Permission:  # 检查指令需求的权限
+    target_func = group_commands[command]
+    if member.permission not in target_func.Permission:  # 检查指令需求的权限
         await bot.sendGroupMessage(group, MessageChain.create([
             Plain('你没有权限执行此命令')
         ]))
         return
-    if target.At:
+
+    parm = {
+        GraiaMiraiApplication: bot,
+        MessageChain: message,
+        Member: member,
+        Group: group,
+        GroupMessage: event
+    }
+
+    target_keyword_parm = {}
+    for parm_key, parm_type in target_func.Target.__annotations__.items():
+        target_keyword_parm.update({parm_key: parm[parm_type]})
+
+    if target_func.At:
         for i in message.get(At):
             if i.target == bot.connect_info.account:
-                await group_commands[command].Target(
-                    **group_commands[command].Target.__annotations__
-                )
+                await target_func.Target(**target_keyword_parm)
     else:
-        await group_commands[command].Target(
-            **group_commands[command].Target.__annotations__
-        )
-    del target
+        await target_func.Target(**target_keyword_parm)
+    del target_func, target_keyword_parm
 
 
 @bcc.receiver("GroupMessage")
@@ -102,6 +112,7 @@ async def group_instruction_pre_processor(
         bot: GraiaMiraiApplication,
         message: MessageChain,
         group: Group, member: Member,
+        event: GroupMessage
 ):
     if message.has(At):
         m = message.get(Plain)[0].text.strip().split()[0]
@@ -110,11 +121,11 @@ async def group_instruction_pre_processor(
 
     command = f"{m}_{group.id}"
     if f"{m}_null" in group_commands:
-        await group_instruction_processor(m, f"{m}_null", bot, message, group, member)
+        await group_instruction_processor(m, f"{m}_null", bot, message, group, member, event)
     elif command not in group_commands:
         return
     elif group_commands[command].Group and group.id == group_commands[command].Group:  # 检查指令是否适用当前群
-        await group_instruction_processor(m, command, bot, message, group, member)
+        await group_instruction_processor(m, command, bot, message, group, member, event)
     del m, command
 
 
