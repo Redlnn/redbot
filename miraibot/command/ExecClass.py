@@ -20,7 +20,7 @@ class ExecClass:
             group: List[int] = None,
             permission: MemberPerm = None,
             at: bool = False,
-            shell_like: bool = False
+            shell_like: bool = True
     ):
         self.Name = name
         self.Target = target
