@@ -102,7 +102,7 @@ async def group_instruction_processor(
         for i in message.get(At):
             if i.target == bot.connect_info.account:
                 await target_func.Target(**target_keyword_parm)
-    else:
+    elif m == message.asDisplay().strip().split()[0]:
         await target_func.Target(**target_keyword_parm)
     del target_func, target_keyword_parm
 
