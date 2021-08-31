@@ -1,6 +1,7 @@
-from typing import Dict, Union, Tuple, List
+from typing import Dict, List, Tuple, Union
 
-from graia.application.entry import GraiaMiraiApplication, MessageChain, Group, Member, Friend, At, Plain, MemberPerm, GroupMessage
+from graia.application.entry import (At, Friend, GraiaMiraiApplication, Group, GroupMessage, Member, MemberPerm,
+                                     MessageChain, Plain)
 
 from miraibot import GetCore
 from .ExecClass import ExecClass
@@ -53,26 +54,26 @@ def group_command(
             if my_command is not None:
                 # global group_commands
                 group_commands[my_command] = ExecClass(
-                    name=my_command,
-                    desc=desc,
-                    target=func,
-                    group=group,
-                    permission=permission,
-                    at=at,
-                    shell_like=shell_like,
-                    is_alias=False
+                        name=my_command,
+                        desc=desc,
+                        target=func,
+                        group=group,
+                        permission=permission,
+                        at=at,
+                        shell_like=shell_like,
+                        is_alias=False
                 )
                 if len(aliases):
                     for i in aliases:
                         group_commands[f"{i}_{group}"] = ExecClass(
-                            name=my_command,
-                            desc=desc,
-                            target=func,
-                            group=group,
-                            permission=permission,
-                            at=at,
-                            shell_like=shell_like,
-                            is_alias=True
+                                name=my_command,
+                                desc=desc,
+                                target=func,
+                                group=group,
+                                permission=permission,
+                                at=at,
+                                shell_like=shell_like,
+                                is_alias=True
                         )
             else:
                 raise CommandDecorators(f"命令 \"{command}\" 已被占用")
