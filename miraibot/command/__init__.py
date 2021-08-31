@@ -5,7 +5,7 @@ from graia.application.entry import GraiaMiraiApplication, MessageChain, Group, 
 from miraibot import GetCore
 from .ExecClass import ExecClass
 
-__all__ = ["group_command"]
+__all__ = ["group_command", "get_group_commands"]
 
 group_commands: Dict[str, ExecClass] = {}
 friend_commands: Dict = {}
@@ -16,9 +16,14 @@ class CommandDecorators(Exception):
     pass
 
 
+def get_group_commands() -> Dict[str, ExecClass]:
+    return group_commands
+
+
 def group_command(
         command: str,
         aliases: Union[Tuple[str], List[str]] = (),
+        desc: str = 'null',
         group: Union[Tuple[int], List[int]] = [],  # 当 group 保持为空时，可针对所有群启用 # noqa
         permission: List[MemberPerm] = [  # noqa
             MemberPerm.Member, MemberPerm.Administrator, MemberPerm.Owner
@@ -31,6 +36,7 @@ def group_command(
 
     :param command: 命令名
     :param aliases: 命令别名, 单个可用字符串，多个请传入元组
+    :param desc: 命令描述
     :param group: 命令适用的群, 可以是 list 或 tuple 但内部必须是 int
     :param permission: 命令权限
     :param at: 机器人是否被 at
@@ -48,17 +54,26 @@ def group_command(
                 # global group_commands
                 group_commands[my_command] = ExecClass(
                     name=my_command,
+                    desc=desc,
                     target=func,
                     group=group,
                     permission=permission,
                     at=at,
-                    shell_like=shell_like
+                    shell_like=shell_like,
+                    is_alias=False
                 )
                 if len(aliases):
                     for i in aliases:
-                        group_commands[
-                            f"{i}_{group}"
-                        ] = group_commands[my_command]
+                        group_commands[f"{i}_{group}"] = ExecClass(
+                            name=my_command,
+                            desc=desc,
+                            target=func,
+                            group=group,
+                            permission=permission,
+                            at=at,
+                            shell_like=shell_like,
+                            is_alias=True
+                        )
             else:
                 raise CommandDecorators(f"命令 \"{command}\" 已被占用")
 

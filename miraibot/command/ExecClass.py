@@ -12,22 +12,28 @@ class ExecClass:
     Permission: List[MemberPerm]
     At: bool
     Shell_like: bool
+    Is_alias: bool
+    Desc: str
 
     def __init__(
             self,
             name: str,
+            desc: str,
             target: object,
             group: List[int] = None,
             permission: MemberPerm = None,
             at: bool = False,
-            shell_like: bool = True
+            shell_like: bool = True,
+            is_alias: bool = False
     ):
         self.Name = name
+        self.Desc = desc
         self.Target = target
         self.Group = group or []
         self.Permission = permission or []
         self.At = at
         self.Shell_like = shell_like
+        self.Is_alias = is_alias
 
     def _check_perm(self):
         pass
