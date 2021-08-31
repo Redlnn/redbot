@@ -138,9 +138,13 @@ async def group_instruction_pre_processor(
         event: GroupMessage
 ):
     if message.has(At):
-        m = message.get(Plain)[0].text.strip().split()[0]
+        m = message.get(Plain)[0].text
     else:
-        m = message.asDisplay().strip().split()[0]
+        m = message.asDisplay()
+    if m == '':
+        return
+    else:
+        m = m.strip().split()[0]
 
     command = f"{m}_{group.id}"
     if f"{m}_null" in group_commands:
