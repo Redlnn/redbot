@@ -2,7 +2,7 @@
 
 # [redbot](https://github.com/Redlnn/redbot) [for](https://github.com/project-mirai/mirai-api-http) [Ariadne](https://github.com/GraiaProject/Ariadne)
 
-[![Licence](https://img.shields.io/github/license/Redlnn/redbot)](https://github.com/GraiaProject/Ariadne/blob/master/LICENSE)
+[![Licence](https://img.shields.io/github/license/Redlnn/redbot)](https://github.com/Redlnn/redbot/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRedlnn%2Fredbot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FRedlnn%2Fredbot?ref=badge_shield)
 
@@ -10,7 +10,7 @@
 
 </div>
 
-**[`文件目录结构`](./FILES.md)**
+⇒  **[文件目录结构](./FILES.md)**  ⇐
 
 ## 功能列表
 
@@ -25,7 +25,7 @@
 - 消息内容转图片（支持纯文本和静态图片）
 - 消息触发支持：全局黑名单控制、成员权限控制、频率限制
 
-### TODO
+### TODO（咕咕咕）
 
 - [ ] 聊天历史记录
 - [ ] 聊天历史词云（咕？
@@ -40,9 +40,9 @@
 
 ## 鸣谢 & 相关项目
 
-> 这些项目也很棒, 去他们的项目页看看, 点个 Star 以鼓励他们的开发工作
+> 这些项目也很棒, 可以去他们的项目主页看看, 点个 Star 鼓励他们的开发工作把
 
-特别感谢 `[Mamoe Technologies](https://github.com/mamoe)` 给我们带来这些精彩的项目:
+特别感谢 [`Mamoe Technologies`](https://github.com/mamoe) 给我们带来这些精彩的项目:
 
 - [`mirai`](https://github.com/mamoe/mirai) & [`mirai-console`](https://github.com/mamoe/mirai-console): 一个在全平台下运行，提供 QQ Android 和 TIM PC 协议支持的高效率机器人框架
 - [`mirai-api-http`](https://github.com/project-mirai/mirai-api-http): 为本项目提供与 mirai 交互方式的 mirai-console 插件
@@ -56,7 +56,7 @@
 [`redbot`](https://github.com/Redlnn/redbot) 在开发中还参考了如下项目:
 
 - [`ABot`](https://github.com/djkcyl/ABot-Graia/): 一个使用 [Graia-Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的 QQ 功能性~~究极缝合怪~~机器人
-- [`Xenon`](https://github.com/McZoo/Xenon): 一个优雅，用户友好的，基于 [`mirai`](https://github.com/mamoe/mirai) 与 [`Graia Project`](https://github.com/GraiaProject/) 的 QQ 机器人应用
+- [`Xenon`](https://github.com/McZoo/Xenon): 一个优雅，用户友好的，基于 [mirai](https://github.com/mamoe/mirai) 与 [Graia Project](https://github.com/GraiaProject/) 的 QQ 机器人应用
 
 ## License
 
