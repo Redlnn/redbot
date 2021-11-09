@@ -4,31 +4,59 @@
 
 [![Licence](https://img.shields.io/github/license/Redlnn/redbot)](https://github.com/GraiaProject/Ariadne/blob/master/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRedlnn%2Fredbot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FRedlnn%2Frebot?ref=badge_shield)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRedlnn%2Fredbot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FRedlnn%2Fredbot?ref=badge_shield)
 
-redbot 是一个使用 [Graia-Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的<del>究极缝合（连 README 也缝合）</del>的 QQ 机器人
+一个使用 [Graia Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的~~连 README 也缝合的~~究极缝合 QQ 机器人
 
 </div>
 
+**[`文件目录结构`](./FILES.md)**
+
 ## 功能列表
 
-> 自动回复：精确匹配、模糊匹配、正则回复，支持带图回复
->
-> 我的世界服务器管理： 白名单管理、执行命令
->
-> 我的世界服务器 Motd Ping
->
-> 我的世界中文 Wiki 搜索
->
-> BiliBili 视频解析：（支持小程序、卡片分享、av号、BV号、B站链接
->
-> 每日抽签（人品检测）：~~狗屁不通的签文生成~~
->
-> 抽取随机数
->
-> 消息内容转图片（仅支持纯文本和静态图片）
->
-> 消息触发支持：全局黑名单控制、成员权限控制、频率限制
+- 菜单以及功能介绍
+- 自动回复：精确匹配、模糊匹配、正则回复，支持带图回复
+- 我的世界服务器管理： 白名单管理、执行命令
+- 我的世界服务器 Motd Ping
+- 我的世界中文 Wiki 搜索
+- BiliBili 视频解析：支持小程序、卡片分享、av号、BV号、B站链接
+- 每日抽签（人品检测）：~~狗屁不通的签文生成~~
+- 随机数抽取
+- 消息内容转图片（支持纯文本和静态图片）
+- 消息触发支持：全局黑名单控制、成员权限控制、频率限制
+
+### TODO
+
+- [ ] 聊天历史记录
+- [ ] 聊天历史词云（咕？
+- [ ] 聊天条数统计
+- [ ] 读被回复消息
+- [ ] 概率复读
+- [ ] 留言
+- [ ] 多边形图片生成 <!--https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py-->
+- [ ] 二维码生成
+- [ ] Bot 运行状态及系统占用监控查询
+- [ ] BiliBili 动态/直播 订阅推送
+
+## 鸣谢 & 相关项目
+
+> 这些项目也很棒, 去他们的项目页看看, 点个 Star 以鼓励他们的开发工作
+
+特别感谢 `[Mamoe Technologies](https://github.com/mamoe)` 给我们带来这些精彩的项目:
+
+- [`mirai`](https://github.com/mamoe/mirai) & [`mirai-console`](https://github.com/mamoe/mirai-console): 一个在全平台下运行，提供 QQ Android 和 TIM PC 协议支持的高效率机器人框架
+- [`mirai-api-http`](https://github.com/project-mirai/mirai-api-http): 为本项目提供与 mirai 交互方式的 mirai-console 插件
+
+感谢 [`GraiaProject`](https://github.com/GraiaProject) 给我们带来这些项目:
+
+- [`Broadcast Control`](https://github.com/GraiaProject/BroadcastControl): 高性能, 高可扩展性，设计简洁，基于 asyncio 的事件系统
+- [`Saya`](https://github.com/GraiaProject/Saya) 简洁的模块管理系统
+- [`Scheduler`](https://github.com/GraiaProject/Scheduler): 简洁的基于 `asyncio` 的定时任务实现
+
+[`redbot`](https://github.com/Redlnn/redbot) 在开发中还参考了如下项目:
+
+- [`ABot`](https://github.com/djkcyl/ABot-Graia/): 一个使用 [Graia-Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的 QQ 功能性~~究极缝合怪~~机器人
+- [`Xenon`](https://github.com/McZoo/Xenon): 一个优雅，用户友好的，基于 [`mirai`](https://github.com/mamoe/mirai) 与 [`Graia Project`](https://github.com/GraiaProject/) 的 QQ 机器人应用
 
 ## License
 

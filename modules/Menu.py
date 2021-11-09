@@ -37,9 +37,13 @@ async def main(app: Ariadne, group: Group):
     for _ in channels.keys():
         if channels[_].module in (channel.module, 'module.test'):
             continue
-        msg_send += f'模块名: {channels[_]._name}\n描述：\n'
-        for i in channels[_]._description.split("\n"):
-            msg_send += f'    {i}\n'
+        msg_send += f'模块名: {channels[_]._name if channels[_]._name else channels[_].module}\n'
+        if not channels[_]._description:
+            msg_send += '无描述'
+        else:
+            msg_send += '描述：\n'
+            for i in channels[_]._description.split("\n"):
+                msg_send += f'    {i}\n'
         msg_send += hr + '\n'
 
     img_io = await async_generate_img([msg_send])
