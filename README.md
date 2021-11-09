@@ -25,18 +25,21 @@
 - 消息内容转图片（支持纯文本和静态图片）
 - 消息触发支持：全局黑名单控制、成员权限控制、频率限制
 
-### TODO（咕咕咕）
+> Tips: 要禁用一个功能只需要在其对应的文件（夹）的名字最前面加上 `! # .` 中的任意一个符号即可
+
+### TODO（咕咕咕？
 
 - [ ] 聊天历史记录
-- [ ] 聊天历史词云（咕？
+- [ ] 聊天历史词云
 - [ ] 聊天条数统计
-- [ ] 读被回复消息
+- [ ] 读取被回复消息的<可持久化字符串>及使用<可持久化字符串>发送消息
 - [ ] 概率复读
-- [ ] 留言
+- [ ] 留言提醒
 - [ ] 多边形图片生成 <!--https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py-->
 - [ ] 二维码生成
 - [ ] Bot 运行状态及系统占用监控查询
 - [ ] BiliBili 动态/直播 订阅推送
+- [ ] Pixiv 搜图
 
 ## 鸣谢 & 相关项目
 
@@ -50,6 +53,8 @@
 感谢 [`GraiaProject`](https://github.com/GraiaProject) 给我们带来这些项目:
 
 - [`Broadcast Control`](https://github.com/GraiaProject/BroadcastControl): 高性能, 高可扩展性，设计简洁，基于 asyncio 的事件系统
+- [`Ariadne`](https://github.com/GraiaProject/Ariadne): 一个设计精巧, 协议实现完备的, 基于 mirai-api-http v2 的即时聊天软件自动化框架
+- [`Application`](https://github.com/GraiaProject/Application): Ariadne 的前身，一个设计精巧, 协议实现完备的, 基于 mirai-api-http 的即时聊天软件自动化框架
 - [`Saya`](https://github.com/GraiaProject/Saya) 简洁的模块管理系统
 - [`Scheduler`](https://github.com/GraiaProject/Scheduler): 简洁的基于 `asyncio` 的定时任务实现
 
