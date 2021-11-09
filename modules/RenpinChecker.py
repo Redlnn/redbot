@@ -125,7 +125,7 @@ async def main(app: Ariadne, group: Group, member: Member):
         )
 
 
-@channel.use(SchedulerSchema(crontabify('38 15 * * *')))
+@channel.use(SchedulerSchema(crontabify('0 0 * * *')))
 async def scheduled_del_outdated_data() -> None:
     """
     定时删除过时的数据文件
