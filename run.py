@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-import logging
 import os
 
 from graia.ariadne.adapter import CombinedAdapter
@@ -28,27 +27,28 @@ if __name__ == '__main__':
     saya.install_behaviours(BroadcastBehaviour(bcc))
     saya.install_behaviours(GraiaSchedulerBehaviour(scheduler))
 
-    # app = Ariadne.create(
-    #         broadcast=bcc,
-    #         session=MiraiSession(
-    #                 host=BotConfig.host,  # noqa # 填入 httpapi 服务运行的地址
-    #                 account=BotConfig.account,  # 你的机器人的 qq 号
-    #                 verify_key=BotConfig.verify_key  # 填入 verifyKey
-    #         )
-    # )
-
-    app = Ariadne(
-        broadcast=bcc,
-        # chat_log_config=False,
-        adapter=CombinedAdapter(
-            bcc,
-            MiraiSession(
-                host=BotConfig.host,  # noqa # 填入 httpapi 服务运行的地址
-                account=BotConfig.account,  # 你的机器人的 qq 号
-                verify_key=BotConfig.verify_key,  # 填入 verifyKey
+    if BotConfig.enable_log_chat:
+        app = Ariadne.create(
+                broadcast=bcc,
+                session=MiraiSession(
+                        host=BotConfig.host,  # noqa # 填入 httpapi 服务运行的地址
+                        account=BotConfig.account,  # 你的机器人的 qq 号
+                        verify_key=BotConfig.verify_key  # 填入 verifyKey
+                )
+        )
+    else:
+        app = Ariadne(
+            broadcast=bcc,
+            chat_log_config=False,
+            adapter=CombinedAdapter(
+                bcc,
+                MiraiSession(
+                    host=BotConfig.host,  # noqa # 填入 httpapi 服务运行的地址
+                    account=BotConfig.account,  # 你的机器人的 qq 号
+                    verify_key=BotConfig.verify_key,  # 填入 verifyKey
+                ),
             ),
-        ),
-    )
+        )
 
     async def main() -> None:
         await app.launch()
