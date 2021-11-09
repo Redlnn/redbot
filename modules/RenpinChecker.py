@@ -101,25 +101,27 @@ class Match(Sparkle):
 
 
 @channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Match)],
-        decorators=[group_blacklist(), MemberInterval.require(3, send_alert=False)],
-    )
+        ListenerSchema(
+                listening_events=[GroupMessage],
+                inline_dispatchers=[Twilight(Match)],
+                decorators=[group_blacklist(), MemberInterval.require(3, send_alert=False)],
+        )
 )
 async def main(app: Ariadne, group: Group, member: Member):
+    print(1)
     is_new, (renpin, qianwen) = await read_data(str(member.id))
     img_io = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
         await app.sendGroupMessage(
-            group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_io.getvalue()))
+                group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_io.getvalue()))
         )
     else:
         await app.sendGroupMessage(
-            group,
-            MessageChain.create(
-                At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'), Image(data_bytes=img_io.getvalue())
-            ),
+                group,
+                MessageChain.create(
+                        At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'),
+                        Image(data_bytes=img_io.getvalue())
+                ),
         )
 
 
@@ -129,8 +131,10 @@ async def scheduled_del_outdated_data() -> None:
     定时删除过时的数据文件
     """
     for _ in os.listdir(data_folder):
-        if regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _) and\
-                _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml':
+        if (
+                regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
+                and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
+        ):
             os.remove(os.path.join(data_folder, _))
             logger.info(f'发现过期的数据文件 {_}，已删除')
 
@@ -141,8 +145,10 @@ async def del_outdated_data() -> None:
     在bot启动时删除过时的数据文件
     """
     for _ in os.listdir(data_folder):
-        if regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _) and \
-                _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml':
+        if (
+                regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
+                and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
+        ):
             os.remove(os.path.join(data_folder, _))
             logger.info(f'发现过期的数据文件 {_}，已删除')
 
@@ -217,4 +223,4 @@ async def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:
             renpin = random.randint(0, 100)
             qianwen = await gen_qianwen(renpin)
             yml.dump({qq: [renpin, qianwen]}, f, allow_unicode=True)
-            return False, (renpin, qianwen)
+            return True, (renpin, qianwen)

@@ -69,8 +69,6 @@ async def get_mc_id(mc_uuid: str) -> str | Response:
 
     :param mc_uuid: 输入一个uuid
     """
-    if not is_uuid(mc_uuid):
-        return None
     url = f'https://sessionserver.mojang.com/session/minecraft/profile/{mc_uuid}'
     res = await httpx.AsyncClient().get(url)
     code = res.status_code
@@ -86,13 +84,23 @@ async def get_mc_id(mc_uuid: str) -> str | Response:
 
 async def query_uuid_by_qq(
         qq: int, table: T_PlayersListTable
-) -> Tuple[bool, Optional[str], Optional[str], Optional[str], Optional[str], Optional[bool], Optional[str]]:
+) -> Tuple[bool, Optional[int], Optional[int], Optional[str], Optional[int], Optional[str], Optional[int], Optional[bool], Optional[str]]:
     try:
         data: T_PlayersListTable = table.get(table.qq == qq)
     except table.DoesNotExist:
-        return False, None, None, None, None, None, None
+        return False, None, None, None, None, None, None, None, None
     else:
-        return True, data.uuid1, data.uuid1AddedTime, data.uuid2, data.uuid2AddedTime, data.blocked, data.blockReason
+        return (
+            True,
+            data.joinTimestamp,
+            data.leaveTimestamp,
+            data.uuid1,
+            data.uuid1AddedTime,
+            data.uuid2,
+            data.uuid2AddedTime,
+            data.blocked,
+            data.blockReason,
+        )
 
 
 async def query_qq_by_uuid(mc_uuid: str, table: T_PlayersListTable) -> Optional[int]:
