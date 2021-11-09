@@ -60,9 +60,10 @@ else:
 class PlayersListTable(Model):
     qq = CharField(max_length=12, unique=True, column_name='qq')
     joinTimestamp = TimestampField(column_name='joinTimestamp')
-    uuid1 = UUIDField(index=True, null=True, column_name='uuid1')
+    leaveTimestamp = TimestampField(null=True, default=None, column_name='leaveTimestamp')
+    uuid1 = UUIDField(index=True, null=True, default=None, column_name='uuid1')
     uuid1AddedTime = TimestampField(null=True, default=None, column_name='uuid1AddedTime')
-    uuid2 = UUIDField(index=True, null=True, column_name='uuid2')
+    uuid2 = UUIDField(index=True, null=True, default=None, column_name='uuid2')
     uuid2AddedTime = TimestampField(null=True, default=None, column_name='uuid2AddedTime')
     blocked = BooleanField(default=False, column_name='blocked')
     blockReason = TextField(null=True, default=None, column_name='blockReason')

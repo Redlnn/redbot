@@ -4,7 +4,7 @@
 
 [![Licence](https://img.shields.io/github/license/Redlnn/redbot)](https://github.com/GraiaProject/Ariadne/blob/master/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-<!-- [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRedlnn%2Fredbot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FRedlnn%2Frebot?ref=badge_shield) -->
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRedlnn%2Fredbot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FRedlnn%2Frebot?ref=badge_shield)
 
 redbot 是一个使用 [Graia-Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的<del>究极缝合（连 README 也缝合）</del>的 QQ 机器人
 
@@ -30,6 +30,6 @@ redbot 是一个使用 [Graia-Ariadne](https://github.com/GraiaProject/Ariadne) 
 >
 > 消息触发支持：全局黑名单控制、成员权限控制、频率限制
 
-[comment]: <> (## License)
+## License
 
-<!-- [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRedlnn%2Fredbot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FRedlnn%2Fredbot?ref=badge_large) -->
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRedlnn%2Fredbot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FRedlnn%2Fredbot?ref=badge_large)
