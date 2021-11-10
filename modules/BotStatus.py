@@ -36,7 +36,7 @@ repo = git.Repo(os.getcwd())
         )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if not regex.match(r'^[!！.](status|version)$'):
+    if not regex.match(r'^[!！.](status|version)$', message.asDisplay()):
         return
     mem_info = psutil.virtual_memory()._asdict()
     msg_send = (
