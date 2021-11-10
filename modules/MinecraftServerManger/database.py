@@ -59,7 +59,7 @@ if not server_group:
 
 
 class PlayersTable(Model):
-    group = CharField(max_length=12, unique=True, column_name='group')
+    group = CharField(max_length=12, index=True, column_name='group')
     qq = CharField(max_length=12, index=True, column_name='qq')
     joinTimestamp = TimestampField(column_name='joinTimestamp')
     leaveTimestamp = TimestampField(null=True, default=None, column_name='leaveTimestamp')
