@@ -324,7 +324,7 @@ reference = "aliyun"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.4.0a3"
+version = "0.4.0a6"
 description = "Anelegant mirai-api-http v2 Python SDK."
 category = "main"
 optional = false
@@ -877,7 +877,7 @@ reference = "aliyun"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "0fc1036a888d1fed50f8b5572a20a2269f4851a897e2c9ba05453d3f47bdcd45"
+content-hash = "8305e46a97353840fbf31aee466674cd522bcab53c149b6eee493d99b032a8e8"
 
 [metadata.files]
 aiohttp = [
@@ -1093,8 +1093,8 @@ frozenlist = [
     {file = "frozenlist-1.2.0.tar.gz", hash = "sha256:68201be60ac56aff972dc18085800b6ee07973c49103a8aba669dee3d71079de"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.4.0a3.tar.gz", hash = "sha256:996d01032a6643304f56de16baa904be394b709fc28f1184a4912f6aceec9636"},
-    {file = "graia_ariadne-0.4.0a3-py3-none-any.whl", hash = "sha256:391eaf6d143edd2777de9458967515698de9724d58f4705dfb43841b21814377"},
+    {file = "graia-ariadne-0.4.0a6.tar.gz", hash = "sha256:a559a3badcd237fbfb334f079f13d8821262cd778e36d0303fa8cfab78bf1582"},
+    {file = "graia_ariadne-0.4.0a6-py3-none-any.whl", hash = "sha256:0d0b376084ed627eded5c664761b18feee5f1e582697c61fcae053fbf586dd35"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.13.1.tar.gz", hash = "sha256:a22d2678a1946f9084a5f29c469c3c631e039e60dbefd52d683294db998cb075"},
