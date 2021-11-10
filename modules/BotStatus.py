@@ -28,7 +28,7 @@ channel.description('用法：[!！.](status|version)')
 
 repo = git.Repo(os.getcwd())
 
-commit = str(repo.head.reference.commit)[:7]
+commit = repo.head.reference.commit.hexsha
 commit_date = repo.head.reference.commit.committed_datetime
 python_version = platform.python_version()
 if platform.uname().system == 'Windows':
@@ -47,9 +47,16 @@ total_memory = '%.1f' % (psutil.virtual_memory()._asdict()["total"] / 1073741824
 async def main(app: Ariadne, group: Group, message: MessageChain):
     if not regex.match(r'^[!！.](status|version)$', message.asDisplay()):
         return
+    git_log = repo.remotes.origin.refs[1].log()
+    last = 0
+    while True:
+        if git_log[-1 - last].newhexsha != commit:
+            last += 1
+        else:
+            break
     msg_send = (
         '-= Red_lnn Bot 状态 =-\n\n'
-        f'bot 版本：{commit}-dev\n'
+        f'bot 版本：{commit[:7]}-dev{("（落后 " + str(last) + " 个版本）") if last > 0 else ""}\n'
         f'更新日期：{commit_date}\n'
         f'{hr}\n'
         f'Python 版本：{python_version}\n'
