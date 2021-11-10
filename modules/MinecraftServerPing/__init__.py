@@ -41,7 +41,6 @@ channel.name('Ping mc服务器')
 channel.author('Red_lnn')
 channel.description('获取指定mc服务器的信息\n指令：[!！.]ping {mc服务器地址}')
 
-default_server = '127.0.0.1:25565'  # 默认情况Ping的服务器
 
 # 不同群组对应不同的服务器
 group_individual_server = {
@@ -68,7 +67,7 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
         if group.id in group_individual_server.keys():
             server_address = group_individual_server[group.id]
         else:
-            server_address = default_server
+            return
 
     if '://' in server_address:
         await app.sendGroupMessage(group, MessageChain.create([Plain('不支持带有协议前缀的地址')]))
