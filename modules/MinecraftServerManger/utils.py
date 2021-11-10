@@ -9,7 +9,7 @@ import httpx
 import regex
 from httpx import Response
 
-from .database import T_PlayersListTable
+from .database import PlayersTable
 
 __all__ = ["get_time", "is_mc_id", "is_uuid", "get_mc_id", "get_uuid", "query_uuid_by_qq", "query_qq_by_uuid"]
 
@@ -83,11 +83,21 @@ async def get_mc_id(mc_uuid: str) -> str | Response:
 
 
 async def query_uuid_by_qq(
-        qq: int, table: T_PlayersListTable
-) -> Tuple[bool, Optional[int], Optional[int], Optional[str], Optional[int], Optional[str], Optional[int], Optional[bool], Optional[str]]:
+        qq: int,
+) -> Tuple[
+    bool,
+    Optional[int],
+    Optional[int],
+    Optional[str],
+    Optional[int],
+    Optional[str],
+    Optional[int],
+    Optional[bool],
+    Optional[str],
+]:
     try:
-        data: T_PlayersListTable = table.get(table.qq == qq)
-    except table.DoesNotExist:
+        data: PlayersTable = PlayersTable.get(PlayersTable.qq == qq)
+    except PlayersTable.DoesNotExist:
         return False, None, None, None, None, None, None, None, None
     else:
         return (
@@ -103,11 +113,11 @@ async def query_uuid_by_qq(
         )
 
 
-async def query_qq_by_uuid(mc_uuid: str, table: T_PlayersListTable) -> Optional[int]:
+async def query_qq_by_uuid(mc_uuid: str) -> Optional[int]:
     target = uuid.UUID(mc_uuid)
     try:
-        data: T_PlayersListTable = table.get((table.uuid1 == target) | (table.uuid2 == target))
-    except table.DoesNotExist:
+        data: PlayersTable = PlayersTable.get((PlayersTable.uuid1 == target) | (PlayersTable.uuid2 == target))
+    except PlayersTable.DoesNotExist:
         return None
     else:
         return int(data.qq)
