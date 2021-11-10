@@ -21,6 +21,8 @@ regex = "^2021.11.10"
 requests = "^2.26.0"
 graia-scheduler = {git = "https://github.com/BlueGlassBlock/Scheduler"}
 graia-broadcast = "^0.13.1"
+gitpython = "^3.1.24"
+psutil = "^5.8.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.10b0"
