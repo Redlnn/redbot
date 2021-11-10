@@ -11,7 +11,7 @@ colorama==0.4.4; python_version >= "3.7" and python_full_version < "3.0.0" and s
 croniter==1.0.15; python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4.0" or python_version >= "3.7" and python_version < "4.0" and python_full_version >= "3.4.0"
 dnspython==2.1.0; python_version >= "3.6"
 frozenlist==1.2.0; python_version >= "3.7" and python_version < "4.0"
-graia-ariadne==0.4.0a3; python_version >= "3.7" and python_version < "4.0"
+graia-ariadne @ git+https://github.com/GraiaProject/Ariadne@master ; python_version >= "3.7" and python_version < "4.0"
 graia-broadcast==0.13.1; python_version >= "3.7" and python_version < "4.0"
 graia-saya==0.0.13; python_version >= "3.7" and python_version < "4.0"
 graia-scheduler @ git+https://github.com/BlueGlassBlock/Scheduler@master ; python_version >= "3.7" and python_version < "4.0"
@@ -23,14 +23,13 @@ loguru==0.5.3; python_version >= "3.5"
 mctools==1.1.2; python_version >= "3.6" and python_version < "4"
 multidict==5.2.0; python_version >= "3.7" and python_version < "4.0"
 numpy==1.21.4; python_version >= "3.7" and python_version < "3.11"
-peewee-async==0.7.2
 peewee==3.14.8
 pillow==8.4.0; python_version >= "3.6"
 pydantic==1.8.2; python_version >= "3.7" and python_version < "4.0" and python_full_version >= "3.6.1"
 pymysql==1.0.2; python_version >= "3.6"
 python-dateutil==2.8.2; python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4.0" or python_version >= "3.7" and python_version < "4.0" and python_full_version >= "3.4.0"
 pyyaml==6.0; python_version >= "3.6"
-regex==2021.11.2
+regex==2021.11.10
 requests==2.26.0; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.6.0")
 rfc3986==1.5.0; python_version >= "3.6"
 six==1.16.0; python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4.0" or python_version >= "3.7" and python_version < "4.0" and python_full_version >= "3.4.0"
