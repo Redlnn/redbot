@@ -4,7 +4,6 @@
 
 [![Licence](https://img.shields.io/github/license/Redlnn/redbot)](https://github.com/Redlnn/redbot/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRedlnn%2Fredbot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FRedlnn%2Fredbot?ref=badge_shield)
 
 一个使用 [Graia Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的~~连 README 也缝合的~~究极缝合 QQ 机器人
 
@@ -62,7 +61,3 @@
 
 - [`ABot`](https://github.com/djkcyl/ABot-Graia/): 一个使用 [Graia-Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的 QQ 功能性~~究极缝合怪~~机器人
 - [`Xenon`](https://github.com/McZoo/Xenon): 一个优雅，用户友好的，基于 [mirai](https://github.com/mamoe/mirai) 与 [Graia Project](https://github.com/GraiaProject/) 的 QQ 机器人应用
-
-## License
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRedlnn%2Fredbot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FRedlnn%2Fredbot?ref=badge_large)
