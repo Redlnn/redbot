@@ -28,6 +28,7 @@ from urllib3.exceptions import TimeoutError
 
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
+from .config import group_individual_server
 from .ping_client import ping
 from .utils import is_domain, is_ip
 
@@ -41,11 +42,8 @@ channel.name('Ping mc服务器')
 channel.author('Red_lnn')
 channel.description('获取指定mc服务器的信息\n指令：[!！.]ping {mc服务器地址}')
 
-
-# 不同群组对应不同的服务器
-group_individual_server = {
-    # 123456: '127.0.0.1:25565'
-}
+if not group_individual_server:
+    group_individual_server = {}
 
 
 class Match(Sparkle):
