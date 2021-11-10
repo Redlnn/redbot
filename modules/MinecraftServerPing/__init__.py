@@ -41,9 +41,6 @@ channel.name('Ping mc服务器')
 channel.author('Red_lnn')
 channel.description('获取指定mc服务器的信息\n指令：[!！.]ping {mc服务器地址}')
 
-# 生效的群组，若为空，即()，则在所有群组生效
-# 格式为：active_group = (123456, 456789, 789012)
-active_group = ()
 default_server = '127.0.0.1:25565'  # 默认情况Ping的服务器
 
 # 不同群组对应不同的服务器
@@ -66,7 +63,7 @@ class Match(Sparkle):
 )
 async def main(app: Ariadne, group: Group, sparkle: Sparkle):
     if sparkle.ping_target.matched:
-        server_address = res.ping_target.result.asDisplay().strip()
+        server_address = sparkle.ping_target.result.asDisplay().strip()
     else:
         if group.id in group_individual_server.keys():
             server_address = group_individual_server[group.id]
