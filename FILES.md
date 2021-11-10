@@ -8,10 +8,11 @@ redbot  根目录
 ├── fonts/  字体目录（文本转图片所用）
 ├── logs/  日志目录
 ├── modules  插件目录
-│   ├── AutoReply  自动回复
-│   ├── MinecraftServerManger  我的世界服务器管理
-│   ├── MinecraftServerPing  我的世界服务器 Motd Ping
+│   ├── AutoReply/  自动回复
+│   ├── MinecraftServerManger/  我的世界服务器管理
+│   ├── MinecraftServerPing/  我的世界服务器 Motd Ping
 │   ├── BiliVideoInfo.py  BiliBili 视频解析
+│   ├── BotStatus.py  Bot版本与系统运行情况查询
 │   ├── Menu.py  菜单
 │   ├── ReadAndSend.py  读取/发送消息的可持久化字符串
 │   ├── RenpinChecker.py  每日抽签（人品检测）
