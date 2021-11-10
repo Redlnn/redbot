@@ -12,7 +12,8 @@ from graia.ariadne.message.element import At, Plain, Source
 from graia.ariadne.model import Group
 from loguru import logger
 
-from .database import get_group_players_list_table, T_PlayersListTable
+from .config import server_group
+from .database import PlayersTable
 from .rcon import execute_command
 from .utils import get_mc_id, get_uuid, query_qq_by_uuid, query_uuid_by_qq
 
@@ -59,8 +60,7 @@ async def add_whitelist_to_qq(
                     quote=message.get(Source).pop(0),
             )
 
-    table = get_group_players_list_table(group.id)
-    user = await query_qq_by_uuid(mc_uuid, table)
+    user = await query_qq_by_uuid(mc_uuid)
     if user == qq:
         await app.sendGroupMessage(group, MessageChain.create([Plain('这个id本来就是你哒')]), quote=message.get(Source).pop(0))
     elif isinstance(user, int):
@@ -98,20 +98,24 @@ async def add_whitelist_to_qq(
         uuid2AddedTime,
         blocked,
         blockReason,
-    ) = await query_uuid_by_qq(qq, table)
+    ) = await query_uuid_by_qq(qq)
     if not had_status:
         member = await app.getMember(group, message.getFirst(At).target)
-        table.create(
-                qq=qq, uuid1=uuid.UUID(mc_uuid), uuid1AddedTime=int(time.time()), joinTimestamp=member.joinTimestamp
-        ).execute()
+        PlayersTable.create(
+                group=server_group,
+                qq=qq,
+                uuid1=uuid.UUID(mc_uuid),
+                uuid1AddedTime=int(time.time()),
+                joinTimestamp=member.joinTimestamp,
+        )
     elif blocked:
         await app.sendGroupMessage(group, MessageChain.create(Plain(f'你的账号已被封禁，封禁原因：{blockReason}')))
         return
     elif uuid1 and not uuid2:
         if admin:
-            table.update({table.uuid2: uuid.UUID(mc_uuid), table.uuid2AddedTime: int(time.time())}).where(
-                    table.qq == qq
-            ).execute()
+            PlayersTable.update(
+                    {PlayersTable.uuid2: uuid.UUID(mc_uuid), PlayersTable.uuid2AddedTime: int(time.time())}
+            ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
         else:
             await app.sendGroupMessage(
                     group,
@@ -125,9 +129,9 @@ async def add_whitelist_to_qq(
             return
     elif uuid2 and not uuid1:
         if admin:
-            table.update({table.uuid1: uuid.UUID(mc_uuid), table.uuid1AddedTime: int(time.time())}).where(
-                    table.qq == qq
-            ).execute()
+            PlayersTable.update(
+                    {PlayersTable.uuid1: uuid.UUID(mc_uuid), PlayersTable.uuid1AddedTime: int(time.time())}
+            ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
         else:
             await app.sendGroupMessage(
                     group,
@@ -214,7 +218,6 @@ async def del_whitelist_from_server(mc_uuid: str, app: Ariadne, group: Group) ->
 
 
 async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
-    table = get_group_players_list_table(group.id)
     (
         had_status,
         joinTimestamp,
@@ -225,7 +228,7 @@ async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
         uuid2AddedTime,
         blocked,
         blockReason,
-    ) = await query_uuid_by_qq(qq, table)
+    ) = await query_uuid_by_qq(qq)
     if not had_status:
         try:
             await app.sendGroupMessage(group, MessageChain.create([At(qq), Plain(f'({qq}) 好像一个白名单都没有呢~')]))
@@ -233,9 +236,14 @@ async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
             await app.sendGroupMessage(group, MessageChain.create([Plain(f'{qq} 一个白名单都没有')]))
         return
     elif uuid1 or uuid2:
-        table.update(
-                {table.uuid1: None, table.uuid1AddedTime: None, table.uuid2: None, table.uuid2AddedTime: None}
-        ).where(table.qq == qq).execute()
+        PlayersTable.update(
+                {
+                    PlayersTable.uuid1: None,
+                    PlayersTable.uuid1AddedTime: None,
+                    PlayersTable.uuid2: None,
+                    PlayersTable.uuid2AddedTime: None,
+                }
+        ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
         target = set()
         if uuid1:
             target.add(await del_whitelist_from_server(str(uuid1), app, group))
@@ -304,16 +312,19 @@ async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> Non
     ) = await query_whitelist_by_uuid(mc_uuid, app, group)
     if not qq:
         return
-    table = get_group_players_list_table(group.id)
     if uuid1.replace('-', '') == mc_uuid.replace('-', ''):
-        table.update({table.uuid1: None, table.uuid1AddedTime: None}).where(table.qq == qq).execute()
+        PlayersTable.update({PlayersTable.uuid1: None, PlayersTable.uuid1AddedTime: None}).where(
+                (PlayersTable.group == server_group) & (PlayersTable.qq == qq)
+        ).execute()
         del_result = await del_whitelist_from_server(mc_uuid, app, group)
         if del_result:
             await app.sendGroupMessage(
                     group, MessageChain.create([Plain('已从服务器删除 '), At(qq), Plain(f'({qq}) 的 uuid 为 {mc_uuid} 的白名单')])
             )
     elif uuid2.replace('-', '') == mc_uuid.replace('-', ''):
-        table.update({table.uuid2: None, table.uuid2AddedTime: None}).where(table.qq == qq).execute()
+        PlayersTable.update({PlayersTable.uuid2: None, PlayersTable.uuid2AddedTime: None}).where(
+                (PlayersTable.group == server_group) & (PlayersTable.qq == qq)
+        ).execute()
         del_result = await del_whitelist_from_server(mc_uuid, app, group)
         if del_result:
             await app.sendGroupMessage(
@@ -334,11 +345,13 @@ async def query_whitelist_by_uuid(
     Optional[bool],
     Optional[str],
 ]:
-    table = get_group_players_list_table(group.id)
     query_target = uuid.UUID(mc_uuid)
     try:
-        data: T_PlayersListTable = table.get((table.uuid1 == query_target) | (table.uuid2 == query_target))
-    except table.DoesNotExist:
+        data: PlayersTable = PlayersTable.get(
+                (PlayersTable.group == server_group)
+                & ((PlayersTable.uuid1 == query_target) | (PlayersTable.uuid2 == query_target))
+        )
+    except PlayersTable.DoesNotExist:
         await app.sendGroupMessage(group, MessageChain.create([Plain(f'好像没有使用{mc_uuid}的玩家呢~')]))
         return None, None, None, None, None, None, None, None, None
     return (
