@@ -16,8 +16,8 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
 from utils.Limit.Permission import Permission
-from .config import active_group
-from .database import db, get_group_players_list_table, init_group_players_list_table
+from .config import active_groups, server_group
+from .database import db, init_table, PlayersTable
 from .rcon import execute_command
 from .utils import is_mc_id, is_uuid, query_uuid_by_qq
 from .whitelist import (
@@ -39,16 +39,12 @@ channel.description(
         '用法：\n'
         ' - [!！.]myid <mc正版id> —— 自助申请白名单\n'
         ' - [!！.]list —— 获取服务器在线列表\n'
-        ' - [!！.]wl —— 白名单相关\n'
+        ' - [!！.]wl —— 白名单相关的菜单\n'
         ' - [!！.]run <command> —— 【管理】执行服务器命令\n'
-        ' - [!！.]pardon <QQ号或@QQ> —— 【管理】将一个QQ从群黑名单中移出\n'
-        ' - [!！.]clear_leave_time ——【管理】 从数据库中清除一个QQ的退群时间'
+        ' - [!！.]ban <QQ号或@QQ> [原因] —— 【管理】从服务器封禁一个QQ及其账号\n'
+        ' - [!！.]pardon <QQ号或@QQ> —— 【管理】将一个QQ从黑名单中移出\n'
+        ' - [!！.]clear_leave_time ——【管理】从数据库中清除一个QQ的退群时间'
 )
-
-# 生效的群组，若为空，即()，则在所有群组生效
-# 格式为：active_group = (123456, 456789, 789012)
-if not active_group:
-    raise ValueError('active_group is not defined')
 
 wl_menu = (
     '-----------白名单管理菜单-----------\n'
@@ -62,6 +58,14 @@ wl_menu = (
     '[!！.]wl info id <游戏ID>  - 查询某个ID的信息'
 )
 
+if not server_group:
+    raise ValueError('server_group is required')
+elif server_group not in active_groups:
+    active_groups.append(server_group)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+
 
 @channel.use(
         ListenerSchema(
@@ -71,19 +75,19 @@ wl_menu = (
 async def init(app: Ariadne):
     group_list = await app.getGroupList()
     groups = [group.id for group in group_list]
-    if active_group not in groups:
-        raise ValueError(f'要进行mc服务器管理的群组 {active_group} 不在机器人账号已加入的群组中')
-    init_group_players_list_table(active_group)
-    table = get_group_players_list_table(active_group)
-    member_list = await app.getMemberList(active_group)
+    for group in active_groups:
+        if group not in groups:
+            raise ValueError(f'要启用mc服务器管理的群组 {group} 不在机器人账号已加入的群组中')
+    init_table()
+    member_list = await app.getMemberList(server_group)
     data_source = []
     for member in member_list:
         try:
-            table.get(table.qq == member.id)
-        except table.DoesNotExist:
-            data_source.append({'qq': member.id, 'joinTimestamp': member.joinTimestamp})
+            PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == member.id))
+        except PlayersTable.DoesNotExist:
+            data_source.append({'group': server_group, 'qq': member.id, 'joinTimestamp': member.joinTimestamp})
     with db.atomic():
-        table.insert_many(data_source).execute()
+        PlayersTable.insert_many(data_source).execute()
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -100,7 +104,7 @@ class WhitelistMenuMatch(Sparkle):
         )
 )
 async def whitelist_menu(app: Ariadne, group: Group):
-    if group.id != active_group:
+    if group.id not in active_groups:
         return
     await app.sendGroupMessage(group, MessageChain.create(Plain(wl_menu)))
 
@@ -121,7 +125,7 @@ class WhitelistAddMatch(Sparkle):
         )
 )
 async def add_whitelist(app: Ariadne, group: Group, message: MessageChain):
-    if group.id != active_group:
+    if group.id not in active_groups:
         return
     msg = message.split(' ')
     if len(msg) != 4:
@@ -164,7 +168,7 @@ class WhitelistDelMatch(Sparkle):
         )
 )
 async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
-    if group.id != active_group:
+    if group.id not in active_groups:
         return
     msg = message.split(' ')
 
@@ -234,7 +238,7 @@ class WhitelistInfoMatch(Sparkle):
         )
 )
 async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
-    if group.id != active_group:
+    if group.id not in active_groups:
         return
     msg = message.split(' ')
 
@@ -242,11 +246,10 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
         case 3:
             if msg[2].onlyContains(At):
                 target = msg[2].getFirst(At).target
-                table = get_group_players_list_table(group.id)
                 (
                     had_status, joinTimestamp, leaveTimestamp,
                     uuid1, uuid1AddedTime, uuid2, uuid2AddedTime, blocked, blockReason
-                ) = await query_uuid_by_qq(target, table)
+                ) = await query_uuid_by_qq(target)
                 if not had_status:
                     await app.sendGroupMessage(
                             group,
@@ -276,11 +279,10 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
                 if func == 'qq':
                     if msg[3].onlyContains(At):
                         target = msg[3].getFirst(At).target
-                        table = get_group_players_list_table(group.id)
                         (
                             had_status, joinTimestamp, leaveTimestamp,
                             uuid1, uuid1AddedTime, uuid2, uuid2AddedTime, blocked, blockReason
-                        ) = await query_uuid_by_qq(target, table)
+                        ) = await query_uuid_by_qq(target)
                         if not had_status:
                             await app.sendGroupMessage(
                                     group,
@@ -307,11 +309,10 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
                     elif msg[3].onlyContains(Plain):
                         target = msg[3].asDisplay()
                         if target.isdigit():
-                            table = get_group_players_list_table(group.id)
                             (
                                 had_status, joinTimestamp, leaveTimestamp,
                                 uuid1, uuid1AddedTime, uuid2, uuid2AddedTime, blocked, blockReason
-                            ) = await query_uuid_by_qq(int(target), table)
+                            ) = await query_uuid_by_qq(int(target))
                             if not had_status:
                                 await app.sendGroupMessage(
                                         group,
@@ -419,7 +420,7 @@ class MyIdMatch(Sparkle):
         )
 )
 async def add_whitelist(app: Ariadne, group: Group, member: Member, message: MessageChain):
-    if group.id != active_group:
+    if group.id not in active_groups:
         return
     msg = message.split(' ')
     if len(msg) != 2 or not msg[1].onlyContains(Plain):
@@ -452,7 +453,7 @@ class ListMatch(Sparkle):
         )
 )
 async def get_player_list(app: Ariadne, group: Group):
-    if group.id != active_group:
+    if group.id not in active_groups:
         return
     try:
         exec_result: str = execute_command('list')  # noqa
@@ -487,7 +488,7 @@ class RunMatch(Sparkle):
         )
 )
 async def get_player_list(app: Ariadne, group: Group, message: MessageChain):
-    if group.id != active_group:
+    if group.id not in active_groups:
         return
     split_msg = message.split(' ')
     if len(split_msg) != 2:
@@ -515,57 +516,62 @@ async def get_player_list(app: Ariadne, group: Group, message: MessageChain):
 
 @channel.use(ListenerSchema(listening_events=[MemberJoinEvent]))
 async def add_player(group: Group, member: Member):
-    if group.id != active_group:
+    if group.id != server_group:
         return
-    table = get_group_players_list_table(group.id)
     try:
-        table.get(table.qq == member.id)
-    except table.DoesNotExist:
-        table.insert(qq=member.id, joinTimestamp=member.joinTimestamp).execute()
+        PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == member.id))
+    except PlayersTable.DoesNotExist:
+        PlayersTable.create(group=server_group, qq=member.id, joinTimestamp=member.joinTimestamp)
     else:
-        table.update({table.joinTimestamp: member.joinTimestamp, table.leaveTimestamp: None}).where(
-                table.qq == member.id
-        ).execute()
+        PlayersTable.update(
+                {
+                    PlayersTable.joinTimestamp: member.joinTimestamp,
+                    PlayersTable.leaveTimestamp: None,
+                }
+        ).where((PlayersTable.group == server_group) & (PlayersTable.qq == member.id)).execute()
 
 
 # ---------------------------------------------------------------------------------------------------------------------
 
 
 @channel.use(ListenerSchema(listening_events=[MemberLeaveEventQuit]))
-async def add_player(group: Group, member: Member):
-    if group.id != active_group:
+async def add_player(app: Ariadne, group: Group, member: Member):
+    if group.id != server_group:
         return
-    table = get_group_players_list_table(group.id)
     try:
-        table.get(table.qq == member.id)
-    except table.DoesNotExist:
-        table.insert(qq=member.id, joinTimestamp=member.joinTimestamp, leaveTimestamp=time.time()).execute()
+        PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == member.id))
+    except PlayersTable.DoesNotExist:
+        PlayersTable.create(
+                group=server_group, qq=member.id, joinTimestamp=member.joinTimestamp, leaveTimestamp=time.time()
+        )
     else:
-        table.update({table.leaveTimestamp: time.time()}).where(table.qq == member.id).execute()
+        PlayersTable.update({PlayersTable.leaveTimestamp: time.time()}).where(
+                (PlayersTable.group == server_group) & (PlayersTable.qq == member.id)
+        ).execute()
+        await del_whitelist_by_qq(member.id, app, group)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
 
 
 @channel.use(ListenerSchema(listening_events=[MemberLeaveEventKick]))
-async def add_player(group: Group, event: MemberLeaveEventKick):
-    if group.id != active_group:
+async def add_player(app: Ariadne, group: Group, event: MemberLeaveEventKick):
+    if group.id != server_group:
         return
-    table = get_group_players_list_table(group.id)
     try:
-        table.get(table.qq == event.member.id)
-    except table.DoesNotExist:
-        table.insert(
+        PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == event.member.id))
+    except PlayersTable.DoesNotExist:
+        PlayersTable.create(
+                group=server_group,
                 qq=event.member.id,
                 joinTimestamp=event.member.joinTimestamp,
                 leaveTimestamp=time.time(),
-                blocked=True,
-                blockReason='Kick',
-        ).execute()
+        )
     else:
-        table.update({table.leaveTimestamp: time.time(), table.blocked: True, table.blockReason: 'Kick'}).where(
-                table.qq == event.member.id
-        ).execute()
+        PlayersTable.update(
+                {PlayersTable.leaveTimestamp: time.time(), PlayersTable.blocked: True, PlayersTable.blockReason: 'Kick'}
+        ).where((PlayersTable.group == server_group) & (PlayersTable.qq == event.member.id)).execute()
+        await del_whitelist_by_qq(event.member.id, app, group)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -584,19 +590,23 @@ class PardonMatch(Sparkle):
         )
 )
 async def pardon(app: Ariadne, group: Group, message: MessageChain):
-    if group.id != active_group:
+    if group.id not in active_groups:
         return
     msg = message.split(' ')
-    table = get_group_players_list_table(group.id)
     if len(msg) != 2:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
         return
-    elif msg[2].onlyContains(At):
-        table.update({table.blocked: False, table.blockReason: None}).where(
-                table.qq == msg[2].getFirst(At).target
+    elif msg[1].onlyContains(At):
+        PlayersTable.update({PlayersTable.blocked: False, PlayersTable.blockReason: None}).where(
+                (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].getFirst(At).target)
         ).execute()
-    elif msg[2].onlyContains(Plain):
-        table.update({table.blocked: False, table.blockReason: None}).where(table.qq == msg[2].asDisplay()).execute()
+    elif msg[1].onlyContains(Plain):
+        PlayersTable.update({PlayersTable.blocked: False, PlayersTable.blockReason: None}).where(
+                (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].asDisplay())
+        ).execute()
+    else:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
+        return
     await app.sendGroupMessage(group, MessageChain.create(Plain('已原谅该玩家')))
 
 
@@ -615,16 +625,69 @@ class ClearLeaveTimeMatch(Sparkle):
                 decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_master=False)],
         )
 )
-async def pardon(app: Ariadne, group: Group, message: MessageChain):
-    if group.id != active_group:
+async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain):
+    if group.id not in active_groups:
         return
     msg = message.split(' ')
-    table = get_group_players_list_table(group.id)
     if len(msg) != 2:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
         return
-    elif msg[2].onlyContains(At):
-        table.update({table.leaveTimestamp: None}).where(table.qq == msg[2].getFirst(At).target).execute()
-    elif msg[2].onlyContains(Plain):
-        table.update({table.leaveTimestamp: None}).where(table.qq == msg[2].asDisplay()).execute()
+    elif msg[1].onlyContains(At):
+        PlayersTable.update({PlayersTable.leaveTimestamp: None}).where(
+                (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].getFirst(At).target)
+        ).execute()
+    elif msg[1].onlyContains(Plain):
+        PlayersTable.update({PlayersTable.leaveTimestamp: None}).where(
+                (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].asDisplay())
+        ).execute()
+    else:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
+        return
     await app.sendGroupMessage(group, MessageChain.create(Plain('已清除该玩家的退群时间')))
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+
+class BanMatch(Sparkle):
+    prefix = RegexMatch(r'[!！.]ban\ ')
+    any = RegexMatch(r'.+')
+
+
+@channel.use(
+        ListenerSchema(
+                listening_events=[GroupMessage],
+                inline_dispatchers=[Twilight(BanMatch)],
+                decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_master=False)],
+        )
+)
+async def ban(app: Ariadne, group: Group, message: MessageChain):
+    if group.id not in active_groups:
+        return
+    msg = message.split(' ')
+    if not 2 <= len(msg) <= 3:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
+        return
+    elif msg[1].onlyContains(At):
+        block_reason = msg[2].include(Plain).merge().asDisplay() if len(msg) == 3 else None
+        target = msg[1].getFirst(At).target
+        PlayersTable.update(
+                {
+                    PlayersTable.blocked: True,
+                    PlayersTable.blockReason: block_reason,
+                }
+        ).where((PlayersTable.group == server_group) & (PlayersTable.qq == target)).execute()
+    elif msg[1].onlyContains(Plain):
+        block_reason = msg[2].include(Plain).merge().asDisplay() if len(msg) == 3 else None
+        target = msg[1].asDisplay()
+        PlayersTable.update(
+                {
+                    PlayersTable.blocked: True,
+                    PlayersTable.blockReason: block_reason,
+                }
+        ).where((PlayersTable.group == server_group) & (PlayersTable.qq == target)).execute()
+    else:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
+        return
+    await app.sendGroupMessage(group, MessageChain.create(Plain('已封禁该玩家')))
+    await del_whitelist_by_qq(target, app, group)

@@ -1,5 +1,9 @@
 data/*
 !data/.gitkeep
+
 logs/
+
 __pycache__/
 .idea/
+
+test.py
