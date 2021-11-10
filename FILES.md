@@ -11,12 +11,13 @@ redbot  根目录
 │   ├── AutoReply  自动回复
 │   ├── MinecraftServerManger  我的世界服务器管理
 │   ├── MinecraftServerPing  我的世界服务器 Motd Ping
-│   ├── BiliVideoInfo  BiliBili 视频解析
-│   ├── Menu  菜单
-│   ├── RenpinChecker  每日抽签（人品检测）
-│   ├── RollNumber  随机数抽取
-│   ├── SearchMinecraftWiki  我的世界中文 Wiki 搜索
-│   └── TextWithImg2Img  消息内容转图片
+│   ├── BiliVideoInfo.py  BiliBili 视频解析
+│   ├── Menu.py  菜单
+│   ├── ReadAndSend.py  读取/发送消息的可持久化字符串
+│   ├── RenpinChecker.py  每日抽签（人品检测）
+│   ├── RollNumber.py  随机数抽取
+│   ├── SearchMinecraftWiki.py  我的世界中文 Wiki 搜索
+│   └── TextWithImg2Img.py  消息内容转图片
 └── utils  通用功能目录
     ├── Database  数据库相关
     │   ├── database.py  数据库初始化（暂时无调用作为示例）
