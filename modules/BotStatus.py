@@ -28,6 +28,15 @@ channel.description('用法：[!！.](status|version)')
 
 repo = git.Repo(os.getcwd())
 
+commit = str(repo.head.reference.commit)[:7]
+commit_date = repo.head.reference.commit.committed_datetime
+python_version = platform.python_version()
+if platform.uname().system == 'Windows':
+    system_version = platform.platform()
+else:
+    system_version = f'{platform.platform()} {platform.version()}'
+total_memory = '%.1f' % (psutil.virtual_memory()._asdict()["total"] / 1073741824)
+
 
 @channel.use(
         ListenerSchema(
@@ -38,16 +47,15 @@ repo = git.Repo(os.getcwd())
 async def main(app: Ariadne, group: Group, message: MessageChain):
     if not regex.match(r'^[!！.](status|version)$', message.asDisplay()):
         return
-    mem_info = psutil.virtual_memory()._asdict()
     msg_send = (
         '-= Red_lnn Bot 状态 =-\n\n'
-        f'bot 版本：{str(repo.head.reference.commit)[:7]}-dev\n'
-        f'更新日期：{repo.head.reference.commit.committed_datetime}\n'
+        f'bot 版本：{commit}-dev\n'
+        f'更新日期：{commit_date}\n'
         f'{hr}\n'
-        f'Python 版本：{platform.python_version()}\n'
-        f'系统版本：{platform.platform()}'
+        f'Python 版本：{python_version}\n'
+        f'系统版本：{system_version}\n'
         f'系统 CPU 占用率：{psutil.cpu_percent()}%\n'
-        f'系统内存占用：{"%.1f" % (mem_info["available"] / 1073741824)}G/{"%.1f" % (mem_info["total"] / 1073741824)}G\n'
+        f'系统内存占用：{"%.1f" % (psutil.virtual_memory()._asdict()["available"] / 1073741824)}G / {total_memory}G\n'
     )
 
     img_io = await async_generate_img([msg_send])
