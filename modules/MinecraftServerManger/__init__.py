@@ -63,6 +63,8 @@ if not server_group:
 elif server_group not in active_groups:
     active_groups.append(server_group)
 
+is_init = False
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -73,21 +75,28 @@ elif server_group not in active_groups:
         )
 )
 async def init(app: Ariadne):
+    global is_init
     group_list = await app.getGroupList()
     groups = [group.id for group in group_list]
     for group in active_groups:
         if group not in groups:
             raise ValueError(f'要启用mc服务器管理的群组 {group} 不在机器人账号已加入的群组中')
     init_table()
-    member_list = await app.getMemberList(server_group)
-    data_source = []
-    for member in member_list:
-        try:
-            PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == member.id))
-        except PlayersTable.DoesNotExist:
-            data_source.append({'group': server_group, 'qq': member.id, 'joinTimestamp': member.joinTimestamp})
-    with db.atomic():
-        PlayersTable.insert_many(data_source).execute()
+    try:
+        PlayersTable.get(PlayersTable.group == server_group)
+    except PlayersTable.DoesNotExist:
+        logger.info('初始化mc服务器管理数据库中...')
+        member_list = await app.getMemberList(server_group)
+        data_source = []
+        for member in member_list:
+            try:
+                PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == member.id))
+            except PlayersTable.DoesNotExist:
+                data_source.append({'group': server_group, 'qq': member.id, 'joinTimestamp': member.joinTimestamp})
+        with db.atomic():
+            PlayersTable.insert_many(data_source).execute()
+        logger.info('mc服务器管理数据库初始化完成')
+    is_init = True
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -104,7 +113,9 @@ class WhitelistMenuMatch(Sparkle):
         )
 )
 async def whitelist_menu(app: Ariadne, group: Group):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     await app.sendGroupMessage(group, MessageChain.create(Plain(wl_menu)))
 
@@ -125,7 +136,9 @@ class WhitelistAddMatch(Sparkle):
         )
 )
 async def add_whitelist(app: Ariadne, group: Group, message: MessageChain):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     msg = message.split(' ')
     if len(msg) != 4:
@@ -168,7 +181,9 @@ class WhitelistDelMatch(Sparkle):
         )
 )
 async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     msg = message.split(' ')
 
@@ -238,7 +253,9 @@ class WhitelistInfoMatch(Sparkle):
         )
 )
 async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     msg = message.split(' ')
 
@@ -420,7 +437,9 @@ class MyIdMatch(Sparkle):
         )
 )
 async def add_whitelist(app: Ariadne, group: Group, member: Member, message: MessageChain):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     msg = message.split(' ')
     if len(msg) != 2 or not msg[1].onlyContains(Plain):
@@ -453,7 +472,9 @@ class ListMatch(Sparkle):
         )
 )
 async def get_player_list(app: Ariadne, group: Group):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     try:
         exec_result: str = execute_command('list')  # noqa
@@ -488,7 +509,9 @@ class RunMatch(Sparkle):
         )
 )
 async def get_player_list(app: Ariadne, group: Group, message: MessageChain):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     split_msg = message.split(' ')
     if len(split_msg) != 2:
@@ -516,7 +539,9 @@ async def get_player_list(app: Ariadne, group: Group, message: MessageChain):
 
 @channel.use(ListenerSchema(listening_events=[MemberJoinEvent]))
 async def add_player(group: Group, member: Member):
-    if group.id != server_group:
+    if not is_init:
+        return
+    elif group.id != server_group:
         return
     try:
         PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == member.id))
@@ -536,7 +561,9 @@ async def add_player(group: Group, member: Member):
 
 @channel.use(ListenerSchema(listening_events=[MemberLeaveEventQuit]))
 async def add_player(app: Ariadne, group: Group, member: Member):
-    if group.id != server_group:
+    if not is_init:
+        return
+    elif group.id != server_group:
         return
     try:
         PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == member.id))
@@ -556,7 +583,9 @@ async def add_player(app: Ariadne, group: Group, member: Member):
 
 @channel.use(ListenerSchema(listening_events=[MemberLeaveEventKick]))
 async def add_player(app: Ariadne, group: Group, event: MemberLeaveEventKick):
-    if group.id != server_group:
+    if not is_init:
+        return
+    elif group.id != server_group:
         return
     try:
         PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == event.member.id))
@@ -590,7 +619,9 @@ class PardonMatch(Sparkle):
         )
 )
 async def pardon(app: Ariadne, group: Group, message: MessageChain):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     msg = message.split(' ')
     if len(msg) != 2:
@@ -626,7 +657,9 @@ class ClearLeaveTimeMatch(Sparkle):
         )
 )
 async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     msg = message.split(' ')
     if len(msg) != 2:
@@ -662,7 +695,9 @@ class BanMatch(Sparkle):
         )
 )
 async def ban(app: Ariadne, group: Group, message: MessageChain):
-    if group.id not in active_groups:
+    if not is_init:
+        return
+    elif group.id not in active_groups:
         return
     msg = message.split(' ')
     if not 2 <= len(msg) <= 3:
