@@ -131,7 +131,7 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
         if not count:
             await app.sendGroupMessage(group, MessageChain.create(Plain(f'群 {target} 木有过发言')))
             return
-        if target = group.id:
+        if target == group.id:
             await app.sendGroupMessage(
                     group,
                     MessageChain.create(
