@@ -25,11 +25,13 @@ from utils.Limit.Rate import MemberInterval
 
 channel = Channel.current()
 
-active_group = ()
-
 channel.name('随机数')
 channel.author('Red_lnn')
 channel.description('获得一个随机数\n用法：[!！.]roll {要roll的事件}')
+
+# 生效的群组，若为空，即()，则在所有群组生效
+# 格式为：active_group = (123456, 456789, 789012)
+active_group = ()
 
 
 class Match(Sparkle):
@@ -48,7 +50,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain, sparkle: Spark
     if group.id not in active_group and active_group:
         return
     if sparkle.roll_target.matched:
-        chain = MessageChain.create([Plain(f'{res.roll_target.result.asDisplay().strip()}的概率为：{randint(0, 100)}')])
+        chain = MessageChain.create([Plain(f'{sparkle.roll_target.result.asDisplay().strip()}的概率为：{randint(0, 100)}')])
     else:
         chain = MessageChain.create([Plain(str(randint(0, 100)))])
     await app.sendGroupMessage(group, chain, quote=message.get(Source).pop(0))
