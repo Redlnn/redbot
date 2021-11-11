@@ -103,15 +103,17 @@ async def get_member_last_message(group: int | str, qq: int | str) -> Tuple[Opti
         data = MsgLog.select(MsgLog.msg_chain, Msglog.timestamp).where((MsgLog.group == group) & (MsgLog.qq == qq) & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group) & (MsgLog.qq == qq)))) 
     except MsgLog.DoesNotExist:
         return None, None
-    return data.get().msg_chain, data.get().timestamp
+    data_get = data.get()
+    return data_get.msg_chain, data_get.timestamp
 
 
 async def get_group_last_message(group: int | str) -> Tuple[Optional[str], Optional[str], Optional[int]]:
     try:
         data = MsgLog.select(MsgLog.qq, MsgLog.msg_chain, Msglog.timestamp).where((MsgLog.group == group) & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group)))) 
     except MsgLog.DoesNotExist:
-        return None
-    return data.get().qq, data.get().msg_chain, data.get().timestamp
+        return None, None, None
+    data_get = data.get()
+    return data_get.qq, data_get.msg_chain, data_get.timestamp
 
 
 async def get_member_last_message_id(group: int | str, qq: int | str) -> Optional[int]:
