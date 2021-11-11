@@ -171,11 +171,11 @@ async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, sparkl
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的指令，参数过多')))
         return
-    msg, timestamp = await get_member_last_message(group.id, target)
+    msg, send_time = await get_member_last_message(group.id, target)
     if not msg:
         await app.sendGroupMessage(group, MessageChain.create(Plain(f'{target} 木有说过话')))
         return
-    send_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))
+    #send_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))
     chain = MessageChain.fromPersistentString(msg)
     at_send = MessageChain.create(At(target), Plain(f'({target}) 在 {send_time} 说过最后一句话：\n')).extend(chain)
     send = MessageChain.create(Plain(f'{target} 在 {send_time} 说过最后一句话：\n')).extend(chain)
