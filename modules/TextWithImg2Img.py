@@ -23,7 +23,7 @@ channel = Channel.current()
 
 channel.name('消息转图片')
 channel.author('Red_lnn')
-channel.description('用法：[!！.]img <内容：文本、图片>}')
+channel.description('用法：[!！.]img <文本、图片>}')
 
 # 生效的群组，若为空，即()，则在所有群组生效
 # 格式为：active_group = (123456, 456789, 789012)
