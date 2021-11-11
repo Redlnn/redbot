@@ -18,6 +18,8 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from utils.Database.msg_history import get_group_talk_count, get_member_last_message, get_member_talk_count, log_msg
+from utils.Limit.Blacklist import group_blacklist
+from utils.Limit.Permission import Permission
 
 channel = Channel.current()
 
@@ -61,14 +63,15 @@ class GetMsgCountMatch(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(GetMsgCountMatch)],
+                decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
         )
 )
 async def get_msg_count(app: Ariadne, group: Group, member: Member, message: MessageChain, sparkle: Sparkle):
     if not sparkle.arg_day.result.isdigit():
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
         return
-    today = int(time.mktime(datetime.date.today().timetuple()))
-    target_day = today - (86400 * (int(sparkle.arg_day.result) - 1))
+    today_timestamp = int(time.mktime(datetime.date.today().timetuple()))
+    target_timestamp = today - (86400 * (int(sparkle.arg_day.result) - 1))
     target: Optional[int] = None
     if sparkle.arg_type.result == 'member':
         if sparkle.arg_target.matched:
@@ -93,7 +96,7 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
         return
     if sparkle.arg_type.result == 'member':
-        count = await get_member_talk_count(group.id, target, target_day)
+        count = await get_member_talk_count(group.id, target, target_timestamp)
         if not count:
             try:
                 await app.sendGroupMessage(
@@ -116,18 +119,18 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
                     group,
                     MessageChain.create(
                             At(target),
-                            Plain(f'({target}) 最近{target_day}天的发言条数为 {count} 条'),
+                            Plain(f'({target}) 最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
                     ),
             )
         except UnknownTarget:
             await app.sendGroupMessage(
                     group,
                     MessageChain.create(
-                            Plain(f'{target}最近{target_day}天的发言条数为 {count} 条'),
+                            Plain(f'{target}最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
                     ),
             )
     else:
-        count = await get_group_talk_count(group.id, target_day)
+        count = await get_group_talk_count(group.id, target_timestamp)
         if not count:
             await app.sendGroupMessage(group, MessageChain.create(Plain(f'群 {target} 木有过发言')))
             return
@@ -135,14 +138,14 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
             await app.sendGroupMessage(
                     group,
                     MessageChain.create(
-                            Plain(f'本群最近{target_day}天的发言条数为 {count} 条'),
+                            Plain(f'本群最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
                     ),
             )
         else:
             await app.sendGroupMessage(
                     group,
                     MessageChain.create(
-                            Plain(f'该群最近{target_day}天的发言条数为 {count} 条'),
+                            Plain(f'该群最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
                     ),
             )
 
@@ -158,6 +161,7 @@ class GetMemberLastMsgMatch(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(GetMemberLastMsgMatch)],
+                decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
         )
 )
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
