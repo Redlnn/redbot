@@ -64,25 +64,25 @@ class GetMsgCountMatch(Sparkle):
         )
 )
 async def get_msg_count(app: Ariadne, group: Group, member: Member, message: MessageChain, sparkle: Sparkle):
-    if not sparkle.arg_day.result.asDisplay().isdigit():
+    if not sparkle.arg_day.result.isdigit():
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
         return
     today = int(time.mktime(datetime.date.today().timetuple()))
-    target_day = today - (86400 * (int(sparkle.arg_day.result.asDisplay()) - 1))
+    target_day = today - (86400 * (int(sparkle.arg_day.result) - 1))
     target: Optional[int] = None
-    if sparkle.arg_type.result.asDisplay() == 'member':
+    if sparkle.arg_type.result == 'member':
         if sparkle.arg_target.matched:
             if sparkle.arg_target.result == '\x081_At\x08':
                 target = message.getFirst(At).target
             else:
-                if sparkle.arg_target.result.asDisplay().isdigit():
-                    target = int(sparkle.arg_target.result.asDisplay())
+                if sparkle.arg_target.result.isdigit():
+                    target = int(sparkle.arg_target.result)
         else:
             target = member.id
-    elif sparkle.arg_type.result.asDisplay() == 'group':
+    elif sparkle.arg_type.result == 'group':
         if sparkle.arg_target.matched:
-            if sparkle.arg_target.result.asDisplay().isdigit():
-                target = int(sparkle.arg_target.result.asDisplay())
+            if sparkle.arg_target.result.isdigit():
+                target = int(sparkle.arg_target.result)
         else:
             target = group.id
     else:
@@ -92,7 +92,7 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
     if not target:
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
         return
-    if sparkle.arg_type.result.asDisplay() == 'member':
+    if sparkle.arg_type.result == 'member':
         count = await get_member_talk_count(group.id, target, target_day)
         if not count:
             try:
@@ -126,7 +126,7 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
                             Plain(f'{target}最近{target_day}天的发言条数为 {count} 条'),
                     ),
             )
-    elif sparkle.arg_type.result.asDisplay() == 'group':
+    else:
         count = await get_group_talk_count(group.id, target_day)
         if not count:
             await app.sendGroupMessage(group, MessageChain.create(Plain(f'群 {target} 木有过发言')))
