@@ -13,6 +13,7 @@ redbot  根目录
 │   ├── MinecraftServerPing/  我的世界服务器 Motd Ping
 │   ├── BiliVideoInfo.py  BiliBili 视频解析
 │   ├── BotStatus.py  Bot版本与系统运行情况查询
+│   ├── LogMsgHistory.py  历史聊天数据记录
 │   ├── Menu.py  菜单
 │   ├── ReadAndSend.py  读取/发送消息的可持久化字符串
 │   ├── RenpinChecker.py  每日抽签（人品检测）
@@ -21,8 +22,8 @@ redbot  根目录
 │   └── TextWithImg2Img.py  消息内容转图片
 └── utils  通用功能目录
     ├── Database  数据库相关
-    │   ├── database.py  数据库初始化（暂时无调用作为示例）
-    │   └── msglog.py  聊天历史记录（TODO）
+    │   ├── database.py  数据库初始化（暂时仅作为示例无调用）
+    │   └── msg_history.py  聊天历史数据库（记录、查询）
     └── Limit  Bot 事件触发限制相关
         ├── Blacklist.py  群、私聊、临时会话黑名单
         ├── Permission.py  群、私聊、临时会话权限控制
