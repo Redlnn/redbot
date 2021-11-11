@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 from peewee import CharField, fn, IntegerField, Model, TextField, TimestampField
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
@@ -98,20 +98,20 @@ async def get_group_talk_count(group: int | str, timestamp: int = 0) -> Optional
         return data.get().count
 
 
-async def get_member_last_message(group: int | str, qq: int | str) -> Optional[str]:
+async def get_member_last_message(group: int | str, qq: int | str) -> Tuple[Optional[str], Optional[int]]:
     try:
-        data = MsgLog.select(MsgLog.msg_chain).where((MsgLog.group == group) & (MsgLog.qq == qq))
+        data = MsgLog.select(MsgLog.msg_chain, Msglog.timestamp).where((MsgLog.group == group) & (MsgLog.qq == qq) & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group) & (MsgLog.qq == qq)))) 
     except MsgLog.DoesNotExist:
-        return None
-    return data.get().msg_chain
+        return None, None
+    return data.get().msg_chain, data.get().timestamp
 
 
-async def get_group_last_message(group: int | str) -> Optional[str]:
+async def get_group_last_message(group: int | str) -> Tuple[Optional[str], Optional[str], Optional[int]]:
     try:
-        data = MsgLog.select(MsgLog.msg_chain).where(MsgLog.group == group)
+        data = MsgLog.select(MsgLog.qq, MsgLog.msg_chain, Msglog.timestamp).where((MsgLog.group == group) & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group)))) 
     except MsgLog.DoesNotExist:
         return None
-    return data.get().msg_chain
+    return data.get().qq, data.get().msg_chain, data.get().timestamp
 
 
 async def get_member_last_message_id(group: int | str, qq: int | str) -> Optional[int]:
