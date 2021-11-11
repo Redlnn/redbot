@@ -103,7 +103,7 @@ async def get_member_last_message(group: int | str, qq: int | str) -> Optional[s
         data = MsgLog.select(MsgLog.msg_chain).where((MsgLog.group == group) & (MsgLog.qq == qq))
     except MsgLog.DoesNotExist:
         return None
-    return data.get().last_id
+    return data.get().msg_chain
 
 
 async def get_group_last_message(group: int | str) -> Optional[str]:
@@ -111,7 +111,7 @@ async def get_group_last_message(group: int | str) -> Optional[str]:
         data = MsgLog.select(MsgLog.msg_chain).where(MsgLog.group == group)
     except MsgLog.DoesNotExist:
         return None
-    return data.get().last_id
+    return data.get().msg_chain
 
 
 async def get_member_last_message_id(group: int | str, qq: int | str) -> Optional[int]:
