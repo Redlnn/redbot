@@ -25,10 +25,10 @@ channel.name('历史聊天数据记录')
 channel.author('Red_lnn')
 channel.description(
         '用法：\n'
-        '[!！.]getmsg —— 获得目标最近n天内的发言次数\n'
+        '[!！.]msgcount —— 获得目标最近n天内的发言次数\n'
         '  参数：\n'
-        '    --type   member/group 目标类型，群成员或群\n'
-        '    --target 【可选】群号/群成员QQ号/At群成员\n'
+        '    --type   member/group 目标类型，本群成员或群\n'
+        '    --target 【可选】群号/本群成员的QQ号/At群成员\n'
         '    --day    天数（含今天）\n'
         '[!！.]getlast <At/QQ号> —— 获取某人的最后一条发言'
 )
@@ -51,7 +51,7 @@ async def main(group: Group, member: Member, message: MessageChain):
 
 # 获取某人指定天数内的发言条数
 class GetMsgCountMatch(Sparkle):
-    prefix = RegexMatch(r'[!！.]getmsg')
+    prefix = RegexMatch(r'[!！.]msgcount')
     arg_type = ArgumentMatch("--type")
     arg_target = ArgumentMatch("--target", optional=True)
     arg_day = ArgumentMatch("--day")
@@ -64,24 +64,24 @@ class GetMsgCountMatch(Sparkle):
         )
 )
 async def get_msg_count(app: Ariadne, group: Group, member: Member, message: MessageChain, sparkle: Sparkle):
-    if not sparkle.arg_day.result.isdigit():
+    if not sparkle.arg_day.result.asDisplay().isdigit():
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
         return
     today = int(time.mktime(datetime.date.today().timetuple()))
-    target_day = today - (86400 * (int(sparkle.arg_day.result) - 1))
+    target_day = today - (86400 * (int(sparkle.arg_day.result.asDisplay()) - 1))
     target: Optional[int] = None
-    if sparkle.arg_type.result == 'member':
+    if sparkle.arg_type.result.asDisplay() == 'member':
         if sparkle.arg_target.matched:
             if sparkle.arg_target.result == '\x081_At\x08':
                 target = message.getFirst(At).target
             else:
-                if sparkle.arg_target.result.isdigit():
+                if sparkle.arg_target.result.asDisplay().isdigit():
                     target = int(sparkle.arg_target.result.asDisplay())
         else:
             target = member.id
-    elif sparkle.arg_type.result == 'group':
+    elif sparkle.arg_type.result.asDisplay() == 'group':
         if sparkle.arg_target.matched:
-            if sparkle.arg_target.result.isdigit():
+            if sparkle.arg_target.result.asDisplay().isdigit():
                 target = int(sparkle.arg_target.result.asDisplay())
         else:
             target = group.id
@@ -92,17 +92,59 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
     if not target:
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
         return
-    count = await get_member_talk_count(group.id, target, target_day)
-    if not count:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'{target} 木有说过话')))
-        return
-    await app.sendGroupMessage(
-            group,
-            MessageChain.create(
-                    At(target),
-                    Plain(f' 最近{target_day}天的发言条数为 {count} 条'),
-            ),
-    )
+    if sparkle.arg_type.result.asDisplay() == 'member':
+        count = await get_member_talk_count(group.id, target, target_day)
+        if not count:
+            try:
+                await app.sendGroupMessage(
+                        group,
+                        MessageChain.create(
+                                At(target),
+                                Plain(f'({target}) 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
+                        ),
+                )
+            except UnknownTarget:
+                await app.sendGroupMessage(
+                        group,
+                        MessageChain.create(
+                                Plain(f'{target} 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
+                        ),
+                )
+            return
+        try:
+            await app.sendGroupMessage(
+                    group,
+                    MessageChain.create(
+                            At(target),
+                            Plain(f'({target}) 最近{target_day}天的发言条数为 {count} 条'),
+                    ),
+            )
+        except UnknownTarget:
+            await app.sendGroupMessage(
+                    group,
+                    MessageChain.create(
+                            Plain(f'{target}最近{target_day}天的发言条数为 {count} 条'),
+                    ),
+            )
+    elif sparkle.arg_type.result.asDisplay() == 'group':
+        count = await get_group_talk_count(group.id, target_day)
+        if not count:
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'群 {target} 木有过发言')))
+            return
+        if target = group.id:
+            await app.sendGroupMessage(
+                    group,
+                    MessageChain.create(
+                            Plain(f'本群最近{target_day}天的发言条数为 {count} 条'),
+                    ),
+            )
+        else:
+            await app.sendGroupMessage(
+                    group,
+                    MessageChain.create(
+                            Plain(f'该群最近{target_day}天的发言条数为 {count} 条'),
+                    ),
+            )
 
 
 # 获取某人的最后一条发言
