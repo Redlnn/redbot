@@ -35,7 +35,7 @@ if platform.uname().system == 'Windows':
     system_version = platform.platform()
 else:
     system_version = f'{platform.platform()} {platform.version()}'
-total_memory = '%.1f' % (psutil.virtual_memory()._asdict()["total"] / 1073741824)
+total_memory = '%.1f' % (psutil.virtual_memory().total / 1073741824)
 
 
 @channel.use(
@@ -61,8 +61,9 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         f'{hr}\n'
         f'Python 版本：{python_version}\n'
         f'系统版本：{system_version}\n'
-        f'系统 CPU 占用率：{psutil.cpu_percent()}%\n'
-        f'系统内存占用：{"%.1f" % (psutil.virtual_memory()._asdict()["available"] / 1073741824)}G / {total_memory}G\n'
+        f'CPU 核心数：{psutil.cpu_count()}'
+        f'CPU 占用率：{psutil.cpu_percent()}%\n'
+        f'系统内存占用：{"%.1f" % (psutil.virtual_memory().available / 1073741824)}G / {total_memory}G\n'
     )
 
     img_io = await async_generate_img([msg_send])

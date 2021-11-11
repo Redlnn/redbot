@@ -437,7 +437,7 @@ class MyIdMatch(Sparkle):
                 inline_dispatchers=[Twilight(MyIdMatch)],
         )
 )
-async def add_whitelist(app: Ariadne, group: Group, member: Member, message: MessageChain):
+async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if not is_init:
         return
     elif group.id not in active_groups:
@@ -509,7 +509,7 @@ class RunMatch(Sparkle):
                 decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_master=False)],
         )
 )
-async def get_player_list(app: Ariadne, group: Group, message: MessageChain):
+async def run_command_list(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
         return
     elif group.id not in active_groups:
@@ -539,7 +539,7 @@ async def get_player_list(app: Ariadne, group: Group, message: MessageChain):
 
 
 @channel.use(ListenerSchema(listening_events=[MemberJoinEvent]))
-async def add_player(group: Group, member: Member):
+async def member_join(group: Group, member: Member):
     if not is_init:
         return
     elif group.id != server_group:
@@ -561,7 +561,7 @@ async def add_player(group: Group, member: Member):
 
 
 @channel.use(ListenerSchema(listening_events=[MemberLeaveEventQuit]))
-async def add_player(app: Ariadne, group: Group, member: Member):
+async def member_leave(app: Ariadne, group: Group, member: Member):
     if not is_init:
         return
     elif group.id != server_group:
@@ -583,7 +583,7 @@ async def add_player(app: Ariadne, group: Group, member: Member):
 
 
 @channel.use(ListenerSchema(listening_events=[MemberLeaveEventKick]))
-async def add_player(app: Ariadne, group: Group, event: MemberLeaveEventKick):
+async def member_kick(app: Ariadne, group: Group, event: MemberLeaveEventKick):
     if not is_init:
         return
     elif group.id != server_group:

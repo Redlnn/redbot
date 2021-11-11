@@ -53,6 +53,8 @@ channel.description(
         ' - 文字消息里含有av号，如 av2'
 )
 
+# 生效的群组，若为空，即()，则在所有群组生效
+# 格式为：active_group = (123456, 456789, 789012)
 active_group = ()
 avid_re = '(av|AV)(\\d{1,12})'
 bvid_re = '[Bb][Vv]1([0-9a-zA-Z]{2})4[1y]1[0-9a-zA-Z]7([0-9a-zA-Z]{2})'

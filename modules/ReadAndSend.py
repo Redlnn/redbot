@@ -16,7 +16,6 @@ from utils.Limit.Permission import Permission
 saya = Saya.current()
 channel = Channel.current()
 
-
 channel.name('读取/发送消息的可持久化字符串')
 channel.author('Red_lnn')
 channel.description(
@@ -24,6 +23,10 @@ channel.description(
         ' - 回复需要读取的消息并且回复内容只含有“[!！.]读取消息”获得消息的可持久化字符串\n'
         ' - [!！.]发送消息 <可持久化字符串> —— 用于从可持久化字符串发送消息'
 )
+
+# 生效的群组，若为空，即()，则在所有群组生效
+# 格式为：active_group = (123456, 456789, 789012)
+active_group = ()
 
 
 @channel.use(
@@ -33,6 +36,8 @@ channel.description(
         )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
+    if group.id not in active_group and active_group:
+        return
     if regex.match(r'^[!！.]读取消息$', message.asDisplay()):
         quote_id = message.include(Quote).getFirst(Quote).id
         message_event = await app.getMessageFromId(quote_id)

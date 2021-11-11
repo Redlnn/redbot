@@ -29,7 +29,7 @@ channel = Channel.current()
 
 channel.name('搜索我的世界中文Wiki')
 channel.author('Red_lnn')
-channel.description('用法：[!！.]wiki <要roll的事件>}')
+channel.description('用法：[!！.]wiki <要搜索的关键词>')
 
 # 生效的群组，若为空，即()，则在所有群组生效
 # 格式为：active_group = (123456, 456789, 789012)

@@ -81,8 +81,9 @@ class GroupInterval:
                                 MessageChain.create(
                                         [
                                             Plain(
-                                                    f"本群暂时不可调用bot，正在冷却中...还有 {last[1] + suspend_time - current:.2f} 秒结束\n"
-                                                    f"冷却结束后可再调用bot {max_exec} 次"
+                                                    '本群暂时不可调用bot，正在冷却中...'
+                                                    f'还有 {last[1] + suspend_time - current:.2f} 秒结束\n'
+                                                    f'冷却结束后可再调用bot {max_exec} 次'
                                             )
                                         ]
                                 ),
@@ -151,8 +152,9 @@ class MemberInterval:
                                         [
                                             At(member.id),
                                             Plain(
-                                                    f"你在本群暂时不可调用bot，正在冷却中...还有{last[1] + suspend_time - current:.2f}秒结束\n"
-                                                    f"冷却结束后可再调用bot {max_exec} 次"
+                                                    '你在本群暂时不可调用bot，正在冷却中...'
+                                                    f'还有{last[1] + suspend_time - current:.2f}秒结束\n'
+                                                    f'冷却结束后可再调用bot {max_exec} 次'
                                             ),
                                         ]
                                 ),
@@ -213,8 +215,9 @@ class FriendInterval:
                                 MessageChain.create(
                                         [
                                             Plain(
-                                                    f"你暂时不可调用bot，正在冷却中...还有{last[1] + suspend_time - current:.2f}秒结束\n"
-                                                    f"冷却结束后可再调用bot {max_exec} 次"
+                                                    '你暂时不可调用bot，正在冷却中...'
+                                                    f'还有{last[1] + suspend_time - current:.2f}秒结束\n'
+                                                    f'冷却结束后可再调用bot {max_exec} 次'
                                             )
                                         ]
                                 ),
