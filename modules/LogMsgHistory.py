@@ -70,7 +70,7 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
         return
     today_timestamp = int(time.mktime(datetime.date.today().timetuple()))
-    target_timestamp = today - (86400 * (int(sparkle.arg_day.result) - 1))
+    target_timestamp = today_timestamp - (86400 * (int(sparkle.arg_day.result) - 1))
     target: Optional[int] = None
     if sparkle.arg_type.result == 'member':
         if sparkle.arg_target.matched:
