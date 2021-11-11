@@ -82,7 +82,7 @@ reference = "aliyun"
 
 [[package]]
 name = "async-timeout"
-version = "4.0.0"
+version = "4.0.1"
 description = "Timeout context manager for asyncio programs"
 category = "main"
 optional = false
@@ -356,7 +356,7 @@ reference = "aliyun"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.4.0-a7"
+version = "0.4.0-a8"
 description = "Anelegant mirai-api-http v2 Python SDK."
 category = "main"
 optional = false
@@ -375,7 +375,7 @@ yarl = "^1.6.3"
 type = "git"
 url = "https://github.com/GraiaProject/Ariadne"
 reference = "master"
-resolved_reference = "f10ccbbcd1d702fcef5862f22cb0e9a5796bff5b"
+resolved_reference = "81fd6ade156585f0da8e223ecf5c916522a58c81"
 
 [[package]]
 name = "graia-broadcast"
@@ -1030,8 +1030,8 @@ asttokens = [
     {file = "asttokens-2.0.5.tar.gz", hash = "sha256:9a54c114f02c7a9480d56550932546a3f1fe71d8a02f1bc7ccd0ee3ee35cf4d5"},
 ]
 async-timeout = [
-    {file = "async-timeout-4.0.0.tar.gz", hash = "sha256:7d87a4e8adba8ededb52e579ce6bc8276985888913620c935094c2276fd83382"},
-    {file = "async_timeout-4.0.0-py3-none-any.whl", hash = "sha256:f3303dddf6cafa748a92747ab6c2ecf60e0aeca769aee4c151adfce243a05d9b"},
+    {file = "async-timeout-4.0.1.tar.gz", hash = "sha256:b930cb161a39042f9222f6efb7301399c87eeab394727ec5437924a36d6eef51"},
+    {file = "async_timeout-4.0.1-py3-none-any.whl", hash = "sha256:a22c0b311af23337eb05fcf05a8b51c3ea53729d46fb5460af62bee033cec690"},
 ]
 attrs = [
     {file = "attrs-21.2.0-py2.py3-none-any.whl", hash = "sha256:149e90d6d8ac20db7a955ad60cf0e6881a3f20d37096140088356da6c716b0b1"},

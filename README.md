@@ -2,6 +2,7 @@
 
 # [redbot](https://github.com/Redlnn/redbot) [for](https://github.com/project-mirai/mirai-api-http) [Ariadne](https://github.com/GraiaProject/Ariadne)
 
+![Works on my machine](https://img.shields.io/badge/works-on%20my%20machine-green)
 [![Licence](https://img.shields.io/github/license/Redlnn/redbot)](https://github.com/Redlnn/redbot/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -35,9 +36,8 @@
 - [ ] 聊天条数统计
 - [ ] 概率复读
 - [ ] 留言提醒
-- [ ] 多边形图片生成 <!--https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py-->
+- [ ] 多边形图片生成~~（依赖库装不上咕了）~~ <!-- https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py -->
 - [ ] 二维码生成
-- [ ] Bot 运行状态及系统占用监控查询
 - [ ] BiliBili 动态/直播 订阅推送
 - [ ] Pixiv 搜图
 

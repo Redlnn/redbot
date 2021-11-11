@@ -94,16 +94,16 @@ def _cut_line_to_list(
         '）', '〉', '〗', '］', '〕', '”', '’', '～', '』', '」', '〞',
     )
     while True:
-        tmp_text = text[start_index : start_index + chars_per_line + index_offset]
+        tmp_text = text[start_index: start_index + chars_per_line + index_offset]
         width = font.getlength(tmp_text)
         if abs(width - line_width) < font_size:
             if start_index + chars_per_line + index_offset < len(text):
                 if text[start_index + chars_per_line + index_offset] in end_symbol:
                     index_offset += 1
-                    text_list.append(text[start_index : start_index + chars_per_line + index_offset])
+                    text_list.append(text[start_index: start_index + chars_per_line + index_offset])
                 elif text[start_index + chars_per_line + index_offset] in start_symbol:
                     index_offset -= 1
-                    text_list.append(text[start_index : start_index + chars_per_line + index_offset])
+                    text_list.append(text[start_index: start_index + chars_per_line + index_offset])
                 elif text[start_index + chars_per_line + index_offset] == ' ':
                     text_list.append(tmp_text)
                     index_offset += 1
