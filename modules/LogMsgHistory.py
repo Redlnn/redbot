@@ -12,8 +12,7 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain, Source
 from graia.ariadne.message.parser.pattern import ArgumentMatch, ElementMatch, RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
-from graia.ariadne.model import Group
-from graia.ariadne.model import Member
+from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
