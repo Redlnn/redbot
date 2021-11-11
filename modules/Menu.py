@@ -35,9 +35,18 @@ class Match(Sparkle):
 async def main(app: Ariadne, group: Group):
     msg_send = '-= Red_lnn Bot 指令菜单 =-\n' + hr + '\n'
     for _ in channels.keys():
-        if channels[_].module in (channel.module, 'module.test'):
+        if channels[_].module in (channel.module, 'modules.test'):
             continue
         msg_send += f'模块: {channels[_]._name if channels[_]._name else channels[_].module}\n'
+        if not channels[_]._author:
+            pass
+        else:
+            msg_send += '作者：'
+            for author in channels[_]._author:
+                msg_send += author
+                msg_send += '、'
+            msg_send.rstrip('、')
+            msg_send += '\n'
         if not channels[_]._description:
             pass
         else:

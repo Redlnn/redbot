@@ -4,6 +4,7 @@
 import regex
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
+from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Quote
 from graia.ariadne.model import Group, MemberPerm
@@ -39,8 +40,15 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
     if group.id not in active_group and active_group:
         return
     if regex.match(r'^[!！.]读取消息$', message.asDisplay()):
-        quote_id = message.include(Quote).getFirst(Quote).id
-        message_event = await app.getMessageFromId(quote_id)
+        try:
+            quote_id = message.include(Quote).getFirst(Quote).id
+        except IndexError:
+            return
+        try:
+            message_event = await app.getMessageFromId(quote_id)
+        except UnknownTarget:
+            await app.sendGroupMessage(group, MessageChain.create(Plain('找不到该消息，对象不存在')))
+            return
         chain = message_event.messageChain
         await app.sendGroupMessage(
                 group, MessageChain.create(Plain(f'消息ID: {quote_id}\n消息内容：{chain.asPersistentString()}'))

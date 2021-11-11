@@ -12,7 +12,7 @@ from graia.ariadne.message.element import At, Plain, Source
 from graia.ariadne.message.parser.pattern import RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
-from graia.saya import Channel
+from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
@@ -31,6 +31,7 @@ from .whitelist import (
     query_whitelist_by_uuid,
 )
 
+saya = Saya.current()
 channel = Channel.current()
 
 channel.name('我的世界服务器管理')
@@ -81,7 +82,9 @@ async def init(app: Ariadne):
     groups = [group.id for group in group_list]
     for group in active_groups:
         if group not in groups:
-            raise ValueError(f'要启用mc服务器管理的群组 {group} 不在机器人账号已加入的群组中')
+            logger.error(f'要启用mc服务器管理的群组 {group} 不在机器人账号已加入的群组中，自动禁用')
+            saya.uninstall_channel(channel)
+            return
     init_table()
     try:
         PlayersTable.get(PlayersTable.group == server_group)
