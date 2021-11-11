@@ -76,13 +76,13 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
                 target = message.getFirst(At).target
             else:
                 if sparkle.arg_target.result.isdigit():
-                    target = int(sparkle.arg_target.result)
+                    target = int(sparkle.arg_target.result.asDisplay())
         else:
             target = member.id
     elif sparkle.arg_type.result == 'group':
         if sparkle.arg_target.matched:
             if sparkle.arg_target.result.isdigit():
-                target = int(sparkle.arg_target.result)
+                target = int(sparkle.arg_target.result.asDisplay())
         else:
             target = group.id
     else:
@@ -120,7 +120,7 @@ class GetMemberLastMsgMatch(Sparkle):
 )
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
     if sparkle.qq.matched and not sparkle.at.matched:
-        target = int(sparkle.qq.result)
+        target = int(sparkle.qq.result.asDisplay())
     elif sparkle.at.matched and not sparkle.qq.matched:
         target = message.getFirst(At).target
     else:
