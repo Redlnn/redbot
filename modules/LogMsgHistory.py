@@ -17,7 +17,7 @@ from graia.ariadne.model import Member
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from utils.Database.msg_history import get_member_last_message, get_member_talk_count, log_msg
+from utils.Database.msg_history import get_group_talk_count, get_member_last_message, get_member_talk_count, log_msg
 
 channel = Channel.current()
 
