@@ -100,7 +100,7 @@ async def get_group_talk_count(group: int | str, timestamp: int = 0) -> Optional
 
 async def get_member_last_message(group: int | str, qq: int | str) -> Tuple[Optional[str], Optional[int]]:
     try:
-        data = MsgLog.select(MsgLog.msg_chain, Msglog.timestamp).where((MsgLog.group == group) & (MsgLog.qq == qq) & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group) & (MsgLog.qq == qq)))) 
+        data = MsgLog.select(MsgLog.msg_chain, MsgLog.timestamp).where((MsgLog.group == group) & (MsgLog.qq == qq) & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group) & (MsgLog.qq == qq)))) 
     except MsgLog.DoesNotExist:
         return None, None
     data_get = data.get()
@@ -109,7 +109,7 @@ async def get_member_last_message(group: int | str, qq: int | str) -> Tuple[Opti
 
 async def get_group_last_message(group: int | str) -> Tuple[Optional[str], Optional[str], Optional[int]]:
     try:
-        data = MsgLog.select(MsgLog.qq, MsgLog.msg_chain, Msglog.timestamp).where((MsgLog.group == group) & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group)))) 
+        data = MsgLog.select(MsgLog.qq, MsgLog.msg_chain, MsgLog.timestamp).where((MsgLog.group == group) & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group)))) 
     except MsgLog.DoesNotExist:
         return None, None, None
     data_get = data.get()
