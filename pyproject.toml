@@ -23,6 +23,8 @@ graia-scheduler = {git = "https://github.com/BlueGlassBlock/Scheduler"}
 graia-broadcast = "^0.13.1"
 gitpython = "^3.1.24"
 psutil = "^5.8.0"
+wordcloud = "^1.8.1"
+jieba = "^0.42.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.10b0"
