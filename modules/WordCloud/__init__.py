@@ -5,6 +5,7 @@
 移植自：https://github.com/djkcyl/ABot-Graia/blob/MAH-V2/saya/WordCloud/__init__.py
 """
 
+import asyncio
 import datetime
 import os
 import time
@@ -109,16 +110,21 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Spa
         Generating_list.remove(target)
         return
 
-    await app.sendGroupMessage(group, MessageChain.create(Plain(f'正在为 {target} 生成词云，其本周共 {len(msg_list)} 条记录，请稍后')))
+    await app.sendGroupMessage(group, MessageChain.create(Plain(f'正在为 {target} 生成词云，其本周共 {len(msg_list)} 条记录，请稍后...')))
     words = await get_frequencies(msg_list)
-    image = await gen_wordcloud(words)
+    image = await asyncio.to_thread(gen_wordcloud, words)
     Generating_list.remove(target)
     if target_type == 'group':
         await app.sendGroupMessage(group, MessageChain.create(Plain('本群最近7天内的聊天词云 👇\n'), Image(data_bytes=image)))
     elif target_type == 'me':
-        await app.sendGroupMessage(
-                group, MessageChain.create(At(target), Plain('你最近7天内的聊天词云 👇\n'), Image(data_bytes=image))
-        )
+        try:
+            await app.sendGroupMessage(
+                    group, MessageChain.create(At(target), Plain('你最近7天内的聊天词云 👇\n'), Image(data_bytes=image))
+            )
+        except UnknownTarget:
+            await app.sendGroupMessage(
+                    group, MessageChain.create(Plain(f'{target} 最近7天内的聊天词云 👇\n'), Image(data_bytes=image))
+            )
     else:
         try:
             await app.sendGroupMessage(
@@ -144,7 +150,7 @@ async def get_frequencies(msg_list: List[str]) -> dict:
     return dict(words)
 
 
-async def gen_wordcloud(words: dict) -> bytes:
+def gen_wordcloud(words: dict) -> bytes:
     wordcloud = WordCloud(font_path=FONT_PATH, background_color="white", mask=MASK, max_words=800, scale=2)
     wordcloud.generate_from_frequencies(words)
     image_colors = ImageColorGenerator(MASK, default_color=(255, 255, 255))
