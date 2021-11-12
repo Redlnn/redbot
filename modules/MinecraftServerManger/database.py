@@ -7,9 +7,11 @@ from peewee import *
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
 
-from .config import DatabaseConfig, server_group
+from config import config_data
 
-if DatabaseConfig.mysql:
+config_data = config_data['Modules']['MinecraftServerManager']
+
+if config_data['Database']['MySQL']:
     # https://www.cnblogs.com/gcxblogs/p/14969019.html
     class ReconnectPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase):
 
@@ -22,12 +24,12 @@ if DatabaseConfig.mysql:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                        DatabaseConfig.mysql_database,
+                        config_data['Database']['Database'],
                         max_connections=5,
-                        host=DatabaseConfig.mysql_host,
-                        port=DatabaseConfig.mysql_port,
-                        user=DatabaseConfig.mysql_user,
-                        password=DatabaseConfig.mysql_passwd,
+                        host=config_data['Database']['Host'],
+                        port=config_data['Database']['Port'],
+                        user=config_data['Database']['User'],
+                        password=config_data['Database']['Passwd'],
                 )
             return cls._instance
 
@@ -46,16 +48,13 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                        os.path.join(os.getcwd(), 'data', f'MinecraftServerManager_{server_group}.db'),
+                        os.path.join(os.getcwd(), 'data', f'MinecraftServerManager_{config_data["ServerGroup"]}.db'),
                         max_connections=5,
                 )
             return cls._instance
 
 
     db = ReconnectPooledSqliteDatabase.get_db_instance()
-
-if not server_group:
-    raise ValueError('server_group is required')
 
 
 class PlayersTable(Model):

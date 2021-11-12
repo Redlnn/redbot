@@ -12,10 +12,12 @@ from graia.ariadne.message.element import At, Plain, Source
 from graia.ariadne.model import Group
 from loguru import logger
 
-from .config import server_group
+from config import config_data
 from .database import PlayersTable
 from .rcon import execute_command
 from .utils import get_mc_id, get_uuid, query_qq_by_uuid, query_uuid_by_qq
+
+server_group = config_data['Modules']['MinecraftServerManager']['ServerGroup']
 
 __all__ = [
     "add_whitelist_to_qq",

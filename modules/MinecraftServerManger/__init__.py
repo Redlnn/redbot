@@ -16,8 +16,8 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
+from config import config_data
 from utils.Limit.Permission import Permission
-from .config import active_groups, server_group
 from .database import db, init_table, PlayersTable
 from .rcon import execute_command
 from .utils import is_mc_id, is_uuid, query_uuid_by_qq
@@ -33,6 +33,18 @@ from .whitelist import (
 
 saya = Saya.current()
 channel = Channel.current()
+
+if not config_data['Modules']['MinecraftServerManager']['Enabled']:
+    saya.uninstall_channel(channel)
+
+server_group = config_data['Modules']['MinecraftServerManager']['ServerGroup']
+active_groups = (
+    config_data['Modules']['MinecraftServerManager']['ActiveGroup']
+    if config_data['Modules']['MinecraftServerManager']['ActiveGroup'] else []
+)
+
+if server_group not in active_groups:
+    active_groups.append(server_group)
 
 channel.name('我的世界服务器管理')
 channel.author('Red_lnn')
@@ -59,11 +71,6 @@ wl_menu = (
     '[!！.]wl info qq <QQ号>  - 查询某个QQ的信息\n'
     '[!！.]wl info id <游戏ID>  - 查询某个ID的信息'
 )
-
-if not server_group:
-    raise ValueError('server_group is required')
-elif server_group not in active_groups:
-    active_groups.append(server_group)
 
 is_init = False
 
@@ -136,7 +143,13 @@ class WhitelistAddMatch(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(WhitelistAddMatch)],
-                decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_master=False)],
+                decorators=[
+                    Permission.group_perm_check(
+                            MemberPerm.Administrator,
+                            send_alert=True,
+                            allow_override=False,
+                    )
+                ],
         )
 )
 async def add_whitelist(app: Ariadne, group: Group, message: MessageChain):
@@ -181,7 +194,13 @@ class WhitelistDelMatch(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(WhitelistDelMatch)],
-                decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_master=False)],
+                decorators=[
+                    Permission.group_perm_check(
+                            MemberPerm.Administrator,
+                            send_alert=True,
+                            allow_override=False,
+                    )
+                ],
         )
 )
 async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
@@ -509,7 +528,8 @@ class RunMatch(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(RunMatch)],
-                decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_master=False)],
+                decorators=[
+                    Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
         )
 )
 async def run_command_list(app: Ariadne, group: Group, message: MessageChain):
@@ -619,7 +639,8 @@ class PardonMatch(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(PardonMatch)],
-                decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_master=False)],
+                decorators=[
+                    Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
         )
 )
 async def pardon(app: Ariadne, group: Group, message: MessageChain):
@@ -657,7 +678,8 @@ class ClearLeaveTimeMatch(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(ClearLeaveTimeMatch)],
-                decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_master=False)],
+                decorators=[
+                    Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
         )
 )
 async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain):
@@ -695,7 +717,8 @@ class BanMatch(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(BanMatch)],
-                decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_master=False)],
+                decorators=[
+                    Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
         )
 )
 async def ban(app: Ariadne, group: Group, message: MessageChain):
