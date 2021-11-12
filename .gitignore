@@ -9,3 +9,4 @@ __pycache__/
 test.py
 
 /config.yml
+/modules/AutoReply/config.py

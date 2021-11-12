@@ -33,7 +33,6 @@ if config_data['Database']['MySQL']:
                 )
             return cls._instance
 
-
     db = ReconnectPooledMySQLDatabase.get_db_instance()
 else:
 
@@ -52,7 +51,6 @@ else:
                         max_connections=5,
                 )
             return cls._instance
-
 
     db = ReconnectPooledSqliteDatabase.get_db_instance()
 

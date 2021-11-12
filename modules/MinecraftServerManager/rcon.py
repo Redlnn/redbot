@@ -14,7 +14,7 @@ __all__ = ["execute_command"]
 
 __HOST = config_data['Host']  # Hostname of the Minecraft server
 __PORT = config_data['Port']  # Port number of the RCON server
-__PASSWORD = config_data['Password']  # Password of the RCON server
+__PASSWORD = config_data['Passwd']  # Password of the RCON server
 
 
 def execute_command(command: str) -> Optional[str]:
