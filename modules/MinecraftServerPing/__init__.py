@@ -26,24 +26,24 @@ from loguru import logger
 from requests import ConnectTimeout, ReadTimeout, Timeout
 from urllib3.exceptions import TimeoutError
 
+from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
-from .config import group_individual_server
 from .ping_client import ping
 from .utils import is_domain, is_ip
 
 saya = Saya.current()
-loop = saya.broadcast.loop
-pool = ThreadPoolExecutor()
-
 channel = Channel.current()
 
 channel.name('Ping mc服务器')
 channel.author('Red_lnn')
 channel.description('获取指定mc服务器的信息\n指令：[!！.]ping {mc服务器地址}')
 
-if not group_individual_server:
-    group_individual_server = {}
+config = config_data['Modules']['MinecraftServerPing']
+servers = config['Servers']
+
+if not config['Enabled']:
+    saya.uninstall_channel(channel)
 
 
 class Match(Sparkle):
@@ -62,10 +62,9 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
     if sparkle.ping_target.matched:
         server_address = sparkle.ping_target.result.asDisplay().strip()
     else:
-        if group.id in group_individual_server.keys():
-            server_address = group_individual_server[group.id]
-        else:
+        if group.id not in servers.keys():
             return
+        server_address = servers[group.id]
 
     if '://' in server_address:
         await app.sendGroupMessage(group, MessageChain.create([Plain('不支持带有协议前缀的地址')]))

@@ -29,15 +29,20 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import App, Image, Plain, Xml
 from graia.ariadne.model import Group, Member
-from graia.saya import Channel
+from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
+from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import ManualInterval
 from utils.TextWithImg2Img import async_generate_img, hr
 
+saya = Saya.current()
 channel = Channel.current()
+
+if not config_data['Modules']['BiliVideoInfo']['Enabled']:
+    saya.uninstall_channel(channel)
 
 channel.name('B站视频信息获取')
 channel.author('Red_lnn')
@@ -53,9 +58,6 @@ channel.description(
         ' - 文字消息里含有av号，如 av2'
 )
 
-# 生效的群组，若为空，即()，则在所有群组生效
-# 格式为：active_group = (123456, 456789, 789012)
-active_group = ()
 avid_re = '(av|AV)(\\d{1,12})'
 bvid_re = '[Bb][Vv]1([0-9a-zA-Z]{2})4[1y]1[0-9a-zA-Z]7([0-9a-zA-Z]{2})'
 
@@ -82,8 +84,9 @@ class VideoInfo:
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[group_blacklist()]))
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
-    if group.id not in active_group and active_group:
-        return
+    if config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
+        if group.id in config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
+            return
     p = regex.compile(f'({avid_re})|({bvid_re})')
     video_id = None
     if message.has(App):

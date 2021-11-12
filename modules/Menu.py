@@ -11,12 +11,16 @@ from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
+from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import GroupInterval
 from utils.TextWithImg2Img import async_generate_img, hr
 
 saya = Saya.current()
 channel = Channel.current()
+
+if not config_data['Modules']['Menu']['Enabled']:
+    saya.uninstall_channel(channel)
 
 channels = saya.channels
 
@@ -33,6 +37,9 @@ class Match(Sparkle):
         )
 )
 async def main(app: Ariadne, group: Group):
+    if config_data['Modules']['Menu']['DisabledGroup']:
+        if group.id in config_data['Modules']['Menu']['DisabledGroup']:
+            return
     msg_send = '-= Red_lnn Bot 指令菜单 =-\n' + hr + '\n'
     for _ in channels.keys():
         if channels[_].module in (channel.module, 'modules.test'):
