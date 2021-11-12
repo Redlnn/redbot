@@ -46,7 +46,7 @@ class Match(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(Match)],
-                decorators=[group_blacklist(), MemberInterval.require(3, send_alert=False)],
+                decorators=[group_blacklist(), MemberInterval.require(3)],
         )
 )
 async def main(app: Ariadne, group: Group, sparkle: Sparkle):
