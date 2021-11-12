@@ -44,8 +44,8 @@ async def main(app: Ariadne, group: Group):
             msg_send += '作者：'
             for author in channels[_]._author:
                 msg_send += author
-                msg_send += '、'
-            msg_send.rstrip('、')
+                msg_send += ' | '
+            msg_send = msg_send[:-3]
             msg_send += '\n'
         if not channels[_]._description:
             pass

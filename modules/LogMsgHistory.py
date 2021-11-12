@@ -91,10 +91,10 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标类型不存在')))
         return
 
-    if not target:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
-        return
     if sparkle.arg_type.result == 'member':
+        if not target:
+            await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
+            return
         count = await get_member_talk_count(group.id, target, target_timestamp)
         if not count:
             try:
@@ -129,6 +129,9 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
                     ),
             )
     else:
+        if not target:
+            await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是群号')))
+            return
         count = await get_group_talk_count(group.id, target_timestamp)
         if not count:
             await app.sendGroupMessage(group, MessageChain.create(Plain(f'群 {target} 木有过发言')))
@@ -175,7 +178,7 @@ async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, sparkl
     if not msg:
         await app.sendGroupMessage(group, MessageChain.create(Plain(f'{target} 木有说过话')))
         return
-    #send_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))
+    # send_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))
     chain = MessageChain.fromPersistentString(msg)
     at_send = MessageChain.create(At(target), Plain(f'({target}) 在 {send_time} 说过最后一句话：\n')).extend(chain)
     send = MessageChain.create(Plain(f'{target} 在 {send_time} 说过最后一句话：\n')).extend(chain)
