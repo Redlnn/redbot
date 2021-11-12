@@ -36,7 +36,7 @@ channel.description('获得一个随机数\n用法：[!！.]roll {要roll的事�
 
 
 class Match(Sparkle):
-    prefix = RegexMatch(r'^[!！.]roll$')
+    prefix = RegexMatch(r'[!！.]roll')
     roll_target = RegexMatch(r'\ \S+', optional=True)
 
 
@@ -44,7 +44,7 @@ class Match(Sparkle):
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(Match)],
-                decorators=[group_blacklist(), MemberInterval.require(2, send_alert=False)],
+                decorators=[group_blacklist(), MemberInterval.require(2)],
         )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
