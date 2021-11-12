@@ -10,7 +10,7 @@
 from .utils import img_2_bytesio  # noqa
 from config import config_data
 
-disabled = False if config_data['modules']['AutoReply']['Enabled'] else True
+disabled = False if config_data['Modules']['AutoReply']['Enabled'] else True
 
 # 格式
 # reply = {
