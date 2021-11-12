@@ -122,7 +122,7 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Spa
         return
 
     await app.sendGroupMessage(group, MessageChain.create(Plain(f'正在为 {target} 生成词云，其本周共 {len(msg_list)} 条记录，请稍后...')))
-    words = await get_frequencies(msg_list)
+    words = await asyncio.to_thread(get_frequencies, msg_list)
     image = await asyncio.to_thread(gen_wordcloud, words)
     Generating_list.remove(target)
     if target_type == 'group':
@@ -148,7 +148,7 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Spa
             )
 
 
-async def get_frequencies(msg_list: List[str]) -> dict:
+def get_frequencies(msg_list: List[str]) -> dict:
     text = ''
     for persistent_string in msg_list:
         if persistent_string == '[APP消息]':
