@@ -131,10 +131,10 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Spa
             )
 
 
-async def get_frequencies(msg_list: List[MessageChain]) -> dict:
+async def get_frequencies(msg_list: List[str]) -> dict:
     text = ''
-    for chain in msg_list:
-        chain = chain.include(Plain)
+    for persistent_msg in msg_list:
+        chain = MessageChain.fromPersistentString(persistent_msg).include(Plain)
         if len(chain) == 0:
             continue
         else:
