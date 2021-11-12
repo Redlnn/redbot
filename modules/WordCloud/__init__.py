@@ -85,21 +85,21 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Spa
             await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
         Generating_list.append(target)
-        msg_list = await get_member_msg(target, target, target_timestamp)
+        msg_list = await get_member_msg(group.id, target, target_timestamp)
     elif match_result.onlyContains(At):
         target = match_result.getFirst(At).target
         if target in Generating_list:
             await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
         Generating_list.append(target)
-        msg_list = await get_member_msg(target, target, target_timestamp)
+        msg_list = await get_member_msg(group.id, target, target_timestamp)
     elif match_result.asDisplay().isdigit():
         target = match_result.asDisplay()
         if target in Generating_list:
             await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
         Generating_list.append(target)
-        msg_list = await get_member_msg(target, target, target_timestamp)
+        msg_list = await get_member_msg(group.id, target, target_timestamp)
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令，参数错误')))
         return
@@ -112,6 +112,7 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Spa
     await app.sendGroupMessage(group, MessageChain.create(Plain(f'正在为 {target} 生成词云，其本周共 {len(msg_list)} 条记录，请稍后')))
     words = await get_frequencies(msg_list)
     image = await gen_wordcloud(words)
+    Generating_list.remove(target)
     if target_type == 'group':
         await app.sendGroupMessage(group, MessageChain.create(Plain('本群最近7天内的聊天词云 👇\n'), Image(data_bytes=image)))
     elif target_type == 'me':
