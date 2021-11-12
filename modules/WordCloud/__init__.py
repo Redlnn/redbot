@@ -22,17 +22,25 @@ from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.pattern import RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member
-from graia.saya import Channel
+from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
+from loguru import logger
 from matplotlib import pyplot
 from PIL import Image as Img
 from wordcloud import ImageColorGenerator, WordCloud
 
+from config import config_data
 from utils.Database.msg_history import get_group_msg, get_member_msg
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import GroupInterval
 
+saya = Saya.current()
 channel = Channel.current()
+
+config = config_data['Modules']['WordCloud']
+
+if not config['Enabled']:
+    saya.uninstall_channel(channel)
 
 channel.name('聊天历史词云生成')
 channel.author('Red_lnn')
@@ -46,7 +54,7 @@ channel.description(
 
 Generating_list: List[int | str] = []
 MASK = numpy.array(Img.open(os.path.join(os.path.dirname(__file__), 'bg.jpg')))
-FONT_PATH = os.path.join(os.getcwd(), 'fonts', 'OPPOSans.ttf')
+FONT_PATH = os.path.join(os.getcwd(), 'fonts', config['FontName'])
 
 
 class WordCloudMatch(Sparkle):
@@ -62,6 +70,9 @@ class WordCloudMatch(Sparkle):
         )
 )
 async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
+    if config['DisabledGroup']:
+        if group.id in config['DisabledGroup']:
+            return
     global Generating_list
     target_type = 'member'
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - 518400
@@ -139,8 +150,15 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Spa
 
 async def get_frequencies(msg_list: List[str]) -> dict:
     text = ''
-    for persistent_msg in msg_list:
-        chain = MessageChain.fromPersistentString(persistent_msg).include(Plain)
+    for persistent_string in msg_list:
+        if persistent_string == '[APP消息]':
+            continue
+        try:
+            chain = MessageChain.fromPersistentString(persistent_string).include(Plain)
+        except Exception as e:
+            logger.error(f'处理该消息时出错: {persistent_string}')
+            logger.exception(e)
+            continue
         if len(chain) == 0:
             continue
         else:

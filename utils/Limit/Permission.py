@@ -14,12 +14,11 @@ from graia.ariadne.model import Group, Member, MemberPerm
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
-from config import master
+from config import config_data
 
 __all__ = ['Permission']
 
-if not master:
-    master = 0
+_admins = config_data['Basic']['Permission']['Admin'] if config_data['Basic']['Permission']['Admin'] else []
 
 
 class Permission:
@@ -30,6 +29,7 @@ class Permission:
     """
 
     MASTER: int = 100
+    BOT_ADMIN: int = 90
     OWMER: int = 30
     ADMIN: int = 20
     USER: int = 10
@@ -39,16 +39,19 @@ class Permission:
     _levels = {MemberPerm.Member: USER, MemberPerm.Administrator: ADMIN, MemberPerm.Owner: OWMER}
 
     @classmethod
-    async def get(cls, user: Member, allow_master: bool = True) -> int:
+    async def get(cls, user: Member, allow_override: bool = True) -> int:
         """
         获取用户的权限等级
 
         :param user: 群成员实例
-        :param allow_master: 是否允许bot主任无视权限控制
+        :param allow_override: 是否允许bot主任无视权限控制
         :return: 等级，整数
         """
-        if allow_master and user.id == master:
-            return cls.MASTER
+        if allow_override:
+            if user.id == config_data['Basic']['Permission']['Master']:
+                return cls.MASTER
+            elif user.id in _admins:
+                return cls.BOT_ADMIN
 
         match user.permission:
             case MemberPerm.Owner:
@@ -62,7 +65,7 @@ class Permission:
 
     @classmethod
     def group_perm_check(cls, perm: MemberPerm, send_alert: bool = False, alert_text: str = '你没有权限执行此指令',
-                         allow_master: bool = True) -> Depend:
+                         allow_override: bool = True) -> Depend:
         """
         群消息权限检查
 
@@ -71,11 +74,11 @@ class Permission:
         :param perm: 至少需要什么权限才能调用
         :param send_alert: 是否发送无权限警告
         :param alert_text: 无权限提示的消息内容
-        :param allow_master: 是否允许bot主任无视权限控制
+        :param allow_override: 是否允许bot主人和bot管理员无视权限控制
         """
 
         async def check_wrapper(app: Ariadne, group: Group, member: Member):
-            level = await cls.get(member, allow_master)
+            level = await cls.get(member, allow_override)
             if level < cls._levels[perm]:
                 if send_alert:
                     await app.sendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
@@ -85,7 +88,7 @@ class Permission:
 
     @classmethod
     def temp_perm_check(cls, perm: MemberPerm, send_alert: bool = False, alert_text: str = '你没有权限执行此指令',
-                        allow_master: bool = True) -> Depend:
+                        allow_override: bool = True) -> Depend:
         """
         群消息权限检查
 
@@ -94,10 +97,11 @@ class Permission:
         :param perm: 至少需要什么权限才能调用
         :param send_alert: 是否发送无权限警告
         :param alert_text: 无权限提示的消息内容
+        :param allow_override: 是否允许bot主人和bot管理员无视权限控制
         """
 
         async def check_wrapper(app: Ariadne, member: Member):
-            level = await cls.get(member, allow_master)
+            level = await cls.get(member, allow_override)
             if level < cls._levels[perm]:
                 if send_alert:
                     await app.sendTempMessage(member, MessageChain.create(Plain(alert_text)))

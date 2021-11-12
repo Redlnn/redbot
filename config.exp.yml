@@ -1,0 +1,134 @@
+# 请复制一份 config.exp.yml 并将其重命名为 config.yml 作为配置文件！
+
+Basic: # 基础设置
+  BotName: redbot # 机器人在群里的名字
+
+  MiraiApiHttp:
+    Account: 123456789 # 机器人的QQ号
+    Host: http://localhost:8080 # Mirai Api Http 的地址
+    VerifyKey: 'xxxxxxxx' # Mirai Api Http 的 verifyKey
+
+  LogChat: true # 是否保存日志文件
+  Debug: false
+
+  Permission:
+    Master: 123456789 # 机器人主人的QQ号
+    Admin: # 机器人管理员
+      -  123456789
+
+  Blacklist: # 全局黑名单
+    Groups: # 群黑名单
+      - 123456789
+    Users: # 私聊/群成员/临时会话黑名单
+      - 123456789
+
+  Database: # 数据库相关
+    MySQL: false # 是否启用 MySQL，下面的选项均仅影响 MySQL
+    Database: redbot # 数据库名称
+    Host: localhost
+    Port: 3306
+    User: user
+    Passwd: password
+
+TextWithImg2Img:
+  # 字体文件的文件名（带后缀名），支持ttf/otf/ttc/otc
+  # 字体文件请放在根目录的 fonts 文件夹内
+  FontName: OPPOSans.ttf
+  # 若使用ttc/otc字体文件，则填写要加载的ttc/otc的字形索引号，不懂请填1
+  # 具体索引号可安装 afdko 后使用 `otc2otf -r {name}.ttc`查看
+  # afdko: https://github.com/adobe-type-tools/afdko
+  TTCIndex: 1
+  FontSize: 50 # 字体大小
+  FontColor: '#645647' # 字体颜色
+  LineSpace: 30 # 行距
+  TextMargin: 80 # 文字范围到内框的距离
+  CharsPerLine: 25 # 每行长度（单位：字符数量，以中文字符为准）
+  BackgroundColor: '#fffcf6' # 背景颜色
+  BorderSideMargin: 50 # 外框距左右边界距离
+  BorderTopMargin: 70 # 外框距上边界距离
+  BorderBottomMargin: 250 # 外框距下边界距离
+  BorderInterval: 5 # 内外框距离
+  BorderSquareWrapWidth: 5 # 外边框四角的小正方形边长
+  BorderOutlineColor: '#e9e5d9' # 边框颜色
+  BorderOutlineWidth: 5 # 边框描边（内描边）厚度
+
+
+Modules: # 各插件的配置
+  Enabled: true # 全局插件开关
+
+  AutoReply: # 自动回复
+    Enabled: true
+    # 详细的自动回复设置请去看 modules/AutoReply/config_exp.py
+
+  MinecraftServerManger: # 我的世界服务器管理
+    Enabled: true
+    ServerGroup: 123457689 # 服务器群群号
+    ActiveGroup: # 其他要生效的群
+      - 123456789
+    Rcon:
+      Host: localhost
+      Port: 25575
+      Passwd: password
+    Database: # 数据库相关，此处数据库仅我的世界服务器管理插件使用
+      MySQL: false # 是否启用 MySQL，下面的选项均仅影响 MySQL
+      Database: redbot # 数据库名称
+      Host: localhost
+      Port: 3306
+      User: user
+      Passwd: password
+
+  MinecraftServerPing: # 我的世界服务器 Motd Ping
+    Enabled: true
+    Servers: # 服务器列表，格式【群号: 服务器地址】
+      123456789: 127.0.0.1:25565
+
+  WordCloud: # 聊天历史词云生成
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+    FontName: OPPOSans.ttf # 字体文件的文件名（带后缀名），支持ttf，字体文件请放在根目录的 fonts 文件夹内
+
+  BiliVideoInfo:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
+  BotStatus:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
+  LogMsgHistory:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
+  Menu:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
+  ReadAndSend:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
+  RenpinChecker:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
+  RollNumber:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
+  SearchMinecraftWiki:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
+  TextWithImg2Img:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789

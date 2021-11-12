@@ -24,25 +24,27 @@ from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.pattern import RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member
-from graia.saya import Channel
+from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
 from loguru import logger
 
+from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
 from utils.TextWithImg2Img import async_generate_img, hr
 
+saya = Saya.current()
 channel = Channel.current()
+
+if not config_data['Modules']['RenpinChecker']['Enabled']:
+    saya.uninstall_channel(channel)
 
 channel.name('人品测试')
 channel.author('Red_lnn')
 channel.description('每个QQ号每天可随机获得一个0-100的人品值并抽签\n用法：[!！.]jrrp / [!！.]抽签')
 
-# 生效的群组，若为空，即()，则在所有群组生效
-# 格式为：active_group = (123456, 456789, 789012)
-active_group = ()
 data_folder = os.path.join(os.getcwd(), 'data')
 
 # https://wiki.biligame.com/ys/%E3%80%8C%E5%BE%A1%E7%A5%9E%E7%AD%BE%E3%80%8D
@@ -108,8 +110,9 @@ class Match(Sparkle):
         )
 )
 async def main(app: Ariadne, group: Group, member: Member):
-    if group.id not in active_group and active_group:
-        return
+    if config_data['Modules']['RenpinChecker']['DisabledGroup']:
+        if group.id in config_data['Modules']['RenpinChecker']['DisabledGroup']:
+            return
     is_new, (renpin, qianwen) = await read_data(str(member.id))
     img_io = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:

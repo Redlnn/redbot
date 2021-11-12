@@ -4,7 +4,7 @@
 """
 搜索我的世界中文Wiki
 
-用法：在下面的 active_group 变量中的QQ群内发送【!wiki {关键词}】即可
+用法：在群内发送【!wiki {关键词}】即可
 """
 
 import asyncio
@@ -19,21 +19,22 @@ from graia.ariadne.message.element import App
 from graia.ariadne.message.parser.pattern import RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group
-from graia.saya import Channel
+from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
+from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
 
+saya = Saya.current()
 channel = Channel.current()
+
+if not config_data['Modules']['SearchMinecraftWiki']['Enabled']:
+    saya.uninstall_channel(channel)
 
 channel.name('搜索我的世界中文Wiki')
 channel.author('Red_lnn')
 channel.description('用法：[!！.]wiki <要搜索的关键词>')
-
-# 生效的群组，若为空，即()，则在所有群组生效
-# 格式为：active_group = (123456, 456789, 789012)
-active_group = ()
 
 
 class Match(Sparkle):
@@ -49,8 +50,9 @@ class Match(Sparkle):
         )
 )
 async def main(app: Ariadne, group: Group, sparkle: Sparkle):
-    if group.id not in active_group and active_group:
-        return
+    if config_data['Modules']['SearchMinecraftWiki']['DisabledGroup']:
+        if group.id in config_data['Modules']['SearchMinecraftWiki']['DisabledGroup']:
+            return
     arg: str = sparkle.search_target.result.asDisplay()
     search_parm: str = quote(arg, encoding='utf-8')
     bilibili_wiki_json = {

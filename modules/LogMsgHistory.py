@@ -9,18 +9,23 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import At, Plain, Source
+from graia.ariadne.message.element import App, At, Plain, Source
 from graia.ariadne.message.parser.pattern import ArgumentMatch, ElementMatch, RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
-from graia.saya import Channel
+from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
+from config import config_data
 from utils.Database.msg_history import get_group_talk_count, get_member_last_message, get_member_talk_count, log_msg
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Permission import Permission
 
+saya = Saya.current()
 channel = Channel.current()
+
+if not config_data['Modules']['LogMsgHistory']['Enabled']:
+    saya.uninstall_channel(channel)
 
 channel.name('历史聊天数据记录')
 channel.author('Red_lnn')
@@ -41,13 +46,25 @@ channel.description(
         )
 )
 async def main(group: Group, member: Member, message: MessageChain):
-    await log_msg(
-            group.id,
-            member.id,
-            int(time.mktime(message.getFirst(Source).time.timetuple())),
-            message.getFirst(Source).id,
-            message.asPersistentString(),
-    )
+    if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+        if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+            return
+    if message.has(App):
+        await log_msg(
+                group.id,
+                member.id,
+                int(time.mktime(message.getFirst(Source).time.timetuple())),
+                message.getFirst(Source).id,
+                '[APP消息]',
+        )
+    else:
+        await log_msg(
+                group.id,
+                member.id,
+                int(time.mktime(message.getFirst(Source).time.timetuple())),
+                message.getFirst(Source).id,
+                message.asPersistentString(),
+        )
 
 
 # 获取某人指定天数内的发言条数
@@ -66,6 +83,9 @@ class GetMsgCountMatch(Sparkle):
         )
 )
 async def get_msg_count(app: Ariadne, group: Group, member: Member, message: MessageChain, sparkle: Sparkle):
+    if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+        if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+            return
     if not sparkle.arg_day.result.isdigit():
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
         return
@@ -167,6 +187,9 @@ class GetMemberLastMsgMatch(Sparkle):
         )
 )
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
+    if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+        if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+            return
     if sparkle.qq.matched and not sparkle.at.matched:
         target = int(sparkle.qq.result.asDisplay())
     elif sparkle.at.matched and not sparkle.qq.matched:

@@ -3,7 +3,8 @@
 ```
 redbot  根目录
 ├── README.md
-├── config.py  配置文件
+├── config.exp.yml  示例配置文件
+├── config.py  配置文件加载器
 ├── data/  数据目录
 ├── fonts/  字体目录（文本转图片所用）
 ├── logs/  日志目录

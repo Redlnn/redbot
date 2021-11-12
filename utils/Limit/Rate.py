@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-群、用户调用频率限制
+群、用户调用频率限制（bot主人与bot管理员可以无视，没有开关）
 
 Xenon 管理：https://github.com/McZoo/Xenon/blob/master/lib/control.py
 """
@@ -19,13 +19,12 @@ from graia.ariadne.model import Friend, Group, Member
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
-from config import master
+from config import config_data
 from .Permission import Permission
 
 __all__ = ['GroupInterval', 'MemberInterval', 'FriendInterval', 'TempInterval', 'ManualInterval']
 
-if not master:
-    master = 0
+_admins = config_data['Basic']['Permission']['Admin'] if config_data['Basic']['Permission']['Admin'] else []
 
 
 class GroupInterval:
@@ -191,7 +190,9 @@ class FriendInterval:
         """
 
         async def cd_check(app: Ariadne, friend: Friend):
-            if friend.id == master:
+            if friend.id == config_data['Basic']['Permission']['Master']:
+                return
+            elif friend.id in _admins:
                 return
             current = time.time()
             async with cls.lock:

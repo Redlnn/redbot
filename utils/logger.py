@@ -7,7 +7,7 @@ import sys
 
 from loguru import logger
 
-from config import BotConfig
+from config import config_data
 
 
 # https://loguru.readthedocs.io/en/stable/overview.html?highlight=InterceptHandler#entirely-compatible-with-standard-logging
@@ -30,7 +30,7 @@ class InterceptHandler(logging.Handler):
 
 logger.remove()
 
-if BotConfig.debug:
+if config_data['Basic']['Debug']:
     LOG_FORMAT = (
         '<green>{time:YYYY-MM-DD HH:mm:ss.SSSS}</green> | <level>{level: <9}</level> | '
         '<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level> '

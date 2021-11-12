@@ -13,7 +13,8 @@
 # 数据库结构：
 # AutoReply表
 # type | group | key | value
-from concurrent.futures import ThreadPoolExecutor
+
+import os.path
 from io import BytesIO
 
 import regex
@@ -24,16 +25,23 @@ from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
+from loguru import logger
 
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
 from utils.TextWithImg2Img import async_generate_img
-from .config import fuzzy_reply, re_reply, reply
 
 saya = Saya.current()
 channel = Channel.current()
-loop = saya.broadcast.loop
-pool = ThreadPoolExecutor()
+
+if os.path.exists(os.path.join(os.path.dirname(__file__), 'config.py')):
+    from .config import disabled, reply, re_reply, fuzzy_reply  # noqa
+else:
+    logger.error('找不到配置文件，自动卸载本插件')
+    saya.uninstall_channel(channel)
+
+if disabled:
+    saya.uninstall_channel(channel)
 
 channel.name('自动回复')
 channel.author('Red_lnn')
@@ -74,7 +82,7 @@ async def full_match(msg: str, app: Ariadne, group: Group):
                 await app.sendGroupMessage(
                         group,
                         MessageChain.create(
-                                [Image(data_bytes=(await async_generate_img(reply[group.id][msg])).getvalue())]
+                                Image(data_bytes=(await async_generate_img(reply[group.id][msg])).getvalue())
                         ),
                 )
                 return
@@ -98,7 +106,7 @@ async def re_match(msg: str, app: Ariadne, group: Group):
                     await app.sendGroupMessage(
                             group,
                             MessageChain.create(
-                                    [Image(data_bytes=(await async_generate_img(reply[group.id][msg])).getvalue())]
+                                    Image(data_bytes=(await async_generate_img(reply[group.id][msg])).getvalue())
                             ),
                     )
                     continue
@@ -122,7 +130,7 @@ async def fuzzy_match(msg: str, app: Ariadne, group: Group):
                     await app.sendGroupMessage(
                             group,
                             MessageChain.create(
-                                    [Image(data_bytes=(await async_generate_img(reply[group.id][msg])).getvalue())]
+                                    Image(data_bytes=(await async_generate_img(reply[group.id][msg])).getvalue())
                             ),
                     )
                     continue

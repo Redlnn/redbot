@@ -13,13 +13,13 @@ from typing import Dict, List
 import PIL
 from PIL import Image, ImageDraw, ImageFont
 
-from config import Text2Img
+from config import config_data
 
 __all__ = ['async_generate_img', 'generate_img', 'hr']
 
 hr = '—————————————————————————'
 
-_font_name: str = Text2Img.font_name
+_font_name: str = config_data['TextWithImg2Img']['FontName']
 _font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
 if not os.path.exists(_font_path):
     raise ValueError(f'文本转图片所用的字体文件不存在，请检查配置文件，尝试访问的路径如下：↓\n{_font_path}')
@@ -27,21 +27,21 @@ if len(_font_name) <= 4 or _font_name[-4:] not in ('.ttf', '.ttc', '.otf', '.otc
     raise ValueError('所配置的字体文件名不正确，请检查配置文件')
 
 _is_ttc_font = True if _font_name.endswith('.ttc') or _font_name.endswith('.otc') else False
-_ttc_font_index = Text2Img.ttc_font_index
-_font_size = Text2Img.font_size
-_font_color = Text2Img.font_color
-_line_space = Text2Img.line_space
-_text_margin = Text2Img.text_margin
-_chars_per_line = Text2Img.chars_per_line
+_ttc_font_index = config_data['TextWithImg2Img']['TTCIndex']
+_font_size = config_data['TextWithImg2Img']['FontSize']
+_font_color = config_data['TextWithImg2Img']['FontColor']
+_line_space = config_data['TextWithImg2Img']['LineSpace']
+_text_margin = config_data['TextWithImg2Img']['TextMargin']
+_chars_per_line = config_data['TextWithImg2Img']['CharsPerLine']
 
-_background_color = Text2Img.background_color
-_border_side_margin = Text2Img.border_side_margin
-_border_top_margin = Text2Img.border_top_margin
-_border_bottom_margin = Text2Img.border_bottom_margin
-_border_interval = Text2Img.border_interval
-_border_nook_wrap_width = Text2Img.border_nook_wrap_width
-_border_outline_width = Text2Img.border_outline_width
-_border_outline_color = Text2Img.border_outline_color
+_background_color = config_data['TextWithImg2Img']['BackgroundColor']
+_border_side_margin = config_data['TextWithImg2Img']['BorderSideMargin']
+_border_top_margin = config_data['TextWithImg2Img']['BorderTopMargin']
+_border_bottom_margin = config_data['TextWithImg2Img']['BorderBottomMargin']
+_border_interval = config_data['TextWithImg2Img']['BorderInterval']
+_border_square_wrap_width = config_data['TextWithImg2Img']['BorderSquareWrapWidth']
+_border_outline_width = config_data['TextWithImg2Img']['BorderOutlineColor']
+_border_outline_color = config_data['TextWithImg2Img']['BorderOutlineWidth']
 
 
 # _font_path = r'C:\Windows\Fonts\OPPOSans-B.ttf'
@@ -58,7 +58,7 @@ _border_outline_color = Text2Img.border_outline_color
 # _border_top_margin = 70,
 # _border_bottom_margin = 250,
 # _border_interval = 5,
-# _border_nook_wrap_width = 5,
+# _border_square_wrap_width = 5,
 # _border_outline_width = 5,  # 内描边
 # _border_outline_color = '#e9e5d9'
 
@@ -265,8 +265,8 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
     draw.rectangle(
         (
             (
-                _border_side_margin - _border_nook_wrap_width - (2 * _border_outline_width) + pil_compensation,
-                _border_top_margin - _border_nook_wrap_width - (2 * _border_outline_width) + pil_compensation,
+                _border_side_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
+                _border_top_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
             ),
             (
                 _border_side_margin + pil_compensation,
@@ -284,12 +284,12 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
         (
             (
                 bg_width - _border_side_margin - pil_compensation,
-                _border_top_margin - _border_nook_wrap_width - (2 * _border_outline_width) + pil_compensation,
+                _border_top_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
             ),
             (
                 bg_width
                 - _border_side_margin
-                + _border_nook_wrap_width
+                + _border_square_wrap_width
                 + (2 * _border_outline_width - pil_compensation),
                 _border_top_margin + pil_compensation,
             ),
@@ -304,14 +304,14 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
     draw.rectangle(
         (
             (
-                _border_side_margin - _border_nook_wrap_width - (2 * _border_outline_width) + pil_compensation,
+                _border_side_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
                 bg_height - _border_bottom_margin - pil_compensation,
             ),
             (
                 _border_side_margin + pil_compensation,
                 bg_height
                 - _border_bottom_margin
-                + _border_nook_wrap_width
+                + _border_square_wrap_width
                 + (2 * _border_outline_width)
                 - pil_compensation,
             ),
@@ -332,11 +332,11 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
             (
                 bg_width
                 - _border_side_margin
-                + _border_nook_wrap_width
+                + _border_square_wrap_width
                 + (2 * _border_outline_width - pil_compensation),
                 bg_height
                 - _border_bottom_margin
-                + _border_nook_wrap_width
+                + _border_square_wrap_width
                 + (2 * _border_outline_width)
                 - pil_compensation,
             ),

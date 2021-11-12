@@ -15,25 +15,25 @@ from graia.scheduler import GraiaScheduler
 from graia.scheduler.saya import GraiaSchedulerBehaviour
 from utils.logger import logger
 
-from config import BotConfig
+from config import config_data
 
 if __name__ == '__main__':
     logger.info('初始化...')
     loop = asyncio.new_event_loop()
-    bcc = Broadcast(loop=loop, debug_flag=BotConfig.debug)
+    bcc = Broadcast(loop=loop, debug_flag=config_data['Basic']['Debug'])
     scheduler = GraiaScheduler(loop, bcc)
     saya = Saya(bcc)
 
     saya.install_behaviours(BroadcastBehaviour(bcc))
     saya.install_behaviours(GraiaSchedulerBehaviour(scheduler))
 
-    if BotConfig.enable_log_chat:
+    if config_data['Basic']['LogChat']:
         app = Ariadne.create(
                 broadcast=bcc,
                 session=MiraiSession(
-                        host=BotConfig.host,  # noqa # 填入 httpapi 服务运行的地址
-                        account=BotConfig.account,  # 你的机器人的 qq 号
-                        verify_key=BotConfig.verify_key  # 填入 verifyKey
+                        host=config_data['Basic']['MiraiApiHttp']['Host'],  # 填入 httpapi 服务运行的地址
+                        account=config_data['Basic']['MiraiApiHttp']['Account'],  # 你的机器人的 qq 号
+                        verify_key=config_data['Basic']['MiraiApiHttp']['VerifyKey']  # 填入 verifyKey
                 )
         )
     else:
@@ -43,9 +43,9 @@ if __name__ == '__main__':
             adapter=CombinedAdapter(
                 bcc,
                 MiraiSession(
-                    host=BotConfig.host,  # noqa # 填入 httpapi 服务运行的地址
-                    account=BotConfig.account,  # 你的机器人的 qq 号
-                    verify_key=BotConfig.verify_key,  # 填入 verifyKey
+                        host=config_data['Basic']['MiraiApiHttp']['Host'],  # 填入 httpapi 服务运行的地址
+                        account=config_data['Basic']['MiraiApiHttp']['Account'],  # 你的机器人的 qq 号
+                        verify_key=config_data['Basic']['MiraiApiHttp']['VerifyKey']  # 填入 verifyKey
                 ),
             ),
         )
@@ -57,15 +57,16 @@ if __name__ == '__main__':
     if not os.path.exists(os.path.join(os.getcwd(), 'data')):
         os.mkdir(os.path.join(os.getcwd(), 'data'))
 
-    logger.info('加载插件中...')
-    with saya.module_context():
-        for module in os.listdir('modules'):
-            if module in ('database.py', '__pycache__') or module[0] in ('!', '#', '.'):
-                continue
-            elif os.path.isdir(os.path.join('modules', module)):
-                saya.require(f'modules.{module}')
-            elif os.path.isfile(os.path.join('modules', module)) and module[-3:] == '.py':
-                saya.require(f'modules.{module[:-3]}')
+    if config_data['Modules']['Enabled']:
+        logger.info('加载插件中...')
+        with saya.module_context():
+            for module in os.listdir('modules'):
+                if module in ('database.py', '__pycache__') or module[0] in ('!', '#', '.'):
+                    continue
+                elif os.path.isdir(os.path.join('modules', module)):
+                    saya.require(f'modules.{module}')
+                elif os.path.isfile(os.path.join('modules', module)) and module[-3:] == '.py':
+                    saya.require(f'modules.{module[:-3]}')
     logger.info('正在启动 Ariadne...')
 
     try:

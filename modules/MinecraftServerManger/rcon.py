@@ -6,13 +6,15 @@ from typing import Optional
 from loguru import logger
 from mctools import RCONClient
 
-from .config import RconConfig
+from config import config_data
+
+config_data = config_data['Modules']['MinecraftServerManager']['Rcon']
 
 __all__ = ["execute_command"]
 
-__HOST = RconConfig.server  # Hostname of the Minecraft server
-__PORT = RconConfig.port  # Port number of the RCON server
-__PASSWORD = RconConfig.passwd  # Password of the RCON server
+__HOST = config_data['Host']  # Hostname of the Minecraft server
+__PORT = config_data['Port']  # Port number of the RCON server
+__PASSWORD = config_data['Password']  # Password of the RCON server
 
 
 def execute_command(command: str) -> Optional[str]:

@@ -11,11 +11,15 @@ from graia.ariadne.model import Group, MemberPerm
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
+from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Permission import Permission
 
 saya = Saya.current()
 channel = Channel.current()
+
+if not config_data['Modules']['ReadAndSend']['Enabled']:
+    saya.uninstall_channel(channel)
 
 channel.name('读取/发送消息的可持久化字符串')
 channel.author('Red_lnn')
@@ -25,10 +29,6 @@ channel.description(
         ' - [!！.]发送消息 <可持久化字符串> —— 用于从可持久化字符串发送消息'
 )
 
-# 生效的群组，若为空，即()，则在所有群组生效
-# 格式为：active_group = (123456, 456789, 789012)
-active_group = ()
-
 
 @channel.use(
         ListenerSchema(
@@ -37,8 +37,13 @@ active_group = ()
         )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if group.id not in active_group and active_group:
-        return
+    if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+        if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+            return
+    if config_data['Modules']['ReadAndSend']['DisabledGroup']:
+        if group.id in config_data['Modules']['ReadAndSend']['DisabledGroup']:
+            return
+
     if regex.match(r'^[!！.]读取消息$', message.asDisplay()):
         try:
             quote_id = message.include(Quote).getFirst(Quote).id

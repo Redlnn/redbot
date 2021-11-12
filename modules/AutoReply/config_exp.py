@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from io import BytesIO
+"""
+请不要直接修改此文件，请将本文件复制一份并重命名为 "config.py" 后再修改 "config.py"
 
+图片回复请支持本地图片
+"""
 
-async def _img_2_bytesio(img_path: str):
-    with open(img_path, 'rb') as f:
-        content = f.read()
-    return BytesIO(content).getvalue()
+from .utils import img_2_bytesio  # noqa
+from config import config_data
 
+disabled = False if config_data['modules']['AutoReply']['Enabled'] else True
 
 # 格式
 # reply = {
@@ -21,8 +23,8 @@ async def _img_2_bytesio(img_path: str):
 reply: dict = {
     123456789: {
         # '自动回复关键词': ['纯文本'],
-        # '带图回复关键词': ['文本1', await _img_2_bytesio(r'C:\1.jpg'), '文本2'],
-        # '图片回复关键词': [await _img_2_bytesio(r'C:\1.jpg')]
+        # '带图回复关键词': ['文本1', await img_2_bytesio(r'C:\1.jpg'), '文本2'],
+        # '图片回复关键词': [await img_2_bytesio(r'C:\1.jpg')]
     }
 }
 

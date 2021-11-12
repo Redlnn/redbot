@@ -17,21 +17,22 @@ from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.message.parser.pattern import RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group
-from graia.saya import Channel
+from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
+from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
 
+saya = Saya.current()
 channel = Channel.current()
+
+if not config_data['Modules']['RollNumber']['Enabled']:
+    saya.uninstall_channel(channel)
 
 channel.name('随机数')
 channel.author('Red_lnn')
 channel.description('获得一个随机数\n用法：[!！.]roll {要roll的事件}')
-
-# 生效的群组，若为空，即()，则在所有群组生效
-# 格式为：active_group = (123456, 456789, 789012)
-active_group = ()
 
 
 class Match(Sparkle):
@@ -47,8 +48,9 @@ class Match(Sparkle):
         )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
-    if group.id not in active_group and active_group:
-        return
+    if config_data['Modules']['RollNumber']['DisabledGroup']:
+        if group.id in config_data['Modules']['RollNumber']['DisabledGroup']:
+            return
     if sparkle.roll_target.matched:
         chain = MessageChain.create([Plain(f'{sparkle.roll_target.result.asDisplay().strip()}的概率为：{randint(0, 100)}')])
     else:
