@@ -40,8 +40,8 @@ _border_top_margin = config_data['TextWithImg2Img']['BorderTopMargin']
 _border_bottom_margin = config_data['TextWithImg2Img']['BorderBottomMargin']
 _border_interval = config_data['TextWithImg2Img']['BorderInterval']
 _border_square_wrap_width = config_data['TextWithImg2Img']['BorderSquareWrapWidth']
-_border_outline_width = config_data['TextWithImg2Img']['BorderOutlineColor']
-_border_outline_color = config_data['TextWithImg2Img']['BorderOutlineWidth']
+_border_outline_width = config_data['TextWithImg2Img']['BorderOutlineWidth']
+_border_outline_color = config_data['TextWithImg2Img']['BorderOutlineColor']
 
 
 # _font_path = r'C:\Windows\Fonts\OPPOSans-B.ttf'
