@@ -50,7 +50,7 @@ channel.description('支持全文匹配、正则匹配、模糊匹配，若回�
 @channel.use(
         ListenerSchema(
                 listening_events=[GroupMessage],
-                decorators=[group_blacklist(), MemberInterval.require(1, send_alert=False)]
+                decorators=[group_blacklist()]
         )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
