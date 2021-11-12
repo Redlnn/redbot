@@ -19,13 +19,13 @@ from io import BytesIO
 
 import regex
 from graia.ariadne.app import Ariadne
+from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
-from loguru import logger
 
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
@@ -37,8 +37,7 @@ channel = Channel.current()
 if os.path.exists(os.path.join(os.path.dirname(__file__), 'config.py')):
     from .config import disabled, reply, re_reply, fuzzy_reply  # noqa
 else:
-    logger.error('找不到配置文件，自动卸载本插件')
-    saya.uninstall_channel(channel)
+    from .config_exp import disabled, reply, re_reply, fuzzy_reply
 
 if disabled:
     saya.uninstall_channel(channel)

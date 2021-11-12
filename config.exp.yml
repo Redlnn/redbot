@@ -8,15 +8,15 @@ Basic: # 基础设置
     Host: http://localhost:8080 # Mirai Api Http 的地址
     VerifyKey: 'xxxxxxxx' # Mirai Api Http 的 verifyKey
 
-  LogChat: true # 是否保存日志文件
+  LogChat: true # 记录接收到的消息
   Debug: false
 
   Permission:
     Master: 123456789 # 机器人主人的QQ号
     Admin: # 机器人管理员
-      -  123456789
+      - 123456789
 
-  Blacklist: # 全局黑名单
+  Blacklist: # 全局黑名单，仅在插件使用的时候生效
     Groups: # 群黑名单
       - 123456789
     Users: # 私聊/群成员/临时会话黑名单
@@ -60,7 +60,7 @@ Modules: # 各插件的配置
     Enabled: true
     # 详细的自动回复设置请去看 modules/AutoReply/config_exp.py
 
-  MinecraftServerManger: # 我的世界服务器管理
+  MinecraftServerManager: # 我的世界服务器管理
     Enabled: true
     ServerGroup: 123457689 # 服务器群群号
     ActiveGroup: # 其他要生效的群
