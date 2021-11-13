@@ -27,7 +27,7 @@ if not config_data['Modules']['TextWithImg2Img']['Enabled']:
 
 channel.name('消息转图片')
 channel.author('Red_lnn')
-channel.description('用法：[!！.]img <文本、图片>}')
+channel.description('用法：[!！.]img <文本、图片>')
 
 
 class Match(Sparkle):
