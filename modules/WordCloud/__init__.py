@@ -17,7 +17,7 @@ import jieba.analyse
 import numpy
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
-from graia.ariadne.exception import UnknownTarget
+from graia.ariadne.exception import UnknownError, UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.pattern import RegexMatch
@@ -48,9 +48,8 @@ Module(
             '[!！.]wordcloud groud —— 获得本群最近7天内的聊天词云\n'
             '[!！.]wordcloud At/本群成员QQ号 —— 获得ta最近7天内的聊天词云\n'
             '[!！.]wordcloud me —— 获得你最近7天内的聊天词云\n'
-        )
+        ),
 ).registe()
-
 
 Generating_list: List[int | str] = []
 bg_list = os.listdir(os.path.join(os.path.dirname(__file__), 'bg'))
@@ -127,32 +126,36 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
     image = await asyncio.to_thread(gen_wordcloud, words)
     Generating_list.remove(target)
     if target_type == 'group':
-        await app.sendGroupMessage(group, MessageChain.create(Plain('本群最近7天内的聊天词云 👇\n'), Image(data_bytes=image)))
-    elif target_type == 'me':
         try:
-            await app.sendGroupMessage(
-                    group, MessageChain.create(At(target), Plain('你最近7天内的聊天词云 👇\n'), Image(data_bytes=image))
-            )
-        except UnknownTarget:
-            await app.sendGroupMessage(
-                    group, MessageChain.create(Plain(f'{target} 最近7天内的聊天词云 👇\n'), Image(data_bytes=image))
-            )
+            await app.sendGroupMessage(group, MessageChain.create(Plain('本群最近7天内的聊天词云 👇\n'), Image(data_bytes=image)))
+        except UnknownError:
+            await app.sendGroupMessage(group, MessageChain.create(Plain('词云发送失败')))
     else:
         try:
             await app.sendGroupMessage(
                     group,
-                    MessageChain.create(At(target), Plain(f'({target}) 最近7天内的聊天词云 👇\n'), Image(data_bytes=image))
+                    MessageChain.create(
+                            At(target),
+                            Plain(f' {"你" if target_type == "me" else ""}最近7天内的聊天词云 👇\n'),
+                            Image(data_bytes=image),
+                    ),
             )
         except UnknownTarget:
             await app.sendGroupMessage(
-                    group, MessageChain.create(Plain(f'{target} 最近7天内的聊天词云 👇\n'), Image(data_bytes=image))
+                    group,
+                    MessageChain.create(
+                            Plain(f'{"你" if target_type == "me" else target} 最近7天内的聊天词云 👇\n'), Image(data_bytes=image)
+                    ),
             )
+        except UnknownError:
+            await app.sendGroupMessage(group, MessageChain.create(Plain('词云发送失败')))
 
 
 def skip(string: str) -> bool:
     blacklist_word = (
         config_data['Modules']['WordCloud']['BlacklistWord']
-        if config_data['Modules']['WordCloud']['BlacklistWord'] else ()
+        if config_data['Modules']['WordCloud']['BlacklistWord']
+        else ()
     )
     for word in blacklist_word:
         if word in string:
@@ -182,9 +185,7 @@ def get_frequencies(msg_list: List[str]) -> dict:
 
 def gen_wordcloud(words: dict) -> bytes:
     mask = numpy.array(
-            Img.open(
-                    os.path.join(os.path.dirname(__file__), 'bg', bg_list[random.randint(0, len(bg_list) - 1)])
-            )
+            Img.open(os.path.join(os.path.dirname(__file__), 'bg', bg_list[random.randint(0, len(bg_list) - 1)]))
     )
     font_path = os.path.join(os.getcwd(), 'fonts', config_data['Modules']['WordCloud']['FontName'])
     wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=800, scale=2)

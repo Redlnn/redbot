@@ -556,7 +556,7 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain):
     if exec_result is None:
         await app.sendGroupMessage(group, MessageChain.create(Plain('服务器返回为空')))
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'服务器返回：↓\n{command}')))
+        await app.sendGroupMessage(group, MessageChain.create(Plain(f'服务器返回：↓\n{exec_result}')))
 
 
 # ---------------------------------------------------------------------------------------------------------------------

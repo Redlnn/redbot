@@ -36,7 +36,7 @@ saya = Saya.current()
 channel = Channel.current()
 
 Module(
-        name='Ping 我的时间服务器',
+        name='Ping 我的世界服务器',
         config_name='MinecraftServerPing',
         author=['Red_lnn'],
         description='获取指定mc服务器的信息',
