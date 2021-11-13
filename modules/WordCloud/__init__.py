@@ -8,12 +8,14 @@
 import asyncio
 import datetime
 import os
+import random
 import time
 from io import BytesIO
 from typing import List
 
 import jieba.analyse
 import numpy
+import regex
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
@@ -37,9 +39,7 @@ from utils.Limit.Rate import GroupInterval
 saya = Saya.current()
 channel = Channel.current()
 
-config = config_data['Modules']['WordCloud']
-
-if not config['Enabled']:
+if not config_data['Modules']['WordCloud']['Enabled']:
     saya.uninstall_channel(channel)
 
 channel.name('聊天历史词云生成')
@@ -53,8 +53,12 @@ channel.description(
 )
 
 Generating_list: List[int | str] = []
-MASK = numpy.array(Img.open(os.path.join(os.path.dirname(__file__), 'bg.jpg')))
-FONT_PATH = os.path.join(os.getcwd(), 'fonts', config['FontName'])
+bg_list = os.listdir(os.path.join(os.path.dirname(__file__), 'bg'))
+font_path = os.path.join(os.getcwd(), 'fonts', config_data['Modules']['WordCloud']['FontName'])
+
+blacklist_word = (
+    config_data['Modules']['WordCloud']['BlacklistWord'] if config_data['Modules']['WordCloud']['BlacklistWord'] else ()
+)
 
 
 class WordCloudMatch(Sparkle):
@@ -70,15 +74,15 @@ class WordCloudMatch(Sparkle):
         )
 )
 async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
-    if config['DisabledGroup']:
-        if group.id in config['DisabledGroup']:
+    if config_data['Modules']['WordCloud']['DisabledGroup']:
+        if group.id in config_data['Modules']['WordCloud']['DisabledGroup']:
             return
     global Generating_list
     target_type = 'member'
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - 518400
     match_result = sparkle.any.result
 
-    if len(Generating_list) > 3:
+    if len(Generating_list) > 2:
         await app.sendGroupMessage(group, MessageChain.create(Plain('词云生成队列已满，请稍后再试')))
         return
 
@@ -148,10 +152,17 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Spa
             )
 
 
+def skip(string: str) -> bool:
+    for word in blacklist_word:
+        if word in string:
+            return True
+    return False
+
+
 def get_frequencies(msg_list: List[str]) -> dict:
     text = ''
     for persistent_string in msg_list:
-        if persistent_string == '[APP消息]':
+        if skip(persistent_string):
             continue
         try:
             chain = MessageChain.fromPersistentString(persistent_string).include(Plain)
@@ -169,9 +180,10 @@ def get_frequencies(msg_list: List[str]) -> dict:
 
 
 def gen_wordcloud(words: dict) -> bytes:
-    wordcloud = WordCloud(font_path=FONT_PATH, background_color="white", mask=MASK, max_words=800, scale=2)
+    mask = numpy.array(Img.open(bg_list[random.randint(0, len(bg_list) - 1)]))
+    wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=800, scale=2)
     wordcloud.generate_from_frequencies(words)
-    image_colors = ImageColorGenerator(MASK, default_color=(255, 255, 255))
+    image_colors = ImageColorGenerator(mask, default_color=(255, 255, 255))
     wordcloud.recolor(color_func=image_colors)
     pyplot.imshow(wordcloud.recolor(color_func=image_colors), interpolation="bilinear")
     pyplot.axis("off")
