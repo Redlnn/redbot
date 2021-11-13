@@ -14,8 +14,6 @@ from typing import Dict, List
 import PIL
 from PIL import Image, ImageDraw, ImageFont
 
-from config import config_data
-
 __all__ = ['async_generate_img', 'generate_img', 'hr']
 
 _font_name: str = 'sarasa-mono-sc-semibold.ttf'

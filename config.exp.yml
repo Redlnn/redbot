@@ -79,6 +79,8 @@ Modules: # 各插件的配置
 
   MinecraftServerPing: # 我的世界服务器 Motd Ping
     Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
     Servers: # 服务器列表，格式【群号: 服务器地址】
       123456789: 127.0.0.1:25565
 

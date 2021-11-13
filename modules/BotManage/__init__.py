@@ -99,11 +99,11 @@ async def menu(app: Ariadne, group: Group):
         disabled_groups = config_data['Modules'][module.config_name]['DisabledGroup']
         num = f' {i}' if i < 10 else str(i)
         if global_disabled:
-            status = f'【全局禁用】'
+            status = '【全局禁用】'
         elif group.id in disabled_groups:
-            status = f'【本群禁用】'
+            status = '【本群禁用】'
         else:
-            status = f'            '
+            status = '【正常启用】'
         msg_send += f'{num}. {status}  {module.name}\n'
     msg_send += (
         f'{hr}\n'

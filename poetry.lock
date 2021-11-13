@@ -440,7 +440,7 @@ saya = []
 type = "git"
 url = "https://github.com/BlueGlassBlock/Scheduler"
 reference = "master"
-resolved_reference = "3598de5fda46618a0fd8642688b9f0143f420ab5"
+resolved_reference = "2ca576cbff74cc75c66fe26d9f9e0707ab3190a6"
 
 [[package]]
 name = "h11"

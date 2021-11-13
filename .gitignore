@@ -2,11 +2,11 @@ data/*
 !data/.gitkeep
 
 logs/
+test/
+test.py
 
 __pycache__/
 .idea/
-
-test/gen_img.py
 
 /config.yml
 /modules/AutoReply/config.py
