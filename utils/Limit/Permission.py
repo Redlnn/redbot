@@ -36,7 +36,11 @@ class Permission:
     BANED: int = 0
     DEFAULT: int = USER
 
-    _levels = {MemberPerm.Member: USER, MemberPerm.Administrator: ADMIN, MemberPerm.Owner: OWMER}
+    _levels = {
+        MemberPerm.Member: USER,
+        MemberPerm.Administrator: ADMIN,
+        MemberPerm.Owner: OWMER,
+    }
 
     @classmethod
     async def get(cls, user: Member, allow_override: bool = True) -> int:
@@ -64,7 +68,7 @@ class Permission:
                 return cls.DEFAULT
 
     @classmethod
-    def group_perm_check(cls, perm: MemberPerm, send_alert: bool = False, alert_text: str = '你没有权限执行此指令',
+    def group_perm_check(cls, perm: MemberPerm | int, send_alert: bool = False, alert_text: str = '你没有权限执行此指令',
                          allow_override: bool = True) -> Depend:
         """
         群消息权限检查
@@ -79,15 +83,21 @@ class Permission:
 
         async def check_wrapper(app: Ariadne, group: Group, member: Member):
             level = await cls.get(member, allow_override)
-            if level < cls._levels[perm]:
-                if send_alert:
-                    await app.sendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
-                raise ExecutionStop()
+            if isinstance(perm, MemberPerm):
+                if level < cls._levels[perm]:
+                    if send_alert:
+                        await app.sendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
+                    raise ExecutionStop()
+            elif isinstance(perm, int):
+                if level < perm:
+                    if send_alert:
+                        await app.sendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
+                    raise ExecutionStop()
 
         return Depend(check_wrapper)
 
     @classmethod
-    def temp_perm_check(cls, perm: MemberPerm, send_alert: bool = False, alert_text: str = '你没有权限执行此指令',
+    def temp_perm_check(cls, perm: MemberPerm | int, send_alert: bool = False, alert_text: str = '你没有权限执行此指令',
                         allow_override: bool = True) -> Depend:
         """
         群消息权限检查
@@ -102,9 +112,15 @@ class Permission:
 
         async def check_wrapper(app: Ariadne, member: Member):
             level = await cls.get(member, allow_override)
-            if level < cls._levels[perm]:
-                if send_alert:
-                    await app.sendTempMessage(member, MessageChain.create(Plain(alert_text)))
-                raise ExecutionStop()
+            if isinstance(perm, MemberPerm):
+                if level < cls._levels[perm]:
+                    if send_alert:
+                        await app.sendTempMessage(member, MessageChain.create(Plain(alert_text)))
+                    raise ExecutionStop()
+            elif isinstance(perm, int):
+                if level < perm:
+                    if send_alert:
+                        await app.sendTempMessage(member, MessageChain.create(Plain(alert_text)))
+                    raise ExecutionStop()
 
         return Depend(check_wrapper)

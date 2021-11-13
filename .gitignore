@@ -6,7 +6,7 @@ logs/
 __pycache__/
 .idea/
 
-test.py
+test/gen_img.py
 
 /config.yml
 /modules/AutoReply/config.py

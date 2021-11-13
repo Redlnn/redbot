@@ -61,7 +61,7 @@ else:
 
 
 class MsgLog(Model):
-    group = CharField(max_length=12, index=True, column_name='group')
+    group = CharField(max_length=12, index=True, column_name='group_id')
     qq = CharField(max_length=12, index=True, column_name='qq')
     timestamp = TimestampField(column_name='timestamp')
     msg_id = IntegerField(unique=True, column_name='msg_id')

@@ -17,18 +17,19 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
+from modules.BotManage import Module
 from utils.Limit.Blacklist import group_blacklist
 from utils.TextWithImg2Img import async_generate_img, hr
 
 saya = Saya.current()
 channel = Channel.current()
 
-if not config_data['Modules']['BotStatus']['Enabled']:
-    saya.uninstall_channel(channel)
-
-channel.name('Bot版本与系统运行情况查询')
-channel.author('Red_lnn')
-channel.description('用法：[!！.](status|version)')
+Module(
+        name='Bot版本与系统运行情况查询',
+        config_name='BotStatus',
+        author=['Red_lnn'],
+        usage='[!！.](status|version)'
+).registe()
 
 repo = git.Repo(os.getcwd())
 
@@ -49,7 +50,10 @@ total_memory = '%.1f' % (psutil.virtual_memory().total / 1073741824)
         )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if config_data['Modules']['BotStatus']['DisabledGroup']:
+    if not config_data['Modules']['BotStatus']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['BotStatus']['DisabledGroup']:
         if group.id in config_data['Modules']['BotStatus']['DisabledGroup']:
             return
     if not regex.match(r'^[!！.](status|version)$', message.asDisplay()):

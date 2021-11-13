@@ -60,7 +60,7 @@ if __name__ == '__main__':
     if config_data['Modules']['Enabled']:
         logger.info('加载插件中...')
         with saya.module_context():
-            for module in os.listdir('modules'):
+            for module in os.listdir(os.path.join('modules')):
                 if module in ('database.py', '__pycache__') or module[0] in ('!', '#', '.'):
                     continue
                 elif os.path.isdir(os.path.join('modules', module)):

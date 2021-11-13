@@ -9,7 +9,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import App, At, Plain, Source
+from graia.ariadne.message.element import App, At, Json, Plain, Source, Xml
 from graia.ariadne.message.parser.pattern import ArgumentMatch, ElementMatch, RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
@@ -17,6 +17,7 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
+from modules.BotManage import Module
 from utils.Database.msg_history import get_group_talk_count, get_member_last_message, get_member_talk_count, log_msg
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Permission import Permission
@@ -24,20 +25,20 @@ from utils.Limit.Permission import Permission
 saya = Saya.current()
 channel = Channel.current()
 
-if not config_data['Modules']['LogMsgHistory']['Enabled']:
-    saya.uninstall_channel(channel)
-
-channel.name('历史聊天数据记录')
-channel.author('Red_lnn')
-channel.description(
-        '用法：\n'
-        '[!！.]msgcount —— 获得目标最近n天内的发言次数\n'
-        '  参数：\n'
-        '    --type   member/group 目标类型，本群成员或群\n'
-        '    --target 【可选】群号/本群成员的QQ号/At群成员\n'
-        '    --day    天数（含今天）\n'
-        '[!！.]getlast <At/QQ号> —— 获取某人的最后一条发言'
-)
+Module(
+        name='历史聊天数据记录',
+        config_name='LogMsgHistory',
+        author=['Red_lnn'],
+        description='记录聊天数据到数据库',
+        usage=(
+            '[!！.]msgcount —— 【管理】获得目标最近n天内的发言次数\n'
+            '  参数：\n'
+            '    --type   member/group 目标类型，本群成员或群\n'
+            '    --target 【可选】群号/本群成员的QQ号/At群成员\n'
+            '    --day    天数（含今天）\n'
+            '[!！.]getlast <At/QQ号> —— 【管理】获取某人的最后一条发言'
+        )
+).registe()
 
 
 @channel.use(
@@ -46,7 +47,10 @@ channel.description(
         )
 )
 async def main(group: Group, member: Member, message: MessageChain):
-    if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+    if not config_data['Modules']['LogMsgHistory']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['LogMsgHistory']['DisabledGroup']:
         if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
             return
     if message.has(App):
@@ -56,6 +60,22 @@ async def main(group: Group, member: Member, message: MessageChain):
                 int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
                 message.getFirst(Source).id,
                 '[APP消息]',
+        )
+    elif message.has(Xml):
+        await log_msg(
+                group.id,
+                member.id,
+                int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
+                message.getFirst(Source).id,
+                '[XML消息]',
+        )
+    elif message.has(Json):
+        await log_msg(
+                group.id,
+                member.id,
+                int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
+                message.getFirst(Source).id,
+                '[JSON消息]',
         )
     else:
         await log_msg(

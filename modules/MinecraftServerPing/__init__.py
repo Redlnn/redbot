@@ -11,7 +11,6 @@ Ping mc服务器
 
 import asyncio
 import socket
-from concurrent.futures import ThreadPoolExecutor
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -31,19 +30,18 @@ from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
 from .ping_client import ping
 from .utils import is_domain, is_ip
+from ..BotManage import Module
 
 saya = Saya.current()
 channel = Channel.current()
 
-channel.name('Ping mc服务器')
-channel.author('Red_lnn')
-channel.description('获取指定mc服务器的信息\n指令：[!！.]ping {mc服务器地址}')
-
-config = config_data['Modules']['MinecraftServerPing']
-servers = config['Servers']
-
-if not config['Enabled']:
-    saya.uninstall_channel(channel)
+Module(
+        name='Ping 我的时间服务器',
+        config_name='MinecraftServerPing',
+        author=['Red_lnn'],
+        description='获取指定mc服务器的信息',
+        usage='[!！.]ping {mc服务器地址}'
+).registe()
 
 
 class Match(Sparkle):
@@ -59,10 +57,18 @@ class Match(Sparkle):
         )
 )
 async def main(app: Ariadne, group: Group, sparkle: Sparkle):
+    if not config_data['Modules']['MinecraftServerPing']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['MinecraftServerPing']['DisabledGroup']:
+        if group.id in config_data['Modules']['MinecraftServerPing']['DisabledGroup']:
+            return
+    servers = config_data['Modules']['MinecraftServerPing']['Servers']
     if sparkle.ping_target.matched:
         server_address = sparkle.ping_target.result.asDisplay().strip()
     else:
         if group.id not in servers.keys():
+            await app.sendGroupMessage(group, MessageChain.create([Plain('该群组没有设置默认服务器地址')]))
             return
         server_address = servers[group.id]
 

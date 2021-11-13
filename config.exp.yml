@@ -1,7 +1,7 @@
 # 请复制一份 config.exp.yml 并将其重命名为 config.yml 作为配置文件！
 
 Basic: # 基础设置
-  BotName: redbot # 机器人在群里的名字
+  BotName: Red_lnn Bot # 机器人在群里的名字
 
   MiraiApiHttp:
     Account: 123456789 # 机器人的QQ号
@@ -33,7 +33,7 @@ Basic: # 基础设置
 TextWithImg2Img:
   # 字体文件的文件名（带后缀名），支持ttf/otf/ttc/otc
   # 字体文件请放在根目录的 fonts 文件夹内
-  FontName: OPPOSans.ttf
+  FontName: OPPOSans-B.ttf
   # 若使用ttc/otc字体文件，则填写要加载的ttc/otc的字形索引号，不懂请填1
   # 具体索引号可安装 afdko 后使用 `otc2otf -r {name}.ttc`查看
   # afdko: https://github.com/adobe-type-tools/afdko
@@ -89,8 +89,15 @@ Modules: # 各插件的配置
     FontName: OPPOSans.ttf # 字体文件的文件名（带后缀名），支持ttf，字体文件请放在根目录的 fonts 文件夹内
     BlacklistWord: # 黑名单关键词，若消息中包含该词则不统计，特殊符号与纯数字请使用引号括起来
       - "[APP消息]"
+      - "[XML消息]"
+      - "[JSON消息]"
 
   BiliVideoInfo:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
+  BotManage:
     Enabled: true
     DisabledGroup: # 要禁用的群
       - 123456789
@@ -101,11 +108,6 @@ Modules: # 各插件的配置
       - 123456789
 
   LogMsgHistory:
-    Enabled: true
-    DisabledGroup: # 要禁用的群
-      - 123456789
-
-  Menu:
     Enabled: true
     DisabledGroup: # 要禁用的群
       - 123456789

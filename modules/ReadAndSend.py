@@ -12,22 +12,24 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
+from modules.BotManage import Module
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Permission import Permission
 
 saya = Saya.current()
 channel = Channel.current()
 
-if not config_data['Modules']['ReadAndSend']['Enabled']:
-    saya.uninstall_channel(channel)
-
-channel.name('读取/发送消息的可持久化字符串')
-channel.author('Red_lnn')
-channel.description(
-        '用法：\n'
-        ' - 回复需要读取的消息并且回复内容只含有“[!！.]读取消息”获得消息的可持久化字符串\n'
-        ' - [!！.]发送消息 <可持久化字符串> —— 用于从可持久化字符串发送消息'
-)
+Module(
+        name='读取/发送消息的可持久化字符串',
+        config_name='ReadAndSend',
+        author=['Red_lnn'],
+        description='获得一个随机数',
+        usage=(
+            '仅限群管理员使用\n'
+            ' - 回复需要读取的消息并且回复内容只含有“[!！.]读取消息”获得消息的可持久化字符串\n'
+            ' - [!！.]发送消息 <可持久化字符串> —— 用于从可持久化字符串发送消息'
+        )
+).registe()
 
 
 @channel.use(
@@ -37,12 +39,16 @@ channel.description(
         )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
-        if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
-            return
-    if config_data['Modules']['ReadAndSend']['DisabledGroup']:
-        if group.id in config_data['Modules']['ReadAndSend']['DisabledGroup']:
-            return
+    if not config_data['Modules']['ReadAndSend']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    else:
+        if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+            if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+                return
+        if config_data['Modules']['ReadAndSend']['DisabledGroup']:
+            if group.id in config_data['Modules']['ReadAndSend']['DisabledGroup']:
+                return
 
     if regex.match(r'^[!！.]读取消息$', message.asDisplay()):
         try:

@@ -10,13 +10,13 @@ redbot  根目录
 ├── logs/  日志目录
 ├── modules  插件目录
 │   ├── AutoReply/  自动回复
+│   ├── BotManage/  Bot菜单及模块管理
 │   ├── MinecraftServerManager/  我的世界服务器管理
 │   ├── MinecraftServerPing/  我的世界服务器 Motd Ping
 │   ├── WordCloud/ 聊天历史词云生成
 │   ├── BiliVideoInfo.py  BiliBili 视频解析
 │   ├── BotStatus.py  Bot版本与系统运行情况查询
 │   ├── LogMsgHistory.py  历史聊天数据记录
-│   ├── Menu.py  菜单
 │   ├── ReadAndSend.py  读取/发送消息的可持久化字符串
 │   ├── RenpinChecker.py  每日抽签（人品检测）
 │   ├── RollNumber.py  随机数抽取

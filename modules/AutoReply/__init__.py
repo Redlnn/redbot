@@ -12,14 +12,13 @@
 # TODO: 将自动回复关键词和内容写入数据库，并支持群管理在群内修改。每次启动时从数据库读出作为缓存，新增时同时写入数据库和缓存
 # 数据库结构：
 # AutoReply表
-# type | group | key | value
+# type | group_id | keyword | value
 
 import os.path
 from io import BytesIO
 
 import regex
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
@@ -27,8 +26,8 @@ from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
+# from modules.BotManage import Module
 from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Rate import MemberInterval
 from utils.TextWithImg2Img import async_generate_img
 
 saya = Saya.current()
@@ -39,12 +38,12 @@ if os.path.exists(os.path.join(os.path.dirname(__file__), 'config.py')):
 else:
     from .config_exp import disabled, reply, re_reply, fuzzy_reply
 
-if disabled:
-    saya.uninstall_channel(channel)
-
-channel.name('自动回复')
-channel.author('Red_lnn')
-channel.description('支持全文匹配、正则匹配、模糊匹配，若回复内容中包含的文字字符数大于100字，则会将内容转为图片发送')
+# Module(
+#         name='自动回复',
+#         config_name='AutoReply',
+#         author=['Red_lnn'],
+#         description='支持全文匹配、正则匹配、模糊匹配，若回复内容中包含的文字字符数大于100字，则会将内容转为图片发送',
+# ).registe()
 
 
 @channel.use(
@@ -54,6 +53,9 @@ channel.description('支持全文匹配、正则匹配、模糊匹配，若回�
         )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
+    if disabled:
+        saya.uninstall_channel(channel)
+        return
     msg: str = message.asDisplay().strip()
     if not msg:
         return

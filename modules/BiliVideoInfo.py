@@ -34,6 +34,7 @@ from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
 from config import config_data
+from modules.BotManage import Module
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import ManualInterval
 from utils.TextWithImg2Img import async_generate_img, hr
@@ -41,22 +42,23 @@ from utils.TextWithImg2Img import async_generate_img, hr
 saya = Saya.current()
 channel = Channel.current()
 
-if not config_data['Modules']['BiliVideoInfo']['Enabled']:
-    saya.uninstall_channel(channel)
-
-channel.name('B站视频信息获取')
-channel.author('Red_lnn')
-channel.description(
-        '识别群内的B站链接、分享、av号、BV号并获取其对应的视频的信息，以下几种消息均可触发：\n'
-        ' - 新版B站app分享的两种小程序\n'
-        ' - 旧版B站app分享的xml消息\n'
-        ' - B站概念版分享的json消息\n'
-        ' - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/av2\n'
-        ' - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/BV1xx411c7mD\n'
-        ' - 文字消息里含有B站视频地址，如 https://b23.tv/3V31Ap\n'
-        ' - 文字消息里含有BV号，如 BV1xx411c7mD\n'
-        ' - 文字消息里含有av号，如 av2'
-)
+Module(
+        name='B站视频信息获取',
+        config_name='BiliVideoInfo',
+        author=['Red_lnn'],
+        description='识别群内的B站链接、分享、av号、BV号并获取其对应的视频的信息',
+        usage=(
+            '以下几种消息均可触发：\n'
+            ' - 新版B站app分享的两种小程序\n'
+            ' - 旧版B站app分享的xml消息\n'
+            ' - B站概念版分享的json消息\n'
+            ' - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/av2\n'
+            ' - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/BV1xx411c7mD\n'
+            ' - 文字消息里含有B站视频地址，如 https://b23.tv/3V31Ap\n'
+            ' - 文字消息里含有BV号，如 BV1xx411c7mD\n'
+            ' - 文字消息里含有av号，如 av2'
+        )
+).registe()
 
 avid_re = '(av|AV)(\\d{1,12})'
 bvid_re = '[Bb][Vv]1([0-9a-zA-Z]{2})4[1y]1[0-9a-zA-Z]7([0-9a-zA-Z]{2})'
@@ -84,7 +86,10 @@ class VideoInfo:
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[group_blacklist()]))
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
-    if config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
+    if not config_data['Modules']['BiliVideoInfo']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
         if group.id in config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
             return
     p = regex.compile(f'({avid_re})|({bvid_re})')
