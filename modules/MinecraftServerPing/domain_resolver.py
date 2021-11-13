@@ -3,7 +3,7 @@
 
 import dns.resolver
 from dns.rdatatype import RdataType
-from dns.resolver import NoAnswer, NXDOMAIN
+from dns.resolver import NXDOMAIN, NoAnswer
 
 __all__ = ["domain_resolver", "domain_resolver_srv"]
 

@@ -5,16 +5,19 @@
 ![Works on my machine](https://img.shields.io/badge/works-on%20my%20machine-green)
 [![Licence](https://img.shields.io/github/license/Redlnn/redbot)](https://github.com/Redlnn/redbot/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 一个使用 [Graia Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的~~连 README 也缝合的~~究极缝合 QQ 机器人
 
-</div>
+**Bot 正处于快速迭代期间，配置文件及部分较深度耦合的模块可能会大改**
 
 ⇒  **[文件目录结构](./FILES.md)**  ⇐
 
+</div>
+
 ## 功能列表
 
-- 菜单以及功能介绍
+- Bot菜单、模块管理及查询
 - Bot 版本与系统运行情况查询
 - 历史聊天数据记录
 - 聊天历史词云生成
@@ -27,16 +30,13 @@
 - 读取被回复消息的<可持久化字符串>及使用<可持久化字符串>发送消息
 - 每日抽签（人品检测）：~~狗屁不通的签文生成~~
 - 随机数抽取
-- 消息内容转图片（支持纯文本和静态图片）
-
-> Tips: 要禁用一个功能只需要在其对应的文件（夹）的名字最前面加上 `! # .` 中的任意一个符号即可
+- 消息内容转图片（支持纯文本和静态图像）
 
 ### TODO（咕咕咕？
 
-- [ ] 指令控制 Bot 卸载/重载/加载新模块
 - [ ] 概率复读
 - [ ] 留言提醒
-- [ ] 多边形图片生成~~（依赖库装不上咕了）~~ <!-- https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py -->
+- [ ] 多边形图片生成（~~依赖库装不上咕了~~） <!-- https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py -->
 - [ ] 二维码生成
 - [ ] BiliBili 动态/直播 订阅推送
 - [ ] Pixiv 搜图

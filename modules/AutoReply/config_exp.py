@@ -7,8 +7,9 @@
 图片回复请支持本地图片
 """
 
-from .utils import img_2_bytesio  # noqa
 from config import config_data
+
+from .utils import img_2_bytesio  # noqa
 
 disabled = False if config_data['Modules']['AutoReply']['Enabled'] else True
 

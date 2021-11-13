@@ -20,6 +20,7 @@ from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
 from config import config_data
+
 from .Permission import Permission
 
 __all__ = ['GroupInterval', 'MemberInterval', 'FriendInterval', 'TempInterval', 'ManualInterval']
@@ -39,12 +40,12 @@ class GroupInterval:
 
     @classmethod
     def require(
-            cls,
-            suspend_time: float,
-            max_exec: int = 1,
-            send_alert: bool = True,
-            alert_time_interval: int = 5,
-            override_level: int = Permission.ADMIN,
+        cls,
+        suspend_time: float,
+        max_exec: int = 1,
+        send_alert: bool = True,
+        alert_time_interval: int = 5,
+        override_level: int = Permission.ADMIN,
     ) -> Depend:
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
@@ -76,15 +77,8 @@ class GroupInterval:
                 if send_alert:
                     if group.id not in cls.sent_alert:
                         await app.sendGroupMessage(
-                                group,
-                                MessageChain.create(
-                                        [
-                                            Plain(
-                                                    '功能冷却中...'
-                                                    f'还有 {last[1] + suspend_time - current:.2f} 秒结束'
-                                            )
-                                        ]
-                                ),
+                            group,
+                            MessageChain.create([Plain('功能冷却中...' f'还有 {last[1] + suspend_time - current:.2f} 秒结束')]),
                         )
                         cls.last_alert[group.id] = current
                         cls.sent_alert.add(group.id)
@@ -107,12 +101,12 @@ class MemberInterval:
 
     @classmethod
     def require(
-            cls,
-            suspend_time: float,
-            max_exec: int = 1,
-            send_alert: bool = True,
-            alert_time_interval: int = 5,
-            override_level: int = Permission.ADMIN,
+        cls,
+        suspend_time: float,
+        max_exec: int = 1,
+        send_alert: bool = True,
+        alert_time_interval: int = 5,
+        override_level: int = Permission.ADMIN,
     ) -> Depend:
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
@@ -145,16 +139,13 @@ class MemberInterval:
                 if send_alert:
                     if member.id not in cls.sent_alert:
                         await app.sendGroupMessage(
-                                group,
-                                MessageChain.create(
-                                        [
-                                            At(member.id),
-                                            Plain(
-                                                    '你在本群暂时不可调用bot，正在冷却中...'
-                                                    f'还有{last[1] + suspend_time - current:.2f}秒结束'
-                                            ),
-                                        ]
-                                ),
+                            group,
+                            MessageChain.create(
+                                [
+                                    At(member.id),
+                                    Plain('你在本群暂时不可调用bot，正在冷却中...' f'还有{last[1] + suspend_time - current:.2f}秒结束'),
+                                ]
+                            ),
                         )
                         cls.last_alert[name] = current
                         cls.sent_alert.add(name)
@@ -177,7 +168,7 @@ class FriendInterval:
 
     @classmethod
     def require(
-            cls, suspend_time: float, max_exec: int = 1, send_alert: bool = True, alert_time_interval: int = 5
+        cls, suspend_time: float, max_exec: int = 1, send_alert: bool = True, alert_time_interval: int = 5
     ) -> Depend:
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
@@ -210,16 +201,16 @@ class FriendInterval:
                 if send_alert:
                     if friend.id not in cls.sent_alert:
                         await app.sendFriendMessage(
-                                friend,
-                                MessageChain.create(
-                                        [
-                                            Plain(
-                                                    '你暂时不可调用bot，正在冷却中...'
-                                                    f'还有{last[1] + suspend_time - current:.2f}秒结束\n'
-                                                    f'冷却结束后可再调用bot {max_exec} 次'
-                                            )
-                                        ]
-                                ),
+                            friend,
+                            MessageChain.create(
+                                [
+                                    Plain(
+                                        '你暂时不可调用bot，正在冷却中...'
+                                        f'还有{last[1] + suspend_time - current:.2f}秒结束\n'
+                                        f'冷却结束后可再调用bot {max_exec} 次'
+                                    )
+                                ]
+                            ),
                         )
                         cls.last_alert[friend.id] = current
                         cls.sent_alert.add(friend.id)
@@ -242,12 +233,12 @@ class TempInterval:
 
     @classmethod
     def require(
-            cls,
-            suspend_time: float,
-            max_exec: int = 1,
-            send_alert: bool = True,
-            alert_time_interval: int = 5,
-            override_level: int = Permission.ADMIN,
+        cls,
+        suspend_time: float,
+        max_exec: int = 1,
+        send_alert: bool = True,
+        alert_time_interval: int = 5,
+        override_level: int = Permission.ADMIN,
     ) -> Depend:
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
@@ -280,15 +271,15 @@ class TempInterval:
                 if send_alert:
                     if name not in cls.sent_alert:
                         await app.sendGroupMessage(
-                                group,
-                                MessageChain.create(
-                                        [
-                                            Plain(
-                                                    f"你暂时不可调用bot，正在冷却中...还有{last[1] + suspend_time - current:.2f}秒结束\n"
-                                                    f"冷却结束后可再调用bot {max_exec} 次"
-                                            )
-                                        ]
-                                ),
+                            group,
+                            MessageChain.create(
+                                [
+                                    Plain(
+                                        f"你暂时不可调用bot，正在冷却中...还有{last[1] + suspend_time - current:.2f}秒结束\n"
+                                        f"冷却结束后可再调用bot {max_exec} 次"
+                                    )
+                                ]
+                            ),
                         )
                         cls.last_alert[name] = current
                         cls.sent_alert.add(name)

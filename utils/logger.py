@@ -43,15 +43,15 @@ else:
     )
     LOG_LEVEL = 'INFO'
 logger.add(
-        os.path.join(os.getcwd(), 'logs', 'latest.log'),
-        encoding='utf-8',
-        format=LOG_FORMAT,
-        rotation='00:00',
-        compression='zip',
-        backtrace=True,
-        diagnose=True,
-        colorize=False,
-        level=LOG_LEVEL,
+    os.path.join(os.getcwd(), 'logs', 'latest.log'),
+    encoding='utf-8',
+    format=LOG_FORMAT,
+    rotation='00:00',
+    compression='zip',
+    backtrace=True,
+    diagnose=True,
+    colorize=False,
+    level=LOG_LEVEL,
 )
 logger.add(sys.stderr, format=LOG_FORMAT, backtrace=True, diagnose=True, colorize=True, level=LOG_LEVEL)
 
