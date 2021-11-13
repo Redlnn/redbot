@@ -53,7 +53,7 @@ async def main(group: Group, member: Member, message: MessageChain):
         await log_msg(
                 group.id,
                 member.id,
-                int(time.mktime(message.getFirst(Source).time.timetuple())),
+                int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
                 message.getFirst(Source).id,
                 '[APP消息]',
         )
@@ -61,7 +61,7 @@ async def main(group: Group, member: Member, message: MessageChain):
         await log_msg(
                 group.id,
                 member.id,
-                int(time.mktime(message.getFirst(Source).time.timetuple())),
+                int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
                 message.getFirst(Source).id,
                 message.asPersistentString(),
         )
