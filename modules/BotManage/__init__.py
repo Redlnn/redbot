@@ -89,6 +89,12 @@ Module(
         )
 )
 async def menu(app: Ariadne, group: Group):
+    if not config_data['Modules']['BotManage']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['BotManage']['DisabledGroup']:
+        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+            return
     msg_send = (
         f'-= {config_data["Basic"]["BotName"]} 菜单 for {group.id} =-\n' f'{group.name}\n' f'{hr}\n' 'ID    模块状态    模块名\n'
     )
@@ -108,7 +114,7 @@ async def menu(app: Ariadne, group: Group):
     msg_send += (
         f'{hr}\n'
         '群管理员要想配置模块开关请发送【.启用/禁用模块 <id>】\n'
-        '要想查询某模块的用法请发送【.用法 <id>】\n'
+        '要想查询某模块的用法请发送【.用法 <id>】（暂不可用）\n'
         '若无法触发，请检查前缀符号是否正确如 ! 与 ！\n'
         '或是命令中有无多余空格，所有模块均不需要@bot\n'
         '全局禁用的模块不能重新开启'
@@ -125,6 +131,12 @@ async def menu(app: Ariadne, group: Group):
         )
 )
 async def turn_on(app: Ariadne, group: Group, sparkle: Sparkle):
+    if not config_data['Modules']['BotManage']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['BotManage']['DisabledGroup']:
+        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+            return
     targe_id = int(sparkle._check_1.result.asDisplay())
     target_module = Modules[targe_id - 1]
     global_disabled = not config_data['Modules'][target_module.config_name]['Enabled']
@@ -148,6 +160,12 @@ async def turn_on(app: Ariadne, group: Group, sparkle: Sparkle):
         )
 )
 async def turn_off(app: Ariadne, group: Group, sparkle: Sparkle):
+    if not config_data['Modules']['BotManage']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['BotManage']['DisabledGroup']:
+        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+            return
     targe_id = int(sparkle._check_1.result.asDisplay())
     target_module = Modules[targe_id - 1]
     disabled_groups = config_data['Modules'][target_module.config_name]['DisabledGroup']
@@ -169,7 +187,13 @@ async def turn_off(app: Ariadne, group: Group, sparkle: Sparkle):
                 decorators=[GroupInterval.require(5), Permission.group_perm_check(Permission.BOT_ADMIN)],
         )
 )
-async def turn_off(app: Ariadne, group: Group):
+async def reload_config_and_modules(app: Ariadne, group: Group):
+    if not config_data['Modules']['BotManage']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['BotManage']['DisabledGroup']:
+        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+            return
     async with lock:
         await app.sendGroupMessage(group, MessageChain.create(Plain('重新加载配置文件中...（若无下一步提示即加载完成）')))
         if reload_config():
