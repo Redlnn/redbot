@@ -369,7 +369,7 @@ reference = "aliyun"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.4.0-a9"
+version = "0.4.0-a10"
 description = "Anelegant mirai-api-http v2 Python SDK."
 category = "main"
 optional = false
@@ -388,7 +388,7 @@ yarl = "^1.6.3"
 type = "git"
 url = "https://github.com/GraiaProject/Ariadne"
 reference = "master"
-resolved_reference = "9db97fb821f15657cb40091351ec10e6182adecd"
+resolved_reference = "e9b0c41250c09299486c00dcc1e7ba9d4ff3356b"
 
 [[package]]
 name = "graia-broadcast"
@@ -786,7 +786,7 @@ reference = "aliyun"
 
 [[package]]
 name = "pyparsing"
-version = "3.0.5"
+version = "3.0.6"
 description = "Python parsing module"
 category = "main"
 optional = false
@@ -1601,8 +1601,8 @@ pymysql = [
     {file = "PyMySQL-1.0.2.tar.gz", hash = "sha256:816927a350f38d56072aeca5dfb10221fe1dc653745853d30a216637f5d7ad36"},
 ]
 pyparsing = [
-    {file = "pyparsing-3.0.5-py3-none-any.whl", hash = "sha256:4881e3d2979f27b41a3a2421b10be9cbfa7ce2baa6c7117952222f8bbea6650c"},
-    {file = "pyparsing-3.0.5.tar.gz", hash = "sha256:9329d1c1b51f0f76371c4ded42c5ec4cc0be18456b22193e0570c2da98ed288b"},
+    {file = "pyparsing-3.0.6-py3-none-any.whl", hash = "sha256:04ff808a5b90911829c55c4e26f75fa5ca8a2f5f36aa3a51f68e27033341d3e4"},
+    {file = "pyparsing-3.0.6.tar.gz", hash = "sha256:d9bdec0013ef1eb5a84ab39a3b3868911598afa494f5faa038647101504e2b81"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
