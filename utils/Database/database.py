@@ -22,12 +22,12 @@ if config_data['Basic']['Database']['MySQL']:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                        config_data['Basic']['Database']['Database'],
-                        max_connections=10,
-                        host=config_data['Basic']['Database']['Host'],
-                        port=config_data['Basic']['Database']['Port'],
-                        user=config_data['Basic']['Database']['User'],
-                        password=config_data['Basic']['Database']['Passwd'],
+                    config_data['Basic']['Database']['Database'],
+                    max_connections=10,
+                    host=config_data['Basic']['Database']['Host'],
+                    port=config_data['Basic']['Database']['Port'],
+                    user=config_data['Basic']['Database']['User'],
+                    password=config_data['Basic']['Database']['Passwd'],
                 )
             return cls._instance
 
@@ -45,8 +45,8 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                        os.path.join(os.getcwd(), 'data', f'{config_data["Basic"]["Database"]["Database"]}.db'),
-                        max_connections=10,
+                    os.path.join(os.getcwd(), 'data', f'{config_data["Basic"]["Database"]["Database"]}.db'),
+                    max_connections=10,
                 )
             return cls._instance
 

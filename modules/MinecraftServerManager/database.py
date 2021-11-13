@@ -24,12 +24,12 @@ if config_data['Database']['MySQL']:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                        config_data['Database']['Database'],
-                        max_connections=5,
-                        host=config_data['Database']['Host'],
-                        port=config_data['Database']['Port'],
-                        user=config_data['Database']['User'],
-                        password=config_data['Database']['Passwd'],
+                    config_data['Database']['Database'],
+                    max_connections=5,
+                    host=config_data['Database']['Host'],
+                    port=config_data['Database']['Port'],
+                    user=config_data['Database']['User'],
+                    password=config_data['Database']['Passwd'],
                 )
             return cls._instance
 
@@ -47,8 +47,8 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                        os.path.join(os.getcwd(), 'data', f'MinecraftServerManager_{config_data["ServerGroup"]}.db'),
-                        max_connections=5,
+                    os.path.join(os.getcwd(), 'data', f'MinecraftServerManager_{config_data["ServerGroup"]}.db'),
+                    max_connections=5,
                 )
             return cls._instance
 

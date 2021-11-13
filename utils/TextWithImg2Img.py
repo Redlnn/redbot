@@ -4,6 +4,7 @@
 """
 仿锤子便签的文字转图片
 """
+
 import asyncio
 import os
 import time
@@ -15,9 +16,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from config import config_data
 
-__all__ = ['async_generate_img', 'generate_img', 'hr']
-
-hr = '—————————————————————————'
+__all__ = ['async_generate_img', 'generate_img', 'hr', 'reload_config']
 
 _font_name: str = config_data['TextWithImg2Img']['FontName']
 _font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
@@ -34,6 +33,8 @@ _line_space = config_data['TextWithImg2Img']['LineSpace']
 _text_margin = config_data['TextWithImg2Img']['TextMargin']
 _chars_per_line = config_data['TextWithImg2Img']['CharsPerLine']
 
+hr = _chars_per_line * '—'
+
 _background_color = config_data['TextWithImg2Img']['BackgroundColor']
 _border_side_margin = config_data['TextWithImg2Img']['BorderSideMargin']
 _border_top_margin = config_data['TextWithImg2Img']['BorderTopMargin']
@@ -42,7 +43,6 @@ _border_interval = config_data['TextWithImg2Img']['BorderInterval']
 _border_square_wrap_width = config_data['TextWithImg2Img']['BorderSquareWrapWidth']
 _border_outline_width = config_data['TextWithImg2Img']['BorderOutlineWidth']
 _border_outline_color = config_data['TextWithImg2Img']['BorderOutlineColor']
-
 
 # _font_path = r'C:\Windows\Fonts\OPPOSans-B.ttf'
 # _is_ttc_font = False
@@ -53,14 +53,59 @@ _border_outline_color = config_data['TextWithImg2Img']['BorderOutlineColor']
 # _text_margin = 80
 # _chars_per_line = 25
 
-# _background_color = '#fffcf6',
-# _border_side_margin = 50,
-# _border_top_margin = 70,
-# _border_bottom_margin = 250,
-# _border_interval = 5,
-# _border_square_wrap_width = 5,
-# _border_outline_width = 5,  # 内描边
+# hr = 25 * '—'
+
+# _background_color = '#fffcf6'
+# _border_side_margin = 50
+# _border_top_margin = 70
+# _border_bottom_margin = 250
+# _border_interval = 5
+# _border_square_wrap_width = 5
+# _border_outline_width = 5  # 内描边
 # _border_outline_color = '#e9e5d9'
+
+if _is_ttc_font:
+    font = ImageFont.truetype(_font_path, size=_font_size, index=_ttc_font_index)  # 确定正文用的ttf字体
+    extra_font = ImageFont.truetype(
+        _font_path, size=_font_size - int(0.3 * _font_size), index=_ttc_font_index
+    )  # 确定而额外文本用的ttf字体
+else:
+    # 确定正文用的ttf字体
+    font = ImageFont.truetype(_font_path, size=_font_size)
+    # 确定而额外文本用的ttf字体
+    extra_font = ImageFont.truetype(_font_path, size=_font_size - int(0.3 * _font_size))
+
+
+def reload_config():
+    global _font_name, _font_path, _is_ttc_font, _ttc_font_index, _font_size, _font_color, _line_space, _text_margin
+    global _chars_per_line, _background_color, _border_side_margin, _border_top_margin, _border_bottom_margin
+    global _border_interval, _border_square_wrap_width, _border_outline_width, _border_outline_color, hr
+
+    _font_name = config_data['TextWithImg2Img']['FontName']
+    _font_path = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
+    if not os.path.exists(_font_path):
+        raise ValueError(f'文本转图片所用的字体文件不存在，请检查配置文件，尝试访问的路径如下：↓\n{_font_path}')
+    if len(_font_name) <= 4 or _font_name[-4:] not in ('.ttf', '.ttc', '.otf', '.otc'):
+        raise ValueError('所配置的字体文件名不正确，请检查配置文件')
+
+    _is_ttc_font = True if _font_name.endswith('.ttc') or _font_name.endswith('.otc') else False
+    _ttc_font_index = config_data['TextWithImg2Img']['TTCIndex']
+    _font_size = config_data['TextWithImg2Img']['FontSize']
+    _font_color = config_data['TextWithImg2Img']['FontColor']
+    _line_space = config_data['TextWithImg2Img']['LineSpace']
+    _text_margin = config_data['TextWithImg2Img']['TextMargin']
+    _chars_per_line = config_data['TextWithImg2Img']['CharsPerLine']
+
+    # hr 无法在改变其原内存地址中的值，无法重载
+
+    _background_color = config_data['TextWithImg2Img']['BackgroundColor']
+    _border_side_margin = config_data['TextWithImg2Img']['BorderSideMargin']
+    _border_top_margin = config_data['TextWithImg2Img']['BorderTopMargin']
+    _border_bottom_margin = config_data['TextWithImg2Img']['BorderBottomMargin']
+    _border_interval = config_data['TextWithImg2Img']['BorderInterval']
+    _border_square_wrap_width = config_data['TextWithImg2Img']['BorderSquareWrapWidth']
+    _border_outline_width = config_data['TextWithImg2Img']['BorderOutlineWidth']
+    _border_outline_color = config_data['TextWithImg2Img']['BorderOutlineColor']
 
 
 def _get_time(mode: int = 1) -> str:
@@ -80,30 +125,24 @@ def _cut_line_to_list(
     text: str,
     chars_per_line: int,
     line_width: int,
-    font: ImageFont.FreeTypeFont,
     font_size: int,
 ):
     start_index = 0
     index_offset = 0
     text_list = []
-    start_symbol = (
-        '[', '{', '<', '(', '【', '《', '（', '〈', '〖', '［', '〔', '“', '‘', '『', '「', '〝',
-    )
-    end_symbol = (
-        ',', '.', '!', '?', ';', ':', ']', '}', '>', ')', '%', '~', '…', '，', '。', '！', '？', '；', '：', '】', '》',
-        '）', '〉', '〗', '］', '〕', '”', '’', '～', '』', '」', '〞',
-    )
+    start_symbol = '[{<(【《（〈〖［〔“‘『「〝'
+    end_symbol = ',.!?;:]}>)%~…，。！？；：】》）〉〗］〕”’～』」〞'
     while True:
-        tmp_text = text[start_index: start_index + chars_per_line + index_offset]
+        tmp_text = text[start_index : start_index + chars_per_line + index_offset]
         width = font.getlength(tmp_text)
         if abs(width - line_width) < font_size:
             if start_index + chars_per_line + index_offset < len(text):
                 if text[start_index + chars_per_line + index_offset] in end_symbol:
                     index_offset += 1
-                    text_list.append(text[start_index: start_index + chars_per_line + index_offset])
+                    text_list.append(text[start_index : start_index + chars_per_line + index_offset])
                 elif text[start_index + chars_per_line + index_offset] in start_symbol:
                     index_offset -= 1
-                    text_list.append(text[start_index: start_index + chars_per_line + index_offset])
+                    text_list.append(text[start_index : start_index + chars_per_line + index_offset])
                 elif text[start_index + chars_per_line + index_offset] == ' ':
                     text_list.append(tmp_text)
                     index_offset += 1
@@ -134,7 +173,6 @@ def _cut_text(
     text: str,
     char_per_line: int,
     line_width: int,
-    font: ImageFont.FreeTypeFont,
     font_size: int,
 ):
     text_list = text.splitlines(False)
@@ -144,7 +182,7 @@ def _cut_text(
         if _ == '':
             n_text_list.append('')
         else:
-            n_text_list.extend(_cut_line_to_list(_, char_per_line, line_width, font, font_size))
+            n_text_list.extend(_cut_line_to_list(_, char_per_line, line_width, font_size))
     for _ in n_text_list:
         if _ == '':
             n_text += '\n'
@@ -172,16 +210,6 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
     if not isinstance(text_and_img, list):
         raise ValueError('ArgumentError: 参数类型错误')
 
-    if _is_ttc_font:
-        font = ImageFont.truetype(_font_path, size=_font_size, index=_ttc_font_index)  # 确定正文用的ttf字体
-        extra_font = ImageFont.truetype(
-            _font_path, size=_font_size - int(0.3 * _font_size), index=_ttc_font_index
-        )  # 确定而额外文本用的ttf字体
-    else:
-        # 确定正文用的ttf字体
-        font = ImageFont.truetype(_font_path, size=_font_size)
-        # 确定而额外文本用的ttf字体
-        extra_font = ImageFont.truetype(_font_path, size=_font_size - int(0.3 * _font_size))
     extra_text1 = '由 Red_lnn 的 Bot 生成'  # 额外文本1
     extra_text2 = _get_time()  # 额外文本2
 
@@ -196,7 +224,7 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
 
     for i in text_and_img:
         if isinstance(i, str):
-            text = _cut_text(i, _chars_per_line, line_width, font, _font_size)
+            text = _cut_text(i, _chars_per_line, line_width, _font_size)
             text_height = font.getsize_multiline(text, spacing=_line_space)[1]
             contents.append({'content': text, 'height': text_height})
             content_height += text_height
@@ -394,10 +422,6 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
     # canvas.show()  # 展示生成结果
 
     byte_io = BytesIO()
-
-    # # 保存为jpg图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#jpeg
-    # img_name = 'temp_{}.jpg'.format(_get_time(2))  # 自定义临时文件的保存名称
-    # img_path = os.path.join(img_name)  # 自定义临时文件保存路径
     canvas.save(
         byte_io,
         format='JPEG',
@@ -408,7 +432,12 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
         qtables='web_high',
     )
 
-    # # 保存为png图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#png
+    # 保存为jpg图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#jpeg
+    # img_name = 'temp_{}.jpg'.format(_get_time(2))  # 自定义临时文件的保存名称
+    # img_path = os.path.join(img_name)  # 自定义临时文件保存路径
+    # canvas.save(img_path, format='JPEG', quality=90, optimize=True, progressive=True, subsampling=2, qtables='web_high')
+
+    # 保存为png图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#png
     # img_name = 'temp_{}.png'.format(__get_time(2))  # 自定义临时文件的保存名称
     # img_path = os.path.join(temp_dir_path, img_name)  # 自定义临时文件保存路径
     # canvas.save(img_path, format='PNG', optimize=True)

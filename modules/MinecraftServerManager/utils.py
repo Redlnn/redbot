@@ -83,7 +83,7 @@ async def get_mc_id(mc_uuid: str) -> str | Response:
 
 
 async def query_uuid_by_qq(
-        qq: int,
+    qq: int,
 ) -> Tuple[
     bool,
     Optional[int],

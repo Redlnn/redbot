@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 from io import BytesIO
 
 import httpx
@@ -17,17 +18,20 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import GroupInterval
+from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import async_generate_img
 
 saya = Saya.current()
 channel = Channel.current()
 
-if not config_data['Modules']['TextWithImg2Img']['Enabled']:
-    saya.uninstall_channel(channel)
-
-channel.name('消息转图片')
-channel.author('Red_lnn')
-channel.description('用法：[!！.]img <文本、图片>')
+Module(
+    name='消息转图片',
+    config_name='TextWithImg2Img',
+    file_name=os.path.basename(__file__),
+    author=['Red_lnn'],
+    description='仿锤子便签样式的消息转图片，支持纯文本与图像',
+    usage='[!！.]img <文本、图像>',
+).register()
 
 
 class Match(Sparkle):
@@ -36,14 +40,17 @@ class Match(Sparkle):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Match)],
-                decorators=[group_blacklist(), GroupInterval.require(15)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Match)],
+        decorators=[group_blacklist(), GroupInterval.require(15)],
+    )
 )
 async def main(app: Ariadne, group: Group, sparkle: Sparkle):
-    if config_data['Modules']['TextWithImg2Img']['DisabledGroup']:
+    if not config_data['Modules']['TextWithImg2Img']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['TextWithImg2Img']['DisabledGroup']:
         if group.id in config_data['Modules']['TextWithImg2Img']['DisabledGroup']:
             return
     img_list = []

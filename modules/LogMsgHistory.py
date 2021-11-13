@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import os
 import time
 from typing import Optional
 
@@ -9,61 +10,86 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import App, At, Plain, Source
-from graia.ariadne.message.parser.pattern import ArgumentMatch, ElementMatch, RegexMatch
+from graia.ariadne.message.element import App, At, Json, Plain, Source, Xml
+from graia.ariadne.message.parser.pattern import (ArgumentMatch,
+                                                  ElementMatch, RegexMatch)
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
-from utils.Database.msg_history import get_group_talk_count, get_member_last_message, get_member_talk_count, log_msg
+from utils.Database.msg_history import (get_group_talk_count,
+                                        get_member_last_message,
+                                        get_member_talk_count, log_msg)
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Permission import Permission
+from utils.ModuleRegister import Module
 
 saya = Saya.current()
 channel = Channel.current()
 
-if not config_data['Modules']['LogMsgHistory']['Enabled']:
-    saya.uninstall_channel(channel)
-
-channel.name('历史聊天数据记录')
-channel.author('Red_lnn')
-channel.description(
-        '用法：\n'
-        '[!！.]msgcount —— 获得目标最近n天内的发言次数\n'
+Module(
+    name='历史聊天数据记录',
+    config_name='LogMsgHistory',
+    file_name=os.path.basename(__file__),
+    author=['Red_lnn'],
+    description='记录聊天数据到数据库',
+    usage=(
+        '[!！.]msgcount —— 【管理】获得目标最近n天内的发言次数\n'
         '  参数：\n'
         '    --type   member/group 目标类型，本群成员或群\n'
         '    --target 【可选】群号/本群成员的QQ号/At群成员\n'
         '    --day    天数（含今天）\n'
-        '[!！.]getlast <At/QQ号> —— 获取某人的最后一条发言'
-)
+        '[!！.]getlast <At/QQ号> —— 【管理】获取某人的最后一条发言'
+    ),
+).register()
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        decorators=[group_blacklist()],
+    )
 )
 async def main(group: Group, member: Member, message: MessageChain):
-    if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
+    if not config_data['Modules']['LogMsgHistory']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['LogMsgHistory']['DisabledGroup']:
         if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
             return
     if message.has(App):
         await log_msg(
-                group.id,
-                member.id,
-                int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
-                message.getFirst(Source).id,
-                '[APP消息]',
+            group.id,
+            member.id,
+            int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
+            message.getFirst(Source).id,
+            '[APP消息]',
+        )
+    elif message.has(Xml):
+        await log_msg(
+            group.id,
+            member.id,
+            int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
+            message.getFirst(Source).id,
+            '[XML消息]',
+        )
+    elif message.has(Json):
+        await log_msg(
+            group.id,
+            member.id,
+            int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
+            message.getFirst(Source).id,
+            '[JSON消息]',
         )
     else:
         await log_msg(
-                group.id,
-                member.id,
-                int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
-                message.getFirst(Source).id,
-                message.asPersistentString(),
+            group.id,
+            member.id,
+            int(time.mktime(message.getFirst(Source).time.timetuple())) - time.timezone,
+            message.getFirst(Source).id,
+            message.asPersistentString(),
         )
 
 
@@ -76,11 +102,11 @@ class GetMsgCountMatch(Sparkle):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(GetMsgCountMatch)],
-                decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(GetMsgCountMatch)],
+        decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
+    )
 )
 async def get_msg_count(app: Ariadne, group: Group, member: Member, message: MessageChain, sparkle: Sparkle):
     if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
@@ -119,34 +145,34 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
         if not count:
             try:
                 await app.sendGroupMessage(
-                        group,
-                        MessageChain.create(
-                                At(target),
-                                Plain(f'({target}) 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
-                        ),
+                    group,
+                    MessageChain.create(
+                        At(target),
+                        Plain(f'({target}) 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
+                    ),
                 )
             except UnknownTarget:
                 await app.sendGroupMessage(
-                        group,
-                        MessageChain.create(
-                                Plain(f'{target} 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
-                        ),
+                    group,
+                    MessageChain.create(
+                        Plain(f'{target} 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
+                    ),
                 )
             return
         try:
             await app.sendGroupMessage(
-                    group,
-                    MessageChain.create(
-                            At(target),
-                            Plain(f'({target}) 最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
-                    ),
+                group,
+                MessageChain.create(
+                    At(target),
+                    Plain(f'({target}) 最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
+                ),
             )
         except UnknownTarget:
             await app.sendGroupMessage(
-                    group,
-                    MessageChain.create(
-                            Plain(f'{target}最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
-                    ),
+                group,
+                MessageChain.create(
+                    Plain(f'{target}最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
+                ),
             )
     else:
         if not target:
@@ -158,17 +184,17 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
             return
         if target == group.id:
             await app.sendGroupMessage(
-                    group,
-                    MessageChain.create(
-                            Plain(f'本群最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
-                    ),
+                group,
+                MessageChain.create(
+                    Plain(f'本群最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
+                ),
             )
         else:
             await app.sendGroupMessage(
-                    group,
-                    MessageChain.create(
-                            Plain(f'该群最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
-                    ),
+                group,
+                MessageChain.create(
+                    Plain(f'该群最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
+                ),
             )
 
 
@@ -180,11 +206,11 @@ class GetMemberLastMsgMatch(Sparkle):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(GetMemberLastMsgMatch)],
-                decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(GetMemberLastMsgMatch)],
+        decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
+    )
 )
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
     if config_data['Modules']['LogMsgHistory']['DisabledGroup']:

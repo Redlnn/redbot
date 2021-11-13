@@ -10,8 +10,8 @@ Ping mc服务器
 """
 
 import asyncio
+import os
 import socket
-from concurrent.futures import ThreadPoolExecutor
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -29,21 +29,22 @@ from urllib3.exceptions import TimeoutError
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
+from utils.ModuleRegister import Module
+
 from .ping_client import ping
 from .utils import is_domain, is_ip
 
 saya = Saya.current()
 channel = Channel.current()
 
-channel.name('Ping mc服务器')
-channel.author('Red_lnn')
-channel.description('获取指定mc服务器的信息\n指令：[!！.]ping {mc服务器地址}')
-
-config = config_data['Modules']['MinecraftServerPing']
-servers = config['Servers']
-
-if not config['Enabled']:
-    saya.uninstall_channel(channel)
+Module(
+    name='Ping 我的世界服务器',
+    config_name='MinecraftServerPing',
+    file_name=os.path.dirname(__file__),
+    author=['Red_lnn'],
+    description='获取指定mc服务器的信息',
+    usage='[!！.]ping {mc服务器地址}',
+).register()
 
 
 class Match(Sparkle):
@@ -52,17 +53,25 @@ class Match(Sparkle):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Match)],
-                decorators=[group_blacklist(), MemberInterval.require(10)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Match)],
+        decorators=[group_blacklist(), MemberInterval.require(10)],
+    )
 )
 async def main(app: Ariadne, group: Group, sparkle: Sparkle):
+    if not config_data['Modules']['MinecraftServerPing']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['MinecraftServerPing']['DisabledGroup']:
+        if group.id in config_data['Modules']['MinecraftServerPing']['DisabledGroup']:
+            return
+    servers = config_data['Modules']['MinecraftServerPing']['Servers']
     if sparkle.ping_target.matched:
         server_address = sparkle.ping_target.result.asDisplay().strip()
     else:
         if group.id not in servers.keys():
+            await app.sendGroupMessage(group, MessageChain.create([Plain('该群组没有设置默认服务器地址')]))
             return
         server_address = servers[group.id]
 

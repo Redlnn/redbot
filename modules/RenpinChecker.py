@@ -33,17 +33,20 @@ from loguru import logger
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
+from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import async_generate_img, hr
 
 saya = Saya.current()
 channel = Channel.current()
 
-if not config_data['Modules']['RenpinChecker']['Enabled']:
-    saya.uninstall_channel(channel)
-
-channel.name('人品测试')
-channel.author('Red_lnn')
-channel.description('每个QQ号每天可随机获得一个0-100的人品值并抽签\n用法：[!！.]jrrp / [!！.]抽签')
+Module(
+        name='人品测试',
+        config_name='RenpinChecker',
+        file_name=os.path.basename(__file__),
+        author=['Red_lnn'],
+        description='每个QQ号每天可抽一次签并获得人品值',
+        usage='[!！.]jrrp / [!！.]抽签'
+).register()
 
 data_folder = os.path.join(os.getcwd(), 'data')
 
@@ -98,19 +101,18 @@ lucky_things = {
 }
 
 
-class Match(Sparkle):
-    prefix = RegexMatch(r'[!！.](jrrp|抽签)')
-
-
 @channel.use(
         ListenerSchema(
                 listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Match)],
+                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](jrrp|抽签)')]))],
                 decorators=[group_blacklist(), MemberInterval.require(10)],
         )
 )
 async def main(app: Ariadne, group: Group, member: Member):
-    if config_data['Modules']['RenpinChecker']['DisabledGroup']:
+    if not config_data['Modules']['RenpinChecker']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['RenpinChecker']['DisabledGroup']:
         if group.id in config_data['Modules']['RenpinChecker']['DisabledGroup']:
             return
     is_new, (renpin, qianwen) = await read_data(str(member.id))

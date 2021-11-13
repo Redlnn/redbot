@@ -17,6 +17,7 @@
 """
 
 import json
+import os
 import time
 from dataclasses import dataclass
 from io import BytesIO
@@ -36,18 +37,20 @@ from loguru import logger
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import ManualInterval
+from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import async_generate_img, hr
 
 saya = Saya.current()
 channel = Channel.current()
 
-if not config_data['Modules']['BiliVideoInfo']['Enabled']:
-    saya.uninstall_channel(channel)
-
-channel.name('B站视频信息获取')
-channel.author('Red_lnn')
-channel.description(
-        '识别群内的B站链接、分享、av号、BV号并获取其对应的视频的信息，以下几种消息均可触发：\n'
+Module(
+    name='B站视频信息获取',
+    config_name='BiliVideoInfo',
+    file_name=os.path.basename(__file__),
+    author=['Red_lnn'],
+    description='识别群内的B站链接、分享、av号、BV号并获取其对应的视频的信息',
+    usage=(
+        '以下几种消息均可触发：\n'
         ' - 新版B站app分享的两种小程序\n'
         ' - 旧版B站app分享的xml消息\n'
         ' - B站概念版分享的json消息\n'
@@ -56,7 +59,8 @@ channel.description(
         ' - 文字消息里含有B站视频地址，如 https://b23.tv/3V31Ap\n'
         ' - 文字消息里含有BV号，如 BV1xx411c7mD\n'
         ' - 文字消息里含有av号，如 av2'
-)
+    ),
+).register()
 
 avid_re = '(av|AV)(\\d{1,12})'
 bvid_re = '[Bb][Vv]1([0-9a-zA-Z]{2})4[1y]1[0-9a-zA-Z]7([0-9a-zA-Z]{2})'
@@ -84,7 +88,10 @@ class VideoInfo:
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[group_blacklist()]))
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
-    if config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
+    if not config_data['Modules']['BiliVideoInfo']['Enabled']:
+        saya.uninstall_channel(channel)
+        return
+    elif config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
         if group.id in config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
             return
     p = regex.compile(f'({avid_re})|({bvid_re})')
@@ -133,19 +140,19 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
         video_info = await info_json_dump(video_info['data'])
         img: BytesIO = await gen_img(video_info)
         await app.sendGroupMessage(
-                group,
-                MessageChain.create(
-                        [
-                            Image(data_bytes=img.getvalue()),
-                            Plain(
-                                    f'{video_info.title}\n'
-                                    '————————————————————\n'
-                                    f'UP主：{video_info.up_name}\n'
-                                    f'{math(video_info.views)}播放 {math(video_info.likes)}赞\n'
-                                    f'链接：https://b23.tv/{video_info.bvid}'
-                            ),
-                        ]
-                ),
+            group,
+            MessageChain.create(
+                [
+                    Image(data_bytes=img.getvalue()),
+                    Plain(
+                        f'{video_info.title}\n'
+                        '————————————————————\n'
+                        f'UP主：{video_info.up_name}\n'
+                        f'{math(video_info.views)}播放 {math(video_info.likes)}赞\n'
+                        f'链接：https://b23.tv/{video_info.bvid}'
+                    ),
+                ]
+            ),
         )
 
 
@@ -206,22 +213,22 @@ async def get_video_info(video_id: str) -> dict:
 
 async def info_json_dump(obj: dict) -> VideoInfo:
     return VideoInfo(
-            cover_url=obj['pic'],
-            bvid=obj['bvid'],
-            avid=obj['aid'],
-            title=obj['title'],
-            sub_count=obj['videos'],
-            pub_timestamp=obj['pubdate'],
-            unload_timestamp=obj['ctime'],
-            desc=obj['desc'].strip(),
-            duration=obj['duration'],
-            up_mid=obj['owner']['mid'],
-            up_name=obj['owner']['name'],
-            views=obj['stat']['view'],
-            danmu=obj['stat']['danmaku'],
-            likes=obj['stat']['like'],
-            coins=obj['stat']['coin'],
-            favorites=obj['stat']['favorite'],
+        cover_url=obj['pic'],
+        bvid=obj['bvid'],
+        avid=obj['aid'],
+        title=obj['title'],
+        sub_count=obj['videos'],
+        pub_timestamp=obj['pubdate'],
+        unload_timestamp=obj['ctime'],
+        desc=obj['desc'].strip(),
+        duration=obj['duration'],
+        up_mid=obj['owner']['mid'],
+        up_name=obj['owner']['name'],
+        views=obj['stat']['view'],
+        danmu=obj['stat']['danmaku'],
+        likes=obj['stat']['like'],
+        coins=obj['stat']['coin'],
+        favorites=obj['stat']['favorite'],
     )
 
 
