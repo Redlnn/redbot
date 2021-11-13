@@ -60,7 +60,7 @@ bg_list = os.listdir(os.path.join(os.path.dirname(__file__), 'bg'))
         ListenerSchema(
                 listening_events=[GroupMessage],
                 inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wordcloud\ '), RegexMatch(r'.+')]))],
-                decorators=[group_blacklist(), GroupInterval.require(10)],
+                decorators=[group_blacklist(), GroupInterval.require(15)],
         )
 )
 async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
@@ -155,7 +155,7 @@ def skip(string: str) -> bool:
         if config_data['Modules']['WordCloud']['BlacklistWord'] else ()
     )
     for word in blacklist_word:
-        if string in word:
+        if word in string:
             return True
     return False
 

@@ -75,9 +75,6 @@ else:
 
 
 def reload_config():
-    global _font_name, _font_path, _is_ttc_font, _ttc_font_index, _font_size, _font_color, _line_space, _text_margin
-    global _chars_per_line, _background_color, _border_side_margin, _border_top_margin, _border_bottom_margin
-    global _border_interval, _border_square_wrap_width, _border_outline_width, _border_outline_color
     _font_name: str = config_data['TextWithImg2Img']['FontName']
     _font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
     if not os.path.exists(_font_path):

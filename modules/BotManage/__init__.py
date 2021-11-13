@@ -171,7 +171,7 @@ async def turn_off(app: Ariadne, group: Group, sparkle: Sparkle):
 )
 async def turn_off(app: Ariadne, group: Group):
     async with lock:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('重新加载配置文件')))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('重新加载配置文件中...（若无下一步提示即加载完成）')))
         if reload_config():
             try:
                 gen_img_reload()

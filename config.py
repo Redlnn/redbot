@@ -32,11 +32,12 @@ def reload_config():
     logger.info('正在重新加载配置文件...')
     try:
         with open('config.yml', 'r', encoding='utf-8') as fr1:
-            file_data1 = fr.read()
+            file_data1 = fr1.read()
         config_data = yaml.load(file_data1, Loader=yaml.FullLoader)
         del file_data1
+        logger.info('重新加载配置文件完成')
         return True
     except Exception as e:
-        logger.error('重新加载配置文件是出错')
+        logger.error('重新加载配置文件时出错')
         logger.exception(e)
         return False
