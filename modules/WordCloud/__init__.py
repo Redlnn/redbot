@@ -73,7 +73,7 @@ class WordCloudMatch(Sparkle):
                 decorators=[group_blacklist(), GroupInterval.require(10)],
         )
 )
-async def get_msg_count(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
+async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
     if config_data['Modules']['WordCloud']['DisabledGroup']:
         if group.id in config_data['Modules']['WordCloud']['DisabledGroup']:
             return
@@ -180,7 +180,11 @@ def get_frequencies(msg_list: List[str]) -> dict:
 
 
 def gen_wordcloud(words: dict) -> bytes:
-    mask = numpy.array(Img.open(bg_list[random.randint(0, len(bg_list) - 1)]))
+    mask = numpy.array(
+            Img.open(
+                    os.path.join(os.path.dirname(__file__), 'bg', bg_list[random.randint(0, len(bg_list) - 1)])
+            )
+    )
     wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=800, scale=2)
     wordcloud.generate_from_frequencies(words)
     image_colors = ImageColorGenerator(mask, default_color=(255, 255, 255))
