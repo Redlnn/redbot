@@ -89,7 +89,7 @@ Modules: # 各插件的配置
     Enabled: true
     DisabledGroup: # 要禁用的群
       - 123456789
-    FontName: sarasa-mono-sc-semibold.ttf # 字体文件的文件名（带后缀名），支持ttf，字体文件请放在根目录的 fonts 文件夹内
+    FontName: OPPOSans-B.ttf # 字体文件的文件名（带后缀名），支持ttf，字体文件请放在根目录的 fonts 文件夹内
     BlacklistWord: # 黑名单关键词，若消息中包含该词则不统计，特殊符号与纯数字请使用引号括起来
       - "[APP消息]"
       - "[XML消息]"
