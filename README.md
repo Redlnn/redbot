@@ -36,7 +36,7 @@
 
 - [ ] 概率复读
 - [ ] 留言提醒
-- [ ] 多边形图片生成~~（依赖库装不上咕了）~~ <!-- https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py -->
+- [ ] 多边形图片生成（~~依赖库装不上咕了~~） <!-- https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py -->
 - [ ] 二维码生成
 - [ ] BiliBili 动态/直播 订阅推送
 - [ ] Pixiv 搜图
