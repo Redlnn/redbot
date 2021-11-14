@@ -60,7 +60,7 @@ bg_list = os.listdir(os.path.join(os.path.dirname(__file__), 'bg'))
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wordcloud\ '), RegexMatch(r'.+')]))],
-        decorators=[group_blacklist(), GroupInterval.require(15)],
+        decorators=[group_blacklist(), GroupInterval.require(5)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
@@ -125,12 +125,14 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
     await app.sendGroupMessage(group, MessageChain.create(Plain(f'正在为 {target} 生成词云，其本周共 {len(msg_list)} 条记录，请稍后...')))
     words = await asyncio.to_thread(get_frequencies, msg_list)
     image = await asyncio.to_thread(gen_wordcloud, words)
-    Generating_list.remove(target)
+
     if target_type == 'group':
         try:
             await app.sendGroupMessage(group, MessageChain.create(Plain('本群最近7天内的聊天词云 👇\n'), Image(data_bytes=image)))
         except UnknownError:
             await app.sendGroupMessage(group, MessageChain.create(Plain('词云发送失败')))
+        finally:
+            Generating_list.remove(target)
     else:
         try:
             await app.sendGroupMessage(
@@ -150,6 +152,8 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
             )
         except UnknownError:
             await app.sendGroupMessage(group, MessageChain.create(Plain('词云发送失败')))
+        finally:
+            Generating_list.remove(target)
 
 
 def skip(string: str) -> bool:
