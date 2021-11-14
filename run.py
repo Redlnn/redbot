@@ -8,6 +8,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.exception import AccountNotFound
 from graia.ariadne.model import MiraiSession
 from graia.broadcast import Broadcast
+from graia.broadcast.interrupt import InterruptControl
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
 from graia.scheduler import GraiaScheduler
@@ -25,6 +26,7 @@ if __name__ == '__main__':
 
     saya.install_behaviours(BroadcastBehaviour(bcc))
     saya.install_behaviours(GraiaSchedulerBehaviour(scheduler))
+    saya.install_behaviours(InterruptControl(bcc))
 
     app = Ariadne.create(
         broadcast=bcc,

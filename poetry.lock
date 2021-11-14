@@ -382,7 +382,7 @@ reference = "aliyun"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.3.9.9"
+version = "0.4.0-a11"
 description = "Anelegant mirai-api-http v2 Python SDK."
 category = "main"
 optional = false
@@ -391,7 +391,7 @@ develop = false
 
 [package.dependencies]
 aiohttp = "^3.7.4"
-graia-broadcast = ">=0.12.1"
+graia-broadcast = ">=0.12.1, < 0.14.0"
 loguru = "^0.5.3"
 pydantic = "^1.8.2"
 typing-extensions = "^3.10.0"
@@ -401,7 +401,7 @@ yarl = "^1.6.3"
 type = "git"
 url = "https://github.com/GraiaProject/Ariadne"
 reference = "master"
-resolved_reference = "e62a444893303cd426d486e9eacf1b68ac1c1e0e"
+resolved_reference = "5bded2e8fbcfce2f64a58daf96432691f3884757"
 
 [[package]]
 name = "graia-broadcast"
