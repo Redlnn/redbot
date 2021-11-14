@@ -127,7 +127,10 @@ async def turn_on(app: Ariadne, group: Group, sparkle: Sparkle):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
     global_disabled: bool = not config_data['Modules'][target_module.config_name]['Enabled']
-    disabled_groups: List[int] = config_data['Modules'][target_module.config_name]['DisabledGroup']
+    try:
+        disabled_groups: List[int] = config_data['Modules'][target_module.config_name]['DisabledGroup']
+    except KeyError:
+        disabled_groups = []
     if global_disabled:
         await app.sendGroupMessage(group, MessageChain.create(Plain('模块已全局禁用无法开启')))
     elif group.id in disabled_groups:
@@ -157,7 +160,10 @@ async def turn_off(app: Ariadne, group: Group, sparkle: Sparkle):
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
-    disabled_groups: List[int] = config_data['Modules'][target_module.config_name]['DisabledGroup']
+    try:
+        disabled_groups: List[int] = config_data['Modules'][target_module.config_name]['DisabledGroup']
+    except KeyError:
+        disabled_groups = []
     if not target_module.can_disable:
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不允许禁用')))
     elif group.id not in disabled_groups:

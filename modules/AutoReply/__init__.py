@@ -44,6 +44,7 @@ Module(
     file_name=os.path.dirname(__file__),
     author=['Red_lnn'],
     description='支持全文匹配、正则匹配、模糊匹配，若回复内容中包含的文字字符数大于100字，则会将内容转为图片发送',
+    can_disable=False,
 ).register()
 
 
