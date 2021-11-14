@@ -38,8 +38,8 @@ saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 
-ensp = ' '  # 半角空格
-emsp = ' '  # 全角空格
+# ensp = ' '  # 半角空格
+# emsp = ' '  # 全角空格
 
 Module(
     name='Bot模块管理',
@@ -92,11 +92,12 @@ async def menu(app: Ariadne, group: Group):
         msg_send += f'{num}. {status}  {module.name}\n'
     msg_send += (
         f'{hr}\n'
+        f'私は {config_data["Basic"]["Permission"]["MasterName"]} の {config_data["Basic"]["BotName"]} です www\n'
         '群管理员要想配置模块开关请发送【.启用/禁用模块 <id>】\n'
         '要想查询某模块的用法和介绍请发送【.用法 <id>】\n'
         '若无法触发，请检查前缀符号是否正确如 ! 与 ！\n'
         '或是命令中有无多余空格，所有模块均不需要@bot\n'
-        '全局禁用的模块不能重新开启'
+        '全局禁用的模块不能重新开启\n'
     )
     img_io = await async_generate_img([msg_send])
     await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img_io.getvalue())))

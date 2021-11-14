@@ -210,7 +210,7 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
     if not isinstance(text_and_img, list):
         raise ValueError('ArgumentError: 参数类型错误')
 
-    extra_text1 = '由 Red_lnn 的 Bot 生成'  # 额外文本1
+    extra_text1 = f'由 {config_data["Basic"]["BotName"]} 生成'  # 额外文本1
     extra_text2 = _get_time()  # 额外文本2
 
     line_width = int(_chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
