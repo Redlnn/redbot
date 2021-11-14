@@ -12,7 +12,8 @@ Basic: # 基础设置
   Debug: false
 
   Permission:
-    Master: 123456789 # 机器人主人的QQ号
+    Master: 731347477 # 机器人主人的QQ号
+    MasterName: Red_lnn # 机器人主人的昵称
     Admin: # 机器人管理员
       - 123456789
 
@@ -88,7 +89,7 @@ Modules: # 各插件的配置
     Enabled: true
     DisabledGroup: # 要禁用的群
       - 123456789
-    FontName: OPPOSans.ttf # 字体文件的文件名（带后缀名），支持ttf，字体文件请放在根目录的 fonts 文件夹内
+    FontName: sarasa-mono-sc-semibold.ttf # 字体文件的文件名（带后缀名），支持ttf，字体文件请放在根目录的 fonts 文件夹内
     BlacklistWord: # 黑名单关键词，若消息中包含该词则不统计，特殊符号与纯数字请使用引号括起来
       - "[APP消息]"
       - "[XML消息]"

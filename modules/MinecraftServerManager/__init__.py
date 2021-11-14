@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# import os
 import time
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
-from graia.ariadne.event.mirai import MemberJoinEvent, MemberLeaveEventKick, MemberLeaveEventQuit
+from graia.ariadne.event.mirai import (MemberJoinEvent, MemberLeaveEventKick,
+                                       MemberLeaveEventQuit)
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain, Source
 from graia.ariadne.message.parser.pattern import RegexMatch
@@ -17,21 +19,17 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
 from config import config_data
-# from modules.BotManage import Module
 from utils.Limit.Permission import Permission
+# from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import generate_img
-from .database import db, init_table, PlayersTable
+
+from .database import PlayersTable, db, init_table
 from .rcon import execute_command
 from .utils import is_mc_id, is_uuid, query_uuid_by_qq
-from .whitelist import (
-    add_whitelist_to_qq,
-    del_whitelist_by_id,
-    del_whitelist_by_qq,
-    del_whitelist_by_uuid,
-    gen_query_info_text,
-    query_whitelist_by_id,
-    query_whitelist_by_uuid,
-)
+from .whitelist import (add_whitelist_to_qq, del_whitelist_by_id,
+                        del_whitelist_by_qq, del_whitelist_by_uuid,
+                        gen_query_info_text, query_whitelist_by_id,
+                        query_whitelist_by_uuid)
 
 saya = Saya.current()
 channel = Channel.current()
@@ -39,7 +37,8 @@ channel = Channel.current()
 server_group = config_data['Modules']['MinecraftServerManager']['ServerGroup']
 active_groups = (
     config_data['Modules']['MinecraftServerManager']['ActiveGroup']
-    if config_data['Modules']['MinecraftServerManager']['ActiveGroup'] else []
+    if config_data['Modules']['MinecraftServerManager']['ActiveGroup']
+    else []
 )
 
 if server_group not in active_groups:
@@ -48,6 +47,7 @@ if server_group not in active_groups:
 # Module(
 #         name='我的世界服务器管理',
 #         config_name='MinecraftServerManager',
+#         file_name=os.path.dirname(__file__),
 #         author=['Red_lnn'],
 #         description='提供白名单管理、在线列表查询、服务器命令执行功能',
 #         usage=(
@@ -59,7 +59,7 @@ if server_group not in active_groups:
 #             ' - [!！.]pardon <QQ号或@QQ> —— 【管理】将一个QQ从黑名单中移出\n'
 #             ' - [!！.]clear_leave_time ——【管理】从数据库中清除一个QQ的退群时间'
 #         )
-# ).registe()
+# ).register()
 
 menu = (
     '-----------服务器管理菜单-----------\n'
@@ -94,9 +94,9 @@ is_init = False
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[ApplicationLaunched],
-        )
+    ListenerSchema(
+        listening_events=[ApplicationLaunched],
+    )
 )
 async def init(app: Ariadne):
     if not config_data['Modules']['MinecraftServerManager']['Enabled']:
@@ -132,10 +132,10 @@ async def init(app: Ariadne):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]mc')]))],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]mc')]))],
+    )
 )
 async def whitelist_menu(app: Ariadne, group: Group):
     if not is_init:
@@ -144,14 +144,15 @@ async def whitelist_menu(app: Ariadne, group: Group):
         return
     await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=menu_img_io.getvalue())))
 
+
 # ---------------------------------------------------------------------------------------------------------------------
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl')]))],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl')]))],
+    )
 )
 async def whitelist_menu(app: Ariadne, group: Group):
     if not is_init:
@@ -165,17 +166,17 @@ async def whitelist_menu(app: Ariadne, group: Group):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ add\ '), RegexMatch(r'.+')]))],
-                decorators=[
-                    Permission.group_perm_check(
-                            MemberPerm.Administrator,
-                            send_alert=True,
-                            allow_override=False,
-                    )
-                ],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ add\ '), RegexMatch(r'.+')]))],
+        decorators=[
+            Permission.group_perm_check(
+                MemberPerm.Administrator,
+                send_alert=True,
+                allow_override=False,
+            )
+        ],
+    )
 )
 async def add_whitelist(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
@@ -193,14 +194,14 @@ async def add_whitelist(app: Ariadne, group: Group, message: MessageChain):
         target = msg[2].getFirst(At).target
     else:
         await app.sendGroupMessage(
-                group, MessageChain.create(Plain('目标用户不是有效的 QQ 号或 at 对象')), quote=message.get(Source).pop(0)
+            group, MessageChain.create(Plain('目标用户不是有效的 QQ 号或 at 对象')), quote=message.get(Source).pop(0)
         )
         return
 
     mc_id = msg[3].asDisplay()
     if not msg[3].onlyContains(Plain) or not is_mc_id(mc_id):
         await app.sendGroupMessage(
-                group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=message.get(Source).pop(0)
+            group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=message.get(Source).pop(0)
         )
         return
 
@@ -211,17 +212,17 @@ async def add_whitelist(app: Ariadne, group: Group, message: MessageChain):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ del\ '), RegexMatch(r'.+')]))],
-                decorators=[
-                    Permission.group_perm_check(
-                            MemberPerm.Administrator,
-                            send_alert=True,
-                            allow_override=False,
-                    )
-                ],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ del\ '), RegexMatch(r'.+')]))],
+        decorators=[
+            Permission.group_perm_check(
+                MemberPerm.Administrator,
+                send_alert=True,
+                allow_override=False,
+            )
+        ],
+    )
 )
 async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
@@ -285,10 +286,10 @@ async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ info\ '), RegexMatch(r'.+')]))],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ info\ '), RegexMatch(r'.+')]))],
+    )
 )
 async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
@@ -464,10 +465,10 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]myid\ '), RegexMatch(r'.+')]))],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]myid\ '), RegexMatch(r'.+')]))],
+    )
 )
 async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if not is_init:
@@ -482,7 +483,7 @@ async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain
     mc_id = msg[1].asDisplay()
     if not is_mc_id(mc_id):
         await app.sendGroupMessage(
-                group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=message.get(Source).pop(0)
+            group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=message.get(Source).pop(0)
         )
         return
 
@@ -495,10 +496,10 @@ async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]list')]))],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]list')]))],
+    )
 )
 async def get_player_list(app: Ariadne, group: Group):
     if not is_init:
@@ -526,12 +527,11 @@ async def get_player_list(app: Ariadne, group: Group):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]run'), RegexMatch(r'.+')]))],
-                decorators=[
-                    Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]run'), RegexMatch(r'.+')]))],
+        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+    )
 )
 async def run_command_list(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
@@ -574,10 +574,10 @@ async def member_join(group: Group, member: Member):
         PlayersTable.create(group=server_group, qq=member.id, joinTimestamp=member.joinTimestamp)
     else:
         PlayersTable.update(
-                {
-                    PlayersTable.joinTimestamp: member.joinTimestamp,
-                    PlayersTable.leaveTimestamp: None,
-                }
+            {
+                PlayersTable.joinTimestamp: member.joinTimestamp,
+                PlayersTable.leaveTimestamp: None,
+            }
         ).where((PlayersTable.group == server_group) & (PlayersTable.qq == member.id)).execute()
 
 
@@ -594,11 +594,11 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
         PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == member.id))
     except PlayersTable.DoesNotExist:
         PlayersTable.create(
-                group=server_group, qq=member.id, joinTimestamp=member.joinTimestamp, leaveTimestamp=time.time()
+            group=server_group, qq=member.id, joinTimestamp=member.joinTimestamp, leaveTimestamp=time.time()
         )
     else:
         PlayersTable.update({PlayersTable.leaveTimestamp: time.time()}).where(
-                (PlayersTable.group == server_group) & (PlayersTable.qq == member.id)
+            (PlayersTable.group == server_group) & (PlayersTable.qq == member.id)
         ).execute()
         await del_whitelist_by_qq(member.id, app, group)
 
@@ -616,14 +616,14 @@ async def member_kick(app: Ariadne, group: Group, event: MemberLeaveEventKick):
         PlayersTable.get((PlayersTable.group == server_group) & (PlayersTable.qq == event.member.id))
     except PlayersTable.DoesNotExist:
         PlayersTable.create(
-                group=server_group,
-                qq=event.member.id,
-                joinTimestamp=event.member.joinTimestamp,
-                leaveTimestamp=time.time(),
+            group=server_group,
+            qq=event.member.id,
+            joinTimestamp=event.member.joinTimestamp,
+            leaveTimestamp=time.time(),
         )
     else:
         PlayersTable.update(
-                {PlayersTable.leaveTimestamp: time.time(), PlayersTable.blocked: True, PlayersTable.blockReason: 'Kick'}
+            {PlayersTable.leaveTimestamp: time.time(), PlayersTable.blocked: True, PlayersTable.blockReason: 'Kick'}
         ).where((PlayersTable.group == server_group) & (PlayersTable.qq == event.member.id)).execute()
         await del_whitelist_by_qq(event.member.id, app, group)
 
@@ -632,12 +632,11 @@ async def member_kick(app: Ariadne, group: Group, event: MemberLeaveEventKick):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]pardon\ '), RegexMatch(r'.+')]))],
-                decorators=[
-                    Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]pardon\ '), RegexMatch(r'.+')]))],
+        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+    )
 )
 async def pardon(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
@@ -650,11 +649,11 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain):
         return
     elif msg[1].onlyContains(At):
         PlayersTable.update({PlayersTable.blocked: False, PlayersTable.blockReason: None}).where(
-                (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].getFirst(At).target)
+            (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].getFirst(At).target)
         ).execute()
     elif msg[1].onlyContains(Plain):
         PlayersTable.update({PlayersTable.blocked: False, PlayersTable.blockReason: None}).where(
-                (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].asDisplay())
+            (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].asDisplay())
         ).execute()
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
@@ -666,12 +665,11 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]clear_leave_time\ '), RegexMatch(r'.+')]))],
-                decorators=[
-                    Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]clear_leave_time\ '), RegexMatch(r'.+')]))],
+        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+    )
 )
 async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
@@ -684,11 +682,11 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain):
         return
     elif msg[1].onlyContains(At):
         PlayersTable.update({PlayersTable.leaveTimestamp: None}).where(
-                (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].getFirst(At).target)
+            (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].getFirst(At).target)
         ).execute()
     elif msg[1].onlyContains(Plain):
         PlayersTable.update({PlayersTable.leaveTimestamp: None}).where(
-                (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].asDisplay())
+            (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].asDisplay())
         ).execute()
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
@@ -700,12 +698,11 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]ban\ '), RegexMatch(r'.+')]))],
-                decorators=[
-                    Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]ban\ '), RegexMatch(r'.+')]))],
+        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+    )
 )
 async def ban(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
@@ -720,19 +717,19 @@ async def ban(app: Ariadne, group: Group, message: MessageChain):
         block_reason = msg[2].include(Plain).merge().asDisplay() if len(msg) == 3 else None
         target = msg[1].getFirst(At).target
         PlayersTable.update(
-                {
-                    PlayersTable.blocked: True,
-                    PlayersTable.blockReason: block_reason,
-                }
+            {
+                PlayersTable.blocked: True,
+                PlayersTable.blockReason: block_reason,
+            }
         ).where((PlayersTable.group == server_group) & (PlayersTable.qq == target)).execute()
     elif msg[1].onlyContains(Plain):
         block_reason = msg[2].include(Plain).merge().asDisplay() if len(msg) == 3 else None
         target = msg[1].asDisplay()
         PlayersTable.update(
-                {
-                    PlayersTable.blocked: True,
-                    PlayersTable.blockReason: block_reason,
-                }
+            {
+                PlayersTable.blocked: True,
+                PlayersTable.blockReason: block_reason,
+            }
         ).where((PlayersTable.group == server_group) & (PlayersTable.qq == target)).execute()
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))

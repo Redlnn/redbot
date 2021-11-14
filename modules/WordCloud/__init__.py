@@ -31,36 +31,37 @@ from PIL import Image as Img
 from wordcloud import ImageColorGenerator, WordCloud
 
 from config import config_data
-from modules.BotManage import Module
 from utils.Database.msg_history import get_group_msg, get_member_msg
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import GroupInterval
+from utils.ModuleRegister import Module
 
 saya = Saya.current()
 channel = Channel.current()
 
 Module(
-        name='聊天历史词云生成',
-        config_name='WordCloud',
-        author=['Red_lnn', 'A60(djkcyl)'],
-        description='获得一个随机数',
-        usage=(
-            '[!！.]wordcloud groud —— 获得本群最近7天内的聊天词云\n'
-            '[!！.]wordcloud At/本群成员QQ号 —— 获得ta最近7天内的聊天词云\n'
-            '[!！.]wordcloud me —— 获得你最近7天内的聊天词云\n'
-        ),
-).registe()
+    name='聊天历史词云生成',
+    config_name='WordCloud',
+    file_name=os.path.dirname(__file__),
+    author=['Red_lnn', 'A60(djkcyl)'],
+    description='获得一个随机数',
+    usage=(
+        '[!！.]wordcloud groud —— 获得本群最近7天内的聊天词云\n'
+        '[!！.]wordcloud At/本群成员QQ号 —— 获得ta最近7天内的聊天词云\n'
+        '[!！.]wordcloud me —— 获得你最近7天内的聊天词云\n'
+    ),
+).register()
 
 Generating_list: List[int | str] = []
 bg_list = os.listdir(os.path.join(os.path.dirname(__file__), 'bg'))
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wordcloud\ '), RegexMatch(r'.+')]))],
-                decorators=[group_blacklist(), GroupInterval.require(15)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wordcloud\ '), RegexMatch(r'.+')]))],
+        decorators=[group_blacklist(), GroupInterval.require(15)],
+    )
 )
 async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
     if not config_data['Modules']['WordCloud']['Enabled']:
@@ -133,19 +134,19 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
     else:
         try:
             await app.sendGroupMessage(
-                    group,
-                    MessageChain.create(
-                            At(target),
-                            Plain(f' {"你" if target_type == "me" else ""}最近7天内的聊天词云 👇\n'),
-                            Image(data_bytes=image),
-                    ),
+                group,
+                MessageChain.create(
+                    At(target),
+                    Plain(f' {"你" if target_type == "me" else ""}最近7天内的聊天词云 👇\n'),
+                    Image(data_bytes=image),
+                ),
             )
         except UnknownTarget:
             await app.sendGroupMessage(
-                    group,
-                    MessageChain.create(
-                            Plain(f'{"你" if target_type == "me" else target} 最近7天内的聊天词云 👇\n'), Image(data_bytes=image)
-                    ),
+                group,
+                MessageChain.create(
+                    Plain(f'{"你" if target_type == "me" else target} 最近7天内的聊天词云 👇\n'), Image(data_bytes=image)
+                ),
             )
         except UnknownError:
             await app.sendGroupMessage(group, MessageChain.create(Plain('词云发送失败')))
@@ -185,7 +186,7 @@ def get_frequencies(msg_list: List[str]) -> dict:
 
 def gen_wordcloud(words: dict) -> bytes:
     mask = numpy.array(
-            Img.open(os.path.join(os.path.dirname(__file__), 'bg', bg_list[random.randint(0, len(bg_list) - 1)]))
+        Img.open(os.path.join(os.path.dirname(__file__), 'bg', bg_list[random.randint(0, len(bg_list) - 1)]))
     )
     font_path = os.path.join(os.getcwd(), 'fonts', config_data['Modules']['WordCloud']['FontName'])
     wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=800, scale=2)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 from io import BytesIO
 
 import httpx
@@ -15,21 +16,22 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
-from modules.BotManage import Module
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import GroupInterval
+from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import async_generate_img
 
 saya = Saya.current()
 channel = Channel.current()
 
 Module(
-        name='消息转图片',
-        config_name='TextWithImg2Img',
-        author=['Red_lnn'],
-        description='仿锤子便签样式的消息转图片，支持纯文本与图像',
-        usage='[!！.]img <文本、图像>'
-).registe()
+    name='消息转图片',
+    config_name='TextWithImg2Img',
+    file_name=os.path.basename(__file__),
+    author=['Red_lnn'],
+    description='仿锤子便签样式的消息转图片，支持纯文本与图像',
+    usage='[!！.]img <文本、图像>',
+).register()
 
 
 class Match(Sparkle):
@@ -38,11 +40,11 @@ class Match(Sparkle):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Match)],
-                decorators=[group_blacklist(), GroupInterval.require(15)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Match)],
+        decorators=[group_blacklist(), GroupInterval.require(15)],
+    )
 )
 async def main(app: Ariadne, group: Group, sparkle: Sparkle):
     if not config_data['Modules']['TextWithImg2Img']['Enabled']:

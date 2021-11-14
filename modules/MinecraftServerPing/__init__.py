@@ -10,6 +10,7 @@ Ping mc服务器
 """
 
 import asyncio
+import os
 import socket
 
 from graia.ariadne.app import Ariadne
@@ -28,20 +29,22 @@ from urllib3.exceptions import TimeoutError
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
+from utils.ModuleRegister import Module
+
 from .ping_client import ping
 from .utils import is_domain, is_ip
-from ..BotManage import Module
 
 saya = Saya.current()
 channel = Channel.current()
 
 Module(
-        name='Ping 我的世界服务器',
-        config_name='MinecraftServerPing',
-        author=['Red_lnn'],
-        description='获取指定mc服务器的信息',
-        usage='[!！.]ping {mc服务器地址}'
-).registe()
+    name='Ping 我的世界服务器',
+    config_name='MinecraftServerPing',
+    file_name=os.path.dirname(__file__),
+    author=['Red_lnn'],
+    description='获取指定mc服务器的信息',
+    usage='[!！.]ping {mc服务器地址}',
+).register()
 
 
 class Match(Sparkle):
@@ -50,11 +53,11 @@ class Match(Sparkle):
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Match)],
-                decorators=[group_blacklist(), MemberInterval.require(10)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Match)],
+        decorators=[group_blacklist(), MemberInterval.require(10)],
+    )
 )
 async def main(app: Ariadne, group: Group, sparkle: Sparkle):
     if not config_data['Modules']['MinecraftServerPing']['Enabled']:

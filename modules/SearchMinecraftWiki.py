@@ -8,6 +8,7 @@
 """
 
 import asyncio
+import os
 from random import uniform
 from urllib.parse import quote
 
@@ -22,27 +23,28 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
-from modules.BotManage import Module
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
+from utils.ModuleRegister import Module
 
 saya = Saya.current()
 channel = Channel.current()
 
 Module(
-        name='搜索我的世界中文Wiki',
-        config_name='SearchMinecraftWiki',
-        author=['Red_lnn'],
-        usage='[!！.]wiki <要搜索的关键词>'
-).registe()
+    name='搜索我的世界中文Wiki',
+    config_name='SearchMinecraftWiki',
+    file_name=os.path.basename(__file__),
+    author=['Red_lnn'],
+    usage='[!！.]wiki <要搜索的关键词>',
+).register()
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wiki\ '), RegexMatch(r'\S+')]))],
-                decorators=[group_blacklist(), MemberInterval.require(3)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wiki\ '), RegexMatch(r'\S+')]))],
+        decorators=[group_blacklist(), MemberInterval.require(3)],
+    )
 )
 async def main(app: Ariadne, group: Group, sparkle: Sparkle):
     if not config_data['Modules']['SearchMinecraftWiki']['Enabled']:

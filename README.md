@@ -5,6 +5,7 @@
 ![Works on my machine](https://img.shields.io/badge/works-on%20my%20machine-green)
 [![Licence](https://img.shields.io/github/license/Redlnn/redbot)](https://github.com/Redlnn/redbot/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 一个使用 [Graia Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的~~连 README 也缝合的~~究极缝合 QQ 机器人
 
@@ -16,7 +17,7 @@
 
 ## 功能列表
 
-- Bot菜单及模块管理
+- Bot菜单、模块管理及查询
 - Bot 版本与系统运行情况查询
 - 历史聊天数据记录
 - 聊天历史词云生成
@@ -33,9 +34,6 @@
 
 ### TODO（咕咕咕？
 
-- [ ] 通过群指令修改Bot配置
-- [ ] 查询插件用法
-- [ ] 指令控制 Bot 卸载/重载/加载新模块
 - [ ] 概率复读
 - [ ] 留言提醒
 - [ ] 多边形图片生成~~（依赖库装不上咕了）~~ <!-- https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py -->

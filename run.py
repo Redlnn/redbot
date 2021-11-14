@@ -4,7 +4,6 @@
 import asyncio
 import os
 
-from graia.ariadne.adapter import CombinedAdapter
 from graia.ariadne.app import Ariadne
 from graia.ariadne.exception import AccountNotFound
 from graia.ariadne.model import MiraiSession
@@ -13,9 +12,9 @@ from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
 from graia.scheduler import GraiaScheduler
 from graia.scheduler.saya import GraiaSchedulerBehaviour
-from utils.logger import logger
 
 from config import config_data
+from utils.logger import logger
 
 if __name__ == '__main__':
     logger.info('初始化...')
@@ -27,28 +26,15 @@ if __name__ == '__main__':
     saya.install_behaviours(BroadcastBehaviour(bcc))
     saya.install_behaviours(GraiaSchedulerBehaviour(scheduler))
 
-    if config_data['Basic']['LogChat']:
-        app = Ariadne.create(
-                broadcast=bcc,
-                session=MiraiSession(
-                        host=config_data['Basic']['MiraiApiHttp']['Host'],  # 填入 httpapi 服务运行的地址
-                        account=config_data['Basic']['MiraiApiHttp']['Account'],  # 你的机器人的 qq 号
-                        verify_key=config_data['Basic']['MiraiApiHttp']['VerifyKey']  # 填入 verifyKey
-                )
-        )
-    else:
-        app = Ariadne(
-            broadcast=bcc,
-            chat_log_config=False,
-            adapter=CombinedAdapter(
-                bcc,
-                MiraiSession(
-                        host=config_data['Basic']['MiraiApiHttp']['Host'],  # 填入 httpapi 服务运行的地址
-                        account=config_data['Basic']['MiraiApiHttp']['Account'],  # 你的机器人的 qq 号
-                        verify_key=config_data['Basic']['MiraiApiHttp']['VerifyKey']  # 填入 verifyKey
-                ),
-            ),
-        )
+    app = Ariadne.create(
+        broadcast=bcc,
+        chat_log_config=None if config_data['Basic']['LogChat'] else False,
+        session=MiraiSession(
+            host=config_data['Basic']['MiraiApiHttp']['Host'],  # 填入 httpapi 服务运行的地址
+            account=config_data['Basic']['MiraiApiHttp']['Account'],  # 你的机器人的 qq 号
+            verify_key=config_data['Basic']['MiraiApiHttp']['VerifyKey'],  # 填入 verifyKey
+        ),
+    )
 
     async def main() -> None:
         await app.launch()

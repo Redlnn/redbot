@@ -4,7 +4,8 @@
 import os
 from typing import Optional, Tuple
 
-from peewee import CharField, fn, IntegerField, Model, TextField, TimestampField
+from peewee import (CharField, IntegerField, Model,
+                    TextField, TimestampField, fn)
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
 
@@ -23,12 +24,12 @@ if config_data['Basic']['Database']['MySQL']:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                        config_data['Basic']['Database']['Database'],
-                        max_connections=10,
-                        host=config_data['Basic']['Database']['Host'],
-                        port=config_data['Basic']['Database']['Port'],
-                        user=config_data['Basic']['Database']['User'],
-                        password=config_data['Basic']['Database']['Passwd'],
+                    config_data['Basic']['Database']['Database'],
+                    max_connections=10,
+                    host=config_data['Basic']['Database']['Host'],
+                    port=config_data['Basic']['Database']['Port'],
+                    user=config_data['Basic']['Database']['User'],
+                    password=config_data['Basic']['Database']['Passwd'],
                 )
             return cls._instance
 
@@ -46,12 +47,8 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                        os.path.join(
-                                os.getcwd(),
-                                'data',
-                                f'{config_data["Basic"]["Database"]["Database"]}_msg_history.db'
-                        ),
-                        max_connections=10,
+                    os.path.join(os.getcwd(), 'data', f'{config_data["Basic"]["Database"]["Database"]}_msg_history.db'),
+                    max_connections=10,
                 )
             return cls._instance
 
@@ -81,7 +78,7 @@ async def log_msg(group: int | str, qq: int | str, timestamp: int, msg_id: int, 
 async def get_member_talk_count(group: int | str, qq: int | str, timestamp: int = 0) -> Optional[int]:
     try:
         data = MsgLog.select(fn.Count(MsgLog.msg_id).alias('count')).where(
-                (MsgLog.group == group) & (MsgLog.qq == qq) & (MsgLog.timestamp >= timestamp)
+            (MsgLog.group == group) & (MsgLog.qq == qq) & (MsgLog.timestamp >= timestamp)
         )
     except MsgLog.DoesNotExist:
         return None
@@ -92,7 +89,7 @@ async def get_member_talk_count(group: int | str, qq: int | str, timestamp: int 
 async def get_group_talk_count(group: int | str, timestamp: int = 0) -> Optional[int]:
     try:
         data = MsgLog.select(fn.Count(MsgLog.msg_id).alias('count')).where(
-                (MsgLog.group == group) & (MsgLog.timestamp >= timestamp)
+            (MsgLog.group == group) & (MsgLog.timestamp >= timestamp)
         )
     except MsgLog.DoesNotExist:
         return None
@@ -103,12 +100,12 @@ async def get_group_talk_count(group: int | str, timestamp: int = 0) -> Optional
 async def get_member_last_message(group: int | str, qq: int | str) -> Tuple[Optional[str], Optional[int]]:
     try:
         data = MsgLog.select(MsgLog.msg_chain, MsgLog.timestamp).where(
-                (MsgLog.group == group)
-                & (MsgLog.qq == qq)
-                & (
-                        MsgLog.timestamp
-                        == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group) & (MsgLog.qq == qq))
-                )
+            (MsgLog.group == group)
+            & (MsgLog.qq == qq)
+            & (
+                MsgLog.timestamp
+                == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group) & (MsgLog.qq == qq))
+            )
         )
     except MsgLog.DoesNotExist:
         return None, None
@@ -119,8 +116,8 @@ async def get_member_last_message(group: int | str, qq: int | str) -> Tuple[Opti
 async def get_group_last_message(group: int | str) -> Tuple[Optional[str], Optional[str], Optional[int]]:
     try:
         data = MsgLog.select(MsgLog.qq, MsgLog.msg_chain, MsgLog.timestamp).where(
-                (MsgLog.group == group)
-                & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group)))
+            (MsgLog.group == group)
+            & (MsgLog.timestamp == MsgLog.select(fn.Max(MsgLog.timestamp)).where((MsgLog.group == group)))
         )
     except MsgLog.DoesNotExist:
         return None, None, None
@@ -147,7 +144,7 @@ async def get_group_last_message_id(group: int | str) -> Optional[int]:
 async def get_member_last_time(group: int | str, qq: int | str) -> Optional[int]:
     try:
         data = MsgLog.select(fn.Max(MsgLog.timestamp).alias('last_time')).where(
-                (MsgLog.group == group) & (MsgLog.qq == qq)
+            (MsgLog.group == group) & (MsgLog.qq == qq)
         )
     except MsgLog.DoesNotExist:
         return None

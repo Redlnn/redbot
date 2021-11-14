@@ -45,7 +45,7 @@ _border_outline_color = '#e9e5d9'
 if _is_ttc_font:
     font = ImageFont.truetype(_font_path, size=_font_size, index=_ttc_font_index)  # 确定正文用的ttf字体
     extra_font = ImageFont.truetype(
-            _font_path, size=_font_size - int(0.3 * _font_size), index=_ttc_font_index
+        _font_path, size=_font_size - int(0.3 * _font_size), index=_ttc_font_index
     )  # 确定而额外文本用的ttf字体
 else:
     # 确定正文用的ttf字体
@@ -68,32 +68,27 @@ def _get_time(mode: int = 1) -> str:
 
 
 def _cut_line_to_list(
-        text: str,
-        chars_per_line: int,
-        line_width: int,
-        font_size: int,
+    text: str,
+    chars_per_line: int,
+    line_width: int,
+    font_size: int,
 ):
     start_index = 0
     index_offset = 0
     text_list = []
-    start_symbol = (
-        '[', '{', '<', '(', '【', '《', '（', '〈', '〖', '［', '〔', '“', '‘', '『', '「', '〝',
-    )
-    end_symbol = (
-        ',', '.', '!', '?', ';', ':', ']', '}', '>', ')', '%', '~', '…', '，', '。', '！', '？', '；', '：', '】', '》',
-        '）', '〉', '〗', '］', '〕', '”', '’', '～', '』', '」', '〞',
-    )
+    start_symbol = '[{<(【《（〈〖［〔“‘『「〝'
+    end_symbol = ',.!?;:]}>)%~…，。！？；：】》）〉〗］〕”’～』」〞'
     while True:
-        tmp_text = text[start_index: start_index + chars_per_line + index_offset]
+        tmp_text = text[start_index : start_index + chars_per_line + index_offset]
         width = font.getlength(tmp_text)
         if abs(width - line_width) < font_size:
             if start_index + chars_per_line + index_offset < len(text):
                 if text[start_index + chars_per_line + index_offset] in end_symbol:
                     index_offset += 1
-                    text_list.append(text[start_index: start_index + chars_per_line + index_offset])
+                    text_list.append(text[start_index : start_index + chars_per_line + index_offset])
                 elif text[start_index + chars_per_line + index_offset] in start_symbol:
                     index_offset -= 1
-                    text_list.append(text[start_index: start_index + chars_per_line + index_offset])
+                    text_list.append(text[start_index : start_index + chars_per_line + index_offset])
                 elif text[start_index + chars_per_line + index_offset] == ' ':
                     text_list.append(tmp_text)
                     index_offset += 1
@@ -121,10 +116,10 @@ def _cut_line_to_list(
 
 
 def _cut_text(
-        text: str,
-        char_per_line: int,
-        line_width: int,
-        font_size: int,
+    text: str,
+    char_per_line: int,
+    line_width: int,
+    font_size: int,
 ):
     text_list = text.splitlines(False)
     n_text_list = []
@@ -190,15 +185,14 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
 
     # 画布高度=(内容区域高度+(2*正文边距)+(边框上边距+4*边框厚度+2*内外框距离+边框下边距)
     bg_height = (
-            content_height
-            + (2 * _text_margin)
-            + (_border_top_margin + (4 * _border_outline_width) + (2 * _border_interval))
-            + _border_bottom_margin
+        content_height
+        + (2 * _text_margin)
+        + (_border_top_margin + (4 * _border_outline_width) + (2 * _border_interval))
+        + _border_bottom_margin
     )
     # 画布宽度=行宽+2*正文侧面边距+2*(边框侧面边距+(2*边框厚度)+内外框距离)
     bg_width = (
-            line_width + (2 * _text_margin) + (
-                2 * (_border_side_margin + (2 * _border_outline_width) + _border_interval))
+        line_width + (2 * _text_margin) + (2 * (_border_side_margin + (2 * _border_outline_width) + _border_interval))
     )
 
     canvas = Image.new('RGB', (bg_width, bg_height), _background_color)
@@ -210,31 +204,31 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
     # 外框左上点坐标 x=边框侧边距 y=边框上边距
     # 外框右下点坐标 x=画布宽度-边框侧边距 y=画布高度-边框上边距
     draw.rectangle(
-            (
-                (_border_side_margin, _border_top_margin),
-                (bg_width - _border_side_margin, bg_height - _border_bottom_margin),
-            ),
-            fill=None,
-            outline=_border_outline_color,
-            width=_border_outline_width,
+        (
+            (_border_side_margin, _border_top_margin),
+            (bg_width - _border_side_margin, bg_height - _border_bottom_margin),
+        ),
+        fill=None,
+        outline=_border_outline_color,
+        width=_border_outline_width,
     )
     # 绘制内框
     # 内框左上点坐标 x=边框侧边距+外边框厚度+内外框距离 y=边框上边距+外边框厚度+内外框距离
     # 内框右下点坐标 x=画布宽度-边框侧边距-外边框厚度-内外框距离 y=画布高度-边框上边距-外边框厚度-内外框距离
     draw.rectangle(
+        (
             (
-                (
-                    _border_side_margin + _border_outline_width + _border_interval,
-                    _border_top_margin + _border_outline_width + _border_interval,
-                ),
-                (
-                    bg_width - _border_side_margin - _border_outline_width - _border_interval,
-                    bg_height - _border_bottom_margin - _border_outline_width - _border_interval,
-                ),
+                _border_side_margin + _border_outline_width + _border_interval,
+                _border_top_margin + _border_outline_width + _border_interval,
             ),
-            fill=None,
-            outline=_border_outline_color,
-            width=_border_outline_width,
+            (
+                bg_width - _border_side_margin - _border_outline_width - _border_interval,
+                bg_height - _border_bottom_margin - _border_outline_width - _border_interval,
+            ),
+        ),
+        fill=None,
+        outline=_border_outline_color,
+        width=_border_outline_width,
     )
 
     pil_compensation = _border_outline_width - 1 if _border_outline_width > 1 else 0
@@ -243,87 +237,87 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
     # 左上点坐标 x=边框侧边距-边长-2*边框厚度+补偿 y=边框侧边距-边长-2*边框厚度+补偿 (补偿PIL绘图的错位)
     # 右下点坐标 x=边框侧边距+补偿 y=边框上边距+补偿
     draw.rectangle(
+        (
             (
-                (
-                    _border_side_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
-                    _border_top_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
-                ),
-                (
-                    _border_side_margin + pil_compensation,
-                    _border_top_margin + pil_compensation,
-                ),
+                _border_side_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
+                _border_top_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
             ),
-            fill=None,
-            outline=_border_outline_color,
-            width=_border_outline_width,
+            (
+                _border_side_margin + pil_compensation,
+                _border_top_margin + pil_compensation,
+            ),
+        ),
+        fill=None,
+        outline=_border_outline_color,
+        width=_border_outline_width,
     )
     # 绘制右上小方形
     # 左上点坐标 x=画布宽度-(边框侧边距+补偿) y=边框侧边距-边长-2*边框厚度+补偿 (补偿PIL绘图的错位)
     # 右下点坐标 x=画布宽度-(边框侧边距-边长-2*边框厚度+补偿) y=边框上边距+补偿
     draw.rectangle(
+        (
             (
-                (
-                    bg_width - _border_side_margin - pil_compensation,
-                    _border_top_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
-                ),
-                (
-                    bg_width
-                    - _border_side_margin
-                    + _border_square_wrap_width
-                    + (2 * _border_outline_width - pil_compensation),
-                    _border_top_margin + pil_compensation,
-                ),
+                bg_width - _border_side_margin - pil_compensation,
+                _border_top_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
             ),
-            fill=None,
-            outline=_border_outline_color,
-            width=_border_outline_width,
+            (
+                bg_width
+                - _border_side_margin
+                + _border_square_wrap_width
+                + (2 * _border_outline_width - pil_compensation),
+                _border_top_margin + pil_compensation,
+            ),
+        ),
+        fill=None,
+        outline=_border_outline_color,
+        width=_border_outline_width,
     )
     # 绘制左下小方形
     # 左上点坐标 x=边框侧边距-边长-2*边框厚度+补偿 y=画布高度-(边框下边距+补偿) (补偿PIL绘图的错位)
     # 右下点坐标 x=边框侧边距+补偿 y=画布高度-(边框侧边距-边长-2*边框厚度+补偿)
     draw.rectangle(
+        (
             (
-                (
-                    _border_side_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
-                    bg_height - _border_bottom_margin - pil_compensation,
-                ),
-                (
-                    _border_side_margin + pil_compensation,
-                    bg_height
-                    - _border_bottom_margin
-                    + _border_square_wrap_width
-                    + (2 * _border_outline_width)
-                    - pil_compensation,
-                ),
+                _border_side_margin - _border_square_wrap_width - (2 * _border_outline_width) + pil_compensation,
+                bg_height - _border_bottom_margin - pil_compensation,
             ),
-            fill=None,
-            outline=_border_outline_color,
-            width=_border_outline_width,
+            (
+                _border_side_margin + pil_compensation,
+                bg_height
+                - _border_bottom_margin
+                + _border_square_wrap_width
+                + (2 * _border_outline_width)
+                - pil_compensation,
+            ),
+        ),
+        fill=None,
+        outline=_border_outline_color,
+        width=_border_outline_width,
     )
     # 绘制右下小方形
     # 左上点坐标 x=画布宽度-(边框侧边距+补偿) y=画布高度-(边框下边距+补偿) (补偿PIL绘图的错位)
     # 右下点坐标 x=画布宽度-(边框侧边距-边长-2*边框厚度+补偿) y=画布高度-(边框侧边距-边长-2*边框厚度+补偿)
     draw.rectangle(
+        (
             (
-                (
-                    bg_width - _border_side_margin - pil_compensation,
-                    bg_height - _border_bottom_margin - pil_compensation,
-                ),
-                (
-                    bg_width
-                    - _border_side_margin
-                    + _border_square_wrap_width
-                    + (2 * _border_outline_width - pil_compensation),
-                    bg_height
-                    - _border_bottom_margin
-                    + _border_square_wrap_width
-                    + (2 * _border_outline_width)
-                    - pil_compensation,
-                ),
+                bg_width - _border_side_margin - pil_compensation,
+                bg_height - _border_bottom_margin - pil_compensation,
             ),
-            fill=None,
-            outline=_border_outline_color,
-            width=_border_outline_width,
+            (
+                bg_width
+                - _border_side_margin
+                + _border_square_wrap_width
+                + (2 * _border_outline_width - pil_compensation),
+                bg_height
+                - _border_bottom_margin
+                + _border_square_wrap_width
+                + (2 * _border_outline_width)
+                - pil_compensation,
+            ),
+        ),
+        fill=None,
+        outline=_border_outline_color,
+        width=_border_outline_width,
     )
 
     # 绘制内容
@@ -336,11 +330,11 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
     for i in contents:
         if isinstance(i['content'], str):
             draw.text(
-                    (content_area_x, content_area_y),
-                    i['content'],
-                    fill=_font_color,
-                    font=font,
-                    spacing=_line_space,
+                (content_area_x, content_area_y),
+                i['content'],
+                fill=_font_color,
+                font=font,
+                spacing=_line_space,
             )
             content_area_y += i['height']
         elif isinstance(i['content'], PIL.Image.Image):
@@ -350,24 +344,24 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
     # 绘制第一行额外文字
     # 开始坐标 x=边框侧边距+(4*内外框距离) y=画布高度-边框下边距+(2*内外框距离)
     draw.text(
-            (
-                _border_side_margin + (4 * _border_interval),
-                bg_height - _border_bottom_margin + (2 * _border_interval),
-            ),
-            extra_text1,
-            fill='#b4a08e',
-            font=extra_font,
+        (
+            _border_side_margin + (4 * _border_interval),
+            bg_height - _border_bottom_margin + (2 * _border_interval),
+        ),
+        extra_text1,
+        fill='#b4a08e',
+        font=extra_font,
     )
     # 绘制第二行额外文字
     # 开始坐标 x=边框侧边距+(4*内外框距离) y=画布高度-边框下边距+(3*内外框距离)+第一行额外文字的高度
     draw.text(
-            (
-                _border_side_margin + (4 * _border_interval),
-                bg_height - _border_bottom_margin + (3 * _border_interval) + extra_font.getsize(extra_text1)[1],
-            ),
-            extra_text2,
-            fill='#b4a08e',
-            font=extra_font,
+        (
+            _border_side_margin + (4 * _border_interval),
+            bg_height - _border_bottom_margin + (3 * _border_interval) + extra_font.getsize(extra_text1)[1],
+        ),
+        extra_text2,
+        fill='#b4a08e',
+        font=extra_font,
     )
 
     # canvas = canvas.convert(mode='RGB')  # 将RGBA转换为RGB
@@ -375,13 +369,13 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
 
     byte_io = BytesIO()
     canvas.save(
-            byte_io,
-            format='JPEG',
-            quality=90,
-            optimize=True,
-            progressive=True,
-            subsampling=2,
-            qtables='web_high',
+        byte_io,
+        format='JPEG',
+        quality=90,
+        optimize=True,
+        progressive=True,
+        subsampling=2,
+        qtables='web_high',
     )
 
     # 保存为jpg图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#jpeg

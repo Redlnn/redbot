@@ -18,8 +18,6 @@ from config import config_data
 
 __all__ = ['Permission']
 
-_admins = config_data['Basic']['Permission']['Admin'] if config_data['Basic']['Permission']['Admin'] else []
-
 
 class Permission:
     """
@@ -43,7 +41,7 @@ class Permission:
     }
 
     @classmethod
-    async def get(cls, user: Member, allow_override: bool = True) -> int:
+    async def get(cls, member: Member, allow_override: bool = True) -> int:
         """
         获取用户的权限等级
 
@@ -52,12 +50,13 @@ class Permission:
         :return: 等级，整数
         """
         if allow_override:
-            if user.id == config_data['Basic']['Permission']['Master']:
+            admins = config_data['Basic']['Permission']['Admin'] if config_data['Basic']['Permission']['Admin'] else []
+            if member.id == config_data['Basic']['Permission']['Master']:
                 return cls.MASTER
-            elif user.id in _admins:
+            elif member.id in admins:
                 return cls.BOT_ADMIN
 
-        match user.permission:
+        match member.permission:
             case MemberPerm.Owner:
                 return cls.OWMER
             case MemberPerm.Administrator:
@@ -68,8 +67,13 @@ class Permission:
                 return cls.DEFAULT
 
     @classmethod
-    def group_perm_check(cls, perm: MemberPerm | int, send_alert: bool = False, alert_text: str = '你没有权限执行此指令',
-                         allow_override: bool = True) -> Depend:
+    def group_perm_check(
+        cls,
+        perm: MemberPerm | int,
+        send_alert: bool = False,
+        alert_text: str = '你没有权限执行此指令',
+        allow_override: bool = True,
+    ) -> Depend:
         """
         群消息权限检查
 
@@ -97,8 +101,13 @@ class Permission:
         return Depend(check_wrapper)
 
     @classmethod
-    def temp_perm_check(cls, perm: MemberPerm | int, send_alert: bool = False, alert_text: str = '你没有权限执行此指令',
-                        allow_override: bool = True) -> Depend:
+    def temp_perm_check(
+        cls,
+        perm: MemberPerm | int,
+        send_alert: bool = False,
+        alert_text: str = '你没有权限执行此指令',
+        allow_override: bool = True,
+    ) -> Depend:
         """
         群消息权限检查
 

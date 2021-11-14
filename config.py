@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from asyncio import Lock
 
 import yaml
 
@@ -19,6 +20,8 @@ else:
     config_data = yaml.load(file_data, Loader=yaml.FullLoader)
     del file_data
 
+lock = Lock()
+
 
 def save_config():
     global config_data
@@ -33,8 +36,12 @@ def reload_config():
     try:
         with open('config.yml', 'r', encoding='utf-8') as fr1:
             file_data1 = fr1.read()
-        config_data = yaml.load(file_data1, Loader=yaml.FullLoader)
-        del file_data1
+        new_data = yaml.load(file_data1, Loader=yaml.FullLoader)
+        # 若直接重新赋值 config_data，会导致其内存地址发生改变，无法影响其他 import 了 config_data 的模块
+        # 因此需要直接改变其内部的内容
+        for key in config_data.keys():
+            config_data[key] = new_data[key]
+        del file_data1, new_data
         logger.info('重新加载配置文件完成')
         return True
     except Exception as e:

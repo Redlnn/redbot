@@ -25,11 +25,12 @@ saya = Saya.current()
 channel = Channel.current()
 
 Module(
-        name='Bot版本与系统运行情况查询',
-        config_name='BotStatus',
-        author=['Red_lnn'],
-        usage='[!！.](status|version)'
-).registe()
+    name='Bot版本与系统运行情况查询',
+    config_name='BotStatus',
+    file_name=os.path.basename(__file__),
+    author=['Red_lnn'],
+    usage='[!！.](status|version)',
+).register()
 
 repo = git.Repo(os.getcwd())
 
@@ -44,10 +45,10 @@ total_memory = '%.1f' % (psutil.virtual_memory().total / 1073741824)
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                decorators=[group_blacklist()],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        decorators=[group_blacklist()],
+    )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
     if not config_data['Modules']['BotStatus']['Enabled']:

@@ -31,9 +31,9 @@ from graia.scheduler.timers import crontabify
 from loguru import logger
 
 from config import config_data
-from modules.BotManage import Module
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Rate import MemberInterval
+from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import async_generate_img, hr
 
 saya = Saya.current()
@@ -42,10 +42,11 @@ channel = Channel.current()
 Module(
         name='人品测试',
         config_name='RenpinChecker',
+        file_name=os.path.basename(__file__),
         author=['Red_lnn'],
         description='每个QQ号每天可抽一次签并获得人品值',
         usage='[!！.]jrrp / [!！.]抽签'
-).registe()
+).register()
 
 data_folder = os.path.join(os.getcwd(), 'data')
 
