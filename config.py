@@ -5,8 +5,7 @@ import os
 from asyncio import Lock
 
 import yaml
-
-from utils.logger import logger
+from loguru import logger
 
 if not os.path.exists('config.yml') and os.path.exists('config.exp.yml'):
     logger.error('请复制一份 config.exp.yml 并将其重命名为 config.yml 作为配置文件！')
