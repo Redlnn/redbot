@@ -132,7 +132,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
         return await app.sendGroupMessage(group, MessageChain.create([Plain('视频不存在')]))
     elif video_info['code'] != 0:
         error_text = (
-            f'在请求 {video_id.group(0)} 的视频信息时，B站服务器返回错误：↓\n' f'错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
+            f'在请求 {video_id.group(0)} 的视频信息时，B站服务器返回错误：↓\n错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
         )
         logger.error(error_text)
         return await app.sendGroupMessage(group, MessageChain.create([Plain(error_text)]))
