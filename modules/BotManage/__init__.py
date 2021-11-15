@@ -75,7 +75,7 @@ async def menu(app: Ariadne, group: Group):
         if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
             return
     msg_send = (
-        f'-= {config_data["Basic"]["BotName"]} 菜单 for {group.id} =-\n' f'{group.name}\n' f'{hr}\n' 'ID    模块状态    模块名\n'
+        f'-= {config_data["Basic"]["BotName"]} 菜单 for {group.id} =-\n-={group.name}=-\n{hr}\nID    模块状态    模块名\n'
     )
     i = 0
     for module in Modules:
@@ -269,7 +269,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, sparkle: Spa
     await app.sendGroupMessage(
         group,
         MessageChain.create(
-            At(member.id), Plain('重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n' '强制重载请在10s发送 .force ，取消请发送 .cancel')
+            At(member.id), Plain('重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s发送 .force ，取消请发送 .cancel')
         ),
     )
     answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
@@ -321,7 +321,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, sparkle: Spark
 
     # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
     await app.sendGroupMessage(
-        group, MessageChain.create(At(member.id), Plain('加载新模块有极大可能会出错，请问你确实吗？\n' '强制加载请在10s发送 .force ，取消请发送 .cancel'))
+        group, MessageChain.create(At(member.id), Plain('加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s发送 .force ，取消请发送 .cancel'))
     )
     answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
     if not answer:
