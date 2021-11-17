@@ -10,7 +10,7 @@ Xenon 管理：https://github.com/McZoo/Xenon/blob/master/lib/control.py
 import time
 from asyncio import Lock
 from collections import defaultdict
-from typing import DefaultDict, Set, Tuple
+from typing import DefaultDict, Optional, Set, Tuple
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
@@ -298,7 +298,7 @@ class ManualInterval:
     last_exec: DefaultDict[str, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
 
     @classmethod
-    def require(cls, name: str, suspend_time: float, max_exec: int = 1, raise_error: bool = True) -> bool:
+    def require(cls, name: str, suspend_time: float, max_exec: int = 1) -> Tuple(bool, Optional[float]):
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
         等级在 `override_level` 以上的可以无视限制
@@ -306,18 +306,15 @@ class ManualInterval:
         :param name: 需要被冷却的功能或自定义flag
         :param suspend_time: 冷却时间
         :param max_exec: 使用n次后进入冷却
-        :param raise_error: 是否抛出 ExecutionStop 异常（会被 broadcast 捕获），若不抛出则返回 False 可自行处理
-        :return: True 为冷却中，False 反之
+        :return: True 为冷却中，False 反之，若为 False，还会返回剩余时间
         """
 
         current = time.time()
         last = cls.last_exec[name]
         if current - cls.last_exec[name][1] >= suspend_time:
             cls.last_exec[name] = (1, current)
-            return True
+            return True, None
         elif last[0] < max_exec:
             cls.last_exec[name] = (last[0] + 1, current)
-            return True
-        if raise_error:
-            raise ExecutionStop()
-        return False
+            return True, None
+        return False, round(last[1] + suspend_time - current, 2)
