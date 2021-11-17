@@ -53,7 +53,6 @@ Module(
 ).register()
 
 Generating_list: List[int | str] = []
-bg_list = os.listdir(os.path.join(os.path.dirname(__file__), 'bg'))
 
 
 @channel.use(
@@ -100,7 +99,7 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
         if target in Generating_list:
             await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
-        rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 15, 2)
+        rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
         if not rate_limit:
             await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后')))
         Generating_list.append(target)
@@ -110,7 +109,7 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
         if target in Generating_list:
             await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
-        rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 15, 2)
+        rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
         if not rate_limit:
             await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后')))
         Generating_list.append(target)
@@ -126,7 +125,7 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令，参数错误')))
         return
 
-    if len(msg_list) < 10:
+    if len(msg_list) < 50:
         await app.sendGroupMessage(group, MessageChain.create(Plain(f'目标 {target} 的样本数量较少，无法生成词云')))
         Generating_list.remove(target)
         return
@@ -193,16 +192,18 @@ def get_frequencies(msg_list: List[str]) -> dict:
         else:
             text += chain.asDisplay()
             text += '\n'
-    words = jieba.analyse.extract_tags(text, topK=800, withWeight=True)
+    jieba.load_userdict(os.path.join(os.path.dirname(__file__), 'user_dict.txt'))
+    words = jieba.analyse.extract_tags(text, topK=600, withWeight=True)
     return dict(words)
 
 
 def gen_wordcloud(words: dict) -> bytes:
+    bg_list = os.listdir(os.path.join(os.path.dirname(__file__), 'bg'))
     mask = numpy.array(
         Img.open(os.path.join(os.path.dirname(__file__), 'bg', bg_list[random.randint(0, len(bg_list) - 1)]))
     )
     font_path = os.path.join(os.getcwd(), 'fonts', config_data['Modules']['WordCloud']['FontName'])
-    wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=800, scale=2)
+    wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=600, scale=2)
     wordcloud.generate_from_frequencies(words)
     image_colors = ImageColorGenerator(mask, default_color=(255, 255, 255))
     wordcloud.recolor(color_func=image_colors)
