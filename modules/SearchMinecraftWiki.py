@@ -68,7 +68,7 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
         f'url="https://minecraft.fandom.com/zh/index.php?search={search_parm}" serviceID="33" action="web" '
         f'actionData="" brief="【链接】{arg} - Minecraft Wiki" flag="8"><item layout="2">'
         '<picture cover="https://images.wikia.com/minecraft_zh_gamepedia/images/b/bc/Wiki.png"/>'
-        '<title>{arg} - Minecraft Wiki</title><summary>{arg} - Minecraft Wiki，最详细的官方我的世界百科</summary>'
+        f'<title>{arg} - Minecraft Wiki</title><summary>{arg} - Minecraft Wiki，最详细的官方我的世界百科</summary>'
         '</item></msg>'
     )
     await app.sendGroupMessage(group, MessageChain.create([Xml(xml=bilibili_wiki, type='Xml')]))
