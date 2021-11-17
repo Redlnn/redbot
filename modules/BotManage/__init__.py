@@ -100,8 +100,8 @@ async def menu(app: Ariadne, group: Group):
         f'私は {config_data["Basic"]["Permission"]["MasterName"]} の {config_data["Basic"]["BotName"]} です www\n'
         '群管理员要想配置模块开关请发送【.启用/禁用模块 <id>】\n'
         '要想查询某模块的用法和介绍请发送【.用法 <id>】\n'
-        '若无法触发，请检查前缀符号是否正确如 ! 与 ！\n'
-        '或是命令中有无多余空格，所有模块均不需要@bot\n'
+        '若无法触发，请检查前缀符号是否正确如！与!\n'
+        '或是命令中有无多余空格，除了特别说明，其他模块均不需要@bot\n'
         '全局禁用的模块不能重新开启\n'
     )
     img_io = await async_generate_img([msg_send])
@@ -182,7 +182,7 @@ async def turn_off(app: Ariadne, group: Group, sparkle: Sparkle):
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(MemberPerm.Administrator)],
     )
 )
-async def turn_off(app: Ariadne, group: Group, sparkle: Sparkle):
+async def get_usage(app: Ariadne, group: Group, sparkle: Sparkle):
     if not config_data['Modules']['BotManage']['Enabled']:
         saya.uninstall_channel(channel)
         return

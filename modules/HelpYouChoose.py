@@ -8,7 +8,9 @@ import regex
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Plain, Source
+from graia.ariadne.message.element import At, Plain, Source
+from graia.ariadne.message.parser.pattern import ElementMatch, RegexMatch
+from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -26,13 +28,14 @@ Module(
     config_name='HelpYouChoose',
     file_name=os.path.basename(__file__),
     author=['Red_lnn'],
-    usage='发送 {主语}<介词>不<介词>{动作}\n如：我要不要去吃饭',
+    usage='@bot {主语}<介词>不<介词>{动作}\n如：@bot 我要不要去吃饭',
 ).register()
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([ElementMatch(At), RegexMatch(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?')]))],
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )
@@ -44,7 +47,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         if group.id in config_data['Modules']['HelpYouChoose']['DisabledGroup']:
             return
 
-    re_match = regex.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', message.include(Plain).asDisplay())
+    re_match = regex.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', message.include(Plain).asDisplay().strip())
     if not re_match:
         return
     re_match = re_match.groups()
