@@ -122,9 +122,9 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
     if not video_id:
         return
 
-    interval_status = ManualInterval.require(f'{group.id}_{member.id}_bilibiliVideoInfo', 5, 2, False)
-    if not interval_status:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('冷却中，请稍后再试')))
+    rate_limit, remaining_time = ManualInterval.require(f'{group.id}_{member.id}_bilibiliVideoInfo', 5, 2)
+    if not rate_limit:
+        await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
 
     video_info = await get_video_info(video_id.group(0))

@@ -90,7 +90,8 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
             return
         rate_limit, remaining_time = ManualInterval.require(f'wordcloud_{target}', 600, 1)
         if not rate_limit:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后')))
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+            return
         Generating_list.append(target)
         msg_list = await get_group_msg(group.id, target_timestamp)
     elif match_result.asDisplay() == 'me':
@@ -101,7 +102,8 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
             return
         rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
         if not rate_limit:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后')))
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+            return
         Generating_list.append(target)
         msg_list = await get_member_msg(group.id, target, target_timestamp)
     elif match_result.onlyContains(At):
@@ -111,7 +113,8 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
             return
         rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
         if not rate_limit:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后')))
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+            return
         Generating_list.append(target)
         msg_list = await get_member_msg(group.id, target, target_timestamp)
     elif match_result.asDisplay().isdigit():
