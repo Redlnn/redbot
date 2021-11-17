@@ -11,6 +11,7 @@ redbot  根目录
 ├── modules  插件目录
 │   ├── AutoReply/  自动回复
 │   ├── BotManage/  Bot菜单及模块管理
+│   ├── EatWhat/  吃啥？
 │   ├── MinecraftServerManager/  我的世界服务器管理
 │   ├── MinecraftServerPing/  我的世界服务器 Motd Ping
 │   ├── WordCloud/ 聊天历史词云生成
