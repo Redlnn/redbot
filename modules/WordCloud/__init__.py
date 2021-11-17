@@ -44,11 +44,11 @@ Module(
     config_name='WordCloud',
     file_name=os.path.dirname(__file__),
     author=['Red_lnn', 'A60(djkcyl)'],
-    description='获得一个随机数',
+    description='获取指定目标在最近7天内的聊天词云',
     usage=(
         '[!！.]wordcloud groud —— 获得本群最近7天内的聊天词云\n'
-        '[!！.]wordcloud At/本群成员QQ号 —— 获得ta最近7天内的聊天词云\n'
-        '[!！.]wordcloud me —— 获得你最近7天内的聊天词云\n'
+        '[!！.]wordcloud At/本群成员QQ号 —— 获得ta在本群最近7天内的聊天词云\n'
+        '[!！.]wordcloud me —— 获得你在本群最近7天内的聊天词云\n'
     ),
 ).register()
 
