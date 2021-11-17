@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import asyncio
 import os
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.exception import AccountNotFound
 from graia.ariadne.model import MiraiSession
-from graia.broadcast import Broadcast
 from graia.broadcast.interrupt import InterruptControl
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
@@ -19,24 +17,19 @@ from utils.logger import logger
 
 if __name__ == '__main__':
     logger.info('初始化...')
-    loop = asyncio.new_event_loop()
-    bcc = Broadcast(loop=loop, debug_flag=config_data['Basic']['Debug'])
-    scheduler = GraiaScheduler(loop, bcc)
-    saya = Saya(bcc)
 
-    saya.install_behaviours(BroadcastBehaviour(bcc))
-    saya.install_behaviours(GraiaSchedulerBehaviour(scheduler))
-    saya.install_behaviours(InterruptControl(bcc))
-
-    app = Ariadne.create(
-        broadcast=bcc,
-        chat_log_config=None if config_data['Basic']['LogChat'] else False,
-        session=MiraiSession(
+    app = Ariadne(
+        MiraiSession(
             host=config_data['Basic']['MiraiApiHttp']['Host'],  # 填入 httpapi 服务运行的地址
             account=config_data['Basic']['MiraiApiHttp']['Account'],  # 你的机器人的 qq 号
             verify_key=config_data['Basic']['MiraiApiHttp']['VerifyKey'],  # 填入 verifyKey
         ),
+        chat_log_config=None if config_data['Basic']['LogChat'] else False,
     )
+    saya = Saya(app.broadcast)
+    saya.install_behaviours(BroadcastBehaviour(app.broadcast))
+    saya.install_behaviours(GraiaSchedulerBehaviour(GraiaScheduler(app.loop, app.broadcast)))
+    saya.install_behaviours(InterruptControl(app.broadcast))
 
     async def main() -> None:
         await app.launch()
@@ -58,15 +51,15 @@ if __name__ == '__main__':
     logger.info('正在启动 Ariadne...')
 
     try:
-        loop.run_until_complete(main())
+        app.loop.run_until_complete(main())
     except KeyboardInterrupt:
         logger.info('正在退出中...')
-        loop.run_until_complete(app.stop())
+        app.loop.run_until_complete(app.stop())
         logger.info('Bye~')
         logger.complete()
         exit()
     except AccountNotFound:
         logger.critical('Ariadne 启动失败，无法连接到 Mirai-Api-Http：Account Not Found')
-        logger.info("正在退出...")
+        logger.info('正在退出...')
         logger.complete()
         exit()
