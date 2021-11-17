@@ -11,17 +11,19 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import App, At, Json, Plain, Source, Xml
-from graia.ariadne.message.parser.pattern import (ArgumentMatch,
-                                                  ElementMatch, RegexMatch)
+from graia.ariadne.message.parser.pattern import ArgumentMatch, ElementMatch, RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
-from utils.Database.msg_history import (get_group_talk_count,
-                                        get_member_last_message,
-                                        get_member_talk_count, log_msg)
+from utils.Database.msg_history import (
+    get_group_talk_count,
+    get_member_last_message,
+    get_member_talk_count,
+    log_msg,
+)
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Permission import Permission
 from utils.ModuleRegister import Module

@@ -3,7 +3,7 @@
 
 import os
 
-from peewee import *
+from peewee import BooleanField, CharField, Model, TextField, TimestampField, UUIDField
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
 
@@ -69,7 +69,7 @@ class PlayersTable(Model):
 
     class Meta:
         database = db
-        table_name = f'redbot_minecraft_players'
+        table_name = 'redbot_minecraft_players'
         legacy_table_names = False
 
 
