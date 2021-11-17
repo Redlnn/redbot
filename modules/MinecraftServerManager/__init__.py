@@ -7,8 +7,11 @@ import time
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
-from graia.ariadne.event.mirai import (MemberJoinEvent, MemberLeaveEventKick,
-                                       MemberLeaveEventQuit)
+from graia.ariadne.event.mirai import (
+    MemberJoinEvent,
+    MemberLeaveEventKick,
+    MemberLeaveEventQuit,
+)
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain, Source
 from graia.ariadne.message.parser.pattern import RegexMatch
@@ -20,16 +23,22 @@ from loguru import logger
 
 from config import config_data
 from utils.Limit.Permission import Permission
+
 # from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import generate_img
 
 from .database import PlayersTable, db, init_table
 from .rcon import execute_command
 from .utils import is_mc_id, is_uuid, query_uuid_by_qq
-from .whitelist import (add_whitelist_to_qq, del_whitelist_by_id,
-                        del_whitelist_by_qq, del_whitelist_by_uuid,
-                        gen_query_info_text, query_whitelist_by_id,
-                        query_whitelist_by_uuid)
+from .whitelist import (
+    add_whitelist_to_qq,
+    del_whitelist_by_id,
+    del_whitelist_by_qq,
+    del_whitelist_by_uuid,
+    gen_query_info_text,
+    query_whitelist_by_id,
+    query_whitelist_by_uuid,
+)
 
 saya = Saya.current()
 channel = Channel.current()
@@ -137,7 +146,7 @@ async def init(app: Ariadne):
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]mc')]))],
     )
 )
-async def whitelist_menu(app: Ariadne, group: Group):
+async def main_menu(app: Ariadne, group: Group):
     if not is_init:
         return
     elif group.id not in active_groups:
@@ -251,9 +260,7 @@ async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
                             await del_whitelist_by_qq(int(target), app, group)
                         else:
                             await app.sendGroupMessage(
-                                    group,
-                                    MessageChain.create(Plain('无效的 QQ 号')),
-                                    quote=message.get(Source).pop(0)
+                                group, MessageChain.create(Plain('无效的 QQ 号')), quote=message.get(Source).pop(0)
                             )
                         return
                 elif func == 'id' and msg[3].onlyContains(Plain):
@@ -262,9 +269,9 @@ async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
                         await del_whitelist_by_id(target, app, group)
                     else:
                         await app.sendGroupMessage(
-                                group,
-                                MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')),
-                                quote=message.get(Source).pop(0)
+                            group,
+                            MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')),
+                            quote=message.get(Source).pop(0),
                         )
                         return
                 elif func == 'uuid' and msg[3].onlyContains(Plain):
@@ -273,9 +280,7 @@ async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
                         await del_whitelist_by_uuid(target, app, group)
                     else:
                         await app.sendGroupMessage(
-                                group,
-                                MessageChain.create(Plain('目标不是有效的 UUID')),
-                                quote=message.get(Source).pop(0)
+                            group, MessageChain.create(Plain('目标不是有效的 UUID')), quote=message.get(Source).pop(0)
                         )
                         return
 
@@ -303,30 +308,33 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
             if msg[2].onlyContains(At):
                 target = msg[2].getFirst(At).target
                 (
-                    had_status, joinTimestamp, leaveTimestamp,
-                    uuid1, uuid1AddedTime, uuid2, uuid2AddedTime, blocked, blockReason
+                    had_status,
+                    joinTimestamp,
+                    leaveTimestamp,
+                    uuid1,
+                    uuid1AddedTime,
+                    uuid2,
+                    uuid2AddedTime,
+                    blocked,
+                    blockReason,
                 ) = await query_uuid_by_qq(target)
                 if not had_status:
                     await app.sendGroupMessage(
-                            group,
-                            MessageChain.create(
-                                    At(target),
-                                    Plain(f'({target}) 好像一个白名单都没有呢~')
-                            )
+                        group, MessageChain.create(At(target), Plain(f'({target}) 好像一个白名单都没有呢~'))
                     )
                     return
                 await gen_query_info_text(
-                        target,
-                        joinTimestamp,
-                        leaveTimestamp,
-                        uuid1,
-                        uuid1AddedTime,
-                        uuid2,
-                        uuid2AddedTime,
-                        blocked,
-                        blockReason,
-                        app,
-                        group,
+                    target,
+                    joinTimestamp,
+                    leaveTimestamp,
+                    uuid1,
+                    uuid1AddedTime,
+                    uuid2,
+                    uuid2AddedTime,
+                    blocked,
+                    blockReason,
+                    app,
+                    group,
                 )
                 return
         case 4:
@@ -336,20 +344,56 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
                     if msg[3].onlyContains(At):
                         target = msg[3].getFirst(At).target
                         (
-                            had_status, joinTimestamp, leaveTimestamp,
-                            uuid1, uuid1AddedTime, uuid2, uuid2AddedTime, blocked, blockReason
+                            had_status,
+                            joinTimestamp,
+                            leaveTimestamp,
+                            uuid1,
+                            uuid1AddedTime,
+                            uuid2,
+                            uuid2AddedTime,
+                            blocked,
+                            blockReason,
                         ) = await query_uuid_by_qq(target)
                         if not had_status:
                             await app.sendGroupMessage(
-                                    group,
-                                    MessageChain.create(
-                                            At(target),
-                                            Plain(f'({target}) 好像一个白名单都没有呢~')
-                                    )
+                                group, MessageChain.create(At(target), Plain(f'({target}) 好像一个白名单都没有呢~'))
                             )
                             return
                         await gen_query_info_text(
-                                target,
+                            target,
+                            joinTimestamp,
+                            leaveTimestamp,
+                            uuid1,
+                            uuid1AddedTime,
+                            uuid2,
+                            uuid2AddedTime,
+                            blocked,
+                            blockReason,
+                            app,
+                            group,
+                        )
+                        return
+                    elif msg[3].onlyContains(Plain):
+                        target = msg[3].asDisplay()
+                        if target.isdigit():
+                            (
+                                had_status,
+                                joinTimestamp,
+                                leaveTimestamp,
+                                uuid1,
+                                uuid1AddedTime,
+                                uuid2,
+                                uuid2AddedTime,
+                                blocked,
+                                blockReason,
+                            ) = await query_uuid_by_qq(int(target))
+                            if not had_status:
+                                await app.sendGroupMessage(
+                                    group, MessageChain.create(At(int(target)), Plain(f'({target}) 好像一个白名单都没有呢~'))
+                                )
+                                return
+                            await gen_query_info_text(
+                                int(target),
                                 joinTimestamp,
                                 leaveTimestamp,
                                 uuid1,
@@ -360,101 +404,81 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
                                 blockReason,
                                 app,
                                 group,
-                        )
-                        return
-                    elif msg[3].onlyContains(Plain):
-                        target = msg[3].asDisplay()
-                        if target.isdigit():
-                            (
-                                had_status, joinTimestamp, leaveTimestamp,
-                                uuid1, uuid1AddedTime, uuid2, uuid2AddedTime, blocked, blockReason
-                            ) = await query_uuid_by_qq(int(target))
-                            if not had_status:
-                                await app.sendGroupMessage(
-                                        group,
-                                        MessageChain.create(
-                                                At(int(target)),
-                                                Plain(f'({target}) 好像一个白名单都没有呢~')
-                                        )
-                                )
-                                return
-                            await gen_query_info_text(
-                                    int(target),
-                                    joinTimestamp,
-                                    leaveTimestamp,
-                                    uuid1,
-                                    uuid1AddedTime,
-                                    uuid2,
-                                    uuid2AddedTime,
-                                    blocked,
-                                    blockReason,
-                                    app,
-                                    group,
                             )
                             return
                         else:
                             await app.sendGroupMessage(
-                                    group,
-                                    MessageChain.create(Plain('无效的 QQ 号')),
-                                    quote=message.get(Source).pop(0)
+                                group, MessageChain.create(Plain('无效的 QQ 号')), quote=message.get(Source).pop(0)
                             )
                         return
                 elif func == 'id' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
                     if is_mc_id(target):
                         (
-                            qq, joinTimestamp, leaveTimestamp,
-                            uuid1, uuid1AddedTime, uuid2, uuid2AddedTime, blocked, blockReason
+                            qq,
+                            joinTimestamp,
+                            leaveTimestamp,
+                            uuid1,
+                            uuid1AddedTime,
+                            uuid2,
+                            uuid2AddedTime,
+                            blocked,
+                            blockReason,
                         ) = await query_whitelist_by_id(target, app, group)
                         if qq:
                             await gen_query_info_text(
-                                    qq,
-                                    joinTimestamp,
-                                    leaveTimestamp,
-                                    uuid1,
-                                    uuid1AddedTime,
-                                    uuid2,
-                                    uuid2AddedTime,
-                                    blocked,
-                                    blockReason,
-                                    app,
-                                    group,
+                                qq,
+                                joinTimestamp,
+                                leaveTimestamp,
+                                uuid1,
+                                uuid1AddedTime,
+                                uuid2,
+                                uuid2AddedTime,
+                                blocked,
+                                blockReason,
+                                app,
+                                group,
                             )
                         return
                     else:
                         await app.sendGroupMessage(
-                                group,
-                                MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')),
-                                quote=message.get(Source).pop(0)
+                            group,
+                            MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')),
+                            quote=message.get(Source).pop(0),
                         )
                         return
                 elif func == 'uuid' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
                     if is_uuid(target):
                         (
-                            qq, joinTimestamp, leaveTimestamp,
-                            uuid1, uuid1AddedTime, uuid2, uuid2AddedTime, blocked, blockReason
+                            qq,
+                            joinTimestamp,
+                            leaveTimestamp,
+                            uuid1,
+                            uuid1AddedTime,
+                            uuid2,
+                            uuid2AddedTime,
+                            blocked,
+                            blockReason,
                         ) = await query_whitelist_by_uuid(target, app, group)
                         if qq:
                             await gen_query_info_text(
-                                    qq,
-                                    joinTimestamp,
-                                    leaveTimestamp,
-                                    uuid1,
-                                    uuid1AddedTime,
-                                    uuid2,
-                                    uuid2AddedTime,
-                                    blocked,
-                                    blockReason,
-                                    app,
-                                    group,
+                                qq,
+                                joinTimestamp,
+                                leaveTimestamp,
+                                uuid1,
+                                uuid1AddedTime,
+                                uuid2,
+                                uuid2AddedTime,
+                                blocked,
+                                blockReason,
+                                app,
+                                group,
                             )
                         return
                     else:
                         await app.sendGroupMessage(
-                                group,
-                                MessageChain.create(Plain('目标不是有效的 UUID')),
-                                quote=message.get(Source).pop(0)
+                            group, MessageChain.create(Plain('目标不是有效的 UUID')), quote=message.get(Source).pop(0)
                         )
                         return
 
