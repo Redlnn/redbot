@@ -39,14 +39,15 @@ Module(
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )
-async def main(app: Ariadne, group: Group, message: MessageChain):
+async def main(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
     if not config_data['Modules']['HelpYouChoose']['Enabled']:
         saya.uninstall_channel(channel)
         return
     elif config_data['Modules']['HelpYouChoose']['DisabledGroup']:
         if group.id in config_data['Modules']['HelpYouChoose']['DisabledGroup']:
             return
-
+    if sparkle._check_0.result.target != config_data['Basic']['MiraiApiHttp']['Account']:
+        return
     msg = message.include(Plain).asDisplay().strip()
     re1_match = regex.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)
     re2_match = regex.match(r'(.+)?(?P<v>有)(没|木)(?P=v)(.+)?', msg)
