@@ -35,7 +35,7 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([ElementMatch(At), RegexMatch(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?')]))],
+        inline_dispatchers=[Twilight(Sparkle([ElementMatch(At), RegexMatch(r'.+')]))],
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )
@@ -47,16 +47,29 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         if group.id in config_data['Modules']['HelpYouChoose']['DisabledGroup']:
             return
 
-    re_match = regex.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', message.include(Plain).asDisplay().strip())
-    if not re_match:
-        return
-    re_match = re_match.groups()
-    subject = re_match[0].replace('我', '你') if re_match[0] else ''
-    preposition = re_match[1]
-    action = re_match[2].replace('我', '你') if re_match[2] else ''
-    roll = randint(0, 100)
-    if roll % 2 == 0:
-        chain = MessageChain.create(Plain(subject + preposition + action))
+    msg = message.include(Plain).asDisplay().strip()
+    re1_match = regex.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)
+    re2_match = regex.match(r'(.+)?(?P<v>有)(没|木)(?P=v)(.+)?', msg)
+    if re1_match:
+        re1_match = re1_match.groups()
+        subject = re1_match[0].replace('我', '你') if re1_match[0] else ''
+        preposition = re1_match[1]
+        action = re1_match[2].replace('我', '你') if re1_match[2] else ''
+        roll = randint(0, 100)
+        if roll % 2 == 0:
+            chain = MessageChain.create(Plain(subject + preposition + action))
+        else:
+            chain = MessageChain.create(Plain(subject + '不' + preposition + action))
+    elif re2_match:
+        re2_match = re2_match.groups()
+        subject = re2_match[0].replace('我', '你') if re2_match[0] else ''
+        preposition = re2_match[1]
+        action = re2_match[3].replace('我', '你') if re2_match[2] else ''
+        roll = randint(0, 100)
+        if roll % 2 == 0:
+            chain = MessageChain.create(Plain(subject + preposition + action))
+        else:
+            chain = MessageChain.create(Plain(subject + re2_match[2] + preposition + action))
     else:
-        chain = MessageChain.create(Plain(subject + '不' + preposition + action))
+        return
     await app.sendGroupMessage(group, chain, quote=message.get(Source).pop(0))
