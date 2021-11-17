@@ -16,6 +16,7 @@ redbot  根目录
 │   ├── WordCloud/ 聊天历史词云生成
 │   ├── BiliVideoInfo.py  BiliBili 视频解析
 │   ├── BotStatus.py  Bot版本与系统运行情况查询
+│   ├── HelpYouChoose  帮你做选择
 │   ├── LogMsgHistory.py  历史聊天数据记录
 │   ├── ReadAndSend.py  读取/发送消息的可持久化字符串
 │   ├── RenpinChecker.py  每日抽签（人品检测）
