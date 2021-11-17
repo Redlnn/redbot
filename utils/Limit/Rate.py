@@ -298,7 +298,7 @@ class ManualInterval:
     last_exec: DefaultDict[str, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
 
     @classmethod
-    def require(cls, name: str, suspend_time: float, max_exec: int = 1) -> Tuple(bool, Optional[float]):
+    def require(cls, name: str, suspend_time: float, max_exec: int = 1) -> Tuple[bool, Optional[float]]:
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
         等级在 `override_level` 以上的可以无视限制
