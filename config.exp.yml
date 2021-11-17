@@ -110,6 +110,11 @@ Modules: # 各插件的配置
     DisabledGroup: # 要禁用的群
       - 123456789
 
+  HelpYouChoose:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
   LogMsgHistory:
     Enabled: true
     DisabledGroup: # 要禁用的群
