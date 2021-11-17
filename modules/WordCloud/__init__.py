@@ -33,7 +33,7 @@ from wordcloud import ImageColorGenerator, WordCloud
 from config import config_data
 from utils.Database.msg_history import get_group_msg, get_member_msg
 from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Rate import GroupInterval
+from utils.Limit.Rate import ManualInterval
 from utils.ModuleRegister import Module
 
 saya = Saya.current()
@@ -60,7 +60,7 @@ bg_list = os.listdir(os.path.join(os.path.dirname(__file__), 'bg'))
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wordcloud\ '), RegexMatch(r'.+')]))],
-        decorators=[group_blacklist(), GroupInterval.require(5)],
+        decorators=[group_blacklist()],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
@@ -89,6 +89,9 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
         if target in Generating_list:
             await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
+        rate_limit, remaining_time = ManualInterval.require(f'wordcloud_{target}', 600, 1)
+        if not rate_limit:
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后')))
         Generating_list.append(target)
         msg_list = await get_group_msg(group.id, target_timestamp)
     elif match_result.asDisplay() == 'me':
@@ -97,6 +100,9 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
         if target in Generating_list:
             await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
+        rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 15, 2)
+        if not rate_limit:
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后')))
         Generating_list.append(target)
         msg_list = await get_member_msg(group.id, target, target_timestamp)
     elif match_result.onlyContains(At):
@@ -104,6 +110,9 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
         if target in Generating_list:
             await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
+        rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 15, 2)
+        if not rate_limit:
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后')))
         Generating_list.append(target)
         msg_list = await get_member_msg(group.id, target, target_timestamp)
     elif match_result.asDisplay().isdigit():
