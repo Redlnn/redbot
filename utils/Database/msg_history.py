@@ -4,8 +4,7 @@
 import os
 from typing import Optional, Tuple
 
-from peewee import (CharField, IntegerField, Model,
-                    TextField, TimestampField, fn)
+from peewee import CharField, IntegerField, Model, TextField, TimestampField, fn
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
 
