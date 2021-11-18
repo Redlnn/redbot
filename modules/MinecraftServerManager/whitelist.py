@@ -84,7 +84,7 @@ async def add_whitelist_to_qq(
                 group,
                 MessageChain.create(
                     [
-                        Plain(f'你想要这个吗？\n这个是 {user} 哒~\n检测到该 QQ 疑似已退群，请联系管理员处理'),
+                        Plain(f'你想要这个吗？\n这个是 {user} 哒~\n该 QQ 疑似已退群，请联系管理员处理'),
                     ]
                 ),
                 quote=message.get(Source).pop(0),
@@ -114,6 +114,10 @@ async def add_whitelist_to_qq(
     elif blocked:
         await app.sendGroupMessage(group, MessageChain.create(Plain(f'你的账号已被封禁，封禁原因：{blockReason}')))
         return
+    elif not uuid1 and not uuid2:
+        PlayersTable.update(
+                {PlayersTable.uuid1: uuid.UUID(mc_uuid), PlayersTable.uuid1AddedTime: int(time.time())}
+            ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
     elif uuid1 and not uuid2:
         if admin:
             PlayersTable.update(
@@ -163,7 +167,7 @@ async def add_whitelist_to_qq(
                 group,
                 MessageChain.create(
                     [
-                        Plain('你已有两个白名单了噢'),
+                        Plain('你已经有两个白名单了噢'),
                     ]
                 ),
                 quote=message.get(Source).pop(0),
@@ -436,9 +440,9 @@ async def gen_query_info_text(
         except UnknownTarget:
             await app.sendGroupMessage(group, MessageChain.create(Plain(f'{qq} 一个白名单都没有呢')))
         return
-    info_text = f'{qq} 的白名单信息如下：\n | 入群时间: {time.localtime(join_timestamp)}\n'
+    info_text = f'{qq} 的白名单信息如下：\n | 入群时间: {join_timestamp}\n'
     if leave_timestamp:
-        info_text += f' | 退群时间: {time.localtime(leave_timestamp)}\n'
+        info_text += f' | 退群时间: {leave_timestamp}\n'
     if uuid1 and not uuid2:
         try:
             mc_id = await get_mc_id(uuid1)
@@ -449,7 +453,7 @@ async def gen_query_info_text(
                 info_text += f' | UUID: {uuid1}\n'
             else:
                 info_text += f' | ID: {mc_id}\n'
-        info_text += f' | 添加时间：{time.localtime(uuid1_added_time)}\n'
+        info_text += f' | 添加时间：{uuid1_added_time}\n'
     elif uuid2 and not uuid1:
         try:
             mc_id = await get_mc_id(uuid2)
@@ -460,7 +464,7 @@ async def gen_query_info_text(
                 info_text += f' | UUID: {uuid2}\n'
             else:
                 info_text += f' | ID: {mc_id}\n'
-        info_text += f' | 添加时间：{time.localtime(uuid2_added_time)}\n'
+        info_text += f' | 添加时间：{uuid2_added_time}\n'
     elif uuid1 and uuid2:
         try:
             mc_id1 = await get_mc_id(uuid1)
@@ -471,7 +475,7 @@ async def gen_query_info_text(
                 info_text += f' | UUID 1: {uuid1}\n'
             else:
                 info_text += f' | ID 1: {mc_id1}\n'
-        info_text += f' | ID 1添加时间：{time.localtime(uuid1_added_time)}\n'
+        info_text += f' | ID 1添加时间：{uuid1_added_time}\n'
         try:
             mc_id2 = await get_mc_id(uuid2)
         except:  # noqa
@@ -481,6 +485,6 @@ async def gen_query_info_text(
                 info_text += f' | UUID 2: {uuid2}\n'
             else:
                 info_text += f' | ID 2: {mc_id2}\n'
-        info_text += f' | ID 2添加时间：{time.localtime(uuid2_added_time)}\n'
+        info_text += f' | ID 2添加时间：{uuid2_added_time}\n'
 
-    await app.sendGroupMessage(group, MessageChain.create(Plain(info_text)))
+    await app.sendGroupMessage(group, MessageChain.create(Plain(info_text.rstrip())))
