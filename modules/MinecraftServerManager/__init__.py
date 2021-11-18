@@ -23,7 +23,7 @@ from loguru import logger
 
 from config import config_data
 from utils.Limit.Permission import Permission
-
+from utils.Limit.Blacklist import group_blacklist
 # from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import generate_img
 
@@ -106,6 +106,7 @@ is_init = False
 @channel.use(
     ListenerSchema(
         listening_events=[ApplicationLaunched],
+        decorators=[group_blacklist()],
     )
 )
 async def init(app: Ariadne):
@@ -145,6 +146,7 @@ async def init(app: Ariadne):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]mc')]))],
+        decorators=[group_blacklist()],
     )
 )
 async def main_menu(app: Ariadne, group: Group):
@@ -162,6 +164,7 @@ async def main_menu(app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl')]))],
+        decorators=[group_blacklist()],
     )
 )
 async def whitelist_menu(app: Ariadne, group: Group):
@@ -184,7 +187,8 @@ async def whitelist_menu(app: Ariadne, group: Group):
                 MemberPerm.Administrator,
                 send_alert=True,
                 allow_override=False,
-            )
+            ),
+            group_blacklist(),
         ],
     )
 )
@@ -230,7 +234,8 @@ async def add_whitelist(app: Ariadne, group: Group, message: MessageChain):
                 MemberPerm.Administrator,
                 send_alert=True,
                 allow_override=False,
-            )
+            ),
+            group_blacklist(),
         ],
     )
 )
@@ -295,6 +300,7 @@ async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ info\ '), RegexMatch(r'.+')]))],
+        decorators=[group_blacklist()],
     )
 )
 async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
@@ -493,7 +499,10 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ clear')]))],
-        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+        decorators=[
+            Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            group_blacklist(),
+        ],
     )
 )
 async def clear_whitelist(app: Ariadne, group: Group, member: Member, message: MessageChain):
@@ -524,6 +533,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, message: M
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]myid\ '), RegexMatch(r'.+')]))],
+        decorators=[group_blacklist()],
     )
 )
 async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain):
@@ -555,6 +565,7 @@ async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]list')]))],
+        decorators=[group_blacklist()],
     )
 )
 async def get_player_list(app: Ariadne, group: Group):
@@ -586,7 +597,10 @@ async def get_player_list(app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]run'), RegexMatch(r'.+')]))],
-        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+        decorators=[
+            Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            group_blacklist(),
+        ],
     )
 )
 async def run_command_list(app: Ariadne, group: Group, message: MessageChain):
@@ -616,7 +630,12 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(ListenerSchema(listening_events=[MemberJoinEvent]))
+@channel.use(
+    ListenerSchema(
+        listening_events=[MemberJoinEvent],
+        decorators=[group_blacklist()],
+    )
+)
 async def member_join(group: Group, member: Member):
     if not is_init:
         return
@@ -638,7 +657,12 @@ async def member_join(group: Group, member: Member):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(ListenerSchema(listening_events=[MemberLeaveEventQuit]))
+@channel.use(
+    ListenerSchema(
+        listening_events=[MemberLeaveEventQuit],
+        decorators=[group_blacklist()],
+    )
+)
 async def member_leave(app: Ariadne, group: Group, member: Member):
     if not is_init:
         return
@@ -660,7 +684,12 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(ListenerSchema(listening_events=[MemberLeaveEventKick]))
+@channel.use(
+    ListenerSchema(
+        listening_events=[MemberLeaveEventKick],
+        decorators=[group_blacklist()],
+    )
+)
 async def member_kick(app: Ariadne, group: Group, event: MemberLeaveEventKick):
     if not is_init:
         return
@@ -689,7 +718,10 @@ async def member_kick(app: Ariadne, group: Group, event: MemberLeaveEventKick):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]pardon\ '), RegexMatch(r'.+')]))],
-        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+        decorators=[
+            Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            group_blacklist(),
+        ],
     )
 )
 async def pardon(app: Ariadne, group: Group, message: MessageChain):
@@ -722,7 +754,10 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]clear_leave_time\ '), RegexMatch(r'.+')]))],
-        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+        decorators=[
+            Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            group_blacklist(),
+        ],
     )
 )
 async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain):
@@ -755,7 +790,10 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]ban\ '), RegexMatch(r'.+')]))],
-        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+        decorators=[
+            Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            group_blacklist(),
+        ],
     )
 )
 async def ban(app: Ariadne, group: Group, message: MessageChain):
