@@ -17,8 +17,8 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
-from modules.BotManage import Module
 from utils.Limit.Blacklist import group_blacklist
+from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import async_generate_img, hr
 
 saya = Saya.current()

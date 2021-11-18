@@ -22,8 +22,8 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
 from config import config_data
-from utils.Limit.Permission import Permission
 from utils.Limit.Blacklist import group_blacklist
+from utils.Limit.Permission import Permission
 # from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import generate_img
 
@@ -106,7 +106,6 @@ is_init = False
 @channel.use(
     ListenerSchema(
         listening_events=[ApplicationLaunched],
-        decorators=[group_blacklist()],
     )
 )
 async def init(app: Ariadne):
