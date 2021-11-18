@@ -27,7 +27,7 @@ wordcloud = "^1.8.1"
 jieba = "^0.42.1"
 
 [tool.poetry.dev-dependencies]
-black = "^21.10b0"
+black = "^21.11b1"
 flake8 = "^4.0.1"
 autopep8 = "^1.6.0"
 devtools = "^0.8.0"
