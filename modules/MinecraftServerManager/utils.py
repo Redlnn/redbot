@@ -53,7 +53,8 @@ async def get_uuid(mc_id: str) -> tuple[str | Response, Optional[str]]:
     :param mc_id: 正版用户名（id）
     """
     url = f'https://api.mojang.com/users/profiles/minecraft/{mc_id}'
-    res = await httpx.AsyncClient().get(url)
+    async with httpx.AsyncClient() as client:
+        res = await client.get(url)
     code = res.status_code
     if code == 200:
         return res.json()['name'], res.json()['id']
@@ -70,7 +71,8 @@ async def get_mc_id(mc_uuid: str) -> str | Response:
     :param mc_uuid: 输入一个uuid
     """
     url = f'https://sessionserver.mojang.com/session/minecraft/profile/{mc_uuid}'
-    res = await httpx.AsyncClient().get(url)
+    async with httpx.AsyncClient() as client:
+        res = await client.get(url)
     code = res.status_code
     if code == 200:
         return res.json()['name']
