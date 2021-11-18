@@ -83,14 +83,15 @@ menu = (
 
 wl_menu = (
     '-----------白名单管理菜单-----------\n'
-    '[!！.]wl add <QQ号或@QQ> <游戏ID>  - 【管理】为某个ID绑定QQ并给予白名单\n'
-    '[!！.]wl del @QQ  - 【管理】删除某个QQ的所有白名单\n'
-    '[!！.]wl del qq <QQ号>  - 【管理】删除某个QQ的所有白名单\n'
-    '[!！.]wl del id <游戏ID>  - 【管理】删除某个ID的白名单\n'
-    '[!！.]wl del uuid <游戏ID>  - 【管理】删除某个UUID的白名单\n'
-    '[!！.]wl info <@QQ或游戏ID>  - 查询被@QQ或某个ID的信息\n'
-    '[!！.]wl info qq <QQ号>  - 查询某个QQ的信息\n'
-    '[!！.]wl info id <游戏ID>  - 查询某个ID的信息'
+    '[!！.]wl add <QQ号或@QQ> <游戏ID> —— 【管理】为某个ID绑定QQ并给予白名单\n'
+    '[!！.]wl del @QQ —— 【管理】删除某个QQ的所有白名单\n'
+    '[!！.]wl del qq <QQ号> —— 【管理】删除某个QQ的所有白名单\n'
+    '[!！.]wl del id <游戏ID> —— 【管理】删除某个ID的白名单\n'
+    '[!！.]wl del uuid <游戏ID> —— 【管理】删除某个UUID的白名单\n'
+    '[!！.]wl info <@QQ或游戏ID> —— 查询被@QQ或某个ID的信息\n'
+    '[!！.]wl info qq <QQ号> —— 查询某个QQ的信息\n'
+    '[!！.]wl info id <游戏ID> —— 查询某个ID的信息\n'
+    '[!！.]wl clear —— 【管理】清空数据库中的白名单信息（服务器端请自行处理）\n'
 )
 
 menu_img_io = generate_img([menu])
@@ -208,7 +209,7 @@ async def add_whitelist(app: Ariadne, group: Group, message: MessageChain):
         return
 
     mc_id = msg[3].asDisplay()
-    if not msg[3].onlyContains(Plain) or not is_mc_id(mc_id):
+    if not msg[3].onlyContains(Plain) or not await is_mc_id(mc_id):
         await app.sendGroupMessage(
             group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=message.get(Source).pop(0)
         )
@@ -265,7 +266,7 @@ async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
                         return
                 elif func == 'id' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
-                    if is_mc_id(target):
+                    if await is_mc_id(target):
                         await del_whitelist_by_id(target, app, group)
                     else:
                         await app.sendGroupMessage(
@@ -276,7 +277,7 @@ async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
                         return
                 elif func == 'uuid' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
-                    if is_uuid(target):
+                    if await is_uuid(target):
                         await del_whitelist_by_uuid(target, app, group)
                     else:
                         await app.sendGroupMessage(
@@ -413,7 +414,7 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
                         return
                 elif func == 'id' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
-                    if is_mc_id(target):
+                    if await is_mc_id(target):
                         (
                             qq,
                             joinTimestamp,
@@ -449,7 +450,7 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
                         return
                 elif func == 'uuid' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
-                    if is_uuid(target):
+                    if await is_uuid(target):
                         (
                             qq,
                             joinTimestamp,
@@ -491,6 +492,37 @@ async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ clear')]))],
+        decorators=[Permission.group_perm_check(MemberPerm.Administrator, send_alert=True, allow_override=False)],
+    )
+)
+async def clear_whitelist(app: Ariadne, group: Group, member: Member, message: MessageChain):
+    if not is_init:
+        return
+    elif group.id not in active_groups:
+        return
+    msg = message.split(' ')
+    if len(msg) != 2:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
+        return
+    logger.warning(f'管理 {member.name}({member.id}) 正在清空白名单数据库')
+    PlayersTable.update(
+        {
+            PlayersTable.uuid1: None,
+            PlayersTable.uuid1AddedTime: None,
+            PlayersTable.uuid2: None,
+            PlayersTable.uuid2AddedTime: None,
+        }
+    ).execute()
+    await app.sendGroupMessage(group, MessageChain.create(Plain('已清空白名单数据库，服务器白名单请自行处理')))
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+
+@channel.use(
+    ListenerSchema(
+        listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]myid\ '), RegexMatch(r'.+')]))],
     )
 )
@@ -505,7 +537,7 @@ async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain
         return
 
     mc_id = msg[1].asDisplay()
-    if not is_mc_id(mc_id):
+    if not await is_mc_id(mc_id):
         await app.sendGroupMessage(
             group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=message.get(Source).pop(0)
         )
@@ -562,25 +594,23 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain):
         return
     elif group.id not in active_groups:
         return
-    split_msg = message.split(' ')
+    split_msg = message.asDisplay().split(' ', 1)
     if len(split_msg) != 2:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
         return
-
-    command = split_msg[1].asDisplay()
     try:
-        exec_result: str = execute_command(command)
-        logger.info(f'在服务器上执行命令：{command}')
+        exec_result: str = execute_command(split_msg[1])
+        logger.info(f'在服务器上执行命令：{split_msg[1]}')
     except Exception as e:
         await app.sendGroupMessage(group, MessageChain.create(Plain(f'在服务器执行命令时出错：{e}')))
-        logger.error('在服务器执行命令时出错')
+        logger.error(f'在服务器执行命令 {split_msg[1]} 时出错')
         logger.exception(e)
         return
 
     if exec_result is None:
         await app.sendGroupMessage(group, MessageChain.create(Plain('服务器返回为空')))
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'服务器返回：↓\n{exec_result}')))
+        await app.sendGroupMessage(group, MessageChain.create(Plain(f'服务器返回 ↓\n{exec_result}')))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
