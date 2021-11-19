@@ -674,10 +674,17 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
             group=server_group, qq=member.id, joinTimestamp=member.joinTimestamp, leaveTimestamp=time.time()
         )
     else:
-        PlayersTable.update({PlayersTable.leaveTimestamp: time.time()}).where(
-            (PlayersTable.group == server_group) & (PlayersTable.qq == member.id)
-        ).execute()
+        PlayersTable.update(
+            {
+                PlayersTable.leaveTimestamp: time.time(),
+                PlayersTable.uuid1: None,
+                PlayersTable.uuid1AddedTime: None,
+                PlayersTable.uuid2: None,
+                PlayersTable.uuid2AddedTime: None,
+            }
+        ).where((PlayersTable.group == server_group) & (PlayersTable.qq == member.id)).execute()
         await del_whitelist_by_qq(member.id, app, group)
+        await app.sendGroupMessage(group, MessageChain.create(f'已删除 {member.id} 的白名单'))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -705,9 +712,18 @@ async def member_kick(app: Ariadne, group: Group, event: MemberLeaveEventKick):
         )
     else:
         PlayersTable.update(
-            {PlayersTable.leaveTimestamp: time.time(), PlayersTable.blocked: True, PlayersTable.blockReason: 'Kick'}
+            {
+                PlayersTable.leaveTimestamp: time.time(),
+                PlayersTable.uuid1: None,
+                PlayersTable.uuid1AddedTime: None,
+                PlayersTable.uuid2: None,
+                PlayersTable.uuid2AddedTime: None,
+                PlayersTable.blocked: True,
+                PlayersTable.blockReason: 'Kick',
+            }
         ).where((PlayersTable.group == server_group) & (PlayersTable.qq == event.member.id)).execute()
         await del_whitelist_by_qq(event.member.id, app, group)
+        await app.sendGroupMessage(group, MessageChain.create(f'已删除 {event.member.id} 的白名单并拉入黑名单'))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
