@@ -269,12 +269,13 @@ async def reload_module(app: Ariadne, group: Group, member: Member, sparkle: Spa
     await app.sendGroupMessage(
         group,
         MessageChain.create(
-            At(member.id), Plain('重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s发送 .force ，取消请发送 .cancel')
+            At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s发送 .force ，取消请发送 .cancel')
         ),
     )
     answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
     if not answer:
         await app.sendGroupMessage(group, MessageChain.create(Plain('已取消')))
+        return
 
     target_id = int(sparkle._check_1.result.asDisplay()) - 1
     if target_id >= len(Modules):
@@ -321,11 +322,12 @@ async def load_module(app: Ariadne, group: Group, member: Member, sparkle: Spark
 
     # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
     await app.sendGroupMessage(
-        group, MessageChain.create(At(member.id), Plain('加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s发送 .force ，取消请发送 .cancel'))
+        group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s发送 .force ，取消请发送 .cancel'))
     )
     answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
     if not answer:
         await app.sendGroupMessage(group, MessageChain.create(Plain('已取消')))
+        return
     match_result = sparkle._check_1.result.asDisplay()
     target_filename = match_result if match_result[-3:] != '.py' else match_result[:-3]
     modules_dir_list = os.listdir(os.path.join(os.getcwd(), 'modules'))
