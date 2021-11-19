@@ -9,7 +9,9 @@
 
 一个使用 [Graia Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的~~连 README 也缝合的~~究极缝合 QQ 机器人
 
-**Bot 正处于快速迭代期间，配置文件及部分较深度耦合的模块可能会大改**
+**Bot 主要仅为自己的群使用所写不一定考虑到其他群的情况，且配置文件及部分有耦合的模块可能会大改**
+
+**推荐可以试试 A60(djkcyl) 的 [`ABot`](https://github.com/djkcyl/ABot-Graia/)**
 
 ⇒  **[文件目录结构](./FILES.md)**  ⇐
 
