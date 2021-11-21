@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
 import sys
+from pathlib import Path
 
 from loguru import logger
 
@@ -43,7 +43,7 @@ else:
     )
     LOG_LEVEL = 'INFO'
 logger.add(
-    os.path.join(os.getcwd(), 'logs', 'latest.log'),
+    Path(Path.cwd(), 'logs', 'latest.log'),
     encoding='utf-8',
     format=LOG_FORMAT,
     rotation='00:00',

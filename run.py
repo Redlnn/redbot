@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from pathlib import Path
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.exception import AccountNotFound
@@ -33,18 +34,18 @@ if __name__ == '__main__':
         await app.launch()
         await app.lifecycle()
 
-    if not os.path.exists(os.path.join(os.getcwd(), 'data')):
-        os.mkdir(os.path.join(os.getcwd(), 'data'))
+    if not Path.exists(Path(Path.cwd(), 'data')):
+        Path.mkdir(Path(Path.cwd(), 'data'))
 
     if config_data['Modules']['Enabled']:
         logger.info('加载插件中...')
         with saya.module_context():
-            for module in os.listdir(os.path.join('modules')):
+            for module in os.listdir(Path(Path.cwd(), 'modules')):
                 if module in ('database.py', '__pycache__') or module[0] in ('!', '#', '.'):
                     continue
-                elif os.path.isdir(os.path.join('modules', module)):
+                elif Path.is_dir(Path(Path.cwd(), 'modules', module)):
                     saya.require(f'modules.{module}')
-                elif os.path.isfile(os.path.join('modules', module)) and module[-3:] == '.py':
+                elif Path.is_file(Path(Path.cwd(), 'modules', module)) and module[-3:] == '.py':
                     saya.require(f'modules.{module[:-3]}')
     logger.info('正在启动 Ariadne...')
 
