@@ -9,6 +9,7 @@ Bot 管理
 import asyncio
 import os
 from asyncio import Lock
+from pathlib import Path
 from typing import List
 
 from graia.ariadne.app import Ariadne
@@ -330,7 +331,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, sparkle: Spark
         return
     match_result = sparkle._check_1.result.asDisplay()
     target_filename = match_result if match_result[-3:] != '.py' else match_result[:-3]
-    modules_dir_list = os.listdir(os.path.join(os.getcwd(), 'modules'))
+    modules_dir_list = os.listdir(Path(Path.cwd(), 'modules'))
     if target_filename + '.py' in modules_dir_list or target_filename in modules_dir_list:
         try:
             saya.require('modules.' + target_filename)

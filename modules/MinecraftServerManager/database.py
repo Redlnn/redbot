@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
+from pathlib import Path
 
 from peewee import BooleanField, CharField, Model, TextField, TimestampField, UUIDField
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
@@ -47,7 +47,7 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                    os.path.join(os.getcwd(), 'data', f'MinecraftServerManager_{config_data["ServerGroup"]}.db'),
+                    Path(Path.cwd(), 'data', f'MinecraftServerManager_{config_data["ServerGroup"]}.db'),
                     max_connections=5,
                 )
             return cls._instance

@@ -6,9 +6,9 @@
 """
 
 import asyncio
-import os
 import time
 from io import BytesIO
+from pathlib import Path
 from typing import Dict, List
 
 import PIL
@@ -19,8 +19,8 @@ from config import config_data
 __all__ = ['async_generate_img', 'generate_img', 'hr']
 
 _font_name: str = 'sarasa-mono-sc-semibold.ttf'
-_font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
-if not os.path.exists(_font_path):
+_font_path: Path = Path(Path.cwd(), 'fonts', _font_name)  # 字体文件的路径
+if not Path.exists(_font_path):
     raise ValueError(f'文本转图片所用的字体文件不存在，请检查配置文件，尝试访问的路径如下：↓\n{_font_path}')
 if len(_font_name) <= 4 or _font_name[-4:] not in ('.ttf', '.ttc', '.otf', '.otc'):
     raise ValueError('所配置的字体文件名不正确，请检查配置文件')
@@ -382,12 +382,12 @@ def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
 
     # 保存为jpg图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#jpeg
     # img_name = 'temp_{}.jpg'.format(_get_time(2))  # 自定义临时文件的保存名称
-    # img_path = os.path.join(img_name)  # 自定义临时文件保存路径
+    # img_path = Path(img_name)  # 自定义临时文件保存路径
     # canvas.save(img_path, format='JPEG', quality=90, optimize=True, progressive=True, subsampling=2, qtables='web_high')
 
     # 保存为png图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#png
     # img_name = 'temp_{}.png'.format(__get_time(2))  # 自定义临时文件的保存名称
-    # img_path = os.path.join(temp_dir_path, img_name)  # 自定义临时文件保存路径
+    # img_path = Path(temp_dir_path, img_name)  # 自定义临时文件保存路径
     # canvas.save(img_path, format='PNG', optimize=True)
 
     return byte_io
