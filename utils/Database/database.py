@@ -1,7 +1,7 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
+from pathlib import Path
 
 from peewee import Model
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
@@ -45,7 +45,7 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                    os.path.join(os.getcwd(), 'data', f'{config_data["Basic"]["Database"]["Database"]}.db'),
+                    Path(Path.cwd(), 'data', f'{config_data["Basic"]["Database"]["Database"]}.db'),
                     max_connections=10,
                 )
             return cls._instance

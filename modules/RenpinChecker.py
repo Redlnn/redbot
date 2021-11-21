@@ -12,6 +12,7 @@
 import datetime
 import os
 import random
+from pathlib import Path
 from typing import Tuple
 
 import regex
@@ -48,7 +49,7 @@ Module(
         usage='[!！.]jrrp / [!！.]抽签'
 ).register()
 
-data_folder = os.path.join(os.getcwd(), 'data')
+data_folder = Path(Path.cwd(), 'data')
 
 # https://wiki.biligame.com/ys/%E3%80%8C%E5%BE%A1%E7%A5%9E%E7%AD%BE%E3%80%8D
 qianwens = {
@@ -102,11 +103,11 @@ lucky_things = {
 
 
 @channel.use(
-        ListenerSchema(
-                listening_events=[GroupMessage],
-                inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](jrrp|抽签)')]))],
-                decorators=[group_blacklist(), MemberInterval.require(10)],
-        )
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](jrrp|抽签)')]))],
+        decorators=[group_blacklist(), MemberInterval.require(10)],
+    )
 )
 async def main(app: Ariadne, group: Group, member: Member):
     if not config_data['Modules']['RenpinChecker']['Enabled']:
@@ -119,15 +120,14 @@ async def main(app: Ariadne, group: Group, member: Member):
     img_io = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
         await app.sendGroupMessage(
-                group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_io.getvalue()))
+            group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_io.getvalue()))
         )
     else:
         await app.sendGroupMessage(
-                group,
-                MessageChain.create(
-                        At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'),
-                        Image(data_bytes=img_io.getvalue())
-                ),
+            group,
+            MessageChain.create(
+                At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'), Image(data_bytes=img_io.getvalue())
+            ),
         )
 
 
@@ -138,10 +138,10 @@ async def scheduled_del_outdated_data() -> None:
     """
     for _ in os.listdir(data_folder):
         if (
-                regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
-                and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
+            regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
+            and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
         ):
-            os.remove(os.path.join(data_folder, _))
+            os.remove(Path(data_folder, _))
             logger.info(f'发现过期的数据文件 {_}，已删除')
 
 
@@ -152,10 +152,10 @@ async def del_outdated_data() -> None:
     """
     for _ in os.listdir(data_folder):
         if (
-                regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
-                and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
+            regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
+            and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
         ):
-            os.remove(os.path.join(data_folder, _))
+            os.remove(Path(data_folder, _))
             logger.info(f'发现过期的数据文件 {_}，已删除')
 
 
@@ -177,29 +177,41 @@ async def chouqian(renpin: int) -> str:
 async def gen_qianwen(renpin: int) -> str:
     match await chouqian(renpin):
         case '大吉':
-            return '——大吉——\n' \
-                   f'{qianwens["大吉"][random.randint(0, len(qianwens["大吉"]) - 1)]}\n\n' \
-                   f'今天的幸运物是：{lucky_things["吉"][random.randint(0, len(lucky_things["吉"]) - 1)]}'
+            return (
+                '——大吉——\n'
+                f'{qianwens["大吉"][random.randint(0, len(qianwens["大吉"]) - 1)]}\n\n'
+                f'今天的幸运物是：{lucky_things["吉"][random.randint(0, len(lucky_things["吉"]) - 1)]}'
+            )
         case '中吉':
-            return '——中吉——\n' \
-                   f'{qianwens["吉"][random.randint(0, len(qianwens["吉"]) - 1)]}\n\n' \
-                   f'今天的幸运物是：{lucky_things["吉"][random.randint(0, len(lucky_things["吉"]) - 1)]}'
+            return (
+                '——中吉——\n'
+                f'{qianwens["吉"][random.randint(0, len(qianwens["吉"]) - 1)]}\n\n'
+                f'今天的幸运物是：{lucky_things["吉"][random.randint(0, len(lucky_things["吉"]) - 1)]}'
+            )
         case '吉':
-            return '——吉——\n' \
-                   f'{qianwens["吉"][random.randint(0, len(qianwens["吉"]) - 1)]}\n\n' \
-                   f'今天的幸运物是：{lucky_things["吉"][random.randint(0, len(lucky_things["吉"]) - 1)]}'
+            return (
+                '——吉——\n'
+                f'{qianwens["吉"][random.randint(0, len(qianwens["吉"]) - 1)]}\n\n'
+                f'今天的幸运物是：{lucky_things["吉"][random.randint(0, len(lucky_things["吉"]) - 1)]}'
+            )
         case '末吉':
-            return '——末吉——\n' \
-                   f'{qianwens["末吉"][random.randint(0, len(qianwens["末吉"]) - 1)]}\n\n' \
-                   f'今天的幸运物是：{lucky_things["凶"][random.randint(0, len(lucky_things["凶"]) - 1)]}'
+            return (
+                '——末吉——\n'
+                f'{qianwens["末吉"][random.randint(0, len(qianwens["末吉"]) - 1)]}\n\n'
+                f'今天的幸运物是：{lucky_things["凶"][random.randint(0, len(lucky_things["凶"]) - 1)]}'
+            )
         case '凶':
-            return '——凶——\n' \
-                   f'{qianwens["凶"][random.randint(0, len(qianwens["凶"]) - 1)]}\n\n' \
-                   f'今天的幸运物是：{lucky_things["凶"][random.randint(0, len(lucky_things["凶"]) - 1)]}'
+            return (
+                '——凶——\n'
+                f'{qianwens["凶"][random.randint(0, len(qianwens["凶"]) - 1)]}\n\n'
+                f'今天的幸运物是：{lucky_things["凶"][random.randint(0, len(lucky_things["凶"]) - 1)]}'
+            )
         case '大凶':
-            return '——大凶——\n' \
-                   f'{qianwens["凶"][random.randint(0, len(qianwens["凶"]) - 1)]}\n\n' \
-                   f'今天的幸运物是：{lucky_things["凶"][random.randint(0, len(lucky_things["凶"]) - 1)]}'
+            return (
+                '——大凶——\n'
+                f'{qianwens["凶"][random.randint(0, len(qianwens["凶"]) - 1)]}\n\n'
+                f'今天的幸运物是：{lucky_things["凶"][random.randint(0, len(lucky_things["凶"]) - 1)]}'
+            )
 
 
 async def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:
@@ -207,12 +219,12 @@ async def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:
     在文件中读取指定QQ今日已生成过的随机数，若今日未生成，则新生成一个随机数并写入文件
     """
     # del_outdated_data(date)
-    data_file_path = os.path.join(data_folder, f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml')
-    if not os.path.exists(data_folder):
-        os.mkdir(data_folder)  # 如果同级目录不存在data文件夹，则新建一个
-    if os.path.isfile(data_folder):
+    data_file_path = Path(data_folder, f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml')
+    if not Path.exists(data_folder):
+        Path.mkdir(data_folder)  # 如果同级目录不存在data文件夹，则新建一个
+    if Path.is_file(data_folder):
         os.remove(data_folder)
-        os.mkdir(data_folder)  # 如果同级目录存在data文件，则删除该文件后新建一个同名文件夹
+        Path.mkdir(data_folder)  # 如果同级目录存在data文件，则删除该文件后新建一个同名文件夹
 
     with open(data_file_path, 'a+', encoding='utf-8') as f:  # 以 追加+读 的方式打开文件
         f.seek(0, 0)  # 将读写指针放在文件头部

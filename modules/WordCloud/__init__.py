@@ -11,6 +11,7 @@ import os
 import random
 import time
 from io import BytesIO
+from pathlib import Path
 from typing import List
 
 import jieba.analyse
@@ -195,17 +196,15 @@ def get_frequencies(msg_list: List[str]) -> dict:
         else:
             text += chain.asDisplay()
             text += '\n'
-    jieba.load_userdict(os.path.join(os.path.dirname(__file__), 'user_dict.txt'))
+    jieba.load_userdict(Path(Path(__file__).parent, 'user_dict.txt'))
     words = jieba.analyse.extract_tags(text, topK=600, withWeight=True)
     return dict(words)
 
 
 def gen_wordcloud(words: dict) -> bytes:
-    bg_list = os.listdir(os.path.join(os.path.dirname(__file__), 'bg'))
-    mask = numpy.array(
-        Img.open(os.path.join(os.path.dirname(__file__), 'bg', bg_list[random.randint(0, len(bg_list) - 1)]))
-    )
-    font_path = os.path.join(os.getcwd(), 'fonts', config_data['Modules']['WordCloud']['FontName'])
+    bg_list = os.listdir(Path(Path(__file__).parent, 'bg'))
+    mask = numpy.array(Img.open(Path(Path(__file__).parent, 'bg', bg_list[random.randint(0, len(bg_list) - 1)])))
+    font_path = str(Path(Path.cwd(), 'fonts', config_data['Modules']['WordCloud']['FontName']))
     wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=600, scale=2)
     wordcloud.generate_from_frequencies(words)
     image_colors = ImageColorGenerator(mask, default_color=(255, 255, 255))

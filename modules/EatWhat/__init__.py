@@ -3,6 +3,7 @@
 
 import asyncio
 import os
+from pathlib import Path
 from random import randint
 
 from graia.ariadne.app import Ariadne
@@ -33,7 +34,7 @@ Module(
 
 
 def get_food():
-    with open(os.path.join(os.path.dirname(__file__), 'foods.txt')) as f:
+    with open(Path(Path(__file__).parent, 'foods.txt')) as f:
         foods = f.readlines()
     return foods[randint(0, len(foods))].rstrip()
 

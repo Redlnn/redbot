@@ -14,8 +14,8 @@
 # AutoReply表
 # type | group_id | keyword | value
 
-import os.path
 from io import BytesIO
+from pathlib import Path
 
 import regex
 from graia.ariadne.app import Ariadne
@@ -33,7 +33,7 @@ from utils.TextWithImg2Img import async_generate_img
 saya = Saya.current()
 channel = Channel.current()
 
-if os.path.exists(os.path.join(os.path.dirname(__file__), 'config.py')):
+if Path.exists(Path(Path(__file__).parent, 'config.py')):
     from .config import disabled, fuzzy_reply, re_reply, reply  # noqa
 else:
     from .config_exp import disabled, fuzzy_reply, re_reply, reply
@@ -41,7 +41,7 @@ else:
 Module(
     name='自动回复',
     config_name='AutoReply',
-    file_name=os.path.dirname(__file__),
+    file_name=str(Path(__file__).parent),
     author=['Red_lnn'],
     description='支持全文匹配、正则匹配、模糊匹配，若回复内容中包含的文字字符数大于100字，则会将内容转为图片发送',
     can_disable=False,
