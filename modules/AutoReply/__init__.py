@@ -111,7 +111,7 @@ async def re_match(msg: str, app: Ariadne, group: Group):
 
 async def fuzzy_match(msg: str, app: Ariadne, group: Group):
     for _ in fuzzy_reply[group.id].keys():
-        if msg not in _:
+        if _ not in msg:
             continue
         chain = MessageChain.create()
         for i in fuzzy_reply[group.id][_]:
