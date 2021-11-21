@@ -2,14 +2,14 @@
 
 # [redbot](https://github.com/Redlnn/redbot) [for](https://github.com/project-mirai/mirai-api-http) [Ariadne](https://github.com/GraiaProject/Ariadne)
 
-![Works on my machine](https://img.shields.io/badge/works-on%20my%20machine-green)
-[![Licence](https://img.shields.io/github/license/Redlnn/redbot)](https://github.com/Redlnn/redbot/LICENSE)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+<img src="https://img.shields.io/badge/works-on%20my%20machine-green" alt="Works on my machine" />
+<a href="https://github.com/Redlnn/redbot/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Redlnn/redbot" alt="Licence" /></a>
+<a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black" /></a>
+<a href="https://pycqa.github.io/isort/"><img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336" alt="Imports: isort" /></a>
 
 一个使用 [Graia Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的~~连 README 也缝合的~~究极缝合 QQ 机器人
 
-**Bot 主要仅为自己的群使用所写不一定考虑到其他群的情况，且配置文件及部分有耦合的模块可能会大改**
+**Bot 只考虑自己的群使用不一定考虑到其他群的情况，配置文件及模块可能会大改**
 
 **推荐可以试试 A60(djkcyl) 的 [`ABot`](https://github.com/djkcyl/ABot-Graia/)**
 
