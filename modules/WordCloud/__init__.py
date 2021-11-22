@@ -196,7 +196,7 @@ def get_frequencies(msg_list: List[str]) -> dict:
         else:
             text += chain.asDisplay()
             text += '\n'
-    jieba.load_userdict(Path(Path(__file__).parent, 'user_dict.txt'))
+    jieba.load_userdict(str(Path(Path(__file__).parent, 'user_dict.txt')))
     words = jieba.analyse.extract_tags(text, topK=600, withWeight=True)
     return dict(words)
 
