@@ -337,7 +337,7 @@ reference = "tsinghua"
 
 [[package]]
 name = "fonttools"
-version = "4.28.1"
+version = "4.28.2"
 description = "Tools to manipulate font files"
 category = "main"
 optional = false
@@ -408,11 +408,11 @@ reference = "tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.4.0a15"
-description = "Anelegant mirai-api-http v2 Python SDK."
+version = "0.4.0"
+description = "Another elegant framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 aiohttp = ">=3.7.4,<4.0.0"
@@ -1175,7 +1175,7 @@ reference = "tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "916ad19f47d9a5cdd71ec4b80f6acd33b1c19c1d1baca7e34cb2e9fc75735771"
+content-hash = "b37625cb645c2a91a0713ca02f8766bf05f95188035b4da8cb280cf38705001d"
 
 [metadata.files]
 aiohttp = [
@@ -1324,8 +1324,8 @@ flake8 = [
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
 ]
 fonttools = [
-    {file = "fonttools-4.28.1-py3-none-any.whl", hash = "sha256:68071406009e7ef6a5fdcd85d95975cd6963867bb226f2b786bfffe15d1959ef"},
-    {file = "fonttools-4.28.1.zip", hash = "sha256:8c8f84131bf04f3b1dcf99b9763cec35c347164ab6ad006e18d2f99fcab05529"},
+    {file = "fonttools-4.28.2-py3-none-any.whl", hash = "sha256:eff1da7ea274c54cb8842853005a139f711646cbf6f1bcfb6c9b86a627f35ff0"},
+    {file = "fonttools-4.28.2.zip", hash = "sha256:dca694331af74c8ad47acc5171e57f6b78fac5692bf050f2ab572964577ac0dd"},
 ]
 frozenlist = [
     {file = "frozenlist-1.2.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:977a1438d0e0d96573fd679d291a1542097ea9f4918a8b6494b06610dfeefbf9"},
@@ -1410,8 +1410,8 @@ gitpython = [
     {file = "GitPython-3.1.24.tar.gz", hash = "sha256:df83fdf5e684fef7c6ee2c02fc68a5ceb7e7e759d08b694088d0cacb4eba59e5"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.4.0a15.tar.gz", hash = "sha256:9945e537e2c58336bd5a9e5ee725387c36248cb6261788bc9b897ad8f82a8750"},
-    {file = "graia_ariadne-0.4.0a15-py3-none-any.whl", hash = "sha256:ba44dbfe2f80f27adf016c7a7a98b143af3ed4861b0a41c487792ce9ebc610da"},
+    {file = "graia-ariadne-0.4.0.tar.gz", hash = "sha256:b92a10effb432d66d0c404a57592dae551be4c5ce26e043a61b41060ce530aa9"},
+    {file = "graia_ariadne-0.4.0-py3-none-any.whl", hash = "sha256:7edf882434e6cb6213de4465c1d197b9e11b44e7bd8513aa2a4a42feb432a6eb"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.13.1.tar.gz", hash = "sha256:a22d2678a1946f9084a5f29c469c3c631e039e60dbefd52d683294db998cb075"},
