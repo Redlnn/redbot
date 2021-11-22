@@ -94,9 +94,12 @@ pos_and_sizes = [
     [[183, 134], [86, 95]],
 ]
 
+# QQ头像API：https://www.cnblogs.com/XiaoJun6/p/13053635.html
+# QQ头像API：https://blog.soarli.top/archives/422.html
+
 
 def ding(qq: int | str) -> bytes:
-    resp = httpx.get(f'http://q1.qlogo.cn/g?b=qq&nk={qq}&s=320')
+    resp = httpx.get(f'http://q.qlogo.cn/headimg_dl?dst_uin={qq}&spec=640&img_type=jpg')
     avatar = Image.open(BytesIO(resp.content))
     # avatar = Image.open(Path('test', 'g.jpg'))
 
