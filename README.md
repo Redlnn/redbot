@@ -22,6 +22,7 @@
 - Bot菜单、模块管理及查询
 - Bot 版本与系统运行情况查询
 - 消息触发支持：全局黑名单控制、成员权限控制、频率限制
+- 用你的头像生成点啥
 - 自动回复：精确匹配、模糊匹配、正则匹配，支持带图回复
 - 吃啥？
 - 我的世界服务器管理： 白名单管理、执行命令
@@ -66,3 +67,4 @@
 
 - [`ABot`](https://github.com/djkcyl/ABot-Graia/): 一个使用 [Graia-Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的 QQ 功能性~~究极缝合怪~~机器人
 - [`Xenon`](https://github.com/McZoo/Xenon): 一个优雅，用户友好的，基于 [mirai](https://github.com/mamoe/mirai) 与 [Graia Project](https://github.com/GraiaProject/) 的 QQ 机器人应用
+- [`SereinFish Bot`](https://github.com/coide-SaltedFish/SereinFish)：一个基于 [YuQ](https://github.com/YuQWorks) 的 QQ 机器人

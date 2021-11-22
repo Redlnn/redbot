@@ -10,6 +10,7 @@ redbot  根目录
 ├── logs/  日志目录
 ├── modules  插件目录
 │   ├── AutoReply/  自动回复
+│   ├── AvatarImgGen/  用你的头像生成点啥
 │   ├── BotManage/  Bot菜单及模块管理
 │   ├── EatWhat/  吃啥？
 │   ├── MinecraftServerManager/  我的世界服务器管理
