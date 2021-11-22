@@ -9,15 +9,15 @@ from pathlib import Path
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import At, Image
-from graia.ariadne.model import Group
+from graia.ariadne.message.element import At, Image, Plain
+from graia.ariadne.model import Group, Member
 from graia.broadcast.interrupt import InterruptControl
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Rate import MemberInterval
+from utils.Limit.Rate import ManualInterval
 from utils.ModuleRegister import Module
 
 from .ding import ding
@@ -45,10 +45,10 @@ func = {
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        decorators=[group_blacklist(), MemberInterval.require(3)],
+        decorators=[group_blacklist()],
     )
 )
-async def main(app: Ariadne, group: Group, message: MessageChain):
+async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if not config_data['Modules']['AvatarImgGen']['Enabled']:
         saya.uninstall_channel(channel)
         return
@@ -57,11 +57,16 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
             return
     if not message.asDisplay()[0] in ('!', '！', '.'):
         return
+    rate_limit, remaining_time = ManualInterval.require(f'AvatarImgGen_{member.id}', 30, 1)
+    if not rate_limit:
+        await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        return
     split_message = message.asDisplay().split(' ')
     if len(split_message) != 2:
         return
     elif split_message[0][1:] not in func.keys():
         return
+
     if message.has(At):
         target = message.getFirst(At).target
     elif split_message[1].isdigit():
