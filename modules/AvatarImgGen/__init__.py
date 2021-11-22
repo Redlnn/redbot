@@ -57,7 +57,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
             return
     if not message.asDisplay()[0] in ('!', '！', '.'):
         return
-    split_message = message.split(' ')
+    split_message = message.asDisplay().split(' ')
     if len(split_message) != 2:
         return
     elif split_message[0][1:] not in func.keys():
