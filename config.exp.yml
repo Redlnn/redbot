@@ -61,6 +61,11 @@ Modules: # 各插件的配置
     Enabled: true
     # 详细的自动回复设置请去看 modules/AutoReply/config_exp.py
 
+  AvatarImgGen:
+    Enabled: true
+    DisabledGroup: # 要禁用的群
+      - 123456789
+
   MinecraftServerManager: # 我的世界服务器管理
     Enabled: true
     ServerGroup: 123457689 # 服务器群群号
