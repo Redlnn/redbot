@@ -72,6 +72,6 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
     img = await asyncio.to_thread(func[split_message[0][1:]], target)
 
     if isinstance(img, bytes):
-        app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img)))
+        await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img)))
     elif isinstance(img, Path | str):
-        app.sendGroupMessage(group, MessageChain.create(Image(path=img)))
+        await app.sendGroupMessage(group, MessageChain.create(Image(path=img)))
