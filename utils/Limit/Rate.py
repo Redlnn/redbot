@@ -78,7 +78,7 @@ class GroupInterval:
                     if group.id not in cls.sent_alert:
                         await app.sendGroupMessage(
                             group,
-                            MessageChain.create([Plain('功能冷却中...\n还有 {last[1] + suspend_time - current:.2f} 秒结束')]),
+                            MessageChain.create([Plain(f'功能冷却中...\n还有 {last[1] + suspend_time - current:.2f} 秒结束')]),
                         )
                         cls.last_alert[group.id] = current
                         cls.sent_alert.add(group.id)
@@ -143,7 +143,7 @@ class MemberInterval:
                             MessageChain.create(
                                 [
                                     At(member.id),
-                                    Plain('你在本群暂时不可调用bot，正在冷却中...\n还有{last[1] + suspend_time - current:.2f}秒结束'),
+                                    Plain(f' 你在本群暂时不可调用bot，正在冷却中...\n还有{last[1] + suspend_time - current:.2f}秒结束'),
                                 ]
                             ),
                         )
