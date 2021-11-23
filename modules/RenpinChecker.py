@@ -41,12 +41,12 @@ saya = Saya.current()
 channel = Channel.current()
 
 Module(
-        name='人品测试',
-        config_name='RenpinChecker',
-        file_name=os.path.basename(__file__),
-        author=['Red_lnn'],
-        description='每个QQ号每天可抽一次签并获得人品值',
-        usage='[!！.]jrrp / [!！.]抽签'
+    name='人品测试',
+    config_name='RenpinChecker',
+    file_name=os.path.basename(__file__),
+    author=['Red_lnn'],
+    description='每个QQ号每天可抽一次签并获得人品值',
+    usage='[!！.]jrrp / [!！.]抽签',
 ).register()
 
 data_folder = Path(Path.cwd(), 'data')
@@ -177,41 +177,17 @@ async def chouqian(renpin: int) -> str:
 async def gen_qianwen(renpin: int) -> str:
     match await chouqian(renpin):
         case '大吉':
-            return (
-                '——大吉——\n'
-                f'{qianwens["大吉"][random.randint(0, len(qianwens["大吉"]) - 1)]}\n\n'
-                f'今天的幸运物是：{lucky_things["吉"][random.randint(0, len(lucky_things["吉"]) - 1)]}'
-            )
+            return '——大吉——\n' f'{random.choice(qianwens["大吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["吉"])}'
         case '中吉':
-            return (
-                '——中吉——\n'
-                f'{qianwens["吉"][random.randint(0, len(qianwens["吉"]) - 1)]}\n\n'
-                f'今天的幸运物是：{lucky_things["吉"][random.randint(0, len(lucky_things["吉"]) - 1)]}'
-            )
+            return '——中吉——\n' f'{random.choice(qianwens["吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["吉"])}'
         case '吉':
-            return (
-                '——吉——\n'
-                f'{qianwens["吉"][random.randint(0, len(qianwens["吉"]) - 1)]}\n\n'
-                f'今天的幸运物是：{lucky_things["吉"][random.randint(0, len(lucky_things["吉"]) - 1)]}'
-            )
+            return '——吉——\n' f'{random.choice(qianwens["吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["吉"])}'
         case '末吉':
-            return (
-                '——末吉——\n'
-                f'{qianwens["末吉"][random.randint(0, len(qianwens["末吉"]) - 1)]}\n\n'
-                f'今天的幸运物是：{lucky_things["凶"][random.randint(0, len(lucky_things["凶"]) - 1)]}'
-            )
+            return '——末吉——\n' f'{random.choice(qianwens["末吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
         case '凶':
-            return (
-                '——凶——\n'
-                f'{qianwens["凶"][random.randint(0, len(qianwens["凶"]) - 1)]}\n\n'
-                f'今天的幸运物是：{lucky_things["凶"][random.randint(0, len(lucky_things["凶"]) - 1)]}'
-            )
+            return '——凶——\n' f'{random.choice(qianwens["凶"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
         case '大凶':
-            return (
-                '——大凶——\n'
-                f'{qianwens["凶"][random.randint(0, len(qianwens["凶"]) - 1)]}\n\n'
-                f'今天的幸运物是：{lucky_things["凶"][random.randint(0, len(lucky_things["凶"]) - 1)]}'
-            )
+            return '——大凶——\n' f'{random.choice(qianwens["凶"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
 
 
 async def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:

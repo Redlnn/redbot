@@ -116,8 +116,8 @@ async def add_whitelist_to_qq(
         return
     elif not uuid1 and not uuid2:
         PlayersTable.update(
-                {PlayersTable.uuid1: uuid.UUID(mc_uuid), PlayersTable.uuid1AddedTime: int(time.time())}
-            ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
+            {PlayersTable.uuid1: uuid.UUID(mc_uuid), PlayersTable.uuid1AddedTime: int(time.time())}
+        ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
     elif uuid1 and not uuid2:
         if admin:
             PlayersTable.update(

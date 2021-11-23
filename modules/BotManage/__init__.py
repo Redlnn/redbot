@@ -75,9 +75,7 @@ async def menu(app: Ariadne, group: Group):
     elif config_data['Modules']['BotManage']['DisabledGroup']:
         if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
             return
-    msg_send = (
-        f'-= {config_data["Basic"]["BotName"]} 菜单 for {group.id} =-\n-={group.name}=-\n{hr}\nID    模块状态    模块名\n'
-    )
+    msg_send = f'-= {config_data["Basic"]["BotName"]} 菜单 for {group.id} =-\n-={group.name}=-\n{hr}\nID    模块状态    模块名\n'
     i = 0
     for module in Modules:
         i += 1
