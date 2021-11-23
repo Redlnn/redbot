@@ -203,7 +203,7 @@ def get_frequencies(msg_list: List[str]) -> dict:
 
 def gen_wordcloud(words: dict) -> bytes:
     bg_list = os.listdir(Path(Path(__file__).parent, 'bg'))
-    mask = numpy.array(Img.open(Path(Path(__file__).parent, 'bg', bg_list[random.randint(0, len(bg_list) - 1)])))
+    mask = numpy.array(Img.open(Path(Path(__file__).parent, 'bg', random.choice(bg_list))))
     font_path = str(Path(Path.cwd(), 'fonts', config_data['Modules']['WordCloud']['FontName']))
     wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=600, scale=2)
     wordcloud.generate_from_frequencies(words)

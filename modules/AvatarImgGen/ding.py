@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from pathlib import Path
-from PIL import Image
 from io import BytesIO
+from pathlib import Path
+
 import httpx
+from PIL import Image
 
 pos_and_sizes = [
     [[183, 62], [95, 95]],

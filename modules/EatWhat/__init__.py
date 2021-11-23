@@ -3,8 +3,8 @@
 
 import asyncio
 import os
+import random
 from pathlib import Path
-from random import randint
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -36,7 +36,8 @@ Module(
 def get_food():
     with open(Path(Path(__file__).parent, 'foods.txt')) as f:
         foods = f.readlines()
-    return foods[randint(0, len(foods))].rstrip()
+    food = random.choice(foods)
+    return food.rstrip()
 
 
 @channel.use(
