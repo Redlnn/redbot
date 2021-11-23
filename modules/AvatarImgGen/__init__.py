@@ -55,7 +55,9 @@ async def main(app: Ariadne, group: Group, member: Member, message: MessageChain
     elif config_data['Modules']['AvatarImgGen']['DisabledGroup']:
         if group.id in config_data['Modules']['AvatarImgGen']['DisabledGroup']:
             return
-    if not message.asDisplay()[0] in ('!', '！', '.'):
+    if not message.has(Plain):
+        return
+    elif message.asDisplay()[0] not in ('!', '！', '.'):
         return
     rate_limit, remaining_time = ManualInterval.require(f'AvatarImgGen_{member.id}', 30, 1)
     if not rate_limit:
