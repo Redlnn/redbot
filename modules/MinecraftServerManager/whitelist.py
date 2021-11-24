@@ -236,45 +236,45 @@ async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
         blocked,
         blockReason,
     ) = await query_uuid_by_qq(qq)
-    if not had_status:
+    if not uuid1 and not uuid2:
         try:
             await app.sendGroupMessage(group, MessageChain.create([At(qq), Plain(f'({qq}) 好像一个白名单都没有呢~')]))
         except UnknownTarget:
             await app.sendGroupMessage(group, MessageChain.create([Plain(f'{qq} 一个白名单都没有')]))
         return
-    elif uuid1 or uuid2:
-        PlayersTable.update(
+
+    PlayersTable.update(
             {
                 PlayersTable.uuid1: None,
                 PlayersTable.uuid1AddedTime: None,
                 PlayersTable.uuid2: None,
                 PlayersTable.uuid2AddedTime: None,
             }
-        ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
-        target = set()
-        if uuid1:
-            target.add(await del_whitelist_from_server(str(uuid1), app, group))
-        elif uuid2:
-            target.add(await del_whitelist_from_server(str(uuid2), app, group))
-        if False in target and True in target:
-            try:
-                await app.sendGroupMessage(
-                    group, MessageChain.create([Plain('只从服务器上删除了 '), At(qq), Plain(f'({qq}) 的部分白名单')])
-                )
-            except UnknownTarget:
-                await app.sendGroupMessage(group, MessageChain.create([Plain(f'只从服务器上删除了 {qq} 的部分白名单')]))
-        elif False in target:
-            try:
-                await app.sendGroupMessage(
-                    group, MessageChain.create([Plain('从服务器上删除 '), At(qq), Plain(f'({qq}) 的白名单时失败')])
-                )
-            except UnknownTarget:
-                await app.sendGroupMessage(group, MessageChain.create([Plain(f'从服务器上删除 {qq} 的白名单时失败')]))
-        else:
-            try:
-                await app.sendGroupMessage(group, MessageChain.create([At(qq), Plain(f'({qq}) 的白名单都删掉啦~')]))
-            except UnknownTarget:
-                await app.sendGroupMessage(group, MessageChain.create([Plain(f'{qq} 的白名单都删掉啦~')]))
+    ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
+    target = set()
+    if uuid1:
+        target.add(await del_whitelist_from_server(str(uuid1), app, group))
+    if uuid2:
+        target.add(await del_whitelist_from_server(str(uuid2), app, group))
+    if False in target and True in target:
+        try:
+            await app.sendGroupMessage(
+                group, MessageChain.create([Plain('只从服务器上删除了 '), At(qq), Plain(f'({qq}) 的部分白名单')])
+            )
+        except UnknownTarget:
+            await app.sendGroupMessage(group, MessageChain.create([Plain(f'只从服务器上删除了 {qq} 的部分白名单')]))
+    elif False in target:
+        try:
+            await app.sendGroupMessage(
+                group, MessageChain.create([Plain('从服务器上删除 '), At(qq), Plain(f'({qq}) 的白名单时失败')])
+            )
+        except UnknownTarget:
+            await app.sendGroupMessage(group, MessageChain.create([Plain(f'从服务器上删除 {qq} 的白名单时失败')]))
+    else:
+        try:
+            await app.sendGroupMessage(group, MessageChain.create([At(qq), Plain(f'({qq}) 的白名单都删掉啦~')]))
+        except UnknownTarget:
+            await app.sendGroupMessage(group, MessageChain.create([Plain(f'{qq} 的白名单都删掉啦~')]))
 
 
 async def del_whitelist_by_id(mc_id: str, app: Ariadne, group: Group):
@@ -328,7 +328,7 @@ async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> Non
             await app.sendGroupMessage(
                 group, MessageChain.create([Plain('已从服务器删除 '), At(qq), Plain(f'({qq}) 的 uuid 为 {mc_uuid} 的白名单')])
             )
-    elif uuid2.replace('-', '') == mc_uuid.replace('-', ''):
+    if uuid2.replace('-', '') == mc_uuid.replace('-', ''):
         PlayersTable.update({PlayersTable.uuid2: None, PlayersTable.uuid2AddedTime: None}).where(
             (PlayersTable.group == server_group) & (PlayersTable.qq == qq)
         ).execute()
