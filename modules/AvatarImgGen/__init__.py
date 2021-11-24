@@ -55,14 +55,12 @@ async def main(app: Ariadne, group: Group, member: Member, message: MessageChain
     elif config_data['Modules']['AvatarImgGen']['DisabledGroup']:
         if group.id in config_data['Modules']['AvatarImgGen']['DisabledGroup']:
             return
+
     if not message.has(Plain):
         return
     elif message.asDisplay()[0] not in ('!', '！', '.'):
         return
-    rate_limit, remaining_time = ManualInterval.require(f'AvatarImgGen_{member.id}', 30, 1)
-    if not rate_limit:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
-        return
+
     split_message = message.asDisplay().split(' ')
     if len(split_message) != 2:
         return
@@ -76,6 +74,10 @@ async def main(app: Ariadne, group: Group, member: Member, message: MessageChain
     else:
         return
 
+    rate_limit, remaining_time = ManualInterval.require(f'AvatarImgGen_{member.id}', 30, 1)
+    if not rate_limit:
+        await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        return
     img = await asyncio.to_thread(func[split_message[0][1:]], target)
 
     if isinstance(img, bytes):
