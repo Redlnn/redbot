@@ -35,7 +35,7 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([ElementMatch(At), RegexMatch(r'.+')]))],
+        inline_dispatchers=[Twilight(Sparkle(matches={'at': ElementMatch(At), 'any': RegexMatch(r'.+')}))],
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )
@@ -46,7 +46,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain, sparkle: Spark
     elif config_data['Modules']['HelpYouChoose']['DisabledGroup']:
         if group.id in config_data['Modules']['HelpYouChoose']['DisabledGroup']:
             return
-    if sparkle._check_0.result.target != config_data['Basic']['MiraiApiHttp']['Account']:
+    if sparkle.at.result.target != config_data['Basic']['MiraiApiHttp']['Account']:
         return
     msg = message.include(Plain).asDisplay().strip()
     re1_match = regex.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)
