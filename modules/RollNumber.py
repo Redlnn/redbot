@@ -42,7 +42,9 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]roll'), RegexMatch(r'\ \S+', optional=True)]))],
+        inline_dispatchers=[
+            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]roll'), 'any': RegexMatch(r'\ \S+', optional=True)}))
+        ],
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )
@@ -53,8 +55,8 @@ async def main(app: Ariadne, group: Group, message: MessageChain, sparkle: Spark
     elif config_data['Modules']['RollNumber']['DisabledGroup']:
         if group.id in config_data['Modules']['RollNumber']['DisabledGroup']:
             return
-    if sparkle._check_1.matched:
-        chain = MessageChain.create([Plain(f'{sparkle._check_1.result.asDisplay().strip()}的概率为：{randint(0, 100)}')])
+    if sparkle.any.matched:
+        chain = MessageChain.create([Plain(f'{sparkle.any.result.asDisplay().strip()}的概率为：{randint(0, 100)}')])
     else:
         chain = MessageChain.create([Plain(str(randint(0, 100)))])
     await app.sendGroupMessage(group, chain, quote=message.get(Source).pop(0))

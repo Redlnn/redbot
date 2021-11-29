@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from peewee import CharField, IntegerField, Model, TextField, TimestampField, fn
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
@@ -166,19 +166,19 @@ async def get_group_msg_by_id(group: int | str) -> Optional[str]:
     return data.get().msg_chain
 
 
-async def get_member_msg(group: int | str, qq: int | str, timestamp: int = 0) -> Optional[list]:
+async def get_member_msg(group: int | str, qq: int | str, timestamp: int = 0) -> List[str]:
     try:
         data = MsgLog.select().where((MsgLog.group == group) & (MsgLog.qq == qq) & (MsgLog.timestamp >= timestamp))
     except MsgLog.DoesNotExist:
-        return None
+        return []
     return [msg.msg_chain for msg in data]
 
 
-async def get_group_msg(group: int | str, timestamp: int = 0) -> Optional[list]:
+async def get_group_msg(group: int | str, timestamp: int = 0) -> List[str]:
     try:
         data = MsgLog.select().where((MsgLog.group == group) & (MsgLog.timestamp >= timestamp))
     except MsgLog.DoesNotExist:
-        return None
+        return []
     return [msg.msg_chain for msg in data]
 
 
