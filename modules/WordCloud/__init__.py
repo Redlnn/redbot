@@ -155,7 +155,7 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
                 group,
                 MessageChain.create(
                     At(target),
-                    Plain(f' {"你" if target_type == "me" else ""} 最近7天内的聊天词云 👇\n'),
+                    Plain(f' {"你" if target_type == "me" else ""}最近7天内的聊天词云 👇\n'),
                     Image(data_bytes=image),
                 ),
             )
@@ -163,7 +163,7 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
             await app.sendGroupMessage(
                 group,
                 MessageChain.create(
-                    Plain(f'{"你" if target_type == "me" else target} 最近7天内的聊天词云 👇\n'), Image(data_bytes=image)
+                    Plain(f'{"你" if target_type == "me" else target}最近7天内的聊天词云 👇\n'), Image(data_bytes=image)
                 ),
             )
         except UnknownError:
