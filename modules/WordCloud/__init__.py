@@ -59,7 +59,9 @@ Generating_list: List[int | str] = []
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wordcloud\ '), RegexMatch(r'.+')]))],
+        inline_dispatchers=[
+            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]wordcloud\ '), 'target': RegexMatch(r'.+')}))
+        ],
         decorators=[group_blacklist()],
     )
 )
@@ -77,7 +79,7 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
     global Generating_list
     target_type = 'member'
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - 518400
-    match_result = sparkle._check_1.result
+    match_result = sparkle.target.result
 
     if len(Generating_list) > 2:
         await app.sendGroupMessage(group, MessageChain.create(Plain('词云生成队列已满，请稍后再试')))
@@ -134,7 +136,9 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
         Generating_list.remove(target)
         return
 
-    await app.sendGroupMessage(group, MessageChain.create(Plain(f'正在为 {target} 生成词云，其本周共 {len(msg_list)} 条记录，请稍后...')))
+    await app.sendGroupMessage(
+        group, MessageChain.create(Plain(f'正在为 {target} 生成词云，其最近7天共 {len(msg_list)} 条记录，请稍后...'))
+    )
     words = await asyncio.to_thread(get_frequencies, msg_list)
     image = await asyncio.to_thread(gen_wordcloud, words)
 
@@ -151,7 +155,7 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
                 group,
                 MessageChain.create(
                     At(target),
-                    Plain(f' {"你" if target_type == "me" else ""}最近7天内的聊天词云 👇\n'),
+                    Plain(f' {"你" if target_type == "me" else ""} 最近7天内的聊天词云 👇\n'),
                     Image(data_bytes=image),
                 ),
             )

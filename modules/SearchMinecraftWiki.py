@@ -42,7 +42,9 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wiki\ '), RegexMatch(r'\S+')]))],
+        inline_dispatchers=[
+            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]wiki\ '), 'keyword': RegexMatch(r'\S+')}))
+        ],
         decorators=[group_blacklist(), MemberInterval.require(3)],
     )
 )
@@ -53,7 +55,7 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
     elif config_data['Modules']['SearchMinecraftWiki']['DisabledGroup']:
         if group.id in config_data['Modules']['SearchMinecraftWiki']['DisabledGroup']:
             return
-    arg: str = sparkle._check_1.result.asDisplay()
+    arg: str = sparkle.keyword.result.asDisplay()
     search_parm: str = quote(arg, encoding='utf-8')
     bilibili_wiki = (
         '<?xml version=\'1.0\' encoding=\'UTF-8\' standalone=\'yes\'?><msg templateID="123" '

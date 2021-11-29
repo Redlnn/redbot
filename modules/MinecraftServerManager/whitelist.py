@@ -244,12 +244,12 @@ async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
         return
 
     PlayersTable.update(
-            {
-                PlayersTable.uuid1: None,
-                PlayersTable.uuid1AddedTime: None,
-                PlayersTable.uuid2: None,
-                PlayersTable.uuid2AddedTime: None,
-            }
+        {
+            PlayersTable.uuid1: None,
+            PlayersTable.uuid1AddedTime: None,
+            PlayersTable.uuid2: None,
+            PlayersTable.uuid2AddedTime: None,
+        }
     ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
     target = set()
     if uuid1:
