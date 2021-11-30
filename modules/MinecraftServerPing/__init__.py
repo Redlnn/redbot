@@ -124,7 +124,7 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
     if online_player == 0:
         msg_send = (
             f'咕咕咕！！！\n'
-            f'服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}'
+            f'服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
             f'MOTD:\n{motd}\n'
             f'延迟: {ping_result["delay"]}ms\n'
             f'在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}\n'
