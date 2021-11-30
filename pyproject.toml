@@ -8,7 +8,7 @@ authors = ["Redlnn <w731347477@gmail.com>"]
 python = ">=3.10,<3.11"
 dnspython = "^2.1.0"
 gitpython = "^3.1.24"
-graia-ariadne = {version = "^0.4.3", allow-prereleases = true}
+graia-ariadne = {version = "^0.4.5", allow-prereleases = true}
 graia-broadcast = "^0.14.3"
 graia-saya = "^0.0.13"
 graia-scheduler = "^0.0.6"
