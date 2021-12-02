@@ -165,12 +165,13 @@ async def main_menu(app: Ariadne, group: Group):
         decorators=[group_blacklist()],
     )
 )
-async def whitelist_menu(app: Ariadne, group: Group):
+async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
         return
     elif group.id not in active_groups:
         return
-    await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=wl_menu_img_io.getvalue())))
+    if len(message.asDisplay()[1:]) == 2:
+        await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=wl_menu_img_io.getvalue())))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
