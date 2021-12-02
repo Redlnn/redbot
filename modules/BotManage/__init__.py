@@ -34,9 +34,9 @@ from utils.TextWithImg2Img import reload_config as gen_img_reload
 
 from .TextWithImg2Img import async_generate_img, hr
 
-lock: Lock = Lock()
 saya = Saya.current()
 channel = Channel.current()
+lock: Lock = Lock()
 inc = InterruptControl(saya.broadcast)
 
 # ensp = ' '  # 半角空格
@@ -276,7 +276,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, sparkle: Spa
     await app.sendGroupMessage(
         group,
         MessageChain.create(
-            At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s发送 .force ，取消请发送 .cancel')
+            At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')
         ),
     )
     answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
@@ -331,7 +331,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, sparkle: Spark
 
     # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
     await app.sendGroupMessage(
-        group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s发送 .force ，取消请发送 .cancel'))
+        group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
     )
     answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
     if not answer:
