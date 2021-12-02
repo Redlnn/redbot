@@ -3,6 +3,7 @@
 
 import time
 import uuid
+from datetime import datetime
 from typing import Optional, Tuple
 
 import httpx
@@ -46,7 +47,7 @@ async def is_uuid(mc_uuid: str) -> bool:
         return True
 
 
-async def get_uuid(mc_id: str) -> tuple[str | Response, Optional[str]]:
+async def get_uuid(mc_id: str) -> tuple[str | Response, str]:
     """
     通过 id 从 Mojang 获取 uuid
 
@@ -61,7 +62,7 @@ async def get_uuid(mc_id: str) -> tuple[str | Response, Optional[str]]:
     # elif code == 204:
     #     raise UnknownUUIDError
     else:
-        return res, None
+        return res, ''
 
 
 async def get_mc_id(mc_uuid: str) -> str | Response:
@@ -88,12 +89,12 @@ async def query_uuid_by_qq(
     qq: int,
 ) -> Tuple[
     bool,
-    Optional[int],
-    Optional[int],
+    Optional[datetime],
+    Optional[datetime],
     Optional[str],
-    Optional[int],
+    Optional[datetime],
     Optional[str],
-    Optional[int],
+    Optional[datetime],
     Optional[bool],
     Optional[str],
 ]:

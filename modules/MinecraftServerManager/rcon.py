@@ -17,7 +17,7 @@ __PORT = config_data['Port']  # Port number of the RCON server
 __PASSWORD = config_data['Passwd']  # Password of the RCON server
 
 
-def execute_command(command: str) -> Optional[str]:
+def execute_command(command: str) -> str:
     """
 
     通过 RCON 连接服务器
@@ -35,7 +35,4 @@ def execute_command(command: str) -> Optional[str]:
         logger.exception(e)
         raise e
     resp: str = rcon.command(command)
-    if resp == '':
-        return None
-    else:
-        return resp
+    return resp
