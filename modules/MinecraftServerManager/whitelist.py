@@ -3,13 +3,14 @@
 
 import time
 import uuid
+from datetime import datetime
 from typing import Optional, Tuple
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain, Source
-from graia.ariadne.model import Group
+from graia.ariadne.model import Group, Member
 from loguru import logger
 
 from config import config_data
@@ -103,7 +104,7 @@ async def add_whitelist_to_qq(
         blockReason,
     ) = await query_uuid_by_qq(qq)
     if not had_status:
-        member = await app.getMember(group, message.getFirst(At).target)
+        member: Member = await app.getMember(group, message.getFirst(At).target)
         PlayersTable.create(
             group=server_group,
             qq=qq,
@@ -343,12 +344,12 @@ async def query_whitelist_by_uuid(
     mc_uuid: str, app: Ariadne, group: Group
 ) -> Tuple[
     Optional[int],
-    Optional[int],
-    Optional[int],
+    Optional[datetime],
+    Optional[datetime],
     Optional[str],
-    Optional[int],
+    Optional[datetime],
     Optional[str],
-    Optional[int],
+    Optional[datetime],
     Optional[bool],
     Optional[str],
 ]:
@@ -378,12 +379,12 @@ async def query_whitelist_by_id(
     mc_id: str, app: Ariadne, group: Group
 ) -> Tuple[
     Optional[int],
-    Optional[int],
-    Optional[int],
+    Optional[datetime],
+    Optional[datetime],
     Optional[str],
-    Optional[int],
+    Optional[datetime],
     Optional[str],
-    Optional[int],
+    Optional[datetime],
     Optional[bool],
     Optional[str],
 ]:
@@ -417,12 +418,12 @@ async def query_whitelist_by_id(
 
 async def gen_query_info_text(
     qq: int,
-    join_timestamp: int,
-    leave_timestamp: Optional[int],
+    join_timestamp: datetime,
+    leave_timestamp: Optional[datetime],
     uuid1: Optional[str],
-    uuid1_added_time: Optional[int],
+    uuid1_added_time: Optional[datetime],
     uuid2: Optional[str],
-    uuid2_added_time: Optional[int],
+    uuid2_added_time: Optional[datetime],
     blocked: bool,
     block_reason: str,
     app: Ariadne,
