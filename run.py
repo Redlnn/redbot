@@ -53,7 +53,7 @@ if __name__ == '__main__':
         app.loop.run_until_complete(main())
     except KeyboardInterrupt:
         logger.info('正在退出中...')
-        app.loop.run_until_complete(app.stop())
+        app.loop.run_until_complete(app.wait_for_stop())
         logger.info('Bye~')
         logger.complete()
         exit()
