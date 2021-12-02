@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
 import time
+from asyncio import Lock
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
@@ -16,6 +18,8 @@ from graia.ariadne.message.element import At, Image, Plain, Source
 from graia.ariadne.message.parser.pattern import RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
+from graia.broadcast.interrupt import InterruptControl
+from graia.broadcast.interrupt.waiter import Waiter
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
@@ -41,6 +45,8 @@ from .whitelist import (
 
 saya = Saya.current()
 channel = Channel.current()
+lock: Lock = Lock()
+inc = InterruptControl(saya.broadcast)
 
 server_group = config_data['Modules']['MinecraftServerManager']['ServerGroup']
 active_groups = (
@@ -513,6 +519,33 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, message: M
     if len(msg) != 2:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
         return
+
+    @Waiter.create_using_function([GroupMessage])
+    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain):
+        if waiter_group.id == group.id and waiter_member.id == member.id:
+            saying = waiter_message.asDisplay()
+            if saying == '.confirm':
+                return True
+            elif saying == '.cancel':
+                return False
+            else:
+                await app.sendGroupMessage(group, MessageChain.create(At(member.id), Plain('请发送 .confirm 或 .cancel')))
+
+    await app.sendGroupMessage(
+        group,
+        MessageChain.create(
+            At(member.id),
+            Plain(
+                ' 你正在清空本 bot 的服务器白名单数据库，本次操作不可逆，且不影响服务器的白名单，请问是否确认要清空本 bot 的服务器白名单数据库？'
+                '\n确认请在10s内发送 .confirm ，取消请发送 .cancel'
+            ),
+        ),
+    )
+    answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+    if not answer:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('已取消')))
+        return
+
     logger.warning(f'管理 {member.name}({member.id}) 正在清空白名单数据库')
     PlayersTable.update(
         {
@@ -620,7 +653,7 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain):
         logger.exception(e)
         return
 
-    if exec_result is None:
+    if not exec_result:
         await app.sendGroupMessage(group, MessageChain.create(Plain('服务器返回为空')))
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain(f'服务器返回 ↓\n{exec_result}')))
@@ -821,7 +854,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain):
         ).where((PlayersTable.group == server_group) & (PlayersTable.qq == target)).execute()
     elif msg[1].onlyContains(Plain):
         block_reason = msg[2].include(Plain).merge().asDisplay() if len(msg) == 3 else None
-        target = msg[1].asDisplay()
+        target = int(msg[1].asDisplay())
         PlayersTable.update(
             {
                 PlayersTable.blocked: True,
