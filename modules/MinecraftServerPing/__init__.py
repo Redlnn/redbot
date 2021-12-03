@@ -141,7 +141,7 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
                 f'MOTD:\n{motd}\n'
                 f'延迟: {ping_result["delay"]}ms\n'
                 f'在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}\n'
-                f'在线列表：\n{players_list}\n'
+                f'在线列表：\n{players_list}'
                 f'にゃ～'
             )
         else:
@@ -151,7 +151,7 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
                 f'MOTD:\n{motd}\n'
                 f'延迟: {ping_result["delay"]}ms\n'
                 f'在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}\n'
-                f'在线列表（不完整）：\n{players_list}\n'
+                f'在线列表（不完整）：\n{players_list}'
                 f'にゃ～'
             )
 
