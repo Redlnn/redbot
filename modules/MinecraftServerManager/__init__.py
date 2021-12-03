@@ -32,7 +32,7 @@ from utils.TextWithImg2Img import generate_img
 
 from .database import PlayersTable, db, init_table
 from .rcon import execute_command
-from .utils import is_mc_id, is_uuid, query_uuid_by_qq
+from .utils import get_mc_id, is_mc_id, is_uuid, query_uuid_by_qq
 from .whitelist import (
     add_whitelist_to_qq,
     del_whitelist_by_id,
@@ -772,17 +772,54 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain):
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
         return
     elif msg[1].onlyContains(At):
+        target = msg[1].getFirst(At).target
         PlayersTable.update({PlayersTable.blocked: False, PlayersTable.blockReason: None}).where(
-            (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].getFirst(At).target)
+            (PlayersTable.group == server_group) & (PlayersTable.qq == target)
         ).execute()
     elif msg[1].onlyContains(Plain):
+        target = msg[1].asDisplay()
         PlayersTable.update({PlayersTable.blocked: False, PlayersTable.blockReason: None}).where(
-            (PlayersTable.group == server_group) & (PlayersTable.qq == msg[1].asDisplay())
+            (PlayersTable.group == server_group) & (PlayersTable.qq == target)
         ).execute()
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
         return
-    await app.sendGroupMessage(group, MessageChain.create(Plain('已原谅该玩家')))
+    (
+        had_status,
+        joinTimestamp,
+        leaveTimestamp,
+        uuid1,
+        uuid1AddedTime,
+        uuid2,
+        uuid2AddedTime,
+        blocked,
+        blockReason,
+    ) = await query_uuid_by_qq(target)
+    flags = []
+    if uuid1:
+        mc_id = await get_mc_id(uuid1)
+        if isinstance(mc_id, str):
+            res = execute_command(f'pardon {mc_id}')
+            if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                await app.sendGroupMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')))
+                flags.append(False)
+        else:
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器解封该玩家\nUUID：{uuid1}')))
+            flags.append(False)
+    if uuid2:
+        mc_id = await get_mc_id(uuid2)
+        if isinstance(mc_id, str):
+            res = execute_command(f'pardon {mc_id}')
+            if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                await app.sendGroupMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')))
+                flags.append(False)
+        else:
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器解封该玩家\nUUID：{uuid1}')))
+            flags.append(False)
+    if False not in flags:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('已解封该玩家')))
+    else:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('在服务器解封该玩家出现错误')))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -864,5 +901,40 @@ async def ban(app: Ariadne, group: Group, message: MessageChain):
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
         return
-    await app.sendGroupMessage(group, MessageChain.create(Plain('已封禁该玩家')))
     await del_whitelist_by_qq(target, app, group)
+    (
+        had_status,
+        joinTimestamp,
+        leaveTimestamp,
+        uuid1,
+        uuid1AddedTime,
+        uuid2,
+        uuid2AddedTime,
+        blocked,
+        blockReason,
+    ) = await query_uuid_by_qq(target)
+    flags = []
+    if uuid1:
+        mc_id = await get_mc_id(uuid1)
+        if isinstance(mc_id, str):
+            res = execute_command(f'ban {mc_id}')
+            if not res.startswith('Banned') and res != 'Nothing changed. The player is already banned':
+                await app.sendGroupMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')))
+                flags.append(False)
+        else:
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{uuid1}')))
+            flags.append(False)
+    if uuid2:
+        mc_id = await get_mc_id(uuid2)
+        if isinstance(mc_id, str):
+            res = execute_command(f'ban {mc_id}')
+            if not res.startswith('Banned') and res != 'Nothing changed. The player is already banned':
+                await app.sendGroupMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')))
+                flags.append(False)
+        else:
+            await app.sendGroupMessage(group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{uuid1}')))
+            flags.append(False)
+    if False not in flags:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('已封禁该玩家')))
+    else:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('在服务器封禁该玩家出现错误')))
