@@ -86,7 +86,7 @@ async def get_mc_id(mc_uuid: str) -> str | Response:
 
 
 async def query_uuid_by_qq(
-    qq: int,
+    qq: int | str,
 ) -> Tuple[
     bool,
     Optional[datetime],
@@ -107,9 +107,9 @@ async def query_uuid_by_qq(
             True,
             data.joinTimestamp,
             data.leaveTimestamp,
-            data.uuid1,
+            str(data.uuid1),
             data.uuid1AddedTime,
-            data.uuid2,
+            str(data.uuid2),
             data.uuid2AddedTime,
             data.blocked,
             data.blockReason,
