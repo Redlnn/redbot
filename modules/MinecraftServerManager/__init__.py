@@ -778,6 +778,9 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain):
         ).execute()
     elif msg[1].onlyContains(Plain):
         target = msg[1].asDisplay()
+        if not target.isdigit():
+            await app.sendGroupMessage(group, MessageChain.create(Plain('请输入QQ号')))
+            return
         PlayersTable.update({PlayersTable.blocked: False, PlayersTable.blockReason: None}).where(
             (PlayersTable.group == server_group) & (PlayersTable.qq == target)
         ).execute()
@@ -891,7 +894,10 @@ async def ban(app: Ariadne, group: Group, message: MessageChain):
         ).where((PlayersTable.group == server_group) & (PlayersTable.qq == target)).execute()
     elif msg[1].onlyContains(Plain):
         block_reason = msg[2].include(Plain).merge().asDisplay() if len(msg) == 3 else None
-        target = int(msg[1].asDisplay())
+        target = msg[1].asDisplay()
+        if not target.isdigit():
+            await app.sendGroupMessage(group, MessageChain.create(Plain('请输入QQ号')))
+            return
         PlayersTable.update(
             {
                 PlayersTable.blocked: True,
