@@ -901,7 +901,6 @@ async def ban(app: Ariadne, group: Group, message: MessageChain):
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
         return
-    await del_whitelist_by_qq(target, app, group)
     (
         had_status,
         joinTimestamp,
@@ -917,7 +916,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain):
     if uuid1:
         mc_id = await get_mc_id(uuid1)
         if isinstance(mc_id, str):
-            res = execute_command(f'ban {mc_id}')
+            res = execute_command(f'ban {mc_id} {block_reason}')
             if not res.startswith('Banned') and res != 'Nothing changed. The player is already banned':
                 await app.sendGroupMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')))
                 flags.append(False)
@@ -927,13 +926,14 @@ async def ban(app: Ariadne, group: Group, message: MessageChain):
     if uuid2:
         mc_id = await get_mc_id(uuid2)
         if isinstance(mc_id, str):
-            res = execute_command(f'ban {mc_id}')
+            res = execute_command(f'ban {mc_id} {block_reason}')
             if not res.startswith('Banned') and res != 'Nothing changed. The player is already banned':
                 await app.sendGroupMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')))
                 flags.append(False)
         else:
             await app.sendGroupMessage(group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{uuid1}')))
             flags.append(False)
+    await del_whitelist_by_qq(target, app, group)
     if False not in flags:
         await app.sendGroupMessage(group, MessageChain.create(Plain('已封禁该玩家')))
     else:
