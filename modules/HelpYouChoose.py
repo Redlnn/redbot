@@ -9,7 +9,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain, Source
-from graia.ariadne.message.parser.pattern import ElementMatch, RegexMatch
+from graia.ariadne.message.parser.pattern import ElementMatch, WildcardMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
@@ -35,18 +35,18 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle(matches={'at': ElementMatch(At), 'any': RegexMatch(r'.+')}))],
+        inline_dispatchers=[Twilight(Sparkle({'at': ElementMatch(At), 'any': WildcardMatch}))],
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )
-async def main(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
+async def main(app: Ariadne, group: Group, message: MessageChain, at: ElementMatch):
     if not config_data['Modules']['HelpYouChoose']['Enabled']:
         saya.uninstall_channel(channel)
         return
     elif config_data['Modules']['HelpYouChoose']['DisabledGroup']:
         if group.id in config_data['Modules']['HelpYouChoose']['DisabledGroup']:
             return
-    if sparkle.at.result.target != config_data['Basic']['MiraiApiHttp']['Account']:
+    if at.result.target != config_data['Basic']['MiraiApiHttp']['Account']:
         return
     msg = message.include(Plain).asDisplay().strip()
     re1_match = regex.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)

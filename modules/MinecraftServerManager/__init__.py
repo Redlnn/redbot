@@ -586,8 +586,7 @@ async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain
         return
     if mc_id.lower() not in member.name.lower():
         await app.sendGroupMessage(
-            group,
-            MessageChain.create(Plain('请确保你的群名片包含你要申请白名单的ID')), quote=message.get(Source).pop(0)
+            group, MessageChain.create(Plain('请确保你的群名片包含你要申请白名单的ID')), quote=message.get(Source).pop(0)
         )
         return
 

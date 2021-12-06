@@ -15,7 +15,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
-from graia.ariadne.message.parser.pattern import RegexMatch
+from graia.ariadne.message.parser.pattern import RegexMatch, WildcardMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
@@ -42,21 +42,19 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]roll'), 'any': RegexMatch(r'\ \S+', optional=True)}))
-        ],
+        inline_dispatchers=[Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]roll'), 'target': WildcardMatch()}))],
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )
-async def main(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
+async def main(app: Ariadne, group: Group, message: MessageChain, target: WildcardMatch):
     if not config_data['Modules']['RollNumber']['Enabled']:
         saya.uninstall_channel(channel)
         return
     elif config_data['Modules']['RollNumber']['DisabledGroup']:
         if group.id in config_data['Modules']['RollNumber']['DisabledGroup']:
             return
-    if sparkle.any.matched:
-        chain = MessageChain.create([Plain(f'{sparkle.any.result.asDisplay().strip()}的概率为：{randint(0, 100)}')])
+    if target.matched:
+        chain = MessageChain.create([Plain(f'{target.result.asDisplay().strip()}的概率为：{randint(0, 100)}')])
     else:
         chain = MessageChain.create([Plain(str(randint(0, 100)))])
     await app.sendGroupMessage(group, chain, quote=message.get(Source).pop(0))
