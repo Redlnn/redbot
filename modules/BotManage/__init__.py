@@ -65,7 +65,7 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](菜单|menu)')]))],
-        # decorators=[group_blacklist(), GroupInterval.require(5)],
+        decorators=[group_blacklist()],
     )
 )
 async def menu(app: Ariadne, group: Group):
@@ -110,20 +110,18 @@ async def menu(app: Ariadne, group: Group):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]启用模块\ '), 'module_id': RegexMatch(r'\d+')}))
-        ],
+        inline_dispatchers=[Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]启用模块\ '), 'module_id': RegexMatch(r'\d+')}))],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(MemberPerm.Administrator)],
     )
 )
-async def turn_on(app: Ariadne, group: Group, sparkle: Sparkle):
+async def turn_on(app: Ariadne, group: Group, module_id: RegexMatch):
     if not config_data['Modules']['BotManage']['Enabled']:
         saya.uninstall_channel(channel)
         return
     elif config_data['Modules']['BotManage']['DisabledGroup']:
         if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
             return
-    target_id = int(sparkle.module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
@@ -146,20 +144,18 @@ async def turn_on(app: Ariadne, group: Group, sparkle: Sparkle):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]禁用模块\ '), 'module_id': RegexMatch(r'\d+')}))
-        ],
+        inline_dispatchers=[Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]禁用模块\ '), 'module_id': RegexMatch(r'\d+')}))],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(MemberPerm.Administrator)],
     )
 )
-async def turn_off(app: Ariadne, group: Group, sparkle: Sparkle):
+async def turn_off(app: Ariadne, group: Group, module_id: RegexMatch):
     if not config_data['Modules']['BotManage']['Enabled']:
         saya.uninstall_channel(channel)
         return
     elif config_data['Modules']['BotManage']['DisabledGroup']:
         if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
             return
-    target_id = int(sparkle.module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
@@ -181,20 +177,18 @@ async def turn_off(app: Ariadne, group: Group, sparkle: Sparkle):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]用法\ '), 'module_id': RegexMatch(r'\d+')}))
-        ],
+        inline_dispatchers=[Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]用法\ '), 'module_id': RegexMatch(r'\d+')}))],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(MemberPerm.Administrator)],
     )
 )
-async def get_usage(app: Ariadne, group: Group, sparkle: Sparkle):
+async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
     if not config_data['Modules']['BotManage']['Enabled']:
         saya.uninstall_channel(channel)
         return
     elif config_data['Modules']['BotManage']['DisabledGroup']:
         if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
             return
-    target_id = int(sparkle.module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
@@ -247,13 +241,11 @@ async def reload_bot_and_modules_config(app: Ariadne, group: Group):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]重载模块\ '), 'module_id': RegexMatch(r'\d+')}))
-        ],
+        inline_dispatchers=[Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]重载模块\ '), 'module_id': RegexMatch(r'\d+')}))],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(Permission.BOT_ADMIN)],
     )
 )
-async def reload_module(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
+async def reload_module(app: Ariadne, group: Group, member: Member, module_id: RegexMatch):
     if not config_data['Modules']['BotManage']['Enabled']:
         saya.uninstall_channel(channel)
         return
@@ -284,7 +276,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, sparkle: Spa
         await app.sendGroupMessage(group, MessageChain.create(Plain('已取消')))
         return
 
-    target_id = int(sparkle.module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
@@ -304,13 +296,11 @@ async def reload_module(app: Ariadne, group: Group, member: Member, sparkle: Spa
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]加载模块\ '), 'module_id': RegexMatch(r'\d+')}))
-        ],
+        inline_dispatchers=[Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]加载模块\ '), 'module_id': RegexMatch(r'\d+')}))],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(Permission.BOT_ADMIN)],
     )
 )
-async def load_module(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
+async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexMatch):
     if not config_data['Modules']['BotManage']['Enabled']:
         saya.uninstall_channel(channel)
         return
@@ -337,7 +327,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, sparkle: Spark
     if not answer:
         await app.sendGroupMessage(group, MessageChain.create(Plain('已取消')))
         return
-    match_result = sparkle.module_id.result.asDisplay()
+    match_result = module_id.result.asDisplay()
     target_filename = match_result if match_result[-3:] != '.py' else match_result[:-3]
     modules_dir_list = os.listdir(Path(Path.cwd(), 'modules'))
     if target_filename + '.py' in modules_dir_list or target_filename in modules_dir_list:
@@ -358,20 +348,18 @@ async def load_module(app: Ariadne, group: Group, member: Member, sparkle: Spark
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]卸载模块\ '), 'module_id': RegexMatch(r'\d+')}))
-        ],
+        inline_dispatchers=[Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]卸载模块\ '), 'module_id': RegexMatch(r'\d+')}))],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(Permission.BOT_ADMIN)],
     )
 )
-async def unload_module(app: Ariadne, group: Group, sparkle: Sparkle):
+async def unload_module(app: Ariadne, group: Group, module_id: RegexMatch):
     if not config_data['Modules']['BotManage']['Enabled']:
         saya.uninstall_channel(channel)
         return
     elif config_data['Modules']['BotManage']['DisabledGroup']:
         if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
             return
-    target_id = int(sparkle.module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]

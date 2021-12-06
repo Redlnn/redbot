@@ -42,20 +42,18 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]wiki\ '), 'keyword': RegexMatch(r'\S+')}))
-        ],
+        inline_dispatchers=[Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]wiki\ '), 'keyword': RegexMatch(r'\S+')}))],
         decorators=[group_blacklist(), MemberInterval.require(3)],
     )
 )
-async def main(app: Ariadne, group: Group, sparkle: Sparkle):
+async def main(app: Ariadne, group: Group, keyword: RegexMatch):
     if not config_data['Modules']['SearchMinecraftWiki']['Enabled']:
         saya.uninstall_channel(channel)
         return
     elif config_data['Modules']['SearchMinecraftWiki']['DisabledGroup']:
         if group.id in config_data['Modules']['SearchMinecraftWiki']['DisabledGroup']:
             return
-    arg: str = sparkle.keyword.result.asDisplay()
+    arg: str = keyword.result.asDisplay()
     search_parm: str = quote(arg, encoding='utf-8')
     bilibili_wiki = (
         '<?xml version=\'1.0\' encoding=\'UTF-8\' standalone=\'yes\'?><msg templateID="123" '
