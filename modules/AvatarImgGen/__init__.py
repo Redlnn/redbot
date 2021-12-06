@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import asyncio
 import os
 from asyncio import Lock
 from pathlib import Path
@@ -78,7 +77,7 @@ async def main(app: Ariadne, group: Group, member: Member, message: MessageChain
     if not rate_limit:
         await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
-    img = await asyncio.to_thread(func[split_message[0][1:]], target)
+    img = await func[split_message[0][1:]](target)
 
     if isinstance(img, bytes):
         await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img)))

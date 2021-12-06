@@ -196,7 +196,7 @@ async def async_generate_img(*args: List[str | BytesIO]) -> BytesIO:
     return await asyncio.to_thread(generate_img, *args)
 
 
-def generate_img(text_and_img: List[str | BytesIO] = ()) -> BytesIO:
+def generate_img(text_and_img: List[str | BytesIO] = []) -> BytesIO:
     """
     根据输入的文本，生成一张图并返回图片文件的路径
 
