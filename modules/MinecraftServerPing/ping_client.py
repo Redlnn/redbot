@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-import regex
+# import regex
 from graia.ariadne.util.async_exec import io_bound
 from mctools import PINGClient
 
@@ -33,10 +33,10 @@ def ping(ip: Optional[str] = None, url: Optional[str] = None, port: Optional[int
                 return {}
         target_port = port if port else 25565
 
-    ping = PINGClient(host=host, port=target_port, timeout=5)
+    ping = PINGClient(host=host, port=target_port, format_method=2, timeout=5)
     stats: dict = ping.get_stats()
     ping.stop()
-    motd: str = regex.sub(r'\x1b\[[0-9]{1,3}[;]?[0-9]?m', '', stats['description'])
+    # motd: str = regex.sub(r'\x1b\[[0-9]{1,3}[;]?[0-9]?m', '', stats['description'])
 
     if stats['players'].get('sample'):
         player_list: list = stats['players'].get('sample')
@@ -46,7 +46,7 @@ def ping(ip: Optional[str] = None, url: Optional[str] = None, port: Optional[int
     return {
         'version': str(stats['version']['name']),
         'protocol': str(stats['version']['protocol']),
-        'motd': motd,
+        'motd': stats['description'],
         'delay': str(round(stats['time'], 1)),
         'online_player': str(stats['players']['online']),
         'max_player': str(stats['players']['max']),
