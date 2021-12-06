@@ -9,7 +9,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image
-from graia.ariadne.message.parser.pattern import RegexMatch
+from graia.ariadne.message.parser.pattern import RegexMatch, WildcardMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
@@ -34,19 +34,23 @@ Module(
 ).register()
 
 
-class Match(Sparkle):
-    prefix = RegexMatch(r'[!！.]img\ ')
-    any = RegexMatch(r'.+')
-
-
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Match)],
+        inline_dispatchers=[
+            Twilight(
+                Sparkle(
+                    {
+                        'prefix': RegexMatch(r'[!！.]img\ '),
+                        'content': WildcardMatch(),
+                    }
+                )
+            )
+        ],
         decorators=[group_blacklist(), GroupInterval.require(15)],
     )
 )
-async def main(app: Ariadne, group: Group, sparkle: Sparkle):
+async def main(app: Ariadne, group: Group, content: RegexMatch):
     if not config_data['Modules']['TextWithImg2Img']['Enabled']:
         saya.uninstall_channel(channel)
         return
@@ -54,7 +58,7 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
         if group.id in config_data['Modules']['TextWithImg2Img']['DisabledGroup']:
             return
     img_list = []
-    for i in sparkle.any.result:
+    for i in content.result:
         if type(i) == Image:
             img = await httpx.AsyncClient().get(i.url)
             img_list.append(BytesIO(img.content))

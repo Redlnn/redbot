@@ -21,7 +21,7 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownError, UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
-from graia.ariadne.message.parser.pattern import RegexMatch
+from graia.ariadne.message.parser.pattern import RegexMatch, WildcardMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member
 from graia.saya import Channel, Saya
@@ -60,12 +60,12 @@ Generating_list: List[int | str] = []
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]wordcloud\ '), 'target': RegexMatch(r'.+')}))
+            Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]wordcloud\ '), 'wc_target': WildcardMatch()}))
         ],
         decorators=[group_blacklist()],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
+async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMatch):
     if not config_data['Modules']['WordCloud']['Enabled']:
         saya.uninstall_channel(channel)
         return
@@ -79,7 +79,7 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
     global Generating_list
     target_type = 'member'
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - 518400
-    match_result = sparkle.target.result
+    match_result: MessageChain = wc_target.result
 
     if len(Generating_list) > 2:
         await app.sendGroupMessage(group, MessageChain.create(Plain('词云生成队列已满，请稍后再试')))
@@ -121,7 +121,7 @@ async def main(app: Ariadne, group: Group, member: Member, sparkle: Sparkle):
         Generating_list.append(target)
         msg_list = await get_member_msg(group.id, target, target_timestamp)
     elif match_result.asDisplay().isdigit():
-        target = match_result.asDisplay()
+        target = int(match_result.asDisplay())
         if target in Generating_list:
             await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return

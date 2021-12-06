@@ -96,50 +96,62 @@ async def main(group: Group, member: Member, message: MessageChain):
 
 
 # 获取某人指定天数内的发言条数
-class GetMsgCountMatch(Sparkle):
-    prefix = RegexMatch(r'[!！.]msgcount')
-    arg_type = ArgumentMatch("--type")
-    arg_target = ArgumentMatch("--target", optional=True)
-    arg_day = ArgumentMatch("--day")
-
-
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(GetMsgCountMatch)],
+        inline_dispatchers=[
+            Twilight(
+                Sparkle(
+                    {
+                        'prefix': RegexMatch(r'[!！.]msgcount'),
+                        'arg_type': ArgumentMatch("--type", optional=False),
+                        'arg_target': ArgumentMatch("--target", optional=True),
+                        'arg_day': ArgumentMatch("--day", optional=True, default='7'),
+                    }
+                )
+            )
+        ],
         decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
     )
 )
-async def get_msg_count(app: Ariadne, group: Group, member: Member, message: MessageChain, sparkle: Sparkle):
+async def get_msg_count(
+    app: Ariadne,
+    group: Group,
+    member: Member,
+    message: MessageChain,
+    arg_type: ArgumentMatch,
+    arg_target: ArgumentMatch,
+    arg_day: ArgumentMatch,
+):
     if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
         if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
             return
-    if not sparkle.arg_day.result.asDisplay().isdigit():
+    if not arg_day.result.asDisplay().isdigit():
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
         return
     today_timestamp = int(time.mktime(datetime.date.today().timetuple()))
-    target_timestamp = today_timestamp - (86400 * (int(sparkle.arg_day.result.asDisplay()) - 1))
+    target_timestamp = today_timestamp - (86400 * (int(arg_day.result.asDisplay()) - 1))
     target: Optional[int] = None
-    if sparkle.arg_type.result.asDisplay() == 'member':
-        if sparkle.arg_target.matched:
-            if sparkle.arg_target.result.onlyContains(At):
-                target = sparkle.arg_target.result.getFirst(At).target
+    if arg_type.result.asDisplay() == 'member':
+        if arg_target.matched:
+            if arg_target.result.onlyContains(At):
+                target = arg_target.result.getFirst(At).target
             else:
-                if sparkle.arg_target.result.asDisplay().isdigit():
-                    target = int(sparkle.arg_target.result)
+                if arg_target.result.asDisplay().isdigit():
+                    target = int(arg_target.result.asDisplay())
         else:
             target = member.id
-    elif sparkle.arg_type.result.asDisplay() == 'group':
-        if sparkle.arg_target.matched:
-            if sparkle.arg_target.result.asDisplay().isdigit():
-                target = int(sparkle.arg_target.result)
+    elif arg_type.result.asDisplay() == 'group':
+        if arg_target.matched:
+            if arg_target.result.asDisplay().isdigit():
+                target = int(arg_target.result.asDisplay())
         else:
             target = group.id
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标类型不存在')))
         return
 
-    if sparkle.arg_type.result.asDisplay() == 'member':
+    if arg_type.result.asDisplay() == 'member':
         if not target:
             await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
             return
@@ -166,14 +178,14 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
                 group,
                 MessageChain.create(
                     At(target),
-                    Plain(f'({target}) 最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
+                    Plain(f'({target}) 最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
                 ),
             )
         except UnknownTarget:
             await app.sendGroupMessage(
                 group,
                 MessageChain.create(
-                    Plain(f'{target}最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
+                    Plain(f'{target}最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
                 ),
             )
     else:
@@ -188,39 +200,43 @@ async def get_msg_count(app: Ariadne, group: Group, member: Member, message: Mes
             await app.sendGroupMessage(
                 group,
                 MessageChain.create(
-                    Plain(f'本群最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
+                    Plain(f'本群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
                 ),
             )
         else:
             await app.sendGroupMessage(
                 group,
                 MessageChain.create(
-                    Plain(f'该群最近{sparkle.arg_day.result}天的发言条数为 {count} 条'),
+                    Plain(f'该群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
                 ),
             )
 
 
 # 获取某人的最后一条发言
-class GetMemberLastMsgMatch(Sparkle):
-    prefix = RegexMatch(r'[!！.]getlast')
-    qq = RegexMatch(r'\d+', optional=True)
-    at = ElementMatch(At, optional=True)
-
-
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(GetMemberLastMsgMatch)],
+        inline_dispatchers=[
+            Twilight(
+                Sparkle(
+                    {
+                        'prefix': RegexMatch(r'[!！.]getlast'),
+                        'qq': RegexMatch(r'\d+', optional=True),
+                        'at': ElementMatch(At, optional=True),
+                    }
+                )
+            )
+        ],
         decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
     )
 )
-async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, sparkle: Sparkle):
+async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexMatch, at: ElementMatch):
     if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
         if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
             return
-    if sparkle.qq.matched and not sparkle.at.matched:
-        target = int(sparkle.qq.result.asDisplay())
-    elif sparkle.at.matched and not sparkle.qq.matched:
+    if qq.matched and not at.matched:
+        target = int(qq.result.asDisplay())
+    elif at.matched and not qq.matched:
         target = message.getFirst(At).target
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无效的指令，参数过多')))
@@ -229,7 +245,6 @@ async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, sparkl
     if not msg:
         await app.sendGroupMessage(group, MessageChain.create(Plain(f'{target} 木有说过话')))
         return
-    # send_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))
     chain = MessageChain.fromPersistentString(msg)
     at_send = MessageChain.create(At(target), Plain(f'({target}) 在 {send_time} 说过最后一句话：\n')).extend(chain)
     send = MessageChain.create(Plain(f'{target} 在 {send_time} 说过最后一句话：\n')).extend(chain)

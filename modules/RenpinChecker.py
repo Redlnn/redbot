@@ -194,7 +194,6 @@ async def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:
     """
     在文件中读取指定QQ今日已生成过的随机数，若今日未生成，则新生成一个随机数并写入文件
     """
-    # del_outdated_data(date)
     data_file_path = Path(data_folder, f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml')
     if not Path.exists(data_folder):
         Path.mkdir(data_folder)  # 如果同级目录不存在data文件夹，则新建一个

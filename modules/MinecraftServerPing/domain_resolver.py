@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from typing import Tuple
+
 import dns.resolver
 from dns.rdatatype import RdataType
 from dns.resolver import NXDOMAIN, NoAnswer
@@ -8,7 +10,7 @@ from dns.resolver import NXDOMAIN, NoAnswer
 __all__ = ["domain_resolver", "domain_resolver_srv"]
 
 
-def domain_resolver(domain: str):
+def domain_resolver(domain: str) -> bool | str:
     dns_resolver = dns.resolver.Resolver()
     dns_resolver.nameservers = ['119.29.29.29']
     try:
@@ -20,7 +22,7 @@ def domain_resolver(domain: str):
     return target_ip
 
 
-def domain_resolver_srv(domain: str):
+def domain_resolver_srv(domain: str) -> Tuple[bool | str, bool | str]:
     srv_domain = f'_minecraft._tcp.{domain}'
     dns_resolver = dns.resolver.Resolver()
     dns_resolver.nameservers = ['119.29.29.29']
@@ -33,3 +35,4 @@ def domain_resolver_srv(domain: str):
         host = str(nameserver_answer[0][0].target).rstrip('.')
         port = nameserver_answer[0][0].port
         return host, port
+    return False, False

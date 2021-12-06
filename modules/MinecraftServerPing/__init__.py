@@ -47,19 +47,23 @@ Module(
 ).register()
 
 
-class Match(Sparkle):
-    prefix = RegexMatch(r'[!！.]ping')
-    ping_target = RegexMatch(r'\ \S+', optional=True)
-
-
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Match)],
+        inline_dispatchers=[
+            Twilight(
+                Sparkle(
+                    {
+                        'prefix': RegexMatch(r'[!！.]ping'),
+                        'ping_target': RegexMatch(r'\ \S+', optional=True),
+                    }
+                )
+            )
+        ],
         decorators=[group_blacklist(), MemberInterval.require(10)],
     )
 )
-async def main(app: Ariadne, group: Group, sparkle: Sparkle):
+async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
     if not config_data['Modules']['MinecraftServerPing']['Enabled']:
         saya.uninstall_channel(channel)
         return
@@ -67,8 +71,8 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
         if group.id in config_data['Modules']['MinecraftServerPing']['DisabledGroup']:
             return
     servers = config_data['Modules']['MinecraftServerPing']['Servers']
-    if sparkle.ping_target.matched:
-        server_address = sparkle.ping_target.result.asDisplay().strip()
+    if ping_target.matched:
+        server_address = ping_target.result.asDisplay().strip()
     else:
         if group.id not in servers.keys():
             await app.sendGroupMessage(group, MessageChain.create([Plain('该群组没有设置默认服务器地址')]))
@@ -102,7 +106,7 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
         return
 
     try:
-        ping_result = await asyncio.to_thread(ping, **kwargs)
+        ping_result = await ping(**kwargs)
     except ConnectionRefusedError:
         await app.sendGroupMessage(group, MessageChain.create([Plain('连接被目标拒绝，该地址（及端口）可能不存在 Minecraft 服务器')]))
         logger.warning(f'连接被目标拒绝，该地址（及端口）可能不存在Minecraft服务器，目标地址：{server_address}')
@@ -114,6 +118,10 @@ async def main(app: Ariadne, group: Group, sparkle: Sparkle):
     except Exception as e:  # noqa
         await app.sendGroupMessage(group, MessageChain.create([Plain(f'发生错误：{e}')]))
         logger.exception(e)
+        return
+
+    if not ping_result:
+        await app.sendGroupMessage(group, MessageChain.create([Plain('无法解析目标地址')]))
         return
 
     motd_list = ping_result['motd'].split('\n')
