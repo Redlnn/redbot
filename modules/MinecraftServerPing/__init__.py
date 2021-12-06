@@ -129,7 +129,7 @@ async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
     if len(motd_list) == 2:
         motd += f'\n | {motd_list[1].strip()}'
     online_player = int(ping_result['online_player'])
-    if online_player == 0:
+    if online_player == 0 or not ping_result['player_list']:
         msg_send = (
             f'咕咕咕！！！\n'
             f'服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
