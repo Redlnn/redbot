@@ -28,9 +28,10 @@ def ping(ip: Optional[str] = None, url: Optional[str] = None, port: Optional[int
     else:  # url and not port
         host, port = domain_resolver_srv(url)
         if not host:
-            host = domain_resolver(url)
-            if not host:
-                return {}
+            host = url
+            # host = domain_resolver(url)
+            # if not host:
+            #     return {}
         target_port = port if port else 25565
 
     ping = PINGClient(host=host, port=target_port, format_method=2, timeout=5)
