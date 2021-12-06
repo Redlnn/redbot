@@ -28,7 +28,7 @@ jieba = "^0.42.1"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"
-black = "^21.10b0"
+black = "^21.12b0"
 devtools = "^0.8.0"
 flake8 = "^4.0.1"
 isort = {extras = ["requirements_deprecated_finder"], version = "^5.10.1"}
