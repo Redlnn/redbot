@@ -5,6 +5,7 @@ from io import BytesIO
 from pathlib import Path
 
 import httpx
+from graia.ariadne.util.async_exec import io_bound
 from PIL import Image
 
 pos_and_sizes = [
@@ -99,6 +100,7 @@ pos_and_sizes = [
 # QQ头像API：https://blog.soarli.top/archives/422.html
 
 
+@io_bound
 def ding(qq: int | str) -> bytes:
     resp = httpx.get(f'http://q.qlogo.cn/headimg_dl?dst_uin={qq}&spec=640&img_type=jpg')
     avatar = Image.open(BytesIO(resp.content))
