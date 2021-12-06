@@ -5,7 +5,6 @@
 移植自：https://github.com/djkcyl/ABot-Graia/blob/MAH-V2/saya/WordCloud/__init__.py
 """
 
-import asyncio
 import datetime
 import os
 import random
@@ -24,6 +23,7 @@ from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.pattern import RegexMatch, WildcardMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group, Member
+from graia.ariadne.util.async_exec import cpu_bound
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
@@ -139,8 +139,8 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
     await app.sendGroupMessage(
         group, MessageChain.create(Plain(f'正在为 {target} 生成词云，其最近7天共 {len(msg_list)} 条记录，请稍后...'))
     )
-    words = await asyncio.to_thread(get_frequencies, msg_list)
-    image = await asyncio.to_thread(gen_wordcloud, words)
+    words = await get_frequencies(msg_list)
+    image = await gen_wordcloud(words)
 
     if target_type == 'group':
         try:
@@ -184,6 +184,7 @@ def skip(string: str) -> bool:
     return False
 
 
+@cpu_bound
 def get_frequencies(msg_list: List[str]) -> dict:
     text = ''
     for persistent_string in msg_list:
@@ -205,6 +206,7 @@ def get_frequencies(msg_list: List[str]) -> dict:
     return dict(words)
 
 
+@cpu_bound
 def gen_wordcloud(words: dict) -> bytes:
     bg_list = os.listdir(Path(Path(__file__).parent, 'bg'))
     mask = numpy.array(Img.open(Path(Path(__file__).parent, 'bg', random.choice(bg_list))))

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import asyncio
 import os
 import random
 from pathlib import Path
@@ -13,6 +12,7 @@ from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.message.parser.pattern import RegexMatch
 from graia.ariadne.message.parser.twilight import Sparkle, Twilight
 from graia.ariadne.model import Group
+from graia.ariadne.util.async_exec import io_bound
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
@@ -33,6 +33,7 @@ Module(
 ).register()
 
 
+@io_bound
 def get_food():
     with open(Path(Path(__file__).parent, 'foods.txt')) as f:
         foods = f.readlines()
@@ -54,6 +55,6 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
     elif config_data['Modules']['EatWhat']['DisabledGroup']:
         if group.id in config_data['Modules']['EatWhat']['DisabledGroup']:
             return
-    food = await asyncio.to_thread(get_food)
+    food = await get_food()
     chain = MessageChain.create(Plain(f'吃{food}'))
     await app.sendGroupMessage(group, chain, quote=message.get(Source).pop(0))
