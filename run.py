@@ -5,7 +5,6 @@ import os
 from pathlib import Path
 
 from graia.ariadne.app import Ariadne
-from graia.ariadne.exception import AccountNotFound
 from graia.ariadne.model import MiraiSession
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
@@ -48,17 +47,4 @@ if __name__ == '__main__':
                 elif Path.is_file(Path(Path.cwd(), 'modules', module)) and module[-3:] == '.py':
                     saya.require(f'modules.{module[:-3]}')
     logger.info('正在启动 Ariadne...')
-
-    try:
-        app.loop.run_until_complete(main())
-    except KeyboardInterrupt:
-        logger.info('正在退出中...')
-        app.loop.run_until_complete(app.wait_for_stop())
-        logger.info('Bye~')
-        logger.complete()
-        exit()
-    except AccountNotFound:
-        logger.critical('Ariadne 启动失败，无法连接到 Mirai-Api-Http：Account Not Found')
-        logger.info('正在退出...')
-        logger.complete()
-        exit()
+    app.launch_blocking()

@@ -47,6 +47,7 @@ logger.add(
     encoding='utf-8',
     format=LOG_FORMAT,
     rotation='00:00',
+    retention="30 days",
     compression='zip',
     backtrace=True,
     diagnose=True,
