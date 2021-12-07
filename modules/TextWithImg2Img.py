@@ -40,7 +40,7 @@ Module(
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    {
+                    matches={
                         'prefix': RegexMatch(r'[!！.]img\ '),
                         'content': WildcardMatch(),
                     }

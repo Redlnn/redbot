@@ -42,7 +42,9 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]wiki\ '), 'keyword': RegexMatch(r'\S+')}))],
+        inline_dispatchers=[
+            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]wiki\ '), 'keyword': RegexMatch(r'\S+')}))
+        ],
         decorators=[group_blacklist(), MemberInterval.require(3)],
     )
 )

@@ -60,7 +60,7 @@ Generating_list: List[int | str] = []
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle({'prefix': RegexMatch(r'[!！.]wordcloud\ '), 'wc_target': WildcardMatch()}))
+            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]wordcloud\ '), 'wc_target': WildcardMatch()}))
         ],
         decorators=[group_blacklist()],
     )

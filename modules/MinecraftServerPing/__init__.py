@@ -9,7 +9,6 @@ Ping mc服务器
 > 命令：/ping [mc服务器地址
 """
 
-import asyncio
 import os
 import socket
 
@@ -53,7 +52,7 @@ Module(
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    {
+                    matches={
                         'prefix': RegexMatch(r'[!！.]ping'),
                         'ping_target': RegexMatch(r'\ \S+', optional=True),
                     }

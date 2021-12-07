@@ -28,14 +28,14 @@ Module(
     config_name='HelpYouChoose',
     file_name=os.path.basename(__file__),
     author=['Red_lnn'],
-    usage='@bot {主语}<介词>不<介词>{动作}\n如：@bot 我要不要去吃饭',
+    usage='@bot {主语}<介词>不<介词>{动作}\n如：@bot 我要不要去吃饭\n@bot 我有没有机会',
 ).register()
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle({'at': ElementMatch(At), 'any': WildcardMatch}))],
+        inline_dispatchers=[Twilight(Sparkle(matches={'at': ElementMatch(At), 'any': WildcardMatch()}))],
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )
