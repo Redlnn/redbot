@@ -9,7 +9,7 @@
 
 from config import config_data
 
-from .utils import img_2_bytesio  # noqa
+from .utils import img_2_bytes  # noqa
 
 disabled = False if config_data['Modules']['AutoReply']['Enabled'] else True
 
@@ -24,8 +24,8 @@ disabled = False if config_data['Modules']['AutoReply']['Enabled'] else True
 reply: dict = {
     123456789: {
         # '自动回复关键词': ['纯文本'],
-        # '带图回复关键词': ['文本1', await img_2_bytesio(r'C:\1.jpg'), '文本2'],
-        # '图片回复关键词': [await img_2_bytesio(r'C:\1.jpg')]
+        # '带图回复关键词': ['文本1', await img_2_bytes(r'C:\1.jpg'), '文本2'],
+        # '图片回复关键词': [await img_2_bytes(r'C:\1.jpg')]
     }
 }
 

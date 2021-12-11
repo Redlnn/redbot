@@ -103,7 +103,7 @@ pos_and_sizes = [
 @io_bound
 def ding(qq: int | str) -> bytes:
     resp = httpx.get(f'http://q.qlogo.cn/headimg_dl?dst_uin={qq}&spec=640&img_type=jpg')
-    avatar = Image.open(BytesIO(resp.content))
+    avatar = Image.open(resp.content)
     # avatar = Image.open(Path('test', 'g.jpg'))
 
     frames = []

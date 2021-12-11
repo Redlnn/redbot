@@ -4,7 +4,7 @@
 from io import BytesIO
 
 
-async def img_2_bytesio(img_path: str):
+async def img_2_bytes(img_path: str):
     with open(img_path, 'rb') as f:
         content = f.read()
     return BytesIO(content).getvalue()

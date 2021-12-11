@@ -20,7 +20,6 @@ import json
 import os
 import time
 from dataclasses import dataclass
-from io import BytesIO
 from xml.dom.minidom import parseString
 
 import httpx
@@ -129,21 +128,21 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
 
     video_info = await get_video_info(video_id.group(0))
     if video_info['code'] == -404:
-        return await app.sendGroupMessage(group, MessageChain.create([Plain('视频不存在')]))
+        return await app.sendGroupMessage(group, MessageChain.create(Plain('视频不存在')))
     elif video_info['code'] != 0:
         error_text = (
             f'在请求 {video_id.group(0)} 的视频信息时，B站服务器返回错误：↓\n错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
         )
         logger.error(error_text)
-        return await app.sendGroupMessage(group, MessageChain.create([Plain(error_text)]))
+        return await app.sendGroupMessage(group, MessageChain.create(Plain(error_text)))
     else:
         video_info = await info_json_dump(video_info['data'])
-        img: BytesIO = await gen_img(video_info)
+        img: bytes = await gen_img(video_info)
         await app.sendGroupMessage(
             group,
             MessageChain.create(
                 [
-                    Image(data_bytes=img.getvalue()),
+                    Image(data_bytes=img),
                     Plain(
                         f'{video_info.title}\n'
                         '————————————————————\n'
@@ -241,7 +240,7 @@ def math(num: int):
         return ('%.2f' % (num / 100000000)) + '亿'
 
 
-async def gen_img(data: VideoInfo) -> BytesIO:
+async def gen_img(data: VideoInfo) -> bytes:
     video_length_m, video_length_s = divmod(data.duration, 60)  # 将总的秒数转换为时分秒格式
     video_length_h, video_length_m = divmod(video_length_m, 60)
     if video_length_h == 0:
@@ -269,6 +268,5 @@ async def gen_img(data: VideoInfo) -> BytesIO:
     )
 
     cover_img_bytes = httpx.get(data.cover_url).content
-    cover_img_io = BytesIO(cover_img_bytes)
-    img_contents = [cover_img_io, info_text]
+    img_contents = [cover_img_bytes, info_text]
     return await async_generate_img(img_contents)

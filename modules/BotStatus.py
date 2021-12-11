@@ -5,9 +5,9 @@ import os
 import platform
 import time
 
-import git
 import psutil
 import regex as re
+from git.repo.base import Repo
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -32,7 +32,7 @@ Module(
     usage='[!！.](status|version)',
 ).register()
 
-repo = git.Repo(os.getcwd())
+repo = Repo(os.getcwd())
 
 commit = repo.head.reference.commit.hexsha
 commit_date = repo.head.reference.commit.committed_datetime
@@ -89,5 +89,5 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         f'系统内存占用：{"%.1f" % (psutil.virtual_memory().available / 1073741824)}G / {total_memory}G\n'
     )
 
-    img_io = await async_generate_img([msg_send])
-    await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img_io.getvalue())))
+    img_bytes = await async_generate_img([msg_send])
+    await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
