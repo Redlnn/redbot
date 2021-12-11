@@ -74,15 +74,15 @@ async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
         server_address = ping_target.result.asDisplay().strip()
     else:
         if group.id not in servers.keys():
-            await app.sendGroupMessage(group, MessageChain.create([Plain('该群组没有设置默认服务器地址')]))
+            await app.sendGroupMessage(group, MessageChain.create(Plain('该群组没有设置默认服务器地址')))
             return
         server_address = servers[group.id]
 
     if '://' in server_address:
-        await app.sendGroupMessage(group, MessageChain.create([Plain('不支持带有协议前缀的地址')]))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('不支持带有协议前缀的地址')))
         return
     elif '/' in server_address:
-        await app.sendGroupMessage(group, MessageChain.create([Plain('ping目标地址出现意外字符')]))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('ping目标地址出现意外字符')))
         return
 
     if is_ip(server_address):
@@ -93,34 +93,34 @@ async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
             if port.isdigit():
                 kwargs = {'url': host, 'port': port}
             else:
-                await app.sendGroupMessage(group, MessageChain.create([Plain('端口号格式不正确')]))
+                await app.sendGroupMessage(group, MessageChain.create(Plain('端口号格式不正确')))
                 return
         else:
-            await app.sendGroupMessage(group, MessageChain.create([Plain('目标地址不是一个有效的域名或IP（不支持中文域名）')]))
+            await app.sendGroupMessage(group, MessageChain.create(Plain('目标地址不是一个有效的域名或IP（不支持中文域名）')))
             return
     elif is_domain(server_address):
         kwargs = {'url': server_address}
     else:
-        await app.sendGroupMessage(group, MessageChain.create([Plain('目标地址不是一个有效的域名或IP（不支持中文域名）')]))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('目标地址不是一个有效的域名或IP（不支持中文域名）')))
         return
 
     try:
         ping_result = await ping(**kwargs)
     except ConnectionRefusedError:
-        await app.sendGroupMessage(group, MessageChain.create([Plain('连接被目标拒绝，该地址（及端口）可能不存在 Minecraft 服务器')]))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('连接被目标拒绝，该地址（及端口）可能不存在 Minecraft 服务器')))
         logger.warning(f'连接被目标拒绝，该地址（及端口）可能不存在Minecraft服务器，目标地址：{server_address}')
         return
     except (Timeout, ReadTimeout, ConnectTimeout, TimeoutError, socket.timeout):
-        await app.sendGroupMessage(group, MessageChain.create([Plain('连接超时')]))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('连接超时')))
         logger.warning(f'连接超时，目标地址：{server_address}')
         return
     except Exception as e:  # noqa
-        await app.sendGroupMessage(group, MessageChain.create([Plain(f'发生错误：{e}')]))
+        await app.sendGroupMessage(group, MessageChain.create(Plain(f'发生错误：{e}')))
         logger.exception(e)
         return
 
     if not ping_result:
-        await app.sendGroupMessage(group, MessageChain.create([Plain('无法解析目标地址')]))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('无法解析目标地址')))
         return
 
     motd_list = ping_result['motd'].split('\n')
@@ -162,4 +162,4 @@ async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
                 f'にゃ～'
             )
 
-    await app.sendGroupMessage(group, MessageChain.create([Plain(msg_send)]))
+    await app.sendGroupMessage(group, MessageChain.create(Plain(msg_send)))
