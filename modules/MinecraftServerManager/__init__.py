@@ -99,8 +99,8 @@ wl_menu = (
     '[!！.]wl clear —— 【管理】清空数据库中的白名单信息（服务器端请自行处理）\n'
 )
 
-menu_img_io = generate_img([menu])
-wl_menu_img_io = generate_img([wl_menu])
+menu_img_bytes = generate_img([menu])
+wl_menu_img_bytes = generate_img([wl_menu])
 
 is_init = False
 
@@ -158,7 +158,7 @@ async def main_menu(app: Ariadne, group: Group):
         return
     elif group.id not in active_groups:
         return
-    await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=menu_img_io.getvalue())))
+    await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=menu_img_bytes)))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
     elif group.id not in active_groups:
         return
     if len(message.asDisplay()[1:]) == 2:
-        await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=wl_menu_img_io.getvalue())))
+        await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=wl_menu_img_bytes)))
 
 
 # ---------------------------------------------------------------------------------------------------------------------

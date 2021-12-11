@@ -117,16 +117,16 @@ async def main(app: Ariadne, group: Group, member: Member):
         if group.id in config_data['Modules']['RenpinChecker']['DisabledGroup']:
             return
     is_new, (renpin, qianwen) = await read_data(str(member.id))
-    img_io = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
+    img_bytes = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
         await app.sendGroupMessage(
-            group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_io.getvalue()))
+            group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes))
         )
     else:
         await app.sendGroupMessage(
             group,
             MessageChain.create(
-                At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'), Image(data_bytes=img_io.getvalue())
+                At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'), Image(data_bytes=img_bytes)
             ),
         )
 
@@ -188,6 +188,8 @@ async def gen_qianwen(renpin: int) -> str:
             return '——凶——\n' f'{random.choice(qianwens["凶"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
         case '大凶':
             return '——大凶——\n' f'{random.choice(qianwens["凶"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
+        case _:
+            return ''
 
 
 async def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:

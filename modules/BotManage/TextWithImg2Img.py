@@ -10,13 +10,12 @@ import time
 from io import BytesIO
 from typing import Dict, List
 
-import PIL
 from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image, ImageDraw, ImageFont
 
 from config import config_data
 
-__all__ = ['async_generate_img', 'generate_img', 'hr']
+__all__ = ['generate_img', 'hr']
 
 _font_name: str = 'sarasa-mono-sc-semibold.ttf'
 _font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
@@ -141,14 +140,14 @@ def _cut_text(
 
 
 @cpu_bound
-def generate_img(text_and_img: List[str | BytesIO] = []) -> BytesIO:
+def generate_img(text_and_img: List[str | bytes] = []) -> bytes:
     """
     根据输入的文本，生成一张图并返回图片文件的路径
 
-    - 本地文件转 BytesIO 方法：BytesIO(open('1.jpg', 'rb').read())
-    - 网络文件转 BytesIO 方法：BytesIO(requests.get('http://localhost/1.jpg').content)
+    - 本地文件转 bytes 方法：BytesIO(open('1.jpg', 'rb').getvalue())
+    - 网络文件转 bytes 方法：requests.get('http://localhost/1.jpg'.content)
 
-    :param text_and_img: 要放到图里的文本（str）/图片（BytesIO）
+    :param text_and_img: 要放到图里的文本（str）/图片（bytes）
     :return: 图片文件的路径
     """
 
@@ -174,7 +173,7 @@ def generate_img(text_and_img: List[str | BytesIO] = []) -> BytesIO:
             contents.append({'content': text, 'height': text_height})
             content_height += text_height
             del text_height
-        elif isinstance(i, BytesIO):
+        elif isinstance(i, bytes):
             img: Image.Image = Image.open(i)
             img_height = int(line_width / img.size[0] * img.size[1])
             img = img.resize((line_width, img_height), Image.LANCZOS)
@@ -387,4 +386,4 @@ def generate_img(text_and_img: List[str | BytesIO] = []) -> BytesIO:
     # img_path = os.path.join(temp_dir_path, img_name)  # 自定义临时文件保存路径
     # canvas.save(img_path, format='PNG', optimize=True)
 
-    return byte_io
+    return byte_io.getvalue()

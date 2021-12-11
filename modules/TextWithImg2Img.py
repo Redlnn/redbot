@@ -66,5 +66,5 @@ async def main(app: Ariadne, group: Group, content: RegexMatch):
             img_list.append(i.asDisplay())
 
     if img_list:
-        img_io = await async_generate_img(img_list)
-        await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img_io.getvalue())))
+        img_bytes = await async_generate_img(img_list)
+        await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))

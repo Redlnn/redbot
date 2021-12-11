@@ -14,7 +14,6 @@
 # AutoReply表
 # type | group_id | keyword | value
 
-from io import BytesIO
 from pathlib import Path
 
 import regex as re
@@ -70,16 +69,17 @@ async def full_match(msg: str, app: Ariadne, group: Group):
     chain = MessageChain.create()
     for _ in reply[group.id][msg]:
         _reply = type(_)
-        if _reply is str:
+        if isinstance(_reply, str):
             chain.append(Plain(_))
-        elif _reply is BytesIO:
+        elif isinstance(_reply, bytes):
             chain.append(Image(data_bytes=_))
     if chain != MessageChain([]):
         if chain.count(Plain) > 0:
             if len(chain.include(Plain).asDisplay()) > 100:
+                img_bytes = await async_generate_img(reply[group.id][msg])
                 await app.sendGroupMessage(
                     group,
-                    MessageChain.create(Image(data_bytes=(await async_generate_img(reply[group.id][msg])).getvalue())),
+                    MessageChain.create(Image(data_bytes=(img_bytes))),
                 )
                 return
         await app.sendGroupMessage(group, chain)
@@ -92,18 +92,17 @@ async def re_match(msg: str, app: Ariadne, group: Group):
         chain = MessageChain.create()
         for i in re_reply[group.id][_]:
             _reply = type(i)
-            if _reply is str:
+            if isinstance(_reply, str):
                 chain.append(Plain(i))
-            elif _reply is BytesIO:
+            elif isinstance(_reply, bytes):
                 chain.append(Image(data_bytes=i))
         if chain != MessageChain([]):
             if chain.count(Plain) > 0:
                 if len(chain.include(Plain).asDisplay()) > 100:
+                    img_bytes = await async_generate_img(reply[group.id][msg])
                     await app.sendGroupMessage(
                         group,
-                        MessageChain.create(
-                            Image(data_bytes=(await async_generate_img(reply[group.id][msg])).getvalue())
-                        ),
+                        MessageChain.create(Image(data_bytes=(img_bytes))),
                     )
                     continue
             await app.sendGroupMessage(group, chain)
@@ -116,18 +115,17 @@ async def fuzzy_match(msg: str, app: Ariadne, group: Group):
         chain = MessageChain.create()
         for i in fuzzy_reply[group.id][_]:
             _reply = type(i)
-            if _reply is str:
+            if isinstance(_reply, str):
                 chain.append(Plain(i))
-            elif _reply is BytesIO:
+            elif isinstance(_reply, bytes):
                 chain.append(Image(data_bytes=i))
         if chain != MessageChain([]):
             if chain.count(Plain) > 0:
                 if len(chain.include(Plain).asDisplay()) > 100:
+                    img_bytes = await async_generate_img(reply[group.id][msg])
                     await app.sendGroupMessage(
                         group,
-                        MessageChain.create(
-                            Image(data_bytes=(await async_generate_img(reply[group.id][msg])).getvalue())
-                        ),
+                        MessageChain.create(Image(data_bytes=(img_bytes))),
                     )
                     continue
             await app.sendGroupMessage(group, chain)

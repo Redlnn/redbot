@@ -5,13 +5,12 @@
 仿锤子便签的文字转图片
 """
 
-import asyncio
 import os
 import time
 from io import BytesIO
 from typing import Dict, List
 
-import PIL
+from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image, ImageDraw, ImageFont
 
 from config import config_data
@@ -192,18 +191,19 @@ def _cut_text(
     return n_text.rstrip()
 
 
-async def async_generate_img(*args: List[str | BytesIO]) -> BytesIO:
-    return await asyncio.to_thread(generate_img, *args)
+@cpu_bound
+def async_generate_img(*args: List[str | bytes]) -> bytes:
+    return generate_img(*args)
 
 
-def generate_img(text_and_img: List[str | BytesIO] = []) -> BytesIO:
+def generate_img(text_and_img: List[str | bytes] = []) -> bytes:
     """
     根据输入的文本，生成一张图并返回图片文件的路径
 
-    - 本地文件转 BytesIO 方法：BytesIO(open('1.jpg', 'rb').read())
-    - 网络文件转 BytesIO 方法：BytesIO(requests.get('http://localhost/1.jpg').content)
+    - 本地文件转 bytes 方法：BytesIO(open('1.jpg', 'rb').getvalue())
+    - 网络文件转 bytes 方法：requests.get('http://localhost/1.jpg'.content)
 
-    :param text_and_img: 要放到图里的文本（str）/图片（BytesIO）
+    :param text_and_img: 要放到图里的文本（str）/图片（bytes）
     :return: 图片文件的路径
     """
 
@@ -216,7 +216,7 @@ def generate_img(text_and_img: List[str | BytesIO] = []) -> BytesIO:
     line_width = int(_chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
 
     content_height = 0
-    contents: List[Dict[str, str | PIL.Image.Image | int]] = []
+    contents: List[Dict[str, str | Image.Image | int]] = []
     # contents = [{
     #     'content': str/byte,
     #     'height': 区域高度
@@ -229,10 +229,10 @@ def generate_img(text_and_img: List[str | BytesIO] = []) -> BytesIO:
             contents.append({'content': text, 'height': text_height})
             content_height += text_height
             del text_height
-        elif isinstance(i, BytesIO):
-            img: PIL.Image.Image = Image.open(i)
+        elif isinstance(i, bytes):
+            img: Image.Image = Image.open(i)
             img_height = int(line_width / img.size[0] * img.size[1])
-            img = img.resize((line_width, img_height), PIL.Image.LANCZOS)
+            img = img.resize((line_width, img_height), Image.LANCZOS)
             contents.append({'content': img, 'height': img_height})
             content_height += img_height + (2 * _line_space)
             del img_height
@@ -391,7 +391,7 @@ def generate_img(text_and_img: List[str | BytesIO] = []) -> BytesIO:
                 spacing=_line_space,
             )
             content_area_y += i['height']
-        elif isinstance(i['content'], PIL.Image.Image):
+        elif isinstance(i['content'], Image.Image):
             canvas.paste(i['content'], (content_area_x, content_area_y + _line_space))
             content_area_y += i['height'] + (2 * _line_space)
 
@@ -442,4 +442,4 @@ def generate_img(text_and_img: List[str | BytesIO] = []) -> BytesIO:
     # img_path = os.path.join(temp_dir_path, img_name)  # 自定义临时文件保存路径
     # canvas.save(img_path, format='PNG', optimize=True)
 
-    return byte_io
+    return byte_io.getvalue()
