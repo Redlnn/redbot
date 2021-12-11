@@ -73,6 +73,6 @@ async def main(app: Ariadne, group: Group, keyword: RegexMatch):
         f'<title>{arg} - Minecraft Wiki</title><summary>{arg} - Minecraft Wiki，最详细的官方我的世界百科</summary>'
         '</item></msg>'
     )
-    await app.sendGroupMessage(group, MessageChain.create([Xml(xml=bilibili_wiki, type='Xml')]))
+    await app.sendGroupMessage(group, MessageChain.create(Xml(xml=bilibili_wiki, type='Xml')))
     await asyncio.sleep(round(uniform(0.5, 1.5), 3))
-    await app.sendGroupMessage(group, MessageChain.create([Xml(xml=fandom_gamepedia_wiki, type='Xml')]))
+    await app.sendGroupMessage(group, MessageChain.create(Xml(xml=fandom_gamepedia_wiki, type='Xml')))

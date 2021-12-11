@@ -54,7 +54,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain, target: Wildca
         if group.id in config_data['Modules']['RollNumber']['DisabledGroup']:
             return
     if target.matched:
-        chain = MessageChain.create([Plain(f'{target.result.asDisplay().strip()}的概率为：{randint(0, 100)}')])
+        chain = MessageChain.create(Plain(f'{target.result.asDisplay().strip()}的概率为：{randint(0, 100)}'))
     else:
-        chain = MessageChain.create([Plain(str(randint(0, 100)))])
+        chain = MessageChain.create(Plain(str(randint(0, 100))))
     await app.sendGroupMessage(group, chain, quote=message.get(Source).pop(0))
