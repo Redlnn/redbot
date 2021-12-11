@@ -16,8 +16,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
-from graia.ariadne.message.parser.pattern import RegexMatch
-from graia.ariadne.message.parser.twilight import Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
 from graia.broadcast.interrupt import InterruptControl
 from graia.broadcast.interrupt.waiter import Waiter
@@ -111,7 +110,7 @@ async def menu(app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]启用模块\ '), 'module_id': RegexMatch(r'\d+')}))
+            Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]启用模块\ '), 'module_id': RegexMatch(r'\d+')}))
         ],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(MemberPerm.Administrator)],
     )
@@ -147,7 +146,7 @@ async def turn_on(app: Ariadne, group: Group, module_id: RegexMatch):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]禁用模块\ '), 'module_id': RegexMatch(r'\d+')}))
+            Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]禁用模块\ '), 'module_id': RegexMatch(r'\d+')}))
         ],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(MemberPerm.Administrator)],
     )
@@ -182,7 +181,7 @@ async def turn_off(app: Ariadne, group: Group, module_id: RegexMatch):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]用法\ '), 'module_id': RegexMatch(r'\d+')}))
+            Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]用法\ '), 'module_id': RegexMatch(r'\d+')}))
         ],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(MemberPerm.Administrator)],
     )
@@ -248,7 +247,7 @@ async def reload_bot_and_modules_config(app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]重载模块\ '), 'module_id': RegexMatch(r'\d+')}))
+            Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]重载模块\ '), 'module_id': RegexMatch(r'\d+')}))
         ],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(Permission.BOT_ADMIN)],
     )
@@ -305,7 +304,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]加载模块\ '), 'module_id': RegexMatch(r'\d+')}))
+            Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]加载模块\ '), 'module_id': RegexMatch(r'\d+')}))
         ],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(Permission.BOT_ADMIN)],
     )
@@ -359,7 +358,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]卸载模块\ '), 'module_id': RegexMatch(r'\d+')}))
+            Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]卸载模块\ '), 'module_id': RegexMatch(r'\d+')}))
         ],
         decorators=[group_blacklist(), GroupInterval.require(5), Permission.group_perm_check(Permission.BOT_ADMIN)],
     )

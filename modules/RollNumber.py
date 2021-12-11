@@ -15,8 +15,12 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
-from graia.ariadne.message.parser.pattern import RegexMatch, WildcardMatch
-from graia.ariadne.message.parser.twilight import Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import (
+    RegexMatch,
+    Sparkle,
+    Twilight,
+    WildcardMatch,
+)
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -42,7 +46,7 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]roll'), 'target': WildcardMatch()}))],
+        inline_dispatchers=[Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]roll'), 'target': WildcardMatch()}))],
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )

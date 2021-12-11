@@ -406,8 +406,8 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tsinghua"
 
 [[package]]
-name = "graia-ariadne"
-version = "0.4.9"
+name = "graia-ariadne-dev"
+version = "2021.12.12.1"
 description = "Another elegant framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -415,8 +415,9 @@ python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 aiohttp = ">=3.7.4,<4.0.0"
-graia-broadcast = ">=0.12.1,<0.14.0 || >0.14.0,<0.14.1 || >0.14.1"
+graia-broadcast = ">=0.14.4"
 loguru = ">=0.5.3,<0.6.0"
+prompt-toolkit = ">=3.0.24,<4.0.0"
 pydantic = ">=1.8.2,<2.0.0"
 typing-extensions = ">=3.10.0,<4.0.0"
 yarl = ">=1.6.3,<2.0.0"
@@ -810,6 +811,22 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tsinghua"
 
 [[package]]
+name = "prompt-toolkit"
+version = "3.0.24"
+description = "Library for building powerful interactive command lines in Python"
+category = "main"
+optional = false
+python-versions = ">=3.6.2"
+
+[package.dependencies]
+wcwidth = "*"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
+
+[[package]]
 name = "psutil"
 version = "5.8.0"
 description = "Cross-platform lib for process and system monitoring in Python."
@@ -1105,6 +1122,19 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tsinghua"
 
 [[package]]
+name = "wcwidth"
+version = "0.2.5"
+description = "Measures the displayed width of unicode strings in a terminal"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
+
+[[package]]
 name = "win32-setctime"
 version = "1.0.4"
 description = "A small Python utility to set file creation time on Windows"
@@ -1174,7 +1204,7 @@ reference = "tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = ">3.10, <3.11"
-content-hash = "2c5049313b00aee42a60617f7f6881d21c5a73c56394739ad66fb5be4ae7a8b8"
+content-hash = "52e02e5ba65860fb3e3cf130565b64381fa2a246114202e04f9dff711285f607"
 
 [metadata.files]
 aiohttp = [
@@ -1408,9 +1438,9 @@ gitpython = [
     {file = "GitPython-3.1.24-py3-none-any.whl", hash = "sha256:dc0a7f2f697657acc8d7f89033e8b1ea94dd90356b2983bca89dc8d2ab3cc647"},
     {file = "GitPython-3.1.24.tar.gz", hash = "sha256:df83fdf5e684fef7c6ee2c02fc68a5ceb7e7e759d08b694088d0cacb4eba59e5"},
 ]
-graia-ariadne = [
-    {file = "graia-ariadne-0.4.9.tar.gz", hash = "sha256:835f8426d6b87749a3d972bad6822291df8e541899fb5bbc658a1665049faa50"},
-    {file = "graia_ariadne-0.4.9-py3-none-any.whl", hash = "sha256:d69f48f78d8084780a5ab7e58634a6e4e7c62033821a811734a99e7c02bf6e12"},
+graia-ariadne-dev = [
+    {file = "graia-ariadne-dev-2021.12.12.1.tar.gz", hash = "sha256:35c467f780b0d57030dc814b5eafb059f891546599488da98d1f8122094ff789"},
+    {file = "graia_ariadne_dev-2021.12.12.1-py3-none-any.whl", hash = "sha256:c8faf2ed730a2562f6081ad96c5d4a00e8792ac64c8a151ec36abb8d3eac7fdd"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.14.4.tar.gz", hash = "sha256:0b7f84d0105e51c862001f966d98e55682debc6aba8030929303bde4e9204e59"},
@@ -1717,6 +1747,10 @@ platformdirs = [
     {file = "platformdirs-2.4.0-py3-none-any.whl", hash = "sha256:8868bbe3c3c80d42f20156f22e7131d2fb321f5bc86a2a345375c6481a67021d"},
     {file = "platformdirs-2.4.0.tar.gz", hash = "sha256:367a5e80b3d04d2428ffa76d33f124cf11e8fff2acdaa9b43d545f5c7d661ef2"},
 ]
+prompt-toolkit = [
+    {file = "prompt_toolkit-3.0.24-py3-none-any.whl", hash = "sha256:e56f2ff799bacecd3e88165b1e2f5ebf9bcd59e80e06d395fa0cc4b8bd7bb506"},
+    {file = "prompt_toolkit-3.0.24.tar.gz", hash = "sha256:1bb05628c7d87b645974a1bad3f17612be0c29fa39af9f7688030163f680bad6"},
+]
 psutil = [
     {file = "psutil-5.8.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:0066a82f7b1b37d334e68697faba68e5ad5e858279fd6351c8ca6024e8d6ba64"},
     {file = "psutil-5.8.0-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:0ae6f386d8d297177fd288be6e8d1afc05966878704dad9847719650e44fc49c"},
@@ -1942,6 +1976,10 @@ typing-extensions = [
 urllib3 = [
     {file = "urllib3-1.26.7-py2.py3-none-any.whl", hash = "sha256:c4fdf4019605b6e5423637e01bc9fe4daef873709a7973e195ceba0a62bbc844"},
     {file = "urllib3-1.26.7.tar.gz", hash = "sha256:4987c65554f7a2dbf30c18fd48778ef124af6fab771a377103da0585e2336ece"},
+]
+wcwidth = [
+    {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
+    {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
 ]
 win32-setctime = [
     {file = "win32_setctime-1.0.4-py3-none-any.whl", hash = "sha256:7964234073ad9bc7a689ef2ebe6ce931976b644fe73fd50cf7729c996b7d8385"},

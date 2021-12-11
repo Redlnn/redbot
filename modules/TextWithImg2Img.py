@@ -9,8 +9,12 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image
-from graia.ariadne.message.parser.pattern import RegexMatch, WildcardMatch
-from graia.ariadne.message.parser.twilight import Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import (
+    RegexMatch,
+    Sparkle,
+    Twilight,
+    WildcardMatch,
+)
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -40,7 +44,7 @@ Module(
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    matches={
+                    match={
                         'prefix': RegexMatch(r'[!！.]img\ '),
                         'content': WildcardMatch(),
                     }

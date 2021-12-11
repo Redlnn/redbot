@@ -16,8 +16,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Xml
-from graia.ariadne.message.parser.pattern import RegexMatch
-from graia.ariadne.message.parser.twilight import Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -43,7 +42,7 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]wiki\ '), 'keyword': RegexMatch(r'\S+')}))
+            Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]wiki\ '), 'keyword': RegexMatch(r'\S+')}))
         ],
         decorators=[group_blacklist(), MemberInterval.require(3)],
     )

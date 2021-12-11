@@ -11,8 +11,13 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import App, At, Json, Plain, Source, Xml
-from graia.ariadne.message.parser.pattern import ArgumentMatch, ElementMatch, RegexMatch
-from graia.ariadne.message.parser.twilight import Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import (
+    ArgumentMatch,
+    ElementMatch,
+    RegexMatch,
+    Sparkle,
+    Twilight,
+)
 from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -102,7 +107,7 @@ async def main(group: Group, member: Member, message: MessageChain):
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    matches={
+                    match={
                         'prefix': RegexMatch(r'[!！.]msgcount'),
                         'arg_type': ArgumentMatch("--type", optional=False),
                         'arg_target': ArgumentMatch("--target", optional=True),
@@ -219,7 +224,7 @@ async def get_msg_count(
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    matches={
+                    match={
                         'prefix': RegexMatch(r'[!！.]getlast'),
                         'qq': RegexMatch(r'\d+', optional=True),
                         'at': ElementMatch(At, optional=True),
