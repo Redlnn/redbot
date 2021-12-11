@@ -12,11 +12,8 @@ from graia.scheduler import GraiaScheduler
 from graia.scheduler.saya import GraiaSchedulerBehaviour
 
 from config import config_data
-from utils.logger import logger
 
 if __name__ == '__main__':
-    logger.info('初始化...')
-
     app = Ariadne(
         MiraiSession(
             host=config_data['Basic']['MiraiApiHttp']['Host'],  # 填入 httpapi 服务运行的地址
@@ -28,6 +25,7 @@ if __name__ == '__main__':
     saya = Saya(app.broadcast)
     saya.install_behaviours(BroadcastBehaviour(app.broadcast))
     saya.install_behaviours(GraiaSchedulerBehaviour(GraiaScheduler(app.loop, app.broadcast)))
+    from utils.logger import logger
 
     async def main() -> None:
         await app.launch()
@@ -37,7 +35,6 @@ if __name__ == '__main__':
         Path.mkdir(Path(Path.cwd(), 'data'))
 
     if config_data['Modules']['Enabled']:
-        logger.info('加载插件中...')
         with saya.module_context():
             for module in os.listdir(Path(Path.cwd(), 'modules')):
                 if module in ('database.py', '__pycache__') or module[0] in ('!', '#', '.'):

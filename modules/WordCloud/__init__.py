@@ -21,8 +21,12 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownError, UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
-from graia.ariadne.message.parser.pattern import RegexMatch, WildcardMatch
-from graia.ariadne.message.parser.twilight import Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import (
+    RegexMatch,
+    Sparkle,
+    Twilight,
+    WildcardMatch,
+)
 from graia.ariadne.model import Group, Member
 from graia.ariadne.util.async_exec import cpu_bound
 from graia.saya import Channel, Saya
@@ -60,7 +64,7 @@ Generating_list: List[int | str] = []
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight(Sparkle(matches={'prefix': RegexMatch(r'[!！.]wordcloud\ '), 'wc_target': WildcardMatch()}))
+            Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]wordcloud\ '), 'wc_target': WildcardMatch()}))
         ],
         decorators=[group_blacklist()],
     )

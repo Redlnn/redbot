@@ -16,8 +16,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
-from graia.ariadne.message.parser.pattern import RegexMatch
-from graia.ariadne.message.parser.twilight import Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -52,7 +51,7 @@ Module(
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    matches={
+                    match={
                         'prefix': RegexMatch(r'[!！.]ping'),
                         'ping_target': RegexMatch(r'\ \S+', optional=True),
                     }
