@@ -17,7 +17,7 @@
 from io import BytesIO
 from pathlib import Path
 
-import regex
+import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -87,7 +87,7 @@ async def full_match(msg: str, app: Ariadne, group: Group):
 
 async def re_match(msg: str, app: Ariadne, group: Group):
     for _ in re_reply[group.id].keys():
-        if regex.search(_, msg):
+        if re.search(_, msg):
             continue
         chain = MessageChain.create()
         for i in re_reply[group.id][_]:

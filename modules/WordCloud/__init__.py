@@ -15,6 +15,7 @@ from typing import List
 
 import jieba.analyse
 import numpy
+import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownError, UnknownTarget
@@ -26,7 +27,6 @@ from graia.ariadne.model import Group, Member
 from graia.ariadne.util.async_exec import cpu_bound
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
-from loguru import logger
 from matplotlib import pyplot
 from PIL import Image as Img
 from wordcloud import ImageColorGenerator, WordCloud
@@ -190,17 +190,9 @@ def get_frequencies(msg_list: List[str]) -> dict:
     for persistent_string in msg_list:
         if skip(persistent_string):
             continue
-        try:
-            chain = MessageChain.fromPersistentString(persistent_string).include(Plain)
-        except Exception as e:
-            logger.error(f'处理该消息时出错: {persistent_string}')
-            logger.exception(e)
-            continue
-        if len(chain) == 0:
-            continue
-        else:
-            text += chain.asDisplay()
-            text += '\n'
+        text += re.sub(r'\[mirai:.+\]', '', persistent_string)
+        text += '\n'
+
     jieba.load_userdict(str(Path(Path(__file__).parent, 'user_dict.txt')))
     words = jieba.analyse.extract_tags(text, topK=600, withWeight=True)
     return dict(words)

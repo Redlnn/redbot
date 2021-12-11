@@ -4,7 +4,7 @@
 import os
 from random import randint
 
-import regex
+import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -49,8 +49,8 @@ async def main(app: Ariadne, group: Group, message: MessageChain, at: ElementMat
     if at.result.target != config_data['Basic']['MiraiApiHttp']['Account']:
         return
     msg = message.include(Plain).asDisplay().strip()
-    re1_match = regex.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)
-    re2_match = regex.match(r'(.+)?(?P<v>有)(没|木)(?P=v)(.+)?', msg)
+    re1_match = re.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)
+    re2_match = re.match(r'(.+)?(?P<v>有)(没|木)(?P=v)(.+)?', msg)
     if re1_match:
         re1_match = re1_match.groups()
         subject = re1_match[0].replace('我', '你') if re1_match[0] else ''

@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Optional, Tuple
 
 import httpx
-import regex
+import regex as re
 from httpx import Response
 
 from .database import PlayersTable
@@ -32,7 +32,7 @@ async def is_mc_id(mc_id: str) -> bool:
     :param mc_id: 正版用户名（id）
     :return: `True`为是，`False`为否
     """
-    return True if 1 <= len(mc_id) <= 16 and regex.match(r'^[0-9a-zA-Z_]+$', mc_id) else False
+    return True if 1 <= len(mc_id) <= 16 and re.match(r'^[0-9a-zA-Z_]+$', mc_id) else False
 
 
 async def is_uuid(mc_uuid: str) -> bool:

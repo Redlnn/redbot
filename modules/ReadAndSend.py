@@ -3,7 +3,7 @@
 
 import os
 
-import regex
+import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
@@ -49,7 +49,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
             if group.id in config_data['Modules']['ReadAndSend']['DisabledGroup']:
                 return
 
-    if regex.match(r'^[!！.]读取消息$', message.asDisplay()):
+    if re.match(r'^[!！.]读取消息$', message.asDisplay()):
         try:
             quote_id = message.include(Quote).getFirst(Quote).id
         except IndexError:
@@ -63,7 +63,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         await app.sendGroupMessage(
             group, MessageChain.create(Plain(f'消息ID: {quote_id}\n消息内容：{chain.asPersistentString()}'))
         )
-    elif regex.match(r'^[!！.]发送消息\ .+', message.asDisplay()):
-        msg = regex.sub(r'[!！.]发送消息\ ', '', message.asDisplay(), count=1)
+    elif re.match(r'^[!！.]发送消息\ .+', message.asDisplay()):
+        msg = re.sub(r'[!！.]发送消息\ ', '', message.asDisplay(), count=1)
         if msg:
             await app.sendGroupMessage(group, MessageChain.fromPersistentString(msg))

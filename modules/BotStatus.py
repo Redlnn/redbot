@@ -7,7 +7,7 @@ import time
 
 import git
 import psutil
-import regex
+import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -57,7 +57,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
     elif config_data['Modules']['BotStatus']['DisabledGroup']:
         if group.id in config_data['Modules']['BotStatus']['DisabledGroup']:
             return
-    if not regex.match(r'^[!！.](status|version)$', message.asDisplay()):
+    if not re.match(r'^[!！.](status|version)$', message.asDisplay()):
         return
     PID = os.getpid()
     p = psutil.Process(PID)
