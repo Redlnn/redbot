@@ -11,6 +11,8 @@
 
 **Bot 只考虑自己的群使用不一定考虑到其他群的情况，配置文件及模块可能会大改**
 
+**本仓库还会存在 Force Push 的情况，没事不建议 Fork 或 Clone**
+
 **推荐可以试试 A60(djkcyl) 的 [`ABot`](https://github.com/djkcyl/ABot-Graia/)**
 
 ⇒  **[文件目录结构](./FILES.md)**  ⇐
