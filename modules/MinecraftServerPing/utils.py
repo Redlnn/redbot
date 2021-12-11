@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import regex
+import regex as re
 
 
 def is_domain(value: str) -> bool:
@@ -10,7 +10,7 @@ def is_domain(value: str) -> bool:
     If the value is valid domain name this function returns ``True``, otherwise False
     :param value: domain string to validate
     """
-    pattern = regex.compile(
+    pattern = re.compile(
         r'^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|'
         r'([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|'
         r'([a-zA-Z0-9][-_.a-zA-Z0-9]{0,61}[a-zA-Z0-9]))\.'
@@ -22,6 +22,6 @@ def is_domain(value: str) -> bool:
 def is_ip(host: str) -> bool:
     return (
         True
-        if regex.match(r'^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$', host)
+        if re.match(r'^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$', host)
         else False
     )

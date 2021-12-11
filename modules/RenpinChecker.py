@@ -15,7 +15,7 @@ import random
 from pathlib import Path
 from typing import Tuple
 
-import regex
+import regex as re
 import yaml as yml
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
@@ -138,7 +138,7 @@ async def scheduled_del_outdated_data() -> None:
     """
     for _ in os.listdir(data_folder):
         if (
-            regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
+            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
             and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
         ):
             os.remove(Path(data_folder, _))
@@ -152,7 +152,7 @@ async def del_outdated_data() -> None:
     """
     for _ in os.listdir(data_folder):
         if (
-            regex.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
+            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
             and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
         ):
             os.remove(Path(data_folder, _))

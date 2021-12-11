@@ -24,7 +24,7 @@ from io import BytesIO
 from xml.dom.minidom import parseString
 
 import httpx
-import regex
+import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -94,7 +94,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
     elif config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
         if group.id in config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
             return
-    p = regex.compile(f'({avid_re})|({bvid_re})')
+    p = re.compile(f'({avid_re})|({bvid_re})')
     video_id = None
     if message.has(App):
         bli_url = await lite_app_extract(message.get(App)[0])
@@ -191,7 +191,7 @@ async def lite_app_extract(app: App) -> bool | str:
 
 
 async def b23_url_extract(url: str) -> bool | str:
-    url = regex.search('b23.tv/[0-9a-zA-Z]*', url).group(0)
+    url = re.search('b23.tv/[0-9a-zA-Z]*', url).group(0)
     async with httpx.AsyncClient(proxies={}) as client:
         resp = await client.get(f'https://{url}', follow_redirects=False)
         target = resp.headers['Location']
