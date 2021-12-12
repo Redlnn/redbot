@@ -20,6 +20,7 @@ import json
 import os
 import time
 from dataclasses import dataclass
+from typing import List
 from xml.dom.minidom import parseString
 
 import httpx
@@ -267,6 +268,7 @@ async def gen_img(data: VideoInfo) -> bytes:
         f'{hr}\n{data.desc}'
     )
 
-    cover_img_bytes = httpx.get(data.cover_url).content
-    img_contents = [cover_img_bytes, info_text]
+    async with httpx.AsyncClient() as client:
+        cover_img_res = await client.get(data.cover_url)
+    img_contents: List[str | bytes] = [cover_img_res.content, info_text]
     return await async_generate_img(img_contents)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from io import BytesIO
+from typing import List
 
 import httpx
 from graia.ariadne.app import Ariadne
@@ -44,10 +44,10 @@ Module(
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    match={
-                        'prefix': RegexMatch(r'[!！.]img\ '),
+                    [RegexMatch(r'[!！.]img\ ')],
+                    {
                         'content': WildcardMatch(),
-                    }
+                    },
                 )
             )
         ],
@@ -61,13 +61,14 @@ async def main(app: Ariadne, group: Group, content: RegexMatch):
     elif config_data['Modules']['TextWithImg2Img']['DisabledGroup']:
         if group.id in config_data['Modules']['TextWithImg2Img']['DisabledGroup']:
             return
-    img_list = []
-    for i in content.result:
-        if type(i) == Image:
-            img = await httpx.AsyncClient().get(i.url)
-            img_list.append(BytesIO(img.content))
-        else:
-            img_list.append(i.asDisplay())
+    img_list: List[str | bytes] = []
+    async with httpx.AsyncClient() as client:
+        for i in content.result:
+            if type(i) == Image:
+                img = await client.get(i.url)
+                img_list.append(img.content)
+            else:
+                img_list.append(i.asDisplay())
 
     if img_list:
         img_bytes = await async_generate_img(img_list)
