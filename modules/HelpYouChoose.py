@@ -39,7 +39,7 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle(match={'at': ElementMatch(At), 'any': WildcardMatch()}))],
+        inline_dispatchers=[Twilight(Sparkle({'at': ElementMatch(At), 'any': WildcardMatch()}))],
         decorators=[group_blacklist(), MemberInterval.require(2)],
     )
 )

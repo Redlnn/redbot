@@ -51,10 +51,10 @@ Module(
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    match={
-                        'prefix': RegexMatch(r'[!！.]ping'),
+                    [RegexMatch(r'[!！.]ping')],
+                    {
                         'ping_target': RegexMatch(r'\ \S+', optional=True),
-                    }
+                    },
                 )
             )
         ],
