@@ -230,7 +230,7 @@ def generate_img(text_and_img: List[str | bytes] = []) -> bytes:
             content_height += text_height
             del text_height
         elif isinstance(i, bytes):
-            img: Image.Image = Image.open(i)
+            img: Image.Image = Image.open(BytesIO(i))
             img_height = int(line_width / img.size[0] * img.size[1])
             img = img.resize((line_width, img_height), Image.LANCZOS)
             contents.append({'content': img, 'height': img_height})
