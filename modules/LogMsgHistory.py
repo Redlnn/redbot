@@ -107,12 +107,12 @@ async def main(group: Group, member: Member, message: MessageChain):
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    match={
-                        'prefix': RegexMatch(r'[!！.]msgcount'),
+                    [RegexMatch(r'[!！.]msgcount')],
+                    {
                         'arg_type': ArgumentMatch("--type", optional=False),
                         'arg_target': ArgumentMatch("--target", optional=True),
                         'arg_day': ArgumentMatch("--day", optional=True, default='7'),
-                    }
+                    },
                 )
             )
         ],
@@ -224,11 +224,11 @@ async def get_msg_count(
         inline_dispatchers=[
             Twilight(
                 Sparkle(
-                    match={
-                        'prefix': RegexMatch(r'[!！.]getlast'),
+                    [RegexMatch(r'[!！.]getlast')],
+                    {
                         'qq': RegexMatch(r'\d+', optional=True),
                         'at': ElementMatch(At, optional=True),
-                    }
+                    },
                 )
             )
         ],

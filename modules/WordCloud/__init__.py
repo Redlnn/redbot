@@ -63,9 +63,7 @@ Generating_list: List[int | str] = []
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(Sparkle(match={'prefix': RegexMatch(r'[!！.]wordcloud\ '), 'wc_target': WildcardMatch()}))
-        ],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wordcloud\ ')], {'wc_target': WildcardMatch()}))],
         decorators=[group_blacklist()],
     )
 )
