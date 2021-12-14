@@ -34,9 +34,9 @@ def ping(ip: Optional[str] = None, url: Optional[str] = None, port: Optional[int
             #     return {}
         target_port = port if port else 25565
 
-    ping = PINGClient(host=host, port=target_port, format_method=2, timeout=5)
-    stats: dict = ping.get_stats()
-    ping.stop()
+    client = PINGClient(host=host, port=target_port, format_method=2, timeout=5)
+    stats: dict = client.get_stats()
+    client.stop()
     # motd: str = re.sub(r'\x1b\[[0-9]{1,3}[;]?[0-9]?m', '', stats['description'])
 
     if stats['players'].get('sample'):
