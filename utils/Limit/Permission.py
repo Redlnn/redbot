@@ -45,7 +45,7 @@ class Permission:
         """
         获取用户的权限等级
 
-        :param user: 群成员实例
+        :param member: 群成员实例
         :param allow_override: 是否允许bot主任无视权限控制
         :return: 等级，整数
         """
