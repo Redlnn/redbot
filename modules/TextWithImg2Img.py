@@ -4,7 +4,7 @@
 import os
 from typing import List
 
-import httpx
+import aiohttp
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -62,11 +62,11 @@ async def main(app: Ariadne, group: Group, content: RegexMatch):
         if group.id in config_data['Modules']['TextWithImg2Img']['DisabledGroup']:
             return
     img_list: List[str | bytes] = []
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession() as session:
         for i in content.result:
             if type(i) == Image:
-                img = await client.get(i.url)
-                img_list.append(img.content)
+                async with session.get(i.url) as resp:
+                    img_list.append(await resp.content.read())
             else:
                 img_list.append(i.asDisplay())
 

@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from typing import List
 from xml.dom.minidom import parseString
 
-import httpx
+import aiohttp
 import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -192,9 +192,9 @@ async def lite_app_extract(app: App) -> bool | str:
 
 async def b23_url_extract(url: str) -> bool | str:
     url = re.search('b23.tv/[0-9a-zA-Z]*', url).group(0)
-    async with httpx.AsyncClient(proxies={}) as client:
-        resp = await client.get(f'https://{url}', follow_redirects=False)
-        target = resp.headers['Location']
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://{url}', allow_redirects=False) as resp:
+            target = resp.headers['Location']
         if 'www.bilibili.com/video/' in target:
             return target
         else:
@@ -202,13 +202,13 @@ async def b23_url_extract(url: str) -> bool | str:
 
 
 async def get_video_info(video_id: str) -> dict:
-    async with httpx.AsyncClient() as client:
+    async with aiohttp.ClientSession('http://api.bilibili.com/x/web-interface') as session:
         if video_id[:2].lower() == 'av':
-            res = await client.get(f'http://api.bilibili.com/x/web-interface/view?aid={video_id[2:]}')
-            return res.json()
+            async with session.get(f'/view?aid={video_id[2:]}') as resp:
+                return await resp.json()
         elif video_id[:2].lower() == 'bv':
-            res = await client.get(f'http://api.bilibili.com/x/web-interface/view?bvid={video_id}')
-            return res.json()
+            async with session.get(f'/view?bvid={video_id}') as resp:
+                return await resp.json()
 
 
 async def info_json_dump(obj: dict) -> VideoInfo:
@@ -268,7 +268,7 @@ async def gen_img(data: VideoInfo) -> bytes:
         f'{hr}\n{data.desc}'
     )
 
-    async with httpx.AsyncClient() as client:
-        cover_img_res = await client.get(data.cover_url)
-    img_contents: List[str | bytes] = [cover_img_res.content, info_text]
-    return await async_generate_img(img_contents)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(data.cover_url) as resp:
+            img_contents: List[str | bytes] = [await resp.content.read(), info_text]
+        return await async_generate_img(img_contents)

@@ -6,13 +6,13 @@ import uuid
 from datetime import datetime
 from typing import Optional, Tuple
 
-import httpx
+import aiohttp
 import regex as re
-from httpx import Response
+from aiohttp import ClientResponse
 
 from .database import PlayersTable
 
-__all__ = ["get_time", "is_mc_id", "is_uuid", "get_mc_id", "get_uuid", "query_uuid_by_qq", "query_qq_by_uuid"]
+__all__ = ['get_time', 'is_mc_id', 'is_uuid', 'get_mc_id', 'get_uuid', 'query_uuid_by_qq', 'query_qq_by_uuid']
 
 
 async def get_time() -> str:
@@ -47,42 +47,37 @@ async def is_uuid(mc_uuid: str) -> bool:
         return True
 
 
-async def get_uuid(mc_id: str) -> tuple[str | Response, str]:
+async def get_uuid(mc_id: str) -> tuple[str | ClientResponse, str]:
     """
     通过 id 从 Mojang 获取 uuid
 
     :param mc_id: 正版用户名（id）
     """
-    url = f'https://api.mojang.com/users/profiles/minecraft/{mc_id}'
-    async with httpx.AsyncClient() as client:
-        res = await client.get(url)
-    code = res.status_code
-    if code == 200:
-        return res.json()['name'], res.json()['id']
-    # elif code == 204:
-    #     raise UnknownUUIDError
-    else:
-        return res, ''
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://api.mojang.com/users/profiles/minecraft/{mc_id}') as resp:
+            if resp.status == 200:
+                resp_json = await resp.json()
+                return resp_json['name'], resp_json['id']
+            # elif resp.status == 204:
+            else:
+                return resp, ''
 
 
-async def get_mc_id(mc_uuid: str) -> str | Response:
+async def get_mc_id(mc_uuid: str) -> str | ClientResponse:
     """
     通过 uuid 从 Mojang 获取正版 id
 
     :param mc_uuid: 输入一个uuid
     """
-    url = f'https://sessionserver.mojang.com/session/minecraft/profile/{mc_uuid}'
-    async with httpx.AsyncClient() as client:
-        res = await client.get(url)
-    code = res.status_code
-    if code == 200:
-        return res.json()['name']
-    # elif code == 204:
-    #     raise UnknownUUIDError
-    # elif code == 400:
-    #     raise InvalidUUIDError
-    else:
-        return res
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{mc_uuid}') as resp:
+            if resp.status == 200:
+                resp_json = await resp.json()
+                return resp_json['name']
+            # elif resp.status == 204:
+            # elif resp.status == 400:
+            else:
+                return resp
 
 
 async def query_uuid_by_qq(
