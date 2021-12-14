@@ -7,6 +7,6 @@ from aiofile import async_open
 
 
 async def img_2_bytes(img_path: str):
-    with async_open(img_path, 'rb') as afp:
-        content = afp.read()
+    async with async_open(img_path, 'rb') as afp:
+        content = await afp.read()
     return BytesIO(content).getvalue()

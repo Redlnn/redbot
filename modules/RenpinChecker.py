@@ -203,7 +203,7 @@ async def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:
         os.remove(data_folder)
         Path.mkdir(data_folder)  # 如果同级目录存在data文件，则删除该文件后新建一个同名文件夹
 
-    with async_open(data_file_path, 'a+', encoding='utf-8') as afp:  # 以 追加+读 的方式打开文件
+    async with async_open(data_file_path, 'a+', encoding='utf-8') as afp:  # 以 追加+读 的方式打开文件
         afp.seek(0, 0)  # 将读写指针放在文件头部
         yml_data: dict = yml.safe_load(afp)  # 读写
         afp.seek(0, 2)  # 将读写指针放在文件尾部
