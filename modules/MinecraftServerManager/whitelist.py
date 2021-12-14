@@ -52,7 +52,7 @@ async def add_whitelist_to_qq(
         logger.exception(e)
         return
     if not isinstance(real_mc_id, str):
-        if real_mc_id.status_code == 204:
+        if real_mc_id.status == 204:
             await app.sendGroupMessage(
                 group, MessageChain.create(Plain('你选择的不是一个正版ID')), quote=message.get(Source).pop(0)
             )
@@ -291,7 +291,7 @@ async def del_whitelist_by_id(mc_id: str, app: Ariadne, group: Group):
         logger.exception(e)
         return None, None, None
     if not isinstance(real_mc_id, str):
-        if real_mc_id.status_code == 204:
+        if real_mc_id.status == 204:
             await app.sendGroupMessage(group, MessageChain.create(Plain('你选择的不是一个正版ID')))
             return None, None, None
         else:
@@ -400,7 +400,7 @@ async def query_whitelist_by_id(
         logger.exception(e)
         return None, None, None, None, None, None, None, None, None
     if not isinstance(real_mc_id, str):
-        if real_mc_id.status_code == 204:
+        if real_mc_id.status == 204:
             await app.sendGroupMessage(group, MessageChain.create(Plain('你选择的不是一个正版ID')))
             return None, None, None, None, None, None, None, None, None
         else:
