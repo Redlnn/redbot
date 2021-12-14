@@ -197,7 +197,7 @@ def async_generate_img(*args: List[str | bytes]) -> bytes:
     return generate_img(*args)
 
 
-def generate_img(text_and_img: List[str | bytes] = []) -> bytes:
+def generate_img(text_and_img: List[str | bytes] = None) -> bytes:
     """
     根据输入的文本，生成一张图并返回图片文件的路径
 
@@ -208,7 +208,9 @@ def generate_img(text_and_img: List[str | bytes] = []) -> bytes:
     :return: 图片文件的路径
     """
 
-    if not isinstance(text_and_img, list):
+    if not text_and_img:
+        raise ValueError('ArgumentError: 参数内容为空')
+    elif not isinstance(text_and_img, list):
         raise ValueError('ArgumentError: 参数类型错误')
 
     extra_text1 = f'由 {config_data["Basic"]["BotName"]} 生成'  # 额外文本1
