@@ -17,6 +17,7 @@ from typing import Tuple
 
 import regex as re
 import yaml as yml
+from aiofile import async_open
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
@@ -202,19 +203,19 @@ async def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:
         os.remove(data_folder)
         Path.mkdir(data_folder)  # 如果同级目录存在data文件，则删除该文件后新建一个同名文件夹
 
-    with open(data_file_path, 'a+', encoding='utf-8') as fp:  # 以 追加+读 的方式打开文件
-        fp.seek(0, 0)  # 将读写指针放在文件头部
-        yml_data: dict = yml.safe_load(fp)  # 读写
-        fp.seek(0, 2)  # 将读写指针放在文件尾部
+    with async_open(data_file_path, 'a+', encoding='utf-8') as afp:  # 以 追加+读 的方式打开文件
+        afp.seek(0, 0)  # 将读写指针放在文件头部
+        yml_data: dict = yml.safe_load(afp)  # 读写
+        afp.seek(0, 2)  # 将读写指针放在文件尾部
         if yml_data is None:  # 若文件为空，则生成一随机数并写入到文件中，然后返回生成的随机数
             renpin = random.randint(0, 100)
             qianwen = await gen_qianwen(renpin)
-            yml.dump({qq: [renpin, qianwen]}, fp, allow_unicode=True)
+            yml.dump({qq: [renpin, qianwen]}, afp, allow_unicode=True)
             return True, (renpin, qianwen)
         if qq in yml_data.keys():  # 若文件中有指定QQ的数据则读取并返回
             return False, yml_data[qq]
         else:  # 若文件中没有指定QQ的数据，则生成一随机数并写入到文件中，然后返回生成的随机数
             renpin = random.randint(0, 100)
             qianwen = await gen_qianwen(renpin)
-            yml.dump({qq: [renpin, qianwen]}, fp, allow_unicode=True)
+            yml.dump({qq: [renpin, qianwen]}, afp, allow_unicode=True)
             return True, (renpin, qianwen)

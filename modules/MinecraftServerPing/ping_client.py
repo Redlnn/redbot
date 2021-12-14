@@ -7,9 +7,9 @@ from typing import Optional
 from graia.ariadne.util.async_exec import io_bound
 from mctools import PINGClient
 
-from .domain_resolver import domain_resolver, domain_resolver_srv
+from .dns_resolver import dns_resolver_srv
 
-__all__ = ["ping"]
+__all__ = ['ping']
 
 
 @io_bound
@@ -26,10 +26,10 @@ def ping(ip: Optional[str] = None, url: Optional[str] = None, port: Optional[int
         host = url
         target_port = port
     else:  # url and not port
-        host, port = domain_resolver_srv(url)
+        host, port = dns_resolver_srv(url)
         if not host:
             host = url
-            # host = domain_resolver(url)
+            # host = dns_resolver(url)
             # if not host:
             #     return {}
         target_port = port if port else 25565
