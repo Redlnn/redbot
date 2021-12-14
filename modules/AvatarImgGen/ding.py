@@ -6,7 +6,7 @@ from pathlib import Path
 
 import httpx
 from graia.ariadne.util.async_exec import cpu_bound
-from PIL import Image
+from PIL import Image as Img
 
 pos_and_sizes = [
     [[183, 62], [95, 95]],
@@ -103,24 +103,24 @@ pos_and_sizes = [
 @cpu_bound
 def ding(qq: int | str) -> bytes:
     resp = httpx.get(f'http://q.qlogo.cn/headimg_dl?dst_uin={qq}&spec=640&img_type=jpg')
-    avatar = Image.open(BytesIO(resp.content))
+    avatar = Img.open(BytesIO(resp.content))
 
     frames = []
     times = len(pos_and_sizes)
     for i in range(0, 121):  # 0-120
         if i < times:
-            n_avatar = avatar.resize(pos_and_sizes[i][1], Image.LANCZOS)
-            bg = Image.open(Path(Path(__file__).parent, 'res', 'ding', f'{i+1}.png'))
-            canvas = Image.new('RGBA', bg.size, '#ffffff')
+            n_avatar = avatar.resize(pos_and_sizes[i][1], Img.LANCZOS)
+            bg = Img.open(Path(Path(__file__).parent, 'res', 'ding', f'{i+1}.png'))
+            canvas = Img.new('RGBA', bg.size, '#ffffff')
             canvas.paste(n_avatar, pos_and_sizes[i][0])
             canvas.paste(bg, mask=bg.split()[3])
             frames.append(canvas)
         else:
-            bg = Image.open(Path(Path(__file__).parent, 'res', 'ding', f'{i+1}.png'))
-            canvas = Image.new('RGBA', bg.size, '#ffffff')
+            bg = Img.open(Path(Path(__file__).parent, 'res', 'ding', f'{i+1}.png'))
+            canvas = Img.new('RGBA', bg.size, '#ffffff')
             canvas.paste(bg)
             frames.append(canvas)
 
     img_io = BytesIO()
-    frames[0].save(img_io, format='GIF', save_all=True, duration=1, append_images=frames[1:], optimize=True, loop=False)
+    frames[0].save(img_io, format='GIF', save_all=True, duration=1, append_Imgs=frames[1:], optimize=True, loop=False)
     return img_io.getvalue()

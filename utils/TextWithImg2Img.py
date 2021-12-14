@@ -11,7 +11,8 @@ from io import BytesIO
 from typing import Dict, List
 
 from graia.ariadne.util.async_exec import cpu_bound
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image as Img
+from PIL import ImageDraw, ImageFont
 
 from config import config_data
 
@@ -216,7 +217,7 @@ def generate_img(text_and_img: List[str | bytes] = []) -> bytes:
     line_width = int(_chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
 
     content_height = 0
-    contents: List[Dict[str, str | Image.Image | int]] = []
+    contents: List[Dict[str, str | Img.Image | int]] = []
     # contents = [{
     #     'content': str/byte,
     #     'height': 区域高度
@@ -230,9 +231,9 @@ def generate_img(text_and_img: List[str | bytes] = []) -> bytes:
             content_height += text_height
             del text_height
         elif isinstance(i, bytes):
-            img: Image.Image = Image.open(BytesIO(i))
+            img: Img.Image = Img.open(BytesIO(i))
             img_height = int(line_width / img.size[0] * img.size[1])
-            img = img.resize((line_width, img_height), Image.LANCZOS)
+            img = img.resize((line_width, img_height), Img.LANCZOS)
             contents.append({'content': img, 'height': img_height})
             content_height += img_height + (2 * _line_space)
             del img_height
@@ -249,7 +250,7 @@ def generate_img(text_and_img: List[str | bytes] = []) -> bytes:
         line_width + (2 * _text_margin) + (2 * (_border_side_margin + (2 * _border_outline_width) + _border_interval))
     )
 
-    canvas = Image.new('RGB', (bg_width, bg_height), _background_color)
+    canvas = Img.new('RGB', (bg_width, bg_height), _background_color)
     draw = ImageDraw.Draw(canvas)
     # 从这里开始绘图均为(x, y)坐标，横坐标x，纵坐标y
     # rectangle(起点坐标, 终点坐标) 绘制矩形，且方向必须为从左上到右下
@@ -391,7 +392,7 @@ def generate_img(text_and_img: List[str | bytes] = []) -> bytes:
                 spacing=_line_space,
             )
             content_area_y += i['height']
-        elif isinstance(i['content'], Image.Image):
+        elif isinstance(i['content'], Img.Image):
             canvas.paste(i['content'], (content_area_x, content_area_y + _line_space))
             content_area_y += i['height'] + (2 * _line_space)
 
