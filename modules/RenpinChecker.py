@@ -90,7 +90,7 @@ lucky_things = {
         '不断发热的「烈焰棒」。\n烈焰棒的炙热来自于烈焰人那火辣辣的心。\n万事顺利是因为心中自有一条明路。',
     ],
     '凶': [
-        '暗中发亮的「发光地衣」。\n发光髓努力地发出微弱的光芒。\n虽然比不过其他光源，但看清前路也够用了。',
+        '暗中发亮的「发光地衣」。\n发光地衣努力地发出微弱的光芒。\n虽然比不过其他光源，但看清前路也够用了。',
         '树上掉落的「树苗」。\n并不是所有的树苗都能长成粗壮的大树，\n成长需要适宜的环境，更需要一点运气。\n所以不用给自己过多压力，耐心等待彩虹吧。',
         '黯淡无光的「火药」。\n火药蕴含着无限的能量。\n如果能够好好导引这股能量，说不定就能成就什么事业。',
         '随风飞翔的「蒲公英」。\n只要有草木生长的空间，就一定有蒲公英。\n这么看来，蒲公英是世界上最强韧的生灵。\n据说连坑坑洼洼的沼泽也能长出蒲公英呢。',
@@ -202,19 +202,19 @@ async def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:
         os.remove(data_folder)
         Path.mkdir(data_folder)  # 如果同级目录存在data文件，则删除该文件后新建一个同名文件夹
 
-    with open(data_file_path, 'a+', encoding='utf-8') as f:  # 以 追加+读 的方式打开文件
-        f.seek(0, 0)  # 将读写指针放在文件头部
-        yml_data: dict = yml.safe_load(f)  # 读写
-        f.seek(0, 2)  # 将读写指针放在文件尾部
+    with open(data_file_path, 'a+', encoding='utf-8') as fp:  # 以 追加+读 的方式打开文件
+        fp.seek(0, 0)  # 将读写指针放在文件头部
+        yml_data: dict = yml.safe_load(fp)  # 读写
+        fp.seek(0, 2)  # 将读写指针放在文件尾部
         if yml_data is None:  # 若文件为空，则生成一随机数并写入到文件中，然后返回生成的随机数
             renpin = random.randint(0, 100)
             qianwen = await gen_qianwen(renpin)
-            yml.dump({qq: [renpin, qianwen]}, f, allow_unicode=True)
+            yml.dump({qq: [renpin, qianwen]}, fp, allow_unicode=True)
             return True, (renpin, qianwen)
         if qq in yml_data.keys():  # 若文件中有指定QQ的数据则读取并返回
             return False, yml_data[qq]
         else:  # 若文件中没有指定QQ的数据，则生成一随机数并写入到文件中，然后返回生成的随机数
             renpin = random.randint(0, 100)
             qianwen = await gen_qianwen(renpin)
-            yml.dump({qq: [renpin, qianwen]}, f, allow_unicode=True)
+            yml.dump({qq: [renpin, qianwen]}, fp, allow_unicode=True)
             return True, (renpin, qianwen)

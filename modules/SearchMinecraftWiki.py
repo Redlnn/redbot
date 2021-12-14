@@ -59,7 +59,7 @@ async def main(app: Ariadne, group: Group, keyword: RegexMatch):
         f'url="https://searchwiki.biligame.com/mc/index.php?search={search_parm}" serviceID="33" action="web" '
         f'actionData="" brief="【链接】{arg} - Biligame Wiki" flag="8"><item layout="2">'
         '<picture cover="https://s1.hdslb.com/bfs/static/game-web/duang/mine/asserts/contact.404066f.png"/>'
-        f'<title>{arg} - Minecraft Wiki</title><summary>{arg} - Biligame Wiki for Minecraft，哔哩哔哩游戏</summary>'
+        f'<title>{arg} - Biligame Wiki</title><summary>{arg} - Biligame Wiki for Minecraft，哔哩哔哩游戏</summary>'
         '</item></msg>'
     )
     fandom_gamepedia_wiki = (

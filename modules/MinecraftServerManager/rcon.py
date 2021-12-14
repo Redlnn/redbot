@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Optional
-
 from loguru import logger
 from mctools import RCONClient
 
@@ -10,7 +8,7 @@ from config import config_data
 
 config_data = config_data['Modules']['MinecraftServerManager']['Rcon']
 
-__all__ = ["execute_command"]
+__all__ = ['execute_command']
 
 __HOST = config_data['Host']  # Hostname of the Minecraft server
 __PORT = config_data['Port']  # Port number of the RCON server
@@ -19,7 +17,6 @@ __PASSWORD = config_data['Passwd']  # Password of the RCON server
 
 def execute_command(command: str) -> str:
     """
-
     通过 RCON 连接服务器
     可用于执行控制台指令
 

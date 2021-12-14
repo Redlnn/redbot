@@ -14,8 +14,8 @@ elif not Path.exists(Path(Path.cwd(), 'config.yml')) and not Path.exists(Path(Pa
     logger.error('在？宁的配置呢?¿?¿')
     exit()
 else:
-    with open('config.yml', 'r', encoding='utf-8') as fr:
-        file_data = fr.read()
+    with open('config.yml', 'r', encoding='utf-8') as fp:
+        file_data = fp.read()
     config_data = yaml.load(file_data, Loader=yaml.FullLoader)
     del file_data
 
@@ -25,16 +25,16 @@ lock = Lock()
 def save_config():
     global config_data
     logger.info('正在保存配置文件...')
-    with open('config.yml', 'w', encoding='utf-8') as fw:
-        yaml.dump(config_data, fw, allow_unicode=True, sort_keys=False)
+    with open('config.yml', 'w', encoding='utf-8') as fp:
+        yaml.dump(config_data, fp, allow_unicode=True, sort_keys=False)
 
 
 def reload_config():
     global config_data
     logger.info('正在重新加载配置文件...')
     try:
-        with open('config.yml', 'r', encoding='utf-8') as fr1:
-            file_data1 = fr1.read()
+        with open('config.yml', 'r', encoding='utf-8') as fp:
+            file_data1 = fp.read()
         new_data = yaml.load(file_data1, Loader=yaml.FullLoader)
         # 若直接重新赋值 config_data，会导致其内存地址发生改变，无法影响其他 import 了 config_data 的模块
         # 因此需要直接改变其内部的内容
