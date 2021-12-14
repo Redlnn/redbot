@@ -14,8 +14,8 @@ elif not Path.exists(Path(Path.cwd(), 'config.yml')) and not Path.exists(Path(Pa
     logger.error('在？宁的配置呢?¿?¿')
     exit()
 else:
-    with open('config.yml', 'r', encoding='utf-8') as fp:
-        file_data = fp.read()
+    with open('config.yml', 'r', encoding='utf-8') as fpr:
+        file_data = fpr.read()
     config_data = yaml.load(file_data, Loader=yaml.FullLoader)
     del file_data
 
