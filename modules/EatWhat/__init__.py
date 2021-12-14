@@ -34,8 +34,8 @@ Module(
 
 @io_bound
 def get_food():
-    with open(Path(Path(__file__).parent, 'foods.txt')) as f:
-        foods = f.readlines()
+    with open(Path(Path(__file__).parent, 'foods.txt')) as fp:
+        foods = fp.readlines()
     food = random.choice(foods)
     return food.rstrip()
 

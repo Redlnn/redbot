@@ -22,7 +22,7 @@ from .utils import get_mc_id, get_uuid, query_qq_by_uuid, query_uuid_by_qq
 server_group = config_data['Modules']['MinecraftServerManager']['ServerGroup']
 
 __all__ = [
-    "add_whitelist_to_qq",
+    'add_whitelist_to_qq',
     'del_whitelist_by_id',
     'del_whitelist_by_uuid',
     'del_whitelist_by_qq',
