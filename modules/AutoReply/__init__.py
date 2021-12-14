@@ -79,7 +79,7 @@ async def full_match(msg: str, app: Ariadne, group: Group):
                 img_bytes = await async_generate_img(reply[group.id][msg])
                 await app.sendGroupMessage(
                     group,
-                    MessageChain.create(Image(data_bytes=(img_bytes))),
+                    MessageChain.create(Image(data_bytes=img_bytes)),
                 )
                 return
         await app.sendGroupMessage(group, chain)
@@ -102,7 +102,7 @@ async def re_match(msg: str, app: Ariadne, group: Group):
                     img_bytes = await async_generate_img(reply[group.id][msg])
                     await app.sendGroupMessage(
                         group,
-                        MessageChain.create(Image(data_bytes=(img_bytes))),
+                        MessageChain.create(Image(data_bytes=img_bytes)),
                     )
                     continue
             await app.sendGroupMessage(group, chain)
@@ -125,7 +125,7 @@ async def fuzzy_match(msg: str, app: Ariadne, group: Group):
                     img_bytes = await async_generate_img(reply[group.id][msg])
                     await app.sendGroupMessage(
                         group,
-                        MessageChain.create(Image(data_bytes=(img_bytes))),
+                        MessageChain.create(Image(data_bytes=img_bytes)),
                     )
                     continue
             await app.sendGroupMessage(group, chain)
