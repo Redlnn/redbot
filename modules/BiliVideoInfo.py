@@ -202,12 +202,12 @@ async def b23_url_extract(url: str) -> bool | str:
 
 
 async def get_video_info(video_id: str) -> dict:
-    async with aiohttp.ClientSession('http://api.bilibili.com/x/web-interface') as session:
+    async with aiohttp.ClientSession('http://api.bilibili.com') as session:
         if video_id[:2].lower() == 'av':
-            async with session.get(f'/view?aid={video_id[2:]}') as resp:
+            async with session.get(f'/x/web-interface/view?aid={video_id[2:]}') as resp:
                 return await resp.json()
         elif video_id[:2].lower() == 'bv':
-            async with session.get(f'/view?bvid={video_id}') as resp:
+            async with session.get(f'/x/web-interface/view?bvid={video_id}') as resp:
                 return await resp.json()
 
 
