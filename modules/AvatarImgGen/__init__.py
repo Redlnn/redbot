@@ -32,7 +32,7 @@ Module(
     file_name=os.path.dirname(__file__),
     author=['Red_lnn', 'SereinFish'],
     description='用你的头像生成一些有趣的图片',
-    usage=('[!！.]顶 At/QQ号 —— 让猫猫虫咖波顶着你的头像耍'),
+    usage='[!！.]顶 At/QQ号 —— 让猫猫虫咖波顶着你的头像耍',
     can_disable=False,
 ).register()
 
