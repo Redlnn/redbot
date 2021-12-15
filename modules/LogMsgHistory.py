@@ -30,7 +30,7 @@ from utils.Database.msg_history import (
     log_msg,
 )
 from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Permission import Permission
+from utils.Limit.Permission import GroupPermission
 from utils.ModuleRegister import Module
 
 saya = Saya.current()
@@ -116,7 +116,7 @@ async def main(group: Group, member: Member, message: MessageChain):
                 )
             )
         ],
-        decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
+        decorators=[group_blacklist(), GroupPermission.require(MemberPerm.Administrator)],
     )
 )
 async def get_msg_count(
@@ -231,7 +231,7 @@ async def get_msg_count(
                 )
             )
         ],
-        decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
+        decorators=[group_blacklist(), GroupPermission.require(MemberPerm.Administrator)],
     )
 )
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexMatch, at: ElementMatch):

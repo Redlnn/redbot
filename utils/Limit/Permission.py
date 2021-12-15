@@ -26,12 +26,12 @@ class Permission:
     适用于群消息和来自群的临时会话
     """
 
-    MASTER: int = 100
-    BOT_ADMIN: int = 90
-    OWMER: int = 30
-    ADMIN: int = 20
-    USER: int = 10
-    BANED: int = 0
+    BOT_MASTER: int = 100  # Bot主人
+    BOT_ADMIN: int = 90  # Bot管理员
+    OWMER: int = 30  # 群主
+    ADMIN: int = 20  # 群管理员
+    USER: int = 10  # 群成员
+    BANED: int = 0  # Bot黑名单成员（未使用）
     DEFAULT: int = USER
 
     _levels = {
@@ -52,7 +52,7 @@ class Permission:
         if allow_override:
             admins = config_data['Basic']['Permission']['Admin'] if config_data['Basic']['Permission']['Admin'] else []
             if member.id == config_data['Basic']['Permission']['Master']:
-                return cls.MASTER
+                return cls.BOT_MASTER
             elif member.id in admins:
                 return cls.BOT_ADMIN
 
@@ -66,8 +66,10 @@ class Permission:
             case _:
                 return cls.DEFAULT
 
+
+class GroupPermission(Permission):
     @classmethod
-    def group_perm_check(
+    def require(
         cls,
         perm: MemberPerm | int,
         send_alert: bool = False,
@@ -100,8 +102,10 @@ class Permission:
 
         return Depend(check_wrapper)
 
+
+class TempPermission(Permission):
     @classmethod
-    def temp_perm_check(
+    def require(
         cls,
         perm: MemberPerm | int,
         send_alert: bool = False,
