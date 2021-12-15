@@ -215,7 +215,7 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]重载配置')]))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(Permission.BOT_ADMIN)],
+        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
 async def reload_bot_and_modules_config(app: Ariadne, group: Group):
@@ -241,7 +241,7 @@ async def reload_bot_and_modules_config(app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]重载模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(Permission.BOT_ADMIN)],
+        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
 async def reload_module(app: Ariadne, group: Group, member: Member, module_id: RegexMatch):
@@ -296,7 +296,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]加载模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(Permission.BOT_ADMIN)],
+        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
 async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexMatch):
@@ -348,7 +348,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]卸载模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(Permission.BOT_ADMIN)],
+        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
 async def unload_module(app: Ariadne, group: Group, module_id: RegexMatch):
