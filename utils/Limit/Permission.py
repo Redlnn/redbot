@@ -10,7 +10,7 @@ Xenon 管理：https://github.com/McZoo/Xenon/blob/master/lib/control.py
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
-from graia.ariadne.model import Group, Member, MemberPerm
+from graia.ariadne.model import Friend, Group, Member, MemberPerm
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
@@ -41,30 +41,32 @@ class Permission:
     }
 
     @classmethod
-    async def get(cls, member: Member, allow_override: bool = True) -> int:
+    async def get(cls, target: Member | Friend, allow_override: bool = True) -> int:
         """
         获取用户的权限等级
 
-        :param member: 群成员实例
+        :param target: Friend 或 Member 实例
         :param allow_override: 是否允许bot主任无视权限控制
         :return: 等级，整数
         """
         if allow_override:
             admins = config_data['Basic']['Permission']['Admin'] if config_data['Basic']['Permission']['Admin'] else []
-            if member.id == config_data['Basic']['Permission']['Master']:
+            if target.id == config_data['Basic']['Permission']['Master']:
                 return cls.BOT_MASTER
-            elif member.id in admins:
+            elif target.id in admins:
                 return cls.BOT_ADMIN
-
-        match member.permission:
-            case MemberPerm.Owner:
-                return cls.OWMER
-            case MemberPerm.Administrator:
-                return cls.ADMIN
-            case MemberPerm.Member:
-                return cls.USER
-            case _:
-                return cls.DEFAULT
+        if isinstance(target, Member):
+            match target.permission:
+                case MemberPerm.Owner:
+                    return cls.OWMER
+                case MemberPerm.Administrator:
+                    return cls.ADMIN
+                case MemberPerm.Member:
+                    return cls.USER
+                case _:
+                    return cls.DEFAULT
+        else:
+            return cls.DEFAULT
 
 
 class GroupPermission(Permission):
@@ -113,7 +115,7 @@ class TempPermission(Permission):
         allow_override: bool = True,
     ) -> Depend:
         """
-        群消息权限检查
+        临时消息权限检查
 
         指示需要 `level` 以上等级才能触发
 
@@ -135,5 +137,35 @@ class TempPermission(Permission):
                     if send_alert:
                         await app.sendTempMessage(member, MessageChain.create(Plain(alert_text)))
                     raise ExecutionStop()
+
+        return Depend(check_wrapper)
+
+
+class FriendPermission(Permission):
+    @classmethod
+    def require(
+        cls,
+        perm: int = 10,
+        send_alert: bool = False,
+        alert_text: str = '你没有权限执行此指令',
+        allow_override: bool = True,
+    ) -> Depend:
+        """
+        私聊消息权限检查
+
+        指示需要 `level` 以上等级才能触发，仅支持检查是否是bot管理员或主人
+
+        :param perm: 至少需要什么权限才能调用
+        :param send_alert: 是否发送无权限警告
+        :param alert_text: 无权限提示的消息内容
+        :param allow_override: 是否允许bot主人和bot管理员无视权限控制
+        """
+
+        async def check_wrapper(app: Ariadne, friend: Friend):
+            level = await cls.get(friend, allow_override)
+            if level < perm:
+                if send_alert:
+                    await app.sendFriendMessage(friend, MessageChain.create(Plain(alert_text)))
+                raise ExecutionStop()
 
         return Depend(check_wrapper)
