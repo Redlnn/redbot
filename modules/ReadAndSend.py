@@ -15,7 +15,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Permission import Permission
+from utils.Limit.Permission import GroupPermission
 from utils.ModuleRegister import Module
 
 saya = Saya.current()
@@ -34,7 +34,7 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        decorators=[group_blacklist(), Permission.group_perm_check(MemberPerm.Administrator)],
+        decorators=[group_blacklist(), GroupPermission.require(MemberPerm.Administrator)],
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
