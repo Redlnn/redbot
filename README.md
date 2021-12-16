@@ -1,21 +1,26 @@
 <div align="center">
 
-# [redbot](https://github.com/Redlnn/redbot) [for](https://github.com/project-mirai/mirai-api-http) [Ariadne](https://github.com/GraiaProject/Ariadne)
+# redbot
 
-<img src="https://img.shields.io/badge/works-on%20my%20machine-green" alt="Works on my machine" />
+一个以 [Graia Ariadne](https://github.com/GraiaProject/Ariadne) 框架为基础的 QQ 机器人
+
+</div>
+
+<p align="center">
+<img src="https://img.shields.io/badge/works-for%20me-yellow" alt="works for me" />
+<img src="https://img.shields.io/badge/works-on%20my%20machine-green" alt="works on my machine" />
 <a href="https://github.com/Redlnn/redbot/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Redlnn/redbot" alt="Licence" /></a>
 <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black" /></a>
 <a href="https://pycqa.github.io/isort/"><img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336" alt="Imports: isort" /></a>
+</p>
 
-一个使用 [Graia Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的~~连 README 也缝合的~~究极缝合 QQ 机器人
+<div align="center">
 
-**Bot 只考虑自己的群使用不一定考虑到其他群的情况，配置文件及模块可能会大改**
+**本 Bot 的设计只考虑本人需求，因此配置文件格式及部分模块可能会大改，推荐 [`A60(djkcyl)`](https://github.com/djkcyl/) 的 [`ABot`](https://github.com/djkcyl/ABot-Graia/)**
 
-**本仓库还会存在 Force Push 的情况，没事不建议 Fork 或 Clone**
+**本仓库偶尔会 Force Push，不建议 Fork**
 
-**推荐可以试试 A60(djkcyl) 的 [`ABot`](https://github.com/djkcyl/ABot-Graia/)**
-
-⇒  **[文件目录结构](./FILES.md)**  ⇐
+⇒ **[文件目录结构](./FILES.md)** ⇐
 
 </div>
 
@@ -41,9 +46,9 @@
 
 ### TODO（咕咕咕？
 
+- [ ] 自动回复使用数据库储存并支持在群内修改回复内容
 - [ ] 概率复读
 - [ ] 留言提醒
-- [ ] 多边形图片生成（~~依赖库装不上咕了~~） <!-- https://github.com/djkcyl/ABot-Graia/saya/LowPolygon.py -->
 - [ ] 二维码生成
 - [ ] BiliBili 动态/直播 订阅推送
 - [ ] Pixiv 搜图
@@ -61,11 +66,11 @@
 
 - [`Broadcast Control`](https://github.com/GraiaProject/BroadcastControl): 高性能, 高可扩展性，设计简洁，基于 asyncio 的事件系统
 - [`Ariadne`](https://github.com/GraiaProject/Ariadne): 一个设计精巧, 协议实现完备的, 基于 mirai-api-http v2 的即时聊天软件自动化框架
-- [`Application`](https://github.com/GraiaProject/Application): Ariadne 的前身，一个设计精巧, 协议实现完备的, 基于 mirai-api-http 的即时聊天软件自动化框架
 - [`Saya`](https://github.com/GraiaProject/Saya) 简洁的模块管理系统
 - [`Scheduler`](https://github.com/GraiaProject/Scheduler): 简洁的基于 `asyncio` 的定时任务实现
+- [`Application`](https://github.com/GraiaProject/Application): Ariadne 的前身，一个设计精巧, 协议实现完备的, 基于 mirai-api-http 的即时聊天软件自动化框架
 
-[`redbot`](https://github.com/Redlnn/redbot) 在开发中还参考了如下项目:
+本 QQ 机器人在开发中还参考了如下项目:
 
 - [`ABot`](https://github.com/djkcyl/ABot-Graia/): 一个使用 [Graia-Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的 QQ 功能性~~究极缝合怪~~机器人
 - [`Xenon`](https://github.com/McZoo/Xenon): 一个优雅，用户友好的，基于 [mirai](https://github.com/mamoe/mirai) 与 [Graia Project](https://github.com/GraiaProject/) 的 QQ 机器人应用
