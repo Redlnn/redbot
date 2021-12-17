@@ -503,7 +503,7 @@ reference = "tsinghua"
 
 [[package]]
 name = "graia-ariadne-dev"
-version = "2021.12.15.2"
+version = "2021.12.16.2"
 description = "Another elegant framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -512,14 +512,15 @@ python-versions = ">=3.8,<4.0"
 [package.dependencies]
 aiohttp = ">=3.7.4,<4.0.0"
 graia-broadcast = ">=0.14.4"
-loguru = ">=0.5.3,<0.6.0"
+loguru = ">=0.5,<0.6"
 prompt-toolkit = ">=3.0.24,<4.0.0"
 pydantic = ">=1.8.2,<2.0.0"
 typing-extensions = ">=3.10.0,<4.0.0"
-yarl = ">=1.6.3,<2.0.0"
+yarl = ">=1.7,<2.0"
 
 [package.extras]
 alconna = ["arclet-alconna (>=0.1.3,<0.2.0)"]
+full = ["graia-saya (>=0.0.13,<0.0.14)", "graia-scheduler (>=0.0.6,<0.0.7)"]
 
 [package.source]
 type = "legacy"
@@ -1335,7 +1336,7 @@ reference = "tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = ">3.10, <3.11"
-content-hash = "ced807615f6824879d01542b8f3069e91af673ccab5cf3979a1465ec86b3bff7"
+content-hash = "437da395ca5fc3f7ebd8d9991a73e473e9df539217facfa14b2aa600dd0b4dff"
 
 [metadata.files]
 aiodns = [
@@ -1722,8 +1723,8 @@ gitpython = [
     {file = "GitPython-3.1.24.tar.gz", hash = "sha256:df83fdf5e684fef7c6ee2c02fc68a5ceb7e7e759d08b694088d0cacb4eba59e5"},
 ]
 graia-ariadne-dev = [
-    {file = "graia-ariadne-dev-2021.12.15.2.tar.gz", hash = "sha256:7b85f8e50753fb006dfde56b5ba1b670442545dc5714845f3fbaa7f8fa736b78"},
-    {file = "graia_ariadne_dev-2021.12.15.2-py3-none-any.whl", hash = "sha256:282f3e2800aa9023d8aeb1050cf900bccf2962bd31156bfd7ce26dec9377f075"},
+    {file = "graia-ariadne-dev-2021.12.16.2.tar.gz", hash = "sha256:f0cca6e35919a45a5eda72973b34b3f34239b6252b7d7ef15e762c6a7fd04604"},
+    {file = "graia_ariadne_dev-2021.12.16.2-py3-none-any.whl", hash = "sha256:6c74ee87dff13b6de9c651ebdf6d4627d853646cf3ea4d4b6433f9c67aa862ef"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.14.4.tar.gz", hash = "sha256:0b7f84d0105e51c862001f966d98e55682debc6aba8030929303bde4e9204e59"},

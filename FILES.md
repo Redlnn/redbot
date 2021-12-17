@@ -24,6 +24,7 @@ redbot  根目录
 │   ├── RenpinChecker.py  每日抽签（人品检测）
 │   ├── RollNumber.py  随机数抽取
 │   ├── SearchMinecraftWiki.py  我的世界中文 Wiki 搜索
+│   ├── Setu.py  涩图（不可以色色噢）
 │   └── TextWithImg2Img.py  消息内容转图片
 └── utils  通用功能目录
     ├── Database  数据库相关
