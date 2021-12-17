@@ -4,6 +4,7 @@
 import asyncio
 import time
 from asyncio import Lock
+from typing import List
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
@@ -47,8 +48,8 @@ channel = Channel.current()
 lock: Lock = Lock()
 inc = InterruptControl(saya.broadcast)
 
-server_group = config_data['Modules']['MinecraftServerManager']['ServerGroup']
-active_groups = (
+server_group: int = config_data['Modules']['MinecraftServerManager']['ServerGroup']
+active_groups: List[int] = (
     config_data['Modules']['MinecraftServerManager']['ActiveGroup']
     if config_data['Modules']['MinecraftServerManager']['ActiveGroup']
     else []
@@ -553,7 +554,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, message: M
             PlayersTable.uuid2: None,
             PlayersTable.uuid2AddedTime: None,
         }
-    ).execute()
+    ).where(PlayersTable.group == server_group).execute()
     await app.sendGroupMessage(group, MessageChain.create(Plain('已清空白名单数据库，服务器白名单请自行处理')))
 
 
