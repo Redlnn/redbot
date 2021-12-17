@@ -30,9 +30,7 @@ requests = "^2.26.0"
 wordcloud = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
-autopep8 = "^1.6.0"
 black = "^21.12b0"
-devtools = "^0.8.0"
 flake8 = "^4.0.1"
 isort = {extras = ["requirements_deprecated_finder"], version = "^5.10.1"}
 
@@ -51,7 +49,7 @@ url = "https://mirrors.aliyun.com/pypi/simple/"
 
 [tool.black]
 line-length = 120
-target-version = ['py310']
+target-version = ["py310"]
 skip-string-normalization = true
 safe = true
 
