@@ -189,7 +189,7 @@ async def get_msg_count(
             await app.sendGroupMessage(
                 group,
                 MessageChain.create(
-                    Plain(f'{target}最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
+                    Plain(f'{target} 最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
                 ),
             )
     else:
