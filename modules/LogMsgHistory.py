@@ -47,7 +47,7 @@ Module(
         '  参数：\n'
         '    --type   member/group 目标类型，本群成员或群\n'
         '    --target 【可选】群号/本群成员的QQ号/At群成员\n'
-        '    --day    天数（含今天）\n'
+        '    --day    【可选，默认7天】天数（含今天）\n'
         '[!！.]getlast <At/QQ号> —— 【管理】获取某人的最后一条发言'
     ),
 ).register()
