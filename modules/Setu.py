@@ -35,10 +35,7 @@ Module(
     file_name=os.path.basename(__file__),
     author=['Red_lnn', 'A60(djkcyl)'],
     description='提供白名单管理、在线列表查询、服务器命令执行功能',
-    usage=(
-        ' - [!！.]涩图 —— 获取随机涩图\n'
-        ' - [!！.]{关键词}涩图 —— 获取指定关键词的涩图'
-    ),
+    usage=' - [!！.]涩图 —— 获取随机涩图\n' ' - [!！.]{关键词}涩图 —— 获取指定关键词的涩图',
 ).register()
 
 
