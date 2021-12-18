@@ -16,7 +16,6 @@
  - av2
 """
 
-import json
 import os
 import time
 from dataclasses import dataclass
@@ -24,6 +23,7 @@ from typing import List
 from xml.dom.minidom import parseString
 
 import aiohttp
+import orjson as json
 import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
