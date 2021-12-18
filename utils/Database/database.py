@@ -9,6 +9,8 @@ from playhouse.shortcuts import ReconnectMixin
 
 from config import config_data
 
+__all__ = ['BaseModel']
+
 if config_data['Basic']['Database']['MySQL']:
     # https://www.cnblogs.com/gcxblogs/p/14969019.html
     class ReconnectPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase):

@@ -10,6 +10,24 @@ from playhouse.shortcuts import ReconnectMixin
 
 from config import config_data
 
+__all__ = [
+    'MsgLog',
+    'log_msg',
+    'get_member_talk_count',
+    'get_group_talk_count',
+    'get_member_last_message',
+    'get_group_last_message',
+    'get_member_last_message_id',
+    'get_group_last_message_id',
+    'get_member_last_time',
+    'get_group_last_time',
+    'get_group_msg_by_id',
+    'get_member_msg',
+    'get_group_msg',
+    'del_member_msg',
+    'del_group_msg',
+]
+
 if config_data['Basic']['Database']['MySQL']:
     # https://www.cnblogs.com/gcxblogs/p/14969019.html
     class ReconnectPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase):

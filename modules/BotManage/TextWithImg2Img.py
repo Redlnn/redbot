@@ -382,7 +382,15 @@ def generate_img(text_and_img: List[str | bytes] = None) -> bytes:
     # 保存为jpg图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#jpeg
     # img_name = 'temp_{}.jpg'.format(_get_time(2))  # 自定义临时文件的保存名称
     # img_path = os.path.join(img_name)  # 自定义临时文件保存路径
-    # canvas.save(img_path, format='JPEG', quality=90, optimize=True, progressive=True, subsampling=2, qtables='web_high')
+    # canvas.save(
+    #     img_path,
+    #     format='JPEG',
+    #     quality=90,
+    #     optimize=True,
+    #     progressive=True,
+    #     subsampling=2,
+    #     qtables='web_high'
+    # )
 
     # 保存为png图片 https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html?highlight=subsampling#png
     # img_name = 'temp_{}.png'.format(__get_time(2))  # 自定义临时文件的保存名称
