@@ -16,7 +16,7 @@ from graia.broadcast.builtin.decorators import Depend
 
 from config import config_data
 
-__all__ = ['Permission']
+__all__ = ['Permission', 'GroupPermission', 'TempPermission', 'FriendPermission']
 
 
 class Permission:

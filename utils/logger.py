@@ -9,6 +9,8 @@ from loguru import logger
 
 from config import config_data
 
+__all__ = ['logger']
+
 
 # https://loguru.readthedocs.io/en/stable/overview.html?highlight=InterceptHandler#entirely-compatible-with-standard-logging
 class InterceptHandler(logging.Handler):

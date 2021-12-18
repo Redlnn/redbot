@@ -81,7 +81,7 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
     global Generating_list
     target_type = 'member'
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - 518400
-    match_result: MessageChain = wc_target.result
+    match_result: MessageChain = wc_target.result  # noqa: E275
 
     if len(Generating_list) > 2:
         await app.sendGroupMessage(group, MessageChain.create(Plain('词云生成队列已满，请稍后再试')))
