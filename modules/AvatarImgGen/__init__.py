@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from asyncio import Lock
 from pathlib import Path
 
 from graia.ariadne.app import Ariadne
@@ -21,7 +20,6 @@ from utils.ModuleRegister import Module
 
 from .ding import ding
 
-lock: Lock = Lock()
 saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)

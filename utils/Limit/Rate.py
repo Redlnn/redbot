@@ -36,7 +36,6 @@ class GroupInterval:
     last_exec: DefaultDict[int, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[int, float] = defaultdict(float)
     sent_alert: Set[int] = set()
-    lock: Lock = Lock()
 
     @classmethod
     def require(
@@ -62,7 +61,7 @@ class GroupInterval:
             if await Permission.get(member) >= override_level:
                 return
             current = time.time()
-            async with cls.lock:
+            async with Lock():
                 last = cls.last_exec[group.id]
                 if current - last[1] >= suspend_time:
                     cls.last_exec[group.id] = (1, current)
@@ -97,7 +96,6 @@ class MemberInterval:
     last_exec: DefaultDict[str, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[str, float] = defaultdict(float)
     sent_alert: Set[str] = set()
-    lock: Lock = Lock()
 
     @classmethod
     def require(
@@ -124,7 +122,7 @@ class MemberInterval:
                 return
             current = time.time()
             name = f'{member.id}_{group.id}'
-            async with cls.lock:
+            async with Lock():
                 last = cls.last_exec[name]
                 if current - cls.last_exec[name][1] >= suspend_time:
                     cls.last_exec[name] = (1, current)
@@ -164,7 +162,6 @@ class FriendInterval:
     last_exec: DefaultDict[int, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[int, float] = defaultdict(float)
     sent_alert: Set[int] = set()
-    lock: Lock = Lock()
 
     @classmethod
     def require(
@@ -186,7 +183,7 @@ class FriendInterval:
             elif friend.id in _admins:
                 return
             current = time.time()
-            async with cls.lock:
+            async with Lock():
                 last = cls.last_exec[friend.id]
                 if current - cls.last_exec[friend.id][1] >= suspend_time:
                     cls.last_exec[friend.id] = (1, current)
@@ -229,7 +226,6 @@ class TempInterval:
     last_exec: DefaultDict[str, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[str, float] = defaultdict(float)
     sent_alert: Set[str] = set()
-    lock: Lock = Lock()
 
     @classmethod
     def require(
@@ -256,7 +252,7 @@ class TempInterval:
                 return
             current = time.time()
             name = f'{member.id}_{group.id}'
-            async with cls.lock:
+            async with Lock():
                 last = cls.last_exec[name]
                 if current - cls.last_exec[name][1] >= suspend_time:
                     cls.last_exec[name] = (1, current)
