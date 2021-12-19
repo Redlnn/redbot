@@ -3,7 +3,6 @@
 
 import asyncio
 import time
-from asyncio import Lock
 from typing import List
 
 from graia.ariadne.app import Ariadne
@@ -45,7 +44,6 @@ from .whitelist import (
 
 saya = Saya.current()
 channel = Channel.current()
-lock: Lock = Lock()
 inc = InterruptControl(saya.broadcast)
 
 server_group: int = config_data['Modules']['MinecraftServerManager']['ServerGroup']
@@ -943,7 +941,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain):
         else:
             await app.sendGroupMessage(group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{uuid1}')))
             flags.append(False)
-    await del_whitelist_by_qq(target, app, group)
+    await del_whitelist_by_qq(int(target), app, group)
     if False not in flags:
         await app.sendGroupMessage(group, MessageChain.create(Plain('已封禁该玩家')))
     else:
