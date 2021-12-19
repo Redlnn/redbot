@@ -434,7 +434,7 @@ reference = "tsinghua"
 
 [[package]]
 name = "graia-ariadne-dev"
-version = "2021.12.18.1"
+version = "2021.12.19.1"
 description = "Another elegant framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -450,7 +450,7 @@ typing-extensions = ">=3.10.0,<4.0.0"
 yarl = ">=1.7,<2.0"
 
 [package.extras]
-alconna = ["arclet-alconna (>=0.1.3,<0.2.0)"]
+alconna = ["arclet-alconna (>=0.3.1,<0.4.0)"]
 full = ["graia-saya (>=0.0.13,<0.0.14)", "graia-scheduler (>=0.0.6,<0.0.7)"]
 
 [package.source]
@@ -460,7 +460,7 @@ reference = "tsinghua"
 
 [[package]]
 name = "graia-broadcast"
-version = "0.14.4"
+version = "0.14.5"
 description = "a highly customizable, elegantly designed event system based on asyncio"
 category = "main"
 optional = false
@@ -1267,7 +1267,7 @@ reference = "tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10, <3.11"
-content-hash = "59a45813e938533eae6e74beec08b9df36706bb2c8c9fb9268e2b9c03b0d29e6"
+content-hash = "e0527f679355181a1acd9117d2cebcd8f969914e278156619c2c444f4b663c93"
 
 [metadata.files]
 aiodns = [
@@ -1638,12 +1638,12 @@ gitpython = [
     {file = "GitPython-3.1.24.tar.gz", hash = "sha256:df83fdf5e684fef7c6ee2c02fc68a5ceb7e7e759d08b694088d0cacb4eba59e5"},
 ]
 graia-ariadne-dev = [
-    {file = "graia-ariadne-dev-2021.12.18.1.tar.gz", hash = "sha256:8e1806f9971b58fc9207246ce3cbd85856afeea3efbd62888617caf7d45435b1"},
-    {file = "graia_ariadne_dev-2021.12.18.1-py3-none-any.whl", hash = "sha256:be765ac744097b6badaff856421a54b18ed05b5e2bd0bde43cea2ccee64efc76"},
+    {file = "graia-ariadne-dev-2021.12.19.1.tar.gz", hash = "sha256:d6726533d9f43eae9832fb456c678a3a05f41176b0b21c43bbedd5f969a72a6b"},
+    {file = "graia_ariadne_dev-2021.12.19.1-py3-none-any.whl", hash = "sha256:d3052b3fce737aef232b35d2bd2064a45e6b10e286446d2e16548706603f43d4"},
 ]
 graia-broadcast = [
-    {file = "graia-broadcast-0.14.4.tar.gz", hash = "sha256:0b7f84d0105e51c862001f966d98e55682debc6aba8030929303bde4e9204e59"},
-    {file = "graia_broadcast-0.14.4-py3-none-any.whl", hash = "sha256:2b04f9f6ac442a4522ef553496b47a9e02761ee00e67e3bf2336fbcf542bd9ec"},
+    {file = "graia-broadcast-0.14.5.tar.gz", hash = "sha256:51b4fa0b35e215751c41ce5006a72b35497b818425ea94a3cf296149251ef6f6"},
+    {file = "graia_broadcast-0.14.5-py3-none-any.whl", hash = "sha256:d9cb6caf249b6c0e207845d5c99529145a385fabadf5f3af02af387dfe3d6b28"},
 ]
 graia-saya = [
     {file = "graia-saya-0.0.13.tar.gz", hash = "sha256:07b4fe4c5e9b82212b63207e6264f5fa296375bdebeb6e972f50eb5825d52547"},

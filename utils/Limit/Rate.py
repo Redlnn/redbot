@@ -75,9 +75,10 @@ class GroupInterval:
                     return
                 if send_alert:
                     if group.id not in cls.sent_alert:
+                        m, s = divmod(last[1] + suspend_time - current, 60)
                         await app.sendGroupMessage(
                             group,
-                            MessageChain.create(Plain(f'功能冷却中...\n还有 {last[1] + suspend_time - current:.2f} 秒结束')),
+                            MessageChain.create(Plain(f'功能冷却中...\n还有{str(m) + "分" if m else ""}{s}秒结束')),
                         )
                         cls.last_alert[group.id] = current
                         cls.sent_alert.add(group.id)
@@ -136,12 +137,13 @@ class MemberInterval:
                     return
                 if send_alert:
                     if member.id not in cls.sent_alert:
+                        m, s = divmod(last[1] + suspend_time - current, 60)
                         await app.sendGroupMessage(
                             group,
                             MessageChain.create(
                                 [
                                     At(member.id),
-                                    Plain(f' 你在本群暂时不可调用bot，正在冷却中...\n还有{last[1] + suspend_time - current:.2f}秒结束'),
+                                    Plain(f' 你在本群暂时不可调用bot，正在冷却中...\n还有{str(m) + "分" if m else ""}{s}秒结束'),
                                 ]
                             ),
                         )
@@ -197,13 +199,14 @@ class FriendInterval:
                     return
                 if send_alert:
                     if friend.id not in cls.sent_alert:
+                        m, s = divmod(last[1] + suspend_time - current, 60)
                         await app.sendFriendMessage(
                             friend,
                             MessageChain.create(
                                 [
                                     Plain(
                                         '你暂时不可调用bot，正在冷却中...'
-                                        f'还有{last[1] + suspend_time - current:.2f}秒结束\n'
+                                        f'还有{str(m) + "分" if m else ""}{s}秒结束\n'
                                         f'冷却结束后可再调用bot {max_exec} 次'
                                     )
                                 ]
@@ -266,13 +269,14 @@ class TempInterval:
                     return
                 if send_alert:
                     if name not in cls.sent_alert:
+                        m, s = divmod(last[1] + suspend_time - current, 60)
                         await app.sendGroupMessage(
                             group,
                             MessageChain.create(
                                 [
                                     Plain(
-                                        f"你暂时不可调用bot，正在冷却中...还有{last[1] + suspend_time - current:.2f}秒结束\n"
-                                        f"冷却结束后可再调用bot {max_exec} 次"
+                                        f'你暂时不可调用bot，正在冷却中...还有{str(m) + "分" if m else ""}{s}秒结束\n'
+                                        f'冷却结束后可再调用bot {max_exec} 次'
                                     )
                                 ]
                             ),
@@ -297,7 +301,6 @@ class ManualInterval:
     def require(cls, name: str, suspend_time: float, max_exec: int = 1) -> Tuple[bool, Optional[float]]:
         """
         指示用户每执行 `max_exec` 次后需要至少相隔 `suspend_time` 秒才能再次触发功能
-        等级在 `override_level` 以上的可以无视限制
 
         :param name: 需要被冷却的功能或自定义flag
         :param suspend_time: 冷却时间
