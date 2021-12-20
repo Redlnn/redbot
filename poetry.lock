@@ -16,7 +16,7 @@ reference = "tsinghua"
 
 [[package]]
 name = "aiofile"
-version = "3.7.2"
+version = "3.7.3"
 description = "Asynchronous file operations."
 category = "main"
 optional = false
@@ -1267,7 +1267,7 @@ reference = "tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10, <3.11"
-content-hash = "e0527f679355181a1acd9117d2cebcd8f969914e278156619c2c444f4b663c93"
+content-hash = "687c2d981dfab291232ae744f894daa12176cc31308cd55d9387bfa5194e76c4"
 
 [metadata.files]
 aiodns = [
@@ -1275,8 +1275,8 @@ aiodns = [
     {file = "aiodns-3.0.0.tar.gz", hash = "sha256:946bdfabe743fceeeb093c8a010f5d1645f708a241be849e17edfb0e49e08cd6"},
 ]
 aiofile = [
-    {file = "aiofile-3.7.2-py3-none-any.whl", hash = "sha256:b2a153a2f8688c9e7c2df00f26024cc4ae03ad2de15aa41a68d939b46eaad859"},
-    {file = "aiofile-3.7.2.tar.gz", hash = "sha256:e1c577ab033cf1fd01ff33e033431223c5310254cc41bc3c6bf467e702a29791"},
+    {file = "aiofile-3.7.3-py3-none-any.whl", hash = "sha256:677f6093f48035393df9b15eefae957d9055b22cb48f75a47d7f03105ab54b86"},
+    {file = "aiofile-3.7.3.tar.gz", hash = "sha256:59ffc4ccafc41bf24831d4917cc918e0cc98a5d3a73f3d5738a4faad99f6ef3d"},
 ]
 aiohttp = [
     {file = "aiohttp-3.8.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:1ed0b6477896559f17b9eaeb6d38e07f7f9ffe40b9f0f9627ae8b9926ae260a8"},
