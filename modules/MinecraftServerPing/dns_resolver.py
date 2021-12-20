@@ -13,9 +13,8 @@ __all__ = ['dns_resolver', 'dns_resolver_srv']
 # A 记录或 CNAME 记录
 def dns_resolver(domain: str) -> bool | str:
     resolver = dns.resolver.Resolver()
-    resolver.nameservers = ['119.29.29.29']
     try:
-        resolve_result = resolver.resolve(domain, 'A', tcp=True, lifetime=5)
+        resolve_result = resolver.resolve(domain, 'A', lifetime=5)
     except (NoAnswer, NXDOMAIN):
         return False
     return resolve_result[0].to_text()
@@ -23,9 +22,8 @@ def dns_resolver(domain: str) -> bool | str:
 
 def dns_resolver_srv(domain: str) -> Tuple[bool | str, bool | int]:
     resolver = dns.resolver.Resolver()
-    resolver.nameservers = ['119.29.29.29']
     try:
-        resolve_result = resolver.resolve(f'_minecraft._tcp.{domain}', 'SRV', tcp=True, lifetime=5)
+        resolve_result = resolver.resolve(f'_minecraft._tcp.{domain}', 'SRV', lifetime=5)
     except (NoAnswer, NXDOMAIN):
         return False, False
     if resolve_result.rdtype == RdataType.SRV:
