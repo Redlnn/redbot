@@ -26,7 +26,7 @@ from urllib3.exceptions import TimeoutError
 
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Rate import MemberInterval
+from utils.Limit.Interval import MemberInterval
 from utils.ModuleRegister import Module
 
 from .ping_client import ping
