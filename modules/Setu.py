@@ -67,9 +67,9 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
         if group.id in config_data['Modules']['Setu']['DisabledGroup']:
             return
 
-    if int(san.result.asDisplay()) >= 4 and (
-        member.permission not in (MemberPerm.Administrator, MemberPerm.Owner)
-        or member.id not in config_data['Basic']['Permission']['Admin']
+    if int(san.result.asDisplay()) >= 4 and not (
+        member.permission in (MemberPerm.Administrator, MemberPerm.Owner)
+        or member.id in config_data['Basic']['Permission']['Admin']
     ):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
         return
