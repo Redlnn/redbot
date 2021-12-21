@@ -11,13 +11,14 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Forward, ForwardNode, Image, Plain
 from graia.ariadne.message.parser.twilight import (
+    ArgumentMatch,
     FullMatch,
     RegexMatch,
     Sparkle,
     Twilight,
     WildcardMatch,
 )
-from graia.ariadne.model import Group, Member
+from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
@@ -46,14 +47,19 @@ Module(
             Twilight(
                 Sparkle(
                     [RegexMatch(r'[.!！]')],
-                    {"tag": WildcardMatch(optional=True), "header": FullMatch("涩图")},
+                    {
+                        'tag': WildcardMatch(optional=True),
+                        'header': FullMatch('涩图'),
+                        'san': ArgumentMatch('--san', '-S', default='2', regex=r'2|4|6', help='最高涩气值，可为2|4|6'),
+                        'num': ArgumentMatch('--num', '-N', default='1', regex=r'[1-5]', help='涩图数量'),
+                    },
                 ),
             )
         ],
         decorators=[group_blacklist(), MemberInterval.require(30)],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch):
+async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, san: ArgumentMatch, num: ArgumentMatch):
     if not config_data['Modules']['Setu']['Enabled']:
         saya.uninstall_channel(channel)
         return
@@ -61,16 +67,24 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch):
         if group.id in config_data['Modules']['Setu']['DisabledGroup']:
             return
 
+    if int(san.result.asDisplay()) >= 4 and (
+        member.permission not in (MemberPerm.Administrator, MemberPerm.Owner)
+        or member.id not in config_data['Basic']['Permission']['Admin']
+    ):
+        await app.sendGroupMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
+        return
     async with aiohttp.ClientSession('http://a60.one:404') as session:
         if tag.matched:
             target_tag = tag.result.getFirst(Plain).text
-            async with session.get(f'/get/tags/{target_tag}?san=2') as resp:
+            async with session.get(
+                f'/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
+            ) as resp:
                 if resp.status in (200, 404):
                     res: dict = await resp.json()
                 else:
                     res = {'code': 500}
         else:
-            async with session.get('/?san=2') as resp:
+            async with session.get(f'/?san={san.result.asDisplay()}&num={num.result.asDisplay()}') as resp:
                 if resp.status == 200:
                     res: dict = await resp.json()
                 else:
@@ -83,34 +97,38 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch):
                 senderId=member.id,
                 time=datetime.now(),
                 senderName=member.name,
-                messageChain=MessageChain.create('你好，刚刚的我，我给你发涩图来了~'),
+                messageChain=MessageChain.create('我有涩图要给大伙康康，请米娜桑坐稳扶好哦嘿嘿嘿~'),
             ),
-            ForwardNode(
-                senderId=member.id,
-                time=datetime.now(),
-                senderName=member.name,
-                messageChain=MessageChain.create('请米娜桑坐稳扶好，涩图要来咯~诶嘿嘿嘿嘿~'),
-            ),
-            ForwardNode(
-                senderId=member.id,
-                time=datetime.now(),
-                senderName=member.name,
-                messageChain=MessageChain.create(
-                    Plain(
-                        f'pixiv id：{res["data"]["imgs"][0]["pic"]}\n'
-                        f'作品名称：{res["data"]["imgs"][0]["name"]}\n'
-                        f'涩气值: {res["data"]["imgs"][0]["sanity_level"]}'
+        ]
+        for img in res['data']['imgs']:
+            forward_nodes.extend(
+                [
+                    ForwardNode(
+                        senderId=member.id,
+                        time=datetime.now(),
+                        senderName=member.name,
+                        messageChain=MessageChain.create(
+                            Plain(
+                                f'作品名称：{img["name"]}\n'
+                                f'pixiv id：{img["pic"]}\n'
+                                f'涩气值: {img["sanity_level"]}\n'
+                                f'作者昵称：{img["username"]}\n'
+                                f'作者 id：{img["userid"]}\n'
+                                f'关键词：{img["tags"]}'
+                            ),
+                        ),
                     ),
-                ),
-            ),
-            ForwardNode(
-                senderId=member.id,
-                time=datetime.now(),
-                senderName=member.name,
-                messageChain=MessageChain.create(
-                    Image(url=res['data']['imgs'][0]['url']),
-                ),
-            ),
+                    ForwardNode(
+                        senderId=member.id,
+                        time=datetime.now(),
+                        senderName=member.name,
+                        messageChain=MessageChain.create(
+                            Image(url=img['url']),
+                        ),
+                    ),
+                ]
+            )
+        forward_nodes.append(
             ForwardNode(
                 senderId=member.id,
                 time=datetime.now(),
@@ -119,10 +137,10 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch):
                     Plain('看够了吗？看够了就没了噢~'),
                 ),
             ),
-        ]
+        )
         message = MessageChain.create(Forward(nodeList=forward_nodes))
         msg_id = await app.sendGroupMessage(group, message)
-        await asyncio.sleep(60)
+        await asyncio.sleep(40)
         try:
             await app.recallMessage(msg_id)
         except Exception:
