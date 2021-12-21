@@ -1,25 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from asyncio import Lock
 from pathlib import Path
 
 import yaml
 from loguru import logger
 
-if not Path.exists(Path(Path.cwd(), 'config.yml')) and Path.exists(Path(Path.cwd(), 'config.exp.yml')):
-    logger.error('请复制一份 config.exp.yml 并将其重命名为 config.yml 作为配置文件！')
-    exit()
-elif not Path.exists(Path(Path.cwd(), 'config.yml')) and not Path.exists(Path(Path.cwd(), 'config.exp.yml')):
-    logger.error('在？宁的配置呢?¿?¿')
-    exit()
-else:
-    with open('config.yml', 'r', encoding='utf-8') as fpr:
-        file_data = fpr.read()
-    config_data = yaml.load(file_data, Loader=yaml.FullLoader)
-    del file_data
+__all__ = ['save_config', 'reload_config', 'config_data']
 
-lock = Lock()
+config_data: dict = {}
 
 
 def save_config():
@@ -47,3 +36,19 @@ def reload_config():
         logger.error('重新加载配置文件时出错')
         logger.exception(e)
         return False
+
+
+if not Path.exists(Path(Path.cwd(), 'config.yml')) and Path.exists(Path(Path.cwd(), 'config.exp.yml')):
+    logger.error('请复制一份 config.exp.yml 并将其重命名为 config.yml 作为配置文件！')
+    exit()
+elif not Path.exists(Path(Path.cwd(), 'config.yml')) and not Path.exists(Path(Path.cwd(), 'config.exp.yml')):
+    logger.error('在？宁的配置呢?¿?¿')
+    exit()
+else:
+    with open('config.yml', 'r', encoding='utf-8') as fpr:
+        file_data = fpr.read()
+    config_data = yaml.load(file_data, Loader=yaml.FullLoader)
+    del file_data
+    if config_data['Basic']['Permission']['Master'] not in config_data['Basic']['Permission']['Admin']:
+        config_data['Basic']['Permission']['Admin'].append(config_data['Basic']['Permission']['Master'])
+        save_config()

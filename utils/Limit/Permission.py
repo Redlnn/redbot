@@ -50,10 +50,9 @@ class Permission:
         :return: 等级，整数
         """
         if allow_override:
-            admins = config_data['Basic']['Permission']['Admin'] if config_data['Basic']['Permission']['Admin'] else []
             if target.id == config_data['Basic']['Permission']['Master']:
                 return cls.BOT_MASTER
-            elif target.id in admins:
+            elif target.id in config_data['Basic']['Permission']['Admin']:
                 return cls.BOT_ADMIN
         if isinstance(target, Member):
             match target.permission:
