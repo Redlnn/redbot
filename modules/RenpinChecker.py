@@ -33,7 +33,7 @@ from loguru import logger
 
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Rate import MemberInterval
+from utils.Limit.Interval import MemberInterval
 from utils.ModuleRegister import Module
 from utils.TextWithImg2Img import async_generate_img, hr
 

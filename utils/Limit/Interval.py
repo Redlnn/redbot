@@ -25,8 +25,6 @@ from .Permission import Permission
 
 __all__ = ['GroupInterval', 'MemberInterval', 'FriendInterval', 'TempInterval', 'ManualInterval']
 
-_admins = config_data['Basic']['Permission']['Admin'] if config_data['Basic']['Permission']['Admin'] else []
-
 
 class GroupInterval:
     """
@@ -78,7 +76,7 @@ class GroupInterval:
                         m, s = divmod(last[1] + suspend_time - current, 60)
                         await app.sendGroupMessage(
                             group,
-                            MessageChain.create(Plain(f'功能冷却中...\n还有{str(m) + "分" if m else ""}{s}秒结束')),
+                            MessageChain.create(Plain(f'功能冷却中...\n还有{str(m) + "分" if m else ""}{"%d" % s}秒结束')),
                         )
                         cls.last_alert[group.id] = current
                         cls.sent_alert.add(group.id)
@@ -143,7 +141,7 @@ class MemberInterval:
                             MessageChain.create(
                                 [
                                     At(member.id),
-                                    Plain(f' 你在本群暂时不可调用bot，正在冷却中...\n还有{str(m) + "分" if m else ""}{s}秒结束'),
+                                    Plain(f' 你在本群暂时不可调用bot，正在冷却中...\n还有{str(m) + "分" if m else ""}{"%d" % s}秒结束'),
                                 ]
                             ),
                         )
@@ -180,9 +178,7 @@ class FriendInterval:
         """
 
         async def cd_check(app: Ariadne, friend: Friend):
-            if friend.id == config_data['Basic']['Permission']['Master']:
-                return
-            elif friend.id in _admins:
+            if friend.id in config_data['Basic']['Permission']['Admin']:
                 return
             current = time.time()
             async with Lock():
@@ -206,7 +202,7 @@ class FriendInterval:
                                 [
                                     Plain(
                                         '你暂时不可调用bot，正在冷却中...'
-                                        f'还有{str(m) + "分" if m else ""}{s}秒结束\n'
+                                        f'还有{str(m) + "分" if m else ""}{"%d" % s}秒结束\n'
                                         f'冷却结束后可再调用bot {max_exec} 次'
                                     )
                                 ]
@@ -275,7 +271,7 @@ class TempInterval:
                             MessageChain.create(
                                 [
                                     Plain(
-                                        f'你暂时不可调用bot，正在冷却中...还有{str(m) + "分" if m else ""}{s}秒结束\n'
+                                        f'你暂时不可调用bot，正在冷却中...还有{str(m) + "分" if m else ""}{"%d" % s}秒结束\n'
                                         f'冷却结束后可再调用bot {max_exec} 次'
                                     )
                                 ]

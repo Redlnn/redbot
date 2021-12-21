@@ -27,7 +27,7 @@ from loguru import logger
 from config import config_data, reload_config, save_config
 from utils.Limit.Blacklist import group_blacklist
 from utils.Limit.Permission import GroupPermission
-from utils.Limit.Rate import GroupInterval
+from utils.Limit.Interval import GroupInterval
 from utils.ModuleRegister import Module, Modules
 from utils.TextWithImg2Img import reload_config as gen_img_reload
 
@@ -74,7 +74,10 @@ async def menu(app: Ariadne, group: Group):
     elif config_data['Modules']['BotManage']['DisabledGroup']:
         if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
             return
-    msg_send = f'-= {config_data["Basic"]["BotName"]} 功能菜单 for {group.id} =-\n-= {group.name} =-\n{hr}\nID    模块状态    模块名\n'
+    msg_send = (
+        f'-= {config_data["Basic"]["BotName"]} 功能菜单 for {group.id} =-\n'
+        f'-= {group.name} =-\n{hr}\nID    模块状态    模块名\n'
+    )
     i = 0
     for module in Modules:
         i += 1

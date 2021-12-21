@@ -38,7 +38,7 @@ from wordcloud import ImageColorGenerator, WordCloud
 from config import config_data
 from utils.Database.msg_history import get_group_msg, get_member_msg
 from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Rate import ManualInterval
+from utils.Limit.Interval import ManualInterval
 from utils.ModuleRegister import Module
 
 saya = Saya.current()

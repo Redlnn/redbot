@@ -15,7 +15,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 
 from config import config_data
 from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Rate import ManualInterval
+from utils.Limit.Interval import ManualInterval
 from utils.ModuleRegister import Module
 
 from .ding import ding
