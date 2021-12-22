@@ -10,6 +10,7 @@ import os
 import random
 import time
 from io import BytesIO
+from os.path import dirname
 from pathlib import Path
 from typing import List
 
@@ -29,55 +30,59 @@ from graia.ariadne.message.parser.twilight import (
 )
 from graia.ariadne.model import Group, Member
 from graia.ariadne.util.async_exec import cpu_bound
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from matplotlib import pyplot
 from PIL import Image as Img
+from pydantic import BaseModel
 from wordcloud import ImageColorGenerator, WordCloud
 
-from config import config_data
-from utils.Database.msg_history import get_group_msg, get_member_msg
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import ManualInterval
-from utils.ModuleRegister import Module
+from utils.config import get_config, get_modules_config
+from utils.control.interval import ManualInterval
+from utils.control.permission import GroupPermission
+from utils.database.msg_history import get_group_msg, get_member_msg
+from utils.module_register import Module
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = dirname(__file__)
 
 Module(
     name='聊天历史词云生成',
-    config_name='WordCloud',
-    file_name=os.path.dirname(__file__),
+    file_name=module_name,
     author=['Red_lnn', 'A60(djkcyl)'],
     description='获取指定目标在最近7天内的聊天词云',
     usage=(
-        '[!！.]wordcloud groud —— 获得本群最近7天内的聊天词云\n'
+        '[!！.]wordcloud group —— 获得本群最近7天内的聊天词云\n'
         '[!！.]wordcloud At/本群成员QQ号 —— 获得ta在本群最近7天内的聊天词云\n'
         '[!！.]wordcloud me —— 获得你在本群最近7天内的聊天词云\n'
     ),
 ).register()
 
+
+class WordCloudConfig(BaseModel):
+    blacklistWord: List[str] = ['[APP消息]', '[XML消息]', '[JSON消息]', '视频短片']
+    fontName: str = 'OPPOSans-B.ttf'
+
+
 Generating_list: List[int | str] = []
+config: WordCloudConfig = get_config('wordcloud.json', WordCloudConfig())
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wordcloud\ ')], {'wc_target': WildcardMatch()}))],
-        decorators=[group_blacklist()],
+        decorators=[GroupPermission.require()],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMatch):
-    if not config_data['Modules']['WordCloud']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    else:
-        if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
-            if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
-                return
-        elif config_data['Modules']['WordCloud']['DisabledGroup']:
-            if group.id in config_data['Modules']['WordCloud']['DisabledGroup']:
-                return
+    if 'LogMsgHistory' in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups['LogMsgHistory']:
+            return
+    elif module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
+            return
     global Generating_list
     target_type = 'member'
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - 518400
@@ -175,11 +180,7 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
 
 
 def skip(string: str) -> bool:
-    blacklist_word = (
-        config_data['Modules']['WordCloud']['BlacklistWord']
-        if config_data['Modules']['WordCloud']['BlacklistWord']
-        else ()
-    )
+    blacklist_word = config.blacklistWord
     for word in blacklist_word:
         if word in string:
             return True
@@ -204,7 +205,7 @@ def get_frequencies(msg_list: List[str]) -> dict:
 def gen_wordcloud(words: dict) -> bytes:
     bg_list = os.listdir(Path(Path(__file__).parent, 'bg'))
     mask = numpy.array(Img.open(Path(Path(__file__).parent, 'bg', random.choice(bg_list))))
-    font_path = str(Path(Path.cwd(), 'fonts', config_data['Modules']['WordCloud']['FontName']))
+    font_path = str(Path(Path.cwd(), 'fonts', config.fontName))
     wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=600, scale=2)
     wordcloud.generate_from_frequencies(words)
     image_colors = ImageColorGenerator(mask, default_color=(255, 255, 255))

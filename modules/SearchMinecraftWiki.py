@@ -8,7 +8,7 @@
 """
 
 import asyncio
-import os
+from os.path import basename
 from random import uniform
 from urllib.parse import quote
 
@@ -18,21 +18,21 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Xml
 from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import MemberInterval
-from utils.ModuleRegister import Module
+from utils.config import get_modules_config
+from utils.control.interval import MemberInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = basename(__file__)
 
 Module(
     name='搜索我的世界中文Wiki',
-    config_name='SearchMinecraftWiki',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     usage='[!！.]wiki <要搜索的关键词>',
 ).register()
@@ -42,15 +42,12 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wiki\ ')], {'keyword': RegexMatch(r'\S+')}))],
-        decorators=[group_blacklist(), MemberInterval.require(3)],
+        decorators=[GroupPermission.require(), MemberInterval.require(3)],
     )
 )
 async def main(app: Ariadne, group: Group, keyword: RegexMatch):
-    if not config_data['Modules']['SearchMinecraftWiki']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['SearchMinecraftWiki']['DisabledGroup']:
-        if group.id in config_data['Modules']['SearchMinecraftWiki']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     arg: str = keyword.result.asDisplay()
     search_parm: str = quote(arg, encoding='utf-8')

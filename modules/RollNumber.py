@@ -8,7 +8,7 @@
 触发后会回复一个由0至100之间的任一随机整数
 """
 
-import os
+from os.path import basename
 from random import randint
 
 from graia.ariadne.app import Ariadne
@@ -22,21 +22,21 @@ from graia.ariadne.message.parser.twilight import (
     WildcardMatch,
 )
 from graia.ariadne.model import Group
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import MemberInterval
-from utils.ModuleRegister import Module
+from utils.config import get_modules_config
+from utils.control.interval import MemberInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = basename(__file__)
 
 Module(
     name='随机数',
-    config_name='RollNumber',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     description='获得一个随机数',
     usage='[!！.]roll {要roll的事件}',
@@ -47,15 +47,12 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]roll')], {'target': WildcardMatch()}))],
-        decorators=[group_blacklist(), MemberInterval.require(2)],
+        decorators=[GroupPermission.require(), MemberInterval.require(2)],
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain, target: WildcardMatch):
-    if not config_data['Modules']['RollNumber']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['RollNumber']['DisabledGroup']:
-        if group.id in config_data['Modules']['RollNumber']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     if target.matched:
         chain = MessageChain.create(Plain(f'{target.result.asDisplay().strip()}的概率为：{randint(0, 100)}'))

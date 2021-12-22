@@ -13,12 +13,40 @@ from typing import Dict, List
 from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
 from PIL import ImageDraw, ImageFont
+from pydantic import BaseModel
 
-from config import config_data
+from .config import get_config, get_main_config
 
-__all__ = ['async_generate_img', 'generate_img', 'hr', 'reload_config']
+__all__ = ['async_generate_img', 'generate_img', 'hr']
 
-_font_name: str = config_data['TextWithImg2Img']['FontName']
+
+class Text2ImgConfig(BaseModel):
+    # 字体文件的文件名（带后缀名），支持ttf/otf/ttc/otc
+    # 字体文件请放在根目录的 fonts 文件夹内
+    FontName: str = 'OPPOSans-B.ttf'
+    # 若使用ttc/otc字体文件，则填写要加载的ttc/otc的字形索引号，不懂请填1
+    # 具体索引号可安装 afdko 后使用 `otc2otf -r {name}.ttc`查看
+    # afdko: https://github.com/adobe-type-tools/afdko
+    TTCIndex: int = 1
+    FontSize: int = 50  # 字体大小
+    FontColor: str = '#645647'  # 字体颜色
+    LineSpace: int = 30  # 行距
+    TextMargin: int = 80  # 文字范围到内框的距离
+    CharsPerLine: int = 25  # 每行长度（单位：字符数量，以中文字符为准）
+    BackgroundColor: str = '#fffcf6'  # 背景颜色
+    BorderSideMargin: int = 50  # 外框距左右边界距离
+    BorderTopMargin: int = 70  # 外框距上边界距离
+    BorderBottomMargin: int = 250  # 外框距下边界距离
+    BorderInterval: int = 5  # 内外框距离
+    BorderSquareWrapWidth: int = 5  # 外边框四角的小正方形边长
+    BorderOutlineColor: str = '#e9e5d9'  # 边框颜色
+    BorderOutlineWidth: int = 5  # 边框描边（内描边）厚度
+
+
+config: Text2ImgConfig = get_config('text2img.json', Text2ImgConfig())
+basic_cfg = get_main_config()
+
+_font_name: str = config.FontName
 _font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
 if not os.path.exists(_font_path):
     raise ValueError(f'文本转图片所用的字体文件不存在，请检查配置文件，尝试访问的路径如下：↓\n{_font_path}')
@@ -26,23 +54,23 @@ if len(_font_name) <= 4 or _font_name[-4:] not in ('.ttf', '.ttc', '.otf', '.otc
     raise ValueError('所配置的字体文件名不正确，请检查配置文件')
 
 _is_ttc_font = True if _font_name.endswith('.ttc') or _font_name.endswith('.otc') else False
-_ttc_font_index = config_data['TextWithImg2Img']['TTCIndex']
-_font_size = config_data['TextWithImg2Img']['FontSize']
-_font_color = config_data['TextWithImg2Img']['FontColor']
-_line_space = config_data['TextWithImg2Img']['LineSpace']
-_text_margin = config_data['TextWithImg2Img']['TextMargin']
-_chars_per_line = config_data['TextWithImg2Img']['CharsPerLine']
+_ttc_font_index = config.TTCIndex
+_font_size = config.FontSize
+_font_color = config.FontColor
+_line_space = config.LineSpace
+_text_margin = config.TextMargin
+_chars_per_line = config.CharsPerLine
 
 hr = _chars_per_line * '—'
 
-_background_color = config_data['TextWithImg2Img']['BackgroundColor']
-_border_side_margin = config_data['TextWithImg2Img']['BorderSideMargin']
-_border_top_margin = config_data['TextWithImg2Img']['BorderTopMargin']
-_border_bottom_margin = config_data['TextWithImg2Img']['BorderBottomMargin']
-_border_interval = config_data['TextWithImg2Img']['BorderInterval']
-_border_square_wrap_width = config_data['TextWithImg2Img']['BorderSquareWrapWidth']
-_border_outline_width = config_data['TextWithImg2Img']['BorderOutlineWidth']
-_border_outline_color = config_data['TextWithImg2Img']['BorderOutlineColor']
+_background_color = config.BackgroundColor
+_border_side_margin = config.BorderSideMargin
+_border_top_margin = config.BorderTopMargin
+_border_bottom_margin = config.BorderBottomMargin
+_border_interval = config.BorderInterval
+_border_square_wrap_width = config.BorderSquareWrapWidth
+_border_outline_width = config.BorderOutlineWidth
+_border_outline_color = config.BorderOutlineColor
 
 # _font_path = r'C:\Windows\Fonts\OPPOSans-B.ttf'
 # _is_ttc_font = False
@@ -74,38 +102,6 @@ else:
     font = ImageFont.truetype(_font_path, size=_font_size)
     # 确定而额外文本用的ttf字体
     extra_font = ImageFont.truetype(_font_path, size=_font_size - int(0.3 * _font_size))
-
-
-def reload_config():
-    global _font_name, _font_path, _is_ttc_font, _ttc_font_index, _font_size, _font_color, _line_space, _text_margin
-    global _chars_per_line, _background_color, _border_side_margin, _border_top_margin, _border_bottom_margin
-    global _border_interval, _border_square_wrap_width, _border_outline_width, _border_outline_color, hr
-
-    _font_name = config_data['TextWithImg2Img']['FontName']
-    _font_path = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
-    if not os.path.exists(_font_path):
-        raise ValueError(f'文本转图片所用的字体文件不存在，请检查配置文件，尝试访问的路径如下：↓\n{_font_path}')
-    if len(_font_name) <= 4 or _font_name[-4:] not in ('.ttf', '.ttc', '.otf', '.otc'):
-        raise ValueError('所配置的字体文件名不正确，请检查配置文件')
-
-    _is_ttc_font = True if _font_name.endswith('.ttc') or _font_name.endswith('.otc') else False
-    _ttc_font_index = config_data['TextWithImg2Img']['TTCIndex']
-    _font_size = config_data['TextWithImg2Img']['FontSize']
-    _font_color = config_data['TextWithImg2Img']['FontColor']
-    _line_space = config_data['TextWithImg2Img']['LineSpace']
-    _text_margin = config_data['TextWithImg2Img']['TextMargin']
-    _chars_per_line = config_data['TextWithImg2Img']['CharsPerLine']
-
-    # hr 无法在改变其原内存地址中的值，无法重载
-
-    _background_color = config_data['TextWithImg2Img']['BackgroundColor']
-    _border_side_margin = config_data['TextWithImg2Img']['BorderSideMargin']
-    _border_top_margin = config_data['TextWithImg2Img']['BorderTopMargin']
-    _border_bottom_margin = config_data['TextWithImg2Img']['BorderBottomMargin']
-    _border_interval = config_data['TextWithImg2Img']['BorderInterval']
-    _border_square_wrap_width = config_data['TextWithImg2Img']['BorderSquareWrapWidth']
-    _border_outline_width = config_data['TextWithImg2Img']['BorderOutlineWidth']
-    _border_outline_color = config_data['TextWithImg2Img']['BorderOutlineColor']
 
 
 def _get_time(mode: int = 1) -> str:
@@ -213,7 +209,7 @@ def generate_img(text_and_img: List[str | bytes] = None) -> bytes:
     elif not isinstance(text_and_img, list):
         raise ValueError('ArgumentError: 参数类型错误')
 
-    extra_text1 = f'由 {config_data["Basic"]["BotName"]} 生成'  # 额外文本1
+    extra_text1 = f'由 {basic_cfg.botName} 生成'  # 额外文本1
     extra_text2 = _get_time()  # 额外文本2
 
     line_width = int(_chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度

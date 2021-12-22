@@ -16,9 +16,9 @@
  - av2
 """
 
-import os
 import time
 from dataclasses import dataclass
+from os.path import basename
 from typing import List
 from xml.dom.minidom import parseString
 
@@ -30,23 +30,23 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import App, Image, Plain, Xml
 from graia.ariadne.model import Group, Member
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import ManualInterval
-from utils.ModuleRegister import Module
-from utils.TextWithImg2Img import async_generate_img, hr
+from utils.config import get_modules_config
+from utils.control.interval import ManualInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
+from utils.text2img import async_generate_img, hr
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = basename(__file__)
 
 Module(
     name='B站视频信息获取',
-    config_name='BiliVideoInfo',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     description='识别群内的B站链接、分享、av号、BV号并获取其对应的视频的信息',
     usage=(
@@ -86,13 +86,10 @@ class VideoInfo:
     favorites: int  # 收藏量
 
 
-@channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[group_blacklist()]))
+@channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[GroupPermission.require()]))
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
-    if not config_data['Modules']['BiliVideoInfo']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
-        if group.id in config_data['Modules']['BiliVideoInfo']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     p = re.compile(f'({avid_re})|({bvid_re})')
     video_id = None

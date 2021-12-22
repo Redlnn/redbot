@@ -6,12 +6,30 @@ from pathlib import Path
 from peewee import Model
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
+from pydantic import BaseModel as PyDanticBaseModel
 
-from config import config_data
+from utils.config import get_config
 
-__all__ = ['BaseModel']
+__all__ = ['BaseModel', 'database_cfg']
 
-if config_data['Basic']['Database']['MySQL']:
+
+class MySQLConfig(PyDanticBaseModel):
+    enabled: bool = False
+    host: str = 'localhost'
+    port: int = 25575
+    user: str = 'user'
+    passwd: str = 'password'
+
+
+class DatabaseConfig(PyDanticBaseModel):
+    database: str = 'redbot'
+    mysql: MySQLConfig = MySQLConfig()
+
+
+database_cfg: DatabaseConfig = get_config('database.json', DatabaseConfig())
+
+
+if database_cfg.mysql.enabled:
     # https://www.cnblogs.com/gcxblogs/p/14969019.html
     class ReconnectPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase):
 
@@ -24,12 +42,12 @@ if config_data['Basic']['Database']['MySQL']:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                    config_data['Basic']['Database']['Database'],
+                    database_cfg.database,
                     max_connections=10,
-                    host=config_data['Basic']['Database']['Host'],
-                    port=config_data['Basic']['Database']['Port'],
-                    user=config_data['Basic']['Database']['User'],
-                    password=config_data['Basic']['Database']['Passwd'],
+                    host=database_cfg.mysql.host,
+                    port=database_cfg.mysql.port,
+                    user=database_cfg.mysql.user,
+                    password=database_cfg.mysql.passwd,
                 )
             return cls._instance
 
@@ -47,7 +65,7 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                    Path(Path.cwd(), 'data', f'{config_data["Basic"]["Database"]["Database"]}.db'),
+                    Path(Path.cwd(), 'data', f'{database_cfg.database}.db'),
                     max_connections=10,
                 )
             return cls._instance

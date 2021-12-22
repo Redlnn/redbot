@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-import os
 from datetime import datetime
+from os.path import basename
 
 import aiohttp
 from graia.ariadne.app import Ariadne
@@ -19,21 +19,22 @@ from graia.ariadne.message.parser.twilight import (
     WildcardMatch,
 )
 from graia.ariadne.model import Group, Member, MemberPerm
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import MemberInterval
-from utils.ModuleRegister import Module
+from utils.config import get_main_config, get_modules_config
+from utils.control.interval import MemberInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = basename(__file__)
+basic_cfg = get_main_config()
 
 Module(
     name='涩图（不可以色色o）',
-    config_name='Setu',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn', 'A60(djkcyl)'],
     description='提供白名单管理、在线列表查询、服务器命令执行功能',
     usage=' - [!！.]涩图 —— 获取随机涩图\n' ' - [!！.]{关键词}涩图 —— 获取指定关键词的涩图',
@@ -56,20 +57,16 @@ Module(
                 ),
             )
         ],
-        decorators=[group_blacklist(), MemberInterval.require(30)],
+        decorators=[GroupPermission.require(), MemberInterval.require(30)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, san: ArgumentMatch, num: ArgumentMatch):
-    if not config_data['Modules']['Setu']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['Setu']['DisabledGroup']:
-        if group.id in config_data['Modules']['Setu']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
 
     if int(san.result.asDisplay()) >= 4 and not (
-        member.permission in (MemberPerm.Administrator, MemberPerm.Owner)
-        or member.id in config_data['Basic']['Permission']['Admin']
+        member.permission in (MemberPerm.Administrator, MemberPerm.Owner) or member.id in basic_cfg.admin.admins
     ):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
         return
@@ -143,7 +140,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
         await asyncio.sleep(40)
         try:
             await app.recallMessage(msg_id)
-        except Exception:
+        except:
             pass
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('慢一点慢一点，别冲辣！')))

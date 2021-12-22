@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
+from os.path import basename
 from typing import List
 
 import aiohttp
@@ -16,22 +16,22 @@ from graia.ariadne.message.parser.twilight import (
     WildcardMatch,
 )
 from graia.ariadne.model import Group
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import GroupInterval
-from utils.ModuleRegister import Module
-from utils.TextWithImg2Img import async_generate_img
+from utils.config import get_modules_config
+from utils.control.interval import GroupInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
+from utils.text2img import async_generate_img
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = basename(__file__)
 
 Module(
     name='消息转图片',
-    config_name='TextWithImg2Img',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     description='仿锤子便签样式的消息转图片，支持纯文本与图像',
     usage='[!！.]img <文本、图像>',
@@ -51,15 +51,12 @@ Module(
                 )
             )
         ],
-        decorators=[group_blacklist(), GroupInterval.require(15)],
+        decorators=[GroupPermission.require(), GroupInterval.require(15)],
     )
 )
 async def main(app: Ariadne, group: Group, content: RegexMatch):
-    if not config_data['Modules']['TextWithImg2Img']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['TextWithImg2Img']['DisabledGroup']:
-        if group.id in config_data['Modules']['TextWithImg2Img']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     img_list: List[str | bytes] = []
     async with aiohttp.ClientSession() as session:

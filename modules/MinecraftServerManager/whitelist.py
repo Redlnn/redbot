@@ -13,13 +13,10 @@ from graia.ariadne.message.element import At, Plain, Source
 from graia.ariadne.model import Group, Member
 from loguru import logger
 
-from config import config_data
-
+from .config import config
 from .database import PlayersTable
 from .rcon import execute_command
 from .utils import get_mc_id, get_uuid, query_qq_by_uuid, query_uuid_by_qq
-
-server_group = config_data['Modules']['MinecraftServerManager']['ServerGroup']
 
 __all__ = [
     'add_whitelist_to_qq',
@@ -106,7 +103,7 @@ async def add_whitelist_to_qq(
     if not had_status:
         member: Member = await app.getMember(group, message.getFirst(At).target)
         PlayersTable.create(
-            group=server_group,
+            group=config.serverGroup,
             qq=qq,
             uuid1=uuid.UUID(mc_uuid),
             uuid1AddedTime=int(time.time()),
@@ -118,12 +115,12 @@ async def add_whitelist_to_qq(
     elif not uuid1 and not uuid2:
         PlayersTable.update(
             {PlayersTable.uuid1: uuid.UUID(mc_uuid), PlayersTable.uuid1AddedTime: int(time.time())}
-        ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
+        ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
     elif uuid1 and not uuid2:
         if admin:
             PlayersTable.update(
                 {PlayersTable.uuid2: uuid.UUID(mc_uuid), PlayersTable.uuid2AddedTime: int(time.time())}
-            ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
+            ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
         else:
             await app.sendGroupMessage(
                 group,
@@ -139,7 +136,7 @@ async def add_whitelist_to_qq(
         if admin:
             PlayersTable.update(
                 {PlayersTable.uuid1: uuid.UUID(mc_uuid), PlayersTable.uuid1AddedTime: int(time.time())}
-            ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
+            ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
         else:
             await app.sendGroupMessage(
                 group,
@@ -251,7 +248,7 @@ async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
             PlayersTable.uuid2: None,
             PlayersTable.uuid2AddedTime: None,
         }
-    ).where((PlayersTable.group == server_group) & (PlayersTable.qq == qq)).execute()
+    ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
     target = set()
     if uuid1:
         target.add(await del_whitelist_from_server(str(uuid1), app, group))
@@ -318,7 +315,7 @@ async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> Non
         return
     if uuid1.replace('-', '') == mc_uuid.replace('-', ''):
         PlayersTable.update({PlayersTable.uuid1: None, PlayersTable.uuid1AddedTime: None}).where(
-            (PlayersTable.group == server_group) & (PlayersTable.qq == qq)
+            (PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)
         ).execute()
         del_result = await del_whitelist_from_server(mc_uuid, app, group)
         if del_result:
@@ -327,7 +324,7 @@ async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> Non
             )
     if uuid2.replace('-', '') == mc_uuid.replace('-', ''):
         PlayersTable.update({PlayersTable.uuid2: None, PlayersTable.uuid2AddedTime: None}).where(
-            (PlayersTable.group == server_group) & (PlayersTable.qq == qq)
+            (PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)
         ).execute()
         del_result = await del_whitelist_from_server(mc_uuid, app, group)
         if del_result:
@@ -352,7 +349,7 @@ async def query_whitelist_by_uuid(
     query_target = uuid.UUID(mc_uuid)
     try:
         data: PlayersTable = PlayersTable.get(
-            (PlayersTable.group == server_group)
+            (PlayersTable.group == config.serverGroup)
             & ((PlayersTable.uuid1 == query_target) | (PlayersTable.uuid2 == query_target))
         )
     except PlayersTable.DoesNotExist:

@@ -4,15 +4,9 @@
 from loguru import logger
 from mctools import RCONClient
 
-from config import config_data
-
-config_data = config_data['Modules']['MinecraftServerManager']['Rcon']
+from .config import config
 
 __all__ = ['execute_command']
-
-__HOST = config_data['Host']  # Hostname of the Minecraft server
-__PORT = config_data['Port']  # Port number of the RCON server
-__PASSWORD = config_data['Passwd']  # Password of the RCON server
 
 
 def execute_command(command: str) -> str:
@@ -23,12 +17,12 @@ def execute_command(command: str) -> str:
     :param command: 需要执行的命令
     :return: 执行命令返回值
     """
-    logger.info(f'在服务器【{__HOST}:{__PORT}】上执行命令【{command}】')
-    rcon = RCONClient(host=__HOST, port=__PORT, format_method=2, timeout=6)
+    logger.info(f'在服务器【{config.rcon.host}:{config.rcon.port}】上执行命令【{command}】')
+    rcon = RCONClient(host=config.rcon.host, port=config.rcon.port, format_method=2, timeout=6)
     try:
-        rcon.login(__PASSWORD)
+        rcon.login(config.rcon.passwd)
     except Exception as e:
-        logger.error(f'通过RCON连接【{__HOST}:{__PORT}】失败')
+        logger.error(f'通过RCON连接【{config.rcon.host}:{config.rcon.port}】失败')
         logger.exception(e)
         raise e
     resp: str = rcon.command(command)
