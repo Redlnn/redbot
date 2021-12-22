@@ -12,6 +12,7 @@
 import datetime
 import os
 import random
+from os.path import basename
 from pathlib import Path
 from typing import Tuple
 
@@ -25,25 +26,25 @@ from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group, Member
 from graia.ariadne.util.async_exec import io_bound
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
 from loguru import logger
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import MemberInterval
-from utils.ModuleRegister import Module
-from utils.TextWithImg2Img import async_generate_img, hr
+from utils.config import get_modules_config
+from utils.control.interval import MemberInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
+from utils.text2img import async_generate_img, hr
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = basename(__file__)
 
 Module(
     name='人品测试',
-    config_name='RenpinChecker',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     description='每个QQ号每天可抽一次签并获得人品值',
     usage='[!！.]jrrp / [!！.]抽签',
@@ -107,15 +108,12 @@ lucky_things = {
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](jrrp|抽签)')]))],
-        decorators=[group_blacklist(), MemberInterval.require(10)],
+        decorators=[GroupPermission.require(), MemberInterval.require(10)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member):
-    if not config_data['Modules']['RenpinChecker']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['RenpinChecker']['DisabledGroup']:
-        if group.id in config_data['Modules']['RenpinChecker']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     is_new, (renpin, qianwen) = await read_data(str(member.id))
     img_bytes = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
@@ -209,14 +207,14 @@ def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:
         fp.seek(0, 0)  # 将读写指针放在文件头部
         yml_data: dict = yml.safe_load(fp)  # 读写
         fp.seek(0, 2)  # 将读写指针放在文件尾部
-        if yml_data is None:  # 若文件为空，则生成一随机数并写入到文件中，然后返回生成的随机数
+        if yml_data is None:  # 若文件为空，则生成一个随机数并写入到文件中，然后返回生成的随机数
             renpin = random.randint(0, 100)
             qianwen = gen_qianwen(renpin)
             yml.dump({qq: [renpin, qianwen]}, fp, allow_unicode=True)
             return True, (renpin, qianwen)
-        if qq in yml_data.keys():  # 若文件中有指定QQ的数据则读取并返回
+        if qq in yml_data:  # 若文件中有指定QQ的数据则读取并返回
             return False, yml_data[qq]
-        else:  # 若文件中没有指定QQ的数据，则生成一随机数并写入到文件中，然后返回生成的随机数
+        else:  # 若文件中没有指定QQ的数据，则生成一个随机数并写入到文件中，然后返回生成的随机数
             renpin = random.randint(0, 100)
             qianwen = gen_qianwen(renpin)
             yml.dump({qq: [renpin, qianwen]}, fp, allow_unicode=True)

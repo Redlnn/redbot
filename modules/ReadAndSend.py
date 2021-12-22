@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
+from os.path import basename
 
 import regex as re
 from graia.ariadne.app import Ariadne
@@ -10,21 +10,20 @@ from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Quote
 from graia.ariadne.model import Group, MemberPerm
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Permission import GroupPermission
-from utils.ModuleRegister import Module
+from utils.config import get_modules_config
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = basename(__file__)
 
 Module(
     name='读取/发送消息的可持久化字符串',
-    config_name='ReadAndSend',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     description='获得一个随机数',
     usage='仅限群管理员使用\n - 回复需要读取的消息并且回复内容只含有“[!！.]读取消息”获得消息的可持久化字符串\n - [!！.]发送消息 <可持久化字符串> —— 用于从可持久化字符串发送消息',
@@ -34,20 +33,13 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        decorators=[group_blacklist(), GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator)],
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if not config_data['Modules']['ReadAndSend']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    else:
-        if config_data['Modules']['LogMsgHistory']['DisabledGroup']:
-            if group.id in config_data['Modules']['LogMsgHistory']['DisabledGroup']:
-                return
-        if config_data['Modules']['ReadAndSend']['DisabledGroup']:
-            if group.id in config_data['Modules']['ReadAndSend']['DisabledGroup']:
-                return
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
+            return
 
     if re.match(r'^[!！.]读取消息$', message.asDisplay()):
         try:

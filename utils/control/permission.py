@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-权限检查
+权限即黑名单检查
 
-Xenon 管理：https://github.com/McZoo/Xenon/blob/master/lib/control.py
+移植自 Xenon：https://github.com/McZoo/Xenon/blob/master/lib/control.py
 """
+
+from typing import List
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
@@ -13,10 +15,20 @@ from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Friend, Group, Member, MemberPerm
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
+from pydantic import BaseModel
 
-from config import config_data
+from ..config import get_config, get_main_config
 
-__all__ = ['Permission', 'GroupPermission', 'TempPermission', 'FriendPermission']
+__all__ = ['BlacklistConfig', 'blacklist_cfg', 'Permission', 'GroupPermission', 'TempPermission', 'FriendPermission']
+
+
+class BlacklistConfig(BaseModel):
+    groups: List[int] = []
+    users: List[int] = []
+
+
+basic_cfg = get_main_config()
+blacklist_cfg: BlacklistConfig = get_config('blacklist.json', BlacklistConfig())
 
 
 class Permission:
@@ -28,16 +40,16 @@ class Permission:
 
     BOT_MASTER: int = 100  # Bot主人
     BOT_ADMIN: int = 90  # Bot管理员
-    OWMER: int = 30  # 群主
+    OWNER: int = 30  # 群主
     ADMIN: int = 20  # 群管理员
-    USER: int = 10  # 群成员
-    BANED: int = 0  # Bot黑名单成员（未使用）
+    USER: int = 10  # 群成员/好友
+    BANED: int = 0  # Bot黑名单成员
     DEFAULT: int = USER
 
     _levels = {
         MemberPerm.Member: USER,
         MemberPerm.Administrator: ADMIN,
-        MemberPerm.Owner: OWMER,
+        MemberPerm.Owner: OWNER,
     }
 
     @classmethod
@@ -50,14 +62,14 @@ class Permission:
         :return: 等级，整数
         """
         if allow_override:
-            if target.id == config_data['Basic']['Permission']['Master']:
+            if target.id == basic_cfg.admin.masterId:
                 return cls.BOT_MASTER
-            elif target.id in config_data['Basic']['Permission']['Admin']:
+            elif target.id in basic_cfg.admin.admins:
                 return cls.BOT_ADMIN
         if isinstance(target, Member):
             match target.permission:
                 case MemberPerm.Owner:
-                    return cls.OWMER
+                    return cls.OWNER
                 case MemberPerm.Administrator:
                     return cls.ADMIN
                 case MemberPerm.Member:
@@ -72,7 +84,7 @@ class GroupPermission(Permission):
     @classmethod
     def require(
         cls,
-        perm: MemberPerm | int,
+        perm: MemberPerm | int = MemberPerm.Member,
         send_alert: bool = False,
         alert_text: str = '你没有权限执行此指令',
         allow_override: bool = True,
@@ -89,6 +101,8 @@ class GroupPermission(Permission):
         """
 
         async def check_wrapper(app: Ariadne, group: Group, member: Member):
+            if group.id in blacklist_cfg.groups or member.id in blacklist_cfg.users:
+                raise ExecutionStop()
             level = await cls.get(member, allow_override)
             if isinstance(perm, MemberPerm):
                 if level < cls._levels[perm]:
@@ -108,7 +122,7 @@ class TempPermission(Permission):
     @classmethod
     def require(
         cls,
-        perm: MemberPerm | int,
+        perm: MemberPerm | int = MemberPerm.Member,
         send_alert: bool = False,
         alert_text: str = '你没有权限执行此指令',
         allow_override: bool = True,
@@ -125,6 +139,8 @@ class TempPermission(Permission):
         """
 
         async def check_wrapper(app: Ariadne, member: Member):
+            if member.id in blacklist_cfg.users:
+                raise ExecutionStop()
             level = await cls.get(member, allow_override)
             if isinstance(perm, MemberPerm):
                 if level < cls._levels[perm]:
@@ -161,6 +177,8 @@ class FriendPermission(Permission):
         """
 
         async def check_wrapper(app: Ariadne, friend: Friend):
+            if friend.id in blacklist_cfg.users:
+                raise ExecutionStop()
             level = await cls.get(friend, allow_override)
             if level < perm:
                 if send_alert:

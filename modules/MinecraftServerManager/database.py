@@ -7,11 +7,11 @@ from peewee import BooleanField, CharField, Model, TextField, TimestampField, UU
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
 
-from config import config_data
+from utils.path import data_path
 
-config_data = config_data['Modules']['MinecraftServerManager']
+from .config import config
 
-if config_data['Database']['MySQL']:
+if config.database.enableMySQL:
     # https://www.cnblogs.com/gcxblogs/p/14969019.html
     class ReconnectPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase):
 
@@ -24,12 +24,12 @@ if config_data['Database']['MySQL']:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                    config_data['Database']['Database'],
+                    config.database.database,
                     max_connections=5,
-                    host=config_data['Database']['Host'],
-                    port=config_data['Database']['Port'],
-                    user=config_data['Database']['User'],
-                    password=config_data['Database']['Passwd'],
+                    host=config.database.host,
+                    port=config.database.port,
+                    user=config.database.user,
+                    password=config.database.passwd,
                 )
             return cls._instance
 
@@ -47,7 +47,7 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                    Path(Path.cwd(), 'data', f'MinecraftServerManager_{config_data["ServerGroup"]}.db'),
+                    Path(data_path, f'MinecraftServerManager_{config.serverGroup}.db'),
                     max_connections=5,
                 )
             return cls._instance

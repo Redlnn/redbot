@@ -8,7 +8,8 @@ from peewee import CharField, IntegerField, Model, TextField, TimestampField, fn
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
 
-from config import config_data
+from ..path import data_path
+from .database import database_cfg
 
 __all__ = [
     'MsgLog',
@@ -28,7 +29,8 @@ __all__ = [
     'del_group_msg',
 ]
 
-if config_data['Basic']['Database']['MySQL']:
+
+if database_cfg.mysql.enabled:
     # https://www.cnblogs.com/gcxblogs/p/14969019.html
     class ReconnectPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase):
 
@@ -41,12 +43,12 @@ if config_data['Basic']['Database']['MySQL']:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                    config_data['Basic']['Database']['Database'],
+                    database_cfg.database,
                     max_connections=10,
-                    host=config_data['Basic']['Database']['Host'],
-                    port=config_data['Basic']['Database']['Port'],
-                    user=config_data['Basic']['Database']['User'],
-                    password=config_data['Basic']['Database']['Passwd'],
+                    host=database_cfg.mysql.host,
+                    port=database_cfg.mysql.port,
+                    user=database_cfg.mysql.user,
+                    password=database_cfg.mysql.passwd,
                 )
             return cls._instance
 
@@ -64,7 +66,7 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                    os.path.join(os.getcwd(), 'data', f'{config_data["Basic"]["Database"]["Database"]}_msg_history.db'),
+                    os.path.join(data_path, f'{database_cfg.database}_msg_history.db'),
                     max_connections=10,
                 )
             return cls._instance

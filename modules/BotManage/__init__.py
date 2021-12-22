@@ -8,9 +8,8 @@ Bot 管理
 
 import asyncio
 import os
-from asyncio import Lock
+from os.path import dirname
 from pathlib import Path
-from typing import List
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -24,34 +23,34 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
-from config import config_data, reload_config, save_config
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Permission import GroupPermission
-from utils.Limit.Interval import GroupInterval
-from utils.ModuleRegister import Module, Modules
-from utils.TextWithImg2Img import reload_config as gen_img_reload
+from utils.config import get_main_config, get_modules_config, save_modules_config
+from utils.control.interval import GroupInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module, Modules
 
-from .TextWithImg2Img import generate_img, hr
+from .text2img import generate_img, hr
 
 saya = Saya.current()
 channel = Channel.current()
-lock: Lock = Lock()
 inc = InterruptControl(saya.broadcast)
+
+basic_cfg = get_main_config()
+modules_cfg = get_modules_config()
+module_name = dirname(__file__)
 
 # ensp = ' '  # 半角空格
 # emsp = ' '  # 全角空格
 
+
 Module(
     name='Bot模块管理',
-    config_name='BotManage',
-    file_name=os.path.dirname(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     description='管理Bot已加载的模块',
     usage=(
         '[!！.](菜单|menu) —— 获取模块列表\n'
         '[!！.]启用模块 <模块ID> —— 【管理员】启用某个已禁用的模块（全局禁用除外）\n'
         '[!！.]禁用模块 <模块ID> —— 【管理员】禁用某个已启用的模块（禁止禁用的模块除外）\n'
-        '[!！.]重载配置 —— 【Bot管理员】重载Bot和模块的配置文件（不影响部分模块）\n'
         '[!！.]重载模块 <模块ID> —— 【Bot管理员，强烈不推荐】重载指定模块\n'
         '[!！.]加载模块 <模块文件名> —— 【Bot管理员】加载新模块（文件名无需后缀）\n'
         '[!！.]卸载模块 <模块ID> —— 【Bot管理员，强烈不推荐】卸载指定模块\n'
@@ -64,26 +63,20 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](菜单|menu)')]))],
-        decorators=[group_blacklist()],
+        decorators=[GroupPermission.require()],
     )
 )
 async def menu(app: Ariadne, group: Group):
-    if not config_data['Modules']['BotManage']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BotManage']['DisabledGroup']:
-        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
-    msg_send = (
-        f'-= {config_data["Basic"]["BotName"]} 功能菜单 for {group.id} =-\n'
-        f'-= {group.name} =-\n{hr}\nID    模块状态    模块名\n'
-    )
+    msg_send = f'-= {basic_cfg.botName} 功能菜单 for {group.id} =-\n' f'-= {group.name} =-\n{hr}\nID    模块状态    模块名\n'
     i = 0
     for module in Modules:
         i += 1
-        global_disabled = not config_data['Modules'][module.config_name]['Enabled']
+        global_disabled: bool = True if module.file_name in modules_cfg.globalDisabledModules else False
         try:
-            disabled_groups = config_data['Modules'][module.config_name]['DisabledGroup']
+            disabled_groups = modules_cfg.disabledGroups[module.name]
         except KeyError:
             disabled_groups = None
         num = f' {i}' if i < 10 else str(i)
@@ -98,7 +91,7 @@ async def menu(app: Ariadne, group: Group):
         msg_send += f'{num}. {status}  {module.name}\n'
     msg_send += (
         f'{hr}\n'
-        f'私は {config_data["Basic"]["Permission"]["MasterName"]} の {config_data["Basic"]["BotName"]} です www\n'
+        f'私は {basic_cfg.admin.masterName} の {basic_cfg.botName} です www\n'
         '群管理员要想配置模块开关请发送【.启用/禁用模块 <id>】\n'
         '要想查询某模块的用法和介绍请发送【.用法 <id>】\n'
         '若无法触发，请检查前缀符号是否正确如！与!\n'
@@ -113,31 +106,29 @@ async def menu(app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]启用模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
     )
 )
-async def turn_on(app: Ariadne, group: Group, module_id: RegexMatch):
-    if not config_data['Modules']['BotManage']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BotManage']['DisabledGroup']:
-        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+async def enable_module(app: Ariadne, group: Group, module_id: RegexMatch):
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
-    global_disabled: bool = not config_data['Modules'][target_module.config_name]['Enabled']
-    try:
-        disabled_groups: List[int] = config_data['Modules'][target_module.config_name]['DisabledGroup']
-    except KeyError:
-        disabled_groups = []
+    global_disabled: bool = True if target_module.file_name in modules_cfg.globalDisabledModules else False
+    disabled_groups = (
+        modules_cfg.disabledGroups[target_module.file_name]
+        if target_module.file_name in modules_cfg.disabledGroups
+        else []
+    )
     if global_disabled:
         await app.sendGroupMessage(group, MessageChain.create(Plain('模块已全局禁用无法开启')))
     elif group.id in disabled_groups:
         disabled_groups.remove(group.id)
-        config_data['Modules'][target_module.config_name]['DisabledGroup'] = disabled_groups
-        save_config()
+        modules_cfg.disabledGroups[target_module.file_name] = disabled_groups
+        save_modules_config()
         await app.sendGroupMessage(group, MessageChain.create(Plain('模块已启用')))
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无变化，模块已处于开启状态')))
@@ -147,30 +138,28 @@ async def turn_on(app: Ariadne, group: Group, module_id: RegexMatch):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]禁用模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
     )
 )
-async def turn_off(app: Ariadne, group: Group, module_id: RegexMatch):
-    if not config_data['Modules']['BotManage']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BotManage']['DisabledGroup']:
-        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+async def disable_module(app: Ariadne, group: Group, module_id: RegexMatch):
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
-    try:
-        disabled_groups: List[int] = config_data['Modules'][target_module.config_name]['DisabledGroup']
-    except KeyError:
-        disabled_groups = []
+    disabled_groups = (
+        modules_cfg.disabledGroups[target_module.file_name]
+        if target_module.file_name in modules_cfg.disabledGroups
+        else []
+    )
     if not target_module.can_disable:
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不允许禁用')))
     elif group.id not in disabled_groups:
         disabled_groups.append(group.id)
-        config_data['Modules'][target_module.config_name]['DisabledGroup'] = disabled_groups
-        save_config()
+        modules_cfg.disabledGroups[target_module.file_name] = disabled_groups
+        save_modules_config()
         await app.sendGroupMessage(group, MessageChain.create(Plain('模块已禁用')))
     else:
         await app.sendGroupMessage(group, MessageChain.create(Plain('无变化，模块已处于禁用状态')))
@@ -180,21 +169,22 @@ async def turn_off(app: Ariadne, group: Group, module_id: RegexMatch):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]用法\ ')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
     )
 )
 async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
-    if not config_data['Modules']['BotManage']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BotManage']['DisabledGroup']:
-        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
-    disabled_groups: List[int] = config_data['Modules'][target_module.config_name]['DisabledGroup']
+    disabled_groups = (
+        modules_cfg.disabledGroups[target_module.file_name]
+        if target_module.file_name in modules_cfg.disabledGroups
+        else []
+    )
     if group.id in disabled_groups:
         await app.sendGroupMessage(group, MessageChain.create(Plain('该模块已在本群禁用')))
         return
@@ -217,42 +207,13 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]重载配置')]))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
-    )
-)
-async def reload_bot_and_modules_config(app: Ariadne, group: Group):
-    if not config_data['Modules']['BotManage']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BotManage']['DisabledGroup']:
-        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
-            return
-    async with lock:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('重新加载配置文件中...（若无下一步提示即加载完成）')))
-        if reload_config():
-            try:
-                gen_img_reload()
-            except Exception as e:
-                await app.sendGroupMessage(group, MessageChain.create(Plain(f'重新加载文本图像转图片的配置文件时出错，错误内容：{e}')))
-            return
-        else:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('重新加载配置文件时出错')))
-
-
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]重载模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
+        decorators=[GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
 async def reload_module(app: Ariadne, group: Group, member: Member, module_id: RegexMatch):
-    if not config_data['Modules']['BotManage']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BotManage']['DisabledGroup']:
-        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
 
     @Waiter.create_using_function([GroupMessage])
@@ -299,15 +260,12 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]加载模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
+        decorators=[GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
 async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexMatch):
-    if not config_data['Modules']['BotManage']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BotManage']['DisabledGroup']:
-        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
 
     @Waiter.create_using_function([GroupMessage])
@@ -351,15 +309,12 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]卸载模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[group_blacklist(), GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
+        decorators=[GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
 async def unload_module(app: Ariadne, group: Group, module_id: RegexMatch):
-    if not config_data['Modules']['BotManage']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BotManage']['DisabledGroup']:
-        if group.id in config_data['Modules']['BotManage']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):

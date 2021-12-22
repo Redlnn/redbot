@@ -4,6 +4,7 @@
 import os
 import platform
 import time
+from os.path import basename
 
 import psutil
 import regex as re
@@ -13,21 +14,21 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image
 from graia.ariadne.model import Group
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.ModuleRegister import Module
-from utils.TextWithImg2Img import async_generate_img, hr
+from utils.config import get_modules_config
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
+from utils.text2img import async_generate_img, hr
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = basename(__file__)
 
 Module(
     name='Bot版本与系统运行情况查询',
-    config_name='BotStatus',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     usage='[!！.](status|version)',
 ).register()
@@ -44,23 +45,15 @@ else:
 total_memory = '%.1f' % (psutil.virtual_memory().total / 1073741824)
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        decorators=[group_blacklist()],
-    )
-)
+@channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[GroupPermission.require()]))
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if not config_data['Modules']['BotStatus']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['BotStatus']['DisabledGroup']:
-        if group.id in config_data['Modules']['BotStatus']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     if not re.match(r'^[!！.](status|version)$', message.asDisplay()):
         return
-    PID = os.getpid()
-    p = psutil.Process(PID)
+    pid = os.getpid()
+    p = psutil.Process(pid)
     started_time = time.localtime(p.create_time())
     running_time = time.time() - p.create_time()
     day = int(running_time / 86400)
@@ -78,7 +71,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         f'bot 版本：{commit[:7]}-dev\n'
         f'更新日期：{commit_date}\n'
         f'MiraiApiHttp版本：{await app.getVersion()}\n'
-        f'PID: {PID}\n'
+        f'PID: {pid}\n'
         f'启动时间：{time.strftime("%Y-%m-%d %H:%M:%S", started_time)}\n'
         f'已运行时长：{running_time}\n'
         f'{hr}\n'

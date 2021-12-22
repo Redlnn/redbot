@@ -14,9 +14,11 @@ from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
 from PIL import ImageDraw, ImageFont
 
-from config import config_data
+from utils.config import get_main_config
 
 __all__ = ['generate_img', 'hr']
+
+basic_cfg = get_main_config()
 
 _font_name: str = 'sarasa-mono-sc-semibold.ttf'
 _font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
@@ -157,7 +159,7 @@ def generate_img(text_and_img: List[str | bytes] = None) -> bytes:
     elif not isinstance(text_and_img, list):
         raise ValueError('ArgumentError: 参数类型错误')
 
-    extra_text1 = f'由 {config_data["Basic"]["BotName"]} 生成'  # 额外文本1
+    extra_text1 = f'由 {basic_cfg.botName} 生成'  # 额外文本1
     extra_text2 = _get_time()  # 额外文本2
 
     line_width = int(_chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度

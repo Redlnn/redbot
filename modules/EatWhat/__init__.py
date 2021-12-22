@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 import random
+from os.path import dirname
 from pathlib import Path
 
 from graia.ariadne.app import Ariadne
@@ -12,21 +12,21 @@ from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group
 from graia.ariadne.util.async_exec import io_bound
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import MemberInterval
-from utils.ModuleRegister import Module
+from utils.config import get_modules_config
+from utils.control.interval import MemberInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = dirname(__file__)
 
 Module(
     name='吃啥',
-    config_name='EatWhat',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     usage='[!！.]吃啥',
 ).register()
@@ -44,15 +44,12 @@ def get_food():
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]吃啥')]))],
-        decorators=[group_blacklist(), MemberInterval.require(2)],
+        decorators=[GroupPermission.require(), MemberInterval.require(2)],
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if not config_data['Modules']['EatWhat']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['EatWhat']['DisabledGroup']:
-        if group.id in config_data['Modules']['EatWhat']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
     food = await get_food()
     chain = MessageChain.create(Plain(f'吃{food}'))

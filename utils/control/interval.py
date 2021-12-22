@@ -19,11 +19,13 @@ from graia.ariadne.model import Friend, Group, Member
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
-from config import config_data
-
-from .Permission import Permission
+from ..config import get_main_config
+from .permission import Permission
 
 __all__ = ['GroupInterval', 'MemberInterval', 'FriendInterval', 'TempInterval', 'ManualInterval']
+
+
+basic_cfg = get_main_config()
 
 
 class GroupInterval:
@@ -178,7 +180,7 @@ class FriendInterval:
         """
 
         async def cd_check(app: Ariadne, friend: Friend):
-            if friend.id in config_data['Basic']['Permission']['Admin']:
+            if friend.id in basic_cfg.admin.admins:
                 return
             current = time.time()
             async with Lock():

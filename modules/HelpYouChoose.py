@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
+from os.path import basename
 from random import randint
 
 import regex as re
@@ -16,21 +16,22 @@ from graia.ariadne.message.parser.twilight import (
     WildcardMatch,
 )
 from graia.ariadne.model import Group
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import MemberInterval
-from utils.ModuleRegister import Module
+from utils.config import get_main_config, get_modules_config
+from utils.control.interval import MemberInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = basename(__file__)
+basic_cfg = get_main_config()
 
 Module(
     name='帮你做选择',
-    config_name='HelpYouChoose',
-    file_name=os.path.basename(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     usage='@bot {主语}<介词>不<介词>{动作}\n如：@bot 我要不要去吃饭\n@bot 我有没有机会',
 ).register()
@@ -40,17 +41,14 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle({'at': ElementMatch(At), 'any': WildcardMatch()}))],
-        decorators=[group_blacklist(), MemberInterval.require(2)],
+        decorators=[GroupPermission.require(), MemberInterval.require(2)],
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain, at: ElementMatch):
-    if not config_data['Modules']['HelpYouChoose']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['HelpYouChoose']['DisabledGroup']:
-        if group.id in config_data['Modules']['HelpYouChoose']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
-    if at.result.target != config_data['Basic']['MiraiApiHttp']['Account']:
+    if at.result.target != basic_cfg.miraiApiHttp.account:
         return
     msg = message.include(Plain).asDisplay().strip()
     re1_match = re.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
+from os.path import dirname
 from pathlib import Path
 
 from graia.ariadne.app import Ariadne
@@ -13,21 +13,22 @@ from graia.broadcast.interrupt import InterruptControl
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import ManualInterval
-from utils.ModuleRegister import Module
+from utils.config import get_modules_config
+from utils.control.interval import ManualInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
 
 from .ding import ding
 
 saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
+modules_cfg = get_modules_config()
+module_name = dirname(__file__)
 
 Module(
     name='用你的头像生成点啥',
-    config_name='AvatarImgGen',
-    file_name=os.path.dirname(__file__),
+    file_name=module_name,
     author=['Red_lnn', 'SereinFish'],
     description='用你的头像生成一些有趣的图片',
     usage='[!！.]顶 At/QQ号 —— 让猫猫虫咖波顶着你的头像耍',
@@ -39,18 +40,10 @@ func = {
 }
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        decorators=[group_blacklist()],
-    )
-)
+@channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[GroupPermission.require()]))
 async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):
-    if not config_data['Modules']['AvatarImgGen']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['AvatarImgGen']['DisabledGroup']:
-        if group.id in config_data['Modules']['AvatarImgGen']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
 
     if not message.has(Plain):
@@ -61,7 +54,7 @@ async def main(app: Ariadne, group: Group, member: Member, message: MessageChain
     split_message = message.asDisplay().split(' ')
     if len(split_message) != 2:
         return
-    elif split_message[0][1:] not in func.keys():
+    elif split_message[0][1:] not in func:
         return
 
     if message.has(At):

@@ -11,6 +11,8 @@ Ping mc服务器
 
 import os
 import socket
+from os.path import dirname
+from typing import Dict
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -18,31 +20,39 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
+from pydantic import BaseModel
 from requests import ConnectTimeout, ReadTimeout, Timeout
 from urllib3.exceptions import TimeoutError
 
-from config import config_data
-from utils.Limit.Blacklist import group_blacklist
-from utils.Limit.Interval import MemberInterval
-from utils.ModuleRegister import Module
+from utils.config import get_config, get_modules_config
+from utils.control.interval import MemberInterval
+from utils.control.permission import GroupPermission
+from utils.module_register import Module
 
 from .ping_client import ping
 from .utils import is_domain, is_ip
 
-saya = Saya.current()
 channel = Channel.current()
+modules_cfg = get_modules_config()
+module_name = dirname(__file__)
 
 Module(
     name='Ping 我的世界服务器',
-    config_name='MinecraftServerPing',
-    file_name=os.path.dirname(__file__),
+    file_name=module_name,
     author=['Red_lnn'],
     description='获取指定mc服务器的信息',
     usage='[!！.]ping {mc服务器地址}',
 ).register()
+
+
+class McServerPingConfig(BaseModel):
+    servers: Dict[int, str] = {123456789: 'localhost:25565'}
+
+
+ping_cfg: McServerPingConfig = get_config('mc_server_ping.json', McServerPingConfig())
 
 
 @channel.use(
@@ -58,24 +68,20 @@ Module(
                 )
             )
         ],
-        decorators=[group_blacklist(), MemberInterval.require(10)],
+        decorators=[GroupPermission.require(), MemberInterval.require(10)],
     )
 )
 async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
-    if not config_data['Modules']['MinecraftServerPing']['Enabled']:
-        saya.uninstall_channel(channel)
-        return
-    elif config_data['Modules']['MinecraftServerPing']['DisabledGroup']:
-        if group.id in config_data['Modules']['MinecraftServerPing']['DisabledGroup']:
+    if module_name in modules_cfg.disabledGroups:
+        if group.id in modules_cfg.disabledGroups[module_name]:
             return
-    servers = config_data['Modules']['MinecraftServerPing']['Servers']
     if ping_target.matched:
         server_address = ping_target.result.asDisplay().strip()
     else:
-        if group.id not in servers.keys():
+        if group.id not in ping_cfg.servers:
             await app.sendGroupMessage(group, MessageChain.create(Plain('该群组没有设置默认服务器地址')))
             return
-        server_address = servers[group.id]
+        server_address = ping_cfg.servers[group.id]
 
     if '://' in server_address:
         await app.sendGroupMessage(group, MessageChain.create(Plain('不支持带有协议前缀的地址')))
