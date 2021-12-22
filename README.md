@@ -50,7 +50,7 @@
 
 ## TODO（咕咕咕？
 
-- [ ] 自动回复使用数据库储存并支持在群内修改回复内容
+- [ ] 修复数据库模块报错 `peewee.ImproperlyConfigured: SQLite driver not installed!`（目前使用 MySQL 无影响）
 - [ ] 概率复读
 - [ ] 留言提醒
 - [ ] 二维码生成
