@@ -16,7 +16,7 @@ __all__ = ['BaseModel', 'database_cfg']
 class MySQLConfig(PyDanticBaseModel):
     enabled: bool = False
     host: str = 'localhost'
-    port: int = 25575
+    port: int = 3306
     user: str = 'user'
     passwd: str = 'password'
 
