@@ -32,13 +32,6 @@ if __name__ == '__main__':
     saya.install_behaviours(GraiaSchedulerBehaviour(GraiaScheduler(app.loop, app.broadcast)))
     change_logger(basic_cfg.debug)
 
-    async def main() -> None:
-        await app.launch()
-        await app.lifecycle()
-
-    if not Path.exists(Path(Path.cwd(), 'data')):
-        Path.mkdir(Path(Path.cwd(), 'data'))
-
     if modules_cfg.enabled:
         with saya.module_context():
             for module in os.listdir(modules_path):
