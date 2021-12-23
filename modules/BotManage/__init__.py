@@ -74,20 +74,17 @@ async def menu(app: Ariadne, group: Group):
     i = 0
     for module in Modules:
         i += 1
-        global_disabled: bool = True if module.file_name in modules_cfg.globalDisabledModules else False
-        try:
-            disabled_groups = modules_cfg.disabledGroups[module.name]
-        except KeyError:
-            disabled_groups = None
+        global_disabled = True if module.file_name in modules_cfg.globalDisabledModules else False
+        disabled_groups = modules_cfg.disabledGroups[module.file_name] if module.file_name in modules_cfg.disabledGroups else []
         num = f' {i}' if i < 10 else str(i)
         if global_disabled:
             status = '【全局禁用】'
-        elif disabled_groups is None:
-            status = '【分群启用】'
         elif group.id in disabled_groups:
             status = '【本群禁用】'
-        else:
+        elif len(disabled_groups) > 0:
             status = '【本群启用】'
+        else:
+            status = '【全局启用】'
         msg_send += f'{num}. {status}  {module.name}\n'
     msg_send += (
         f'{hr}\n'
