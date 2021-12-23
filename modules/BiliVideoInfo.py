@@ -178,11 +178,13 @@ async def lite_app_extract(app: App) -> bool | str:
     except:  # noqa
         return False
 
-    if int(app_id) == 1109937557:
+    b23_url = ''
+    if app_id == '1109937557':
         b23_url = app_dict['meta']['detail_1']['qqdocurl']
-        return await b23_url_extract(b23_url)
-    elif int(app_id) in (1105517988, 100951776):
+    elif app_id in ('1105517988', '100951776'):
         b23_url = app_dict['meta']['news']['jumpUrl']
+
+    if b23_url and (b23_url.startswith('https://b23.tv') or b23_url.startswith('http://b23.tv')):
         return await b23_url_extract(b23_url)
     return False
 
