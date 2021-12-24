@@ -21,7 +21,7 @@ from utils.logger import change_logger
 from utils.path import modules_path, root_path
 
 
-def get_ariadne_cersion() -> str:
+def get_ariadne_version() -> str:
     for dist in importlib.metadata.distributions():
         name = dist.metadata['Name']
         if name == 'graia-ariadne-dev' or name == 'graia-ariadne':
@@ -49,7 +49,7 @@ if __name__ == '__main__':
             '<split_2></split_2>'
             '<ariadne> Ariadne </ariadne>'
             '<split_3></split_3>'
-            f'<ariadne_ver> {get_ariadne_cersion()} </ariadne_ver>'
+            f'<ariadne_ver> {get_ariadne_version()} </ariadne_ver>'
             '<split_4></split_4>'
             f'<time> {datetime.now().time().isoformat(timespec="seconds")} </time>'
             '<split_5></split_5> '
