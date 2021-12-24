@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+from datetime import datetime
 from pathlib import Path
 
 from graia.ariadne.app import Ariadne
+from graia.ariadne.console import Console
+from graia.ariadne.console.saya import ConsoleBehaviour
 from graia.ariadne.model import MiraiSession
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
@@ -27,20 +30,33 @@ if __name__ == '__main__':
         ),
         chat_log_config=None if basic_cfg.logChat else False,
     )
+    console = Console(
+        broadcast=app.broadcast,
+        r_prompt="<{current_time}>",
+        style={
+            "rprompt": "bg:#00ffff #ffffff",
+        },
+        extra_data_getter=[lambda: {"current_time": datetime.now().time().isoformat()}],
+        replace_logger=False,
+    )
     saya = Saya(app.broadcast)
     saya.install_behaviours(BroadcastBehaviour(app.broadcast))
+    saya.install_behaviours(ConsoleBehaviour(console))
     saya.install_behaviours(GraiaSchedulerBehaviour(GraiaScheduler(app.loop, app.broadcast)))
-    change_logger(basic_cfg.debug)
+    console.start()
+    change_logger(basic_cfg.debug, True)  # 对logger进行调整，必须放在这里
 
     if modules_cfg.enabled:
         with saya.module_context():
             for module in os.listdir(modules_path):
                 if module in modules_cfg.globalDisabledModules:
                     continue
-                elif module in ('database.py', '__pycache__') or module[0] in ('!', '#', '.'):
+                elif module == '__pycache__' or module[0] in ('!', '#', '.'):
                     continue
                 elif Path.is_dir(Path(modules_path, module)):
                     saya.require(f'modules.{module}')
                 elif Path.is_file(Path(modules_path, module)) and module[-3:] == '.py':
                     saya.require(f'modules.{module[:-3]}')
+
     app.launch_blocking()
+    console.stop()

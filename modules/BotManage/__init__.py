@@ -75,7 +75,9 @@ async def menu(app: Ariadne, group: Group):
     for module in Modules:
         i += 1
         global_disabled = True if module.file_name in modules_cfg.globalDisabledModules else False
-        disabled_groups = modules_cfg.disabledGroups[module.file_name] if module.file_name in modules_cfg.disabledGroups else []
+        disabled_groups = (
+            modules_cfg.disabledGroups[module.file_name] if module.file_name in modules_cfg.disabledGroups else []
+        )
         num = f' {i}' if i < 10 else str(i)
         if global_disabled:
             status = '【全局禁用】'
