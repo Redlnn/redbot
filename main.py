@@ -15,19 +15,11 @@ from graia.saya.builtins.broadcast import BroadcastBehaviour
 from graia.scheduler import GraiaScheduler
 from graia.scheduler.saya import GraiaSchedulerBehaviour
 from prompt_toolkit.formatted_text import HTML
+from prompt_toolkit.styles import Style
 
 from utils.config import get_main_config, get_modules_config
 from utils.logger import change_logger
 from utils.path import modules_path, root_path
-
-
-def get_ariadne_version() -> str:
-    for dist in importlib.metadata.distributions():
-        name = dist.metadata['Name']
-        if name == 'graia-ariadne-dev' or name == 'graia-ariadne':
-            return dist.version
-    return 'null'
-
 
 basic_cfg = get_main_config()
 modules_cfg = get_modules_config()
@@ -43,28 +35,14 @@ if __name__ == '__main__':
     )
     console = Console(
         broadcast=app.broadcast,
-        prompt=HTML(
-            '<split_1></split_1>'
-            '<redbot> redbot </redbot>'
-            '<split_2></split_2>'
-            '<ariadne> Ariadne </ariadne>'
-            '<split_3></split_3>'
-            f'<ariadne_ver> {get_ariadne_version()} </ariadne_ver>'
-            '<split_4></split_4>'
-            f'<time> {datetime.now().time().isoformat(timespec="seconds")} </time>'
-            '<split_5></split_5> '
+        prompt=HTML('<split_1></split_1>' '<redbot> redbot </redbot>' '<split_2></split_2> '),
+        style=Style(
+            [
+                ('split_1', 'fg:#61afef'),
+                ('redbot', 'bg:#61afef fg:#ffffff'),
+                ('split_2', 'fg:#61afef'),
+            ]
         ),
-        style={
-            'split_1': 'fg:#c678dd',
-            'redbot': 'bg:#c678dd fg:#ffffff',
-            'split_2': 'bg:#e5c07b fg:#c678dd',
-            'ariadne': 'bg:#e5c07b fg:#3f3f3f',
-            'split_3': 'bg:#98c379 fg:#e5c07b',
-            'ariadne_ver': 'bg:#98c379 fg:#ffffff',
-            'split_4': 'bg:#61afef fg:#98c379',
-            'time': 'bg:#61afef fg:#ffffff',
-            'split_5': 'fg:#61afef',
-        },
         replace_logger=False,
     )
     saya = Saya(app.broadcast)
