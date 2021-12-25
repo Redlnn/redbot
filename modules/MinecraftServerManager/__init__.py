@@ -134,6 +134,7 @@ async def init(app: Ariadne):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]mc')]))],
+        decorators=[GroupPermission.require()],
     )
 )
 async def main_menu(app: Ariadne, group: Group):
@@ -151,6 +152,7 @@ async def main_menu(app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl')]))],
+        decorators=[GroupPermission.require()],
     )
 )
 async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
@@ -285,6 +287,7 @@ async def del_whitelist(app: Ariadne, group: Group, message: MessageChain):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ info\ '), RegexMatch(r'.+')]))],
+        decorators=[GroupPermission.require()],
     )
 )
 async def info_whitelist(app: Ariadne, group: Group, message: MessageChain):
@@ -543,6 +546,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, message: M
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]myid\ '), RegexMatch(r'.+')]))],
+        decorators=[GroupPermission.require()],
     )
 )
 async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain):
@@ -578,6 +582,7 @@ async def myid(app: Ariadne, group: Group, member: Member, message: MessageChain
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]list')]))],
+        decorators=[GroupPermission.require()],
     )
 )
 async def get_player_list(app: Ariadne, group: Group):
