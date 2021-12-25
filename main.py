@@ -23,6 +23,7 @@ from utils.path import modules_path, root_path
 
 basic_cfg = get_main_config()
 modules_cfg = get_modules_config()
+ignore = ('__init__.py', '__pycache__')
 
 if __name__ == '__main__':
     app = Ariadne(
@@ -53,16 +54,16 @@ if __name__ == '__main__':
     change_logger(basic_cfg.debug, True)  # 对logger进行调整，必须放在这里
 
     with saya.module_context():
-        builtin_modules_path = abspath(join(root_path, 'builtin_modules'))
-        for module in os.listdir(builtin_modules_path):
+        core_modules_path = abspath(join(root_path, 'core_modules'))
+        for module in os.listdir(core_modules_path):
             if module in modules_cfg.globalDisabledModules:
                 continue
-            elif module == '__pycache__' or module[0] in ('!', '#', '.'):
+            elif module in ignore or module[0] in ('!', '#', '.'):
                 continue
-            elif isdir(join(builtin_modules_path, module)):
-                saya.require(f'builtin_modules.{module}')
-            elif isfile(join(builtin_modules_path, module)) and module[-3:] == '.py':
-                saya.require(f'builtin_modules.{module[:-3]}')
+            elif isdir(join(core_modules_path, module)):
+                saya.require(f'core_modules.{module}')
+            elif isfile(join(core_modules_path, module)) and module[-3:] == '.py':
+                saya.require(f'core_modules.{module[:-3]}')
 
     if modules_cfg.enabled:
         with saya.module_context():

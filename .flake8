@@ -6,4 +6,9 @@ extend-ignore =
 
 exclude = .git,
     __pycache__,
-    data/*
+    .github/*,
+    .idea/*,
+    .vscode/*,
+    data/*,
+    logs/*,
+    config/*
