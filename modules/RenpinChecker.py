@@ -16,8 +16,8 @@ from os.path import basename
 from pathlib import Path
 from typing import Tuple
 
+import orjson as json
 import regex as re
-import yaml as yml
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
@@ -36,6 +36,7 @@ from utils.config import get_modules_config
 from utils.control.interval import MemberInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
+from utils.path import data_path
 from utils.text2img import async_generate_img, hr
 
 channel = Channel.current()
@@ -49,8 +50,6 @@ Module(
     description='每个QQ号每天可抽一次签并获得人品值',
     usage='[!！.]jrrp / [!！.]抽签',
 ).register()
-
-data_folder = Path(Path.cwd(), 'data')
 
 # https://wiki.biligame.com/ys/%E3%80%8C%E5%BE%A1%E7%A5%9E%E7%AD%BE%E3%80%8D
 qianwens = {
@@ -85,7 +84,7 @@ lucky_things = {
     '吉': [
         '散发暖意的「鸡蛋」。\n鸡蛋孕育着无限的可能性，是未来之种。\n反过来，这个世界对鸡蛋中的生命而言，\n也充满了令其兴奋的未知事物吧。\n要温柔对待鸡蛋喔。',
         '节节高升的「竹笋」。\n竹笋拥有着无限的潜力，\n没有人知道一颗竹笋，到底能长成多高的竹子。\n看着竹笋，会让人不由自主期待起未来吧。',
-        '闪闪发亮的「下界之星」。\n下届之星可以做成直上云霄的信标。\n而信标是这个世界最令人憧憬的食物之一吧，他能许以天地当中人们的祝福。',
+        '闪闪发亮的「下界之星」。\n下届之星可以做成直上云霄的信标。\n而信标是这个世界最令人憧憬的事物之一吧，他能许以天地当中人们的祝福。',
         '色泽艳丽的「金萝卜」。\n人们常说表里如一是美德，\n但金萝卜明艳的外貌下隐藏着的是谦卑而甘甜的内在。',
         '生长多年的「钟乳石」。\n脆弱的滴水石锥在无人而幽黑的洞穴中历经多年的寂寞，才能结成钟乳石。\n为目标而努力前行的人们，最终也必将拥有胜利的果实。',
         '难得一见的「附魔金苹果」。\n附魔金苹果非常地难寻，他藏匿于废弃遗迹的杂物中，\n与傲然挺立于此世的你一定很是相配。',
@@ -115,7 +114,7 @@ async def main(app: Ariadne, group: Group, member: Member):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
-    is_new, (renpin, qianwen) = await read_data(str(member.id))
+    is_new, renpin, qianwen = await read_data(str(member.id))
     img_bytes = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
         await app.sendGroupMessage(
@@ -135,12 +134,12 @@ async def scheduled_del_outdated_data() -> None:
     """
     定时删除过时的数据文件
     """
-    for _ in os.listdir(data_folder):
+    for _ in os.listdir(data_path):
         if (
             re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
             and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
         ):
-            os.remove(Path(data_folder, _))
+            os.remove(Path(data_path, _))
             logger.info(f'发现过期的数据文件 {_}，已删除')
 
 
@@ -149,12 +148,12 @@ async def del_outdated_data() -> None:
     """
     在bot启动时删除过时的数据文件
     """
-    for _ in os.listdir(data_folder):
+    for _ in os.listdir(data_path):
         if (
-            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
-            and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
+            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', _)
+            and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json'
         ):
-            os.remove(Path(data_folder, _))
+            os.remove(Path(data_path, _))
             logger.info(f'发现过期的数据文件 {_}，已删除')
 
 
@@ -192,30 +191,41 @@ def gen_qianwen(renpin: int) -> str:
 
 
 @io_bound
-def read_data(qq: str) -> Tuple[bool, Tuple[int, str]]:
+def read_data(qq: str) -> Tuple[bool, int, str]:
     """
     在文件中读取指定QQ今日已生成过的随机数，若今日未生成，则新生成一个随机数并写入文件
     """
-    data_file_path = Path(data_folder, f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml')
-    if not Path.exists(data_folder):
-        Path.mkdir(data_folder)  # 如果同级目录不存在data文件夹，则新建一个
-    if Path.is_file(data_folder):
-        os.remove(data_folder)
-        Path.mkdir(data_folder)  # 如果同级目录存在data文件，则删除该文件后新建一个同名文件夹
-
-    with open(data_file_path, 'a+', encoding='utf-8') as fp:  # 以 追加+读 的方式打开文件
-        fp.seek(0, 0)  # 将读写指针放在文件头部
-        yml_data: dict = yml.safe_load(fp)  # 读写
-        fp.seek(0, 2)  # 将读写指针放在文件尾部
-        if yml_data is None:  # 若文件为空，则生成一个随机数并写入到文件中，然后返回生成的随机数
-            renpin = random.randint(0, 100)
-            qianwen = gen_qianwen(renpin)
-            yml.dump({qq: [renpin, qianwen]}, fp, allow_unicode=True)
-            return True, (renpin, qianwen)
-        if qq in yml_data:  # 若文件中有指定QQ的数据则读取并返回
-            return False, yml_data[qq]
-        else:  # 若文件中没有指定QQ的数据，则生成一个随机数并写入到文件中，然后返回生成的随机数
-            renpin = random.randint(0, 100)
-            qianwen = gen_qianwen(renpin)
-            yml.dump({qq: [renpin, qianwen]}, fp, allow_unicode=True)
-            return True, (renpin, qianwen)
+    data_file_path = Path(data_path, f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json')
+    try:
+        with open(data_file_path, 'r', encoding='utf-8') as fp:  # 以 追加+读 的方式打开文件
+            f_data = fp.read()
+            if len(f_data) > 0:
+                data: dict = json.loads(f_data)  # 读写
+            else:
+                data = {}
+    except FileNotFoundError:
+        data = {}
+    if data:  # 若文件为空，则生成一个随机数并写入到文件中，然后返回生成的随机数
+        renpin = random.randint(0, 100)
+        qianwen = gen_qianwen(renpin)
+        data[qq] = {'renpin': renpin, 'qianwen': qianwen}
+        with open(data_file_path, 'wb') as fp:
+            fp.write(
+                json.dumps(
+                    data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE
+                )
+            )
+        return True, renpin, qianwen
+    if qq in data:  # 若文件中有指定QQ的数据则读取并返回
+        return False, data[qq]['renpin'], data[qq]['qianwen']
+    else:  # 若文件中没有指定QQ的数据，则生成一个随机数并写入到文件中，然后返回生成的随机数
+        renpin = random.randint(0, 100)
+        qianwen = gen_qianwen(renpin)
+        data[qq] = {'renpin': renpin, 'qianwen': qianwen}
+        with open(data_file_path, 'wb') as fp:
+            fp.write(
+                json.dumps(
+                    data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE
+                )
+            )
+        return True, renpin, qianwen
