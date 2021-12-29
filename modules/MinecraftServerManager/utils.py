@@ -6,9 +6,9 @@ import uuid
 from datetime import datetime
 from typing import Optional, Tuple
 
-import aiohttp
 import regex as re
 from aiohttp import ClientResponse
+from graia.ariadne.context import adapter_ctx
 
 from .database import PlayersTable
 
@@ -53,14 +53,14 @@ async def get_uuid(mc_id: str) -> tuple[str | ClientResponse, str]:
 
     :param mc_id: 正版用户名（id）
     """
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://api.mojang.com/users/profiles/minecraft/{mc_id}') as resp:
-            if resp.status == 200:
-                resp_json = await resp.json()
-                return resp_json['name'], resp_json['id']
-            # elif resp.status == 204:
-            else:
-                return resp, ''
+    session = adapter_ctx.get().session
+    async with session.get(f'https://api.mojang.com/users/profiles/minecraft/{mc_id}') as resp:
+        if resp.status == 200:
+            resp_json = await resp.json()
+            return resp_json['name'], resp_json['id']
+        # elif resp.status == 204:
+        else:
+            return resp, ''
 
 
 async def get_mc_id(mc_uuid: str) -> str | ClientResponse:
@@ -69,15 +69,15 @@ async def get_mc_id(mc_uuid: str) -> str | ClientResponse:
 
     :param mc_uuid: 输入一个uuid
     """
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{mc_uuid}') as resp:
-            if resp.status == 200:
-                resp_json = await resp.json()
-                return resp_json['name']
-            # elif resp.status == 204:
-            # elif resp.status == 400:
-            else:
-                return resp
+    session = adapter_ctx.get().session
+    async with session.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{mc_uuid}') as resp:
+        if resp.status == 200:
+            resp_json = await resp.json()
+            return resp_json['name']
+        # elif resp.status == 204:
+        # elif resp.status == 400:
+        else:
+            return resp
 
 
 async def query_uuid_by_qq(
