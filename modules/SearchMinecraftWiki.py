@@ -7,15 +7,13 @@
 用法：在群内发送【!wiki {关键词}】即可
 """
 
-import asyncio
 from os.path import basename
-from random import uniform
 from urllib.parse import quote
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Xml
+from graia.ariadne.message.element import Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel
@@ -51,22 +49,7 @@ async def main(app: Ariadne, group: Group, keyword: RegexMatch):
             return
     arg: str = keyword.result.asDisplay()
     search_parm: str = quote(arg, encoding='utf-8')
-    bilibili_wiki = (
-        '<?xml version=\'1.0\' encoding=\'UTF-8\' standalone=\'yes\'?><msg templateID="123" '
-        f'url="https://searchwiki.biligame.com/mc/index.php?search={search_parm}" serviceID="33" action="web" '
-        f'actionData="" brief="【链接】{arg} - Biligame Wiki" flag="8"><item layout="2">'
-        '<picture cover="https://s1.hdslb.com/bfs/static/game-web/duang/mine/asserts/contact.404066f.png"/>'
-        f'<title>{arg} - Biligame Wiki</title><summary>{arg} - Biligame Wiki for Minecraft，哔哩哔哩游戏</summary>'
-        '</item></msg>'
-    )
-    fandom_gamepedia_wiki = (
-        '<?xml version=\'1.0\' encoding=\'UTF-8\' standalone=\'yes\'?><msg templateID="123" '
-        f'url="https://minecraft.fandom.com/zh/index.php?search={search_parm}" serviceID="33" action="web" '
-        f'actionData="" brief="【链接】{arg} - Minecraft Wiki" flag="8"><item layout="2">'
-        '<picture cover="https://images.wikia.com/minecraft_zh_gamepedia/images/b/bc/Wiki.png"/>'
-        f'<title>{arg} - Minecraft Wiki</title><summary>{arg} - Minecraft Wiki，最详细的官方我的世界百科</summary>'
-        '</item></msg>'
-    )
-    await app.sendGroupMessage(group, MessageChain.create(Xml(xml=bilibili_wiki, type='Xml')))
-    await asyncio.sleep(round(uniform(0.5, 1.5), 3))
-    await app.sendGroupMessage(group, MessageChain.create(Xml(xml=fandom_gamepedia_wiki, type='Xml')))
+    await app.sendGroupMessage(group, MessageChain.create(Plain(
+        f'Bilibili 镜像Wiki: https://searchwiki.biligame.com/mc/index.php?search={search_parm}\n'
+        f'Fandom Wiki: https://minecraft.fandom.com/zh/index.php?search={search_parm}'
+    )))
