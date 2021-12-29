@@ -5,8 +5,8 @@ import asyncio
 from datetime import datetime
 from os.path import basename
 
-import aiohttp
 from graia.ariadne.app import Ariadne
+from graia.ariadne.context import adapter_ctx
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Forward, ForwardNode, Image, Plain
@@ -70,22 +70,24 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
     ):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
         return
-    async with aiohttp.ClientSession('http://a60.one:404') as session:
-        if tag.matched:
-            target_tag = tag.result.getFirst(Plain).text
-            async with session.get(
-                f'/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
-            ) as resp:
-                if resp.status in (200, 404):
-                    res: dict = await resp.json()
-                else:
-                    res = {'code': 500}
-        else:
-            async with session.get(f'/?san={san.result.asDisplay()}&num={num.result.asDisplay()}') as resp:
-                if resp.status == 200:
-                    res: dict = await resp.json()
-                else:
-                    res = {'code': 500}
+    session = adapter_ctx.get().session
+    if tag.matched:
+        target_tag = tag.result.getFirst(Plain).text
+        async with session.get(
+            f'http://a60.one:404/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
+        ) as resp:
+            if resp.status in (200, 404):
+                res: dict = await resp.json()
+            else:
+                res = {'code': 500}
+    else:
+        async with session.get(
+            f'http://a60.one:404/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
+        ) as resp:
+            if resp.status == 200:
+                res: dict = await resp.json()
+            else:
+                res = {'code': 500}
     if res.get('code', False) == 404 and tag.matched:
         await app.sendGroupMessage(group, MessageChain.create(Plain('未找到相应tag的色图')))
     elif res.get('code', False) == 200:

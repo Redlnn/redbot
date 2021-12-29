@@ -22,10 +22,10 @@ from os.path import basename
 from typing import List
 from xml.dom.minidom import parseString
 
-import aiohttp
 import orjson as json
 import regex as re
 from graia.ariadne.app import Ariadne
+from graia.ariadne.context import adapter_ctx
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import App, Image, Plain, Xml
@@ -191,23 +191,23 @@ async def lite_app_extract(app: App) -> bool | str:
 
 async def b23_url_extract(url: str) -> bool | str:
     url = re.search('b23.tv/[0-9a-zA-Z]*', url).group(0)
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://{url}', allow_redirects=False) as resp:
-            target = resp.headers['Location']
-        if 'www.bilibili.com/video/' in target:
-            return target
-        else:
-            return False
+    session = adapter_ctx.get().session
+    async with session.get(f'https://{url}', allow_redirects=False) as resp:
+        target = resp.headers['Location']
+    if 'www.bilibili.com/video/' in target:
+        return target
+    else:
+        return False
 
 
 async def get_video_info(video_id: str) -> dict:
-    async with aiohttp.ClientSession('http://api.bilibili.com') as session:
-        if video_id[:2].lower() == 'av':
-            async with session.get(f'/x/web-interface/view?aid={video_id[2:]}') as resp:
-                return await resp.json()
-        elif video_id[:2].lower() == 'bv':
-            async with session.get(f'/x/web-interface/view?bvid={video_id}') as resp:
-                return await resp.json()
+    session = adapter_ctx.get().session
+    if video_id[:2].lower() == 'av':
+        async with session.get(f'http://api.bilibili.com/x/web-interface/view?aid={video_id[2:]}') as resp:
+            return await resp.json()
+    elif video_id[:2].lower() == 'bv':
+        async with session.get(f'http://api.bilibili.com/x/web-interface/view?bvid={video_id}') as resp:
+            return await resp.json()
 
 
 async def info_json_dump(obj: dict) -> VideoInfo:
@@ -267,7 +267,7 @@ async def gen_img(data: VideoInfo) -> bytes:
         f'{hr}\n{data.desc}'
     )
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(data.cover_url) as resp:
-            img_contents: List[str | bytes] = [await resp.content.read(), info_text]
-        return await async_generate_img(img_contents)
+    session = adapter_ctx.get().session
+    async with session.get(data.cover_url) as resp:
+        img_contents: List[str | bytes] = [await resp.content.read(), info_text]
+    return await async_generate_img(img_contents)
