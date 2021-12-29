@@ -71,7 +71,7 @@
 
 1. 部署 `Mirai`、`Mirai Console` 及 `Mirai Api Http`
 
-   > 请参阅 [`Ariadne` 文档](https://graia.readthedocs.io/zh_CN/latest/appendix/mah-install/)
+   > 请参阅 [`Ariadne` 文档](https://graia.readthedocs.io/appendix/mah-install/)
 
 2. 安装 `Poetry`
 
