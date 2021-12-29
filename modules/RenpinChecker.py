@@ -4,7 +4,7 @@
 """
 人品测试
 
-每个QQ号每天可随机获得一个0-100的整数（人品值），在当天内该值不会改变，该值会存放于一yml文件中，每日删除过期文件
+每个QQ号每天可随机获得一个0-100的整数（人品值），在当天内该值不会改变，该值会存放于一json文件中，每日删除过期文件
 
 用法：[!！.#](jrrp|抽签) （jrrp 即 JinRiRenPin）
 """
@@ -136,8 +136,8 @@ async def scheduled_del_outdated_data() -> None:
     """
     for _ in os.listdir(data_path):
         if (
-            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.yml', _)
-            and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.yml'
+            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', _)
+            and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json'
         ):
             os.remove(Path(data_path, _))
             logger.info(f'发现过期的数据文件 {_}，已删除')
@@ -205,17 +205,6 @@ def read_data(qq: str) -> Tuple[bool, int, str]:
                 data = {}
     except FileNotFoundError:
         data = {}
-    if data:  # 若文件为空，则生成一个随机数并写入到文件中，然后返回生成的随机数
-        renpin = random.randint(0, 100)
-        qianwen = gen_qianwen(renpin)
-        data[qq] = {'renpin': renpin, 'qianwen': qianwen}
-        with open(data_file_path, 'wb') as fp:
-            fp.write(
-                json.dumps(
-                    data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE
-                )
-            )
-        return True, renpin, qianwen
     if qq in data:  # 若文件中有指定QQ的数据则读取并返回
         return False, data[qq]['renpin'], data[qq]['qianwen']
     else:  # 若文件中没有指定QQ的数据，则生成一个随机数并写入到文件中，然后返回生成的随机数
