@@ -212,9 +212,5 @@ def read_data(qq: str) -> Tuple[bool, int, str]:
         qianwen = gen_qianwen(renpin)
         data[qq] = {'renpin': renpin, 'qianwen': qianwen}
         with open(data_file_path, 'wb') as fp:
-            fp.write(
-                json.dumps(
-                    data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE
-                )
-            )
+            fp.write(json.dumps(data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE))
         return True, renpin, qianwen

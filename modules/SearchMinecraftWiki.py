@@ -49,7 +49,12 @@ async def main(app: Ariadne, group: Group, keyword: RegexMatch):
             return
     arg: str = keyword.result.asDisplay()
     search_parm: str = quote(arg, encoding='utf-8')
-    await app.sendGroupMessage(group, MessageChain.create(Plain(
-        f'Bilibili 镜像Wiki: https://searchwiki.biligame.com/mc/index.php?search={search_parm}\n'
-        f'Fandom Wiki: https://minecraft.fandom.com/zh/index.php?search={search_parm}'
-    )))
+    await app.sendGroupMessage(
+        group,
+        MessageChain.create(
+            Plain(
+                f'Bilibili 镜像Wiki: https://searchwiki.biligame.com/mc/index.php?search={search_parm}\n'
+                f'Fandom Wiki: https://minecraft.fandom.com/zh/index.php?search={search_parm}'
+            )
+        ),
+    )
