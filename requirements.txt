@@ -35,7 +35,7 @@ loguru==0.5.3; python_version >= "3.5"
 matplotlib==3.5.1; python_version >= "3.7"
 mctools==1.1.2; python_version >= "3.6" and python_version < "4"
 multidict==5.2.0; python_version >= "3.8" and python_version < "4.0"
-numpy==1.21.5; python_version >= "3.7" and python_version < "3.11"
+numpy==1.22.0; python_version >= "3.8"
 orjson==3.6.5; python_version >= "3.7"
 packaging==21.3; python_version >= "3.7"
 peewee==3.14.8
@@ -44,7 +44,7 @@ prompt-toolkit==3.0.24; python_version >= "3.8" and python_version < "4.0" and p
 psutil==5.9.0; (python_version >= "2.6" and python_full_version < "3.0.0") or (python_full_version >= "3.4.0")
 pycares==4.1.2; python_version >= "3.6"
 pycparser==2.21; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.4.0"
-pydantic==1.8.2; python_full_version >= "3.6.1"
+pydantic==1.9.0; python_full_version >= "3.6.1"
 pymysql==1.0.2; python_version >= "3.6"
 pyparsing==3.0.6; python_version >= "3.7"
 python-dateutil==2.8.2; python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4.0" or python_version >= "3.7" and python_version < "4.0" and python_full_version >= "3.4.0"
