@@ -233,9 +233,13 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
             At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')
         ),
     )
-    answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+    try:
+        answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+    except asyncio.exceptions.TimeoutError:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('已超时取消')))
+        return
     if not answer:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('已取消')))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('已取消操作')))
         return
 
     target_id = int(module_id.result.asDisplay()) - 1
@@ -282,9 +286,13 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     await app.sendGroupMessage(
         group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
     )
-    answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+    try:
+        answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+    except asyncio.exceptions.TimeoutError:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('已超时取消')))
+        return
     if not answer:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('已取消')))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('已取消操作')))
         return
     match_result = module_id.result.asDisplay()
     target_filename = match_result if match_result[-3:] != '.py' else match_result[:-3]
