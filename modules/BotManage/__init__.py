@@ -104,7 +104,7 @@ async def menu(app: Ariadne, group: Group):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]启用模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]启用模块')], {'module_id': RegexMatch(r'\d+')}))],
         decorators=[GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
     )
 )
@@ -136,7 +136,7 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexMatch):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]禁用模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]禁用模块')], {'module_id': RegexMatch(r'\d+')}))],
         decorators=[GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
     )
 )
@@ -167,7 +167,7 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexMatch):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]用法\ ')], {'module_id': RegexMatch(r'\d+')}))],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]用法')], {'module_id': RegexMatch(r'\d+')}))],
         decorators=[GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
     )
 )
@@ -206,7 +206,7 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]重载模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]重载模块')], {'module_id': RegexMatch(r'\d+')}))],
         decorators=[GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
@@ -258,7 +258,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]加载模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]加载模块')], {'module_id': RegexMatch(r'\d+')}))],
         decorators=[GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
@@ -307,7 +307,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]卸载模块\ ')], {'module_id': RegexMatch(r'\d+')}))],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]卸载模块')], {'module_id': RegexMatch(r'\d+')}))],
         decorators=[GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
     )
 )
