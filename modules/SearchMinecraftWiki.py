@@ -39,7 +39,7 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wiki\ ')], {'keyword': RegexMatch(r'\S+')}))],
+        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wiki')], {'keyword': RegexMatch(r'\S+')}))],
         decorators=[GroupPermission.require(), MemberInterval.require(3)],
     )
 )
