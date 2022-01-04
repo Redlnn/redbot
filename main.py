@@ -70,7 +70,7 @@ if __name__ == '__main__':
             for module in os.listdir(modules_path):
                 if module in modules_cfg.globalDisabledModules:
                     continue
-                elif module == '__pycache__' or module[0] in ('!', '#', '.'):
+                elif module in ignore or module[0] in ('!', '#', '.'):
                     continue
                 elif isdir(join(modules_path, module)):
                     saya.require(f'modules.{module}')
