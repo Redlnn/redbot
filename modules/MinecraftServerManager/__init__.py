@@ -522,9 +522,13 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, message: M
             ),
         ),
     )
-    answer = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+    try:
+        answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+    except asyncio.exceptions.TimeoutError:
+        await app.sendGroupMessage(group, MessageChain.create(Plain('已超时取消')))
+        return
     if not answer:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('已取消')))
+        await app.sendGroupMessage(group, MessageChain.create(Plain('已取消操作')))
         return
 
     logger.warning(f'管理 {member.name}({member.id}) 正在清空白名单数据库')
