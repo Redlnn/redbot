@@ -23,6 +23,7 @@ from graia.ariadne.exception import UnknownError, UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import (
+    ArgumentMatch,
     RegexMatch,
     Sparkle,
     Twilight,
@@ -51,11 +52,13 @@ Module(
     name='聊天历史词云生成',
     file_name=module_name,
     author=['Red_lnn', 'A60(djkcyl)'],
-    description='获取指定目标在最近7天内的聊天词云',
+    description='获取指定目标在最近n天内的聊天词云',
     usage=(
-        '[!！.]wordcloud group —— 获得本群最近7天内的聊天词云\n'
-        '[!！.]wordcloud At/本群成员QQ号 —— 获得ta在本群最近7天内的聊天词云\n'
-        '[!！.]wordcloud me —— 获得你在本群最近7天内的聊天词云\n'
+        '[!！.]wordcloud group —— 获得本群最近n天内的聊天词云\n'
+        '[!！.]wordcloud At/本群成员QQ号 —— 获得ta在本群最近n天内的聊天词云\n'
+        '[!！.]wordcloud me —— 获得你在本群最近n天内的聊天词云\n'
+        '参数：\n'
+        '    --day, -D 最近n天的天数，默认为7天'
     ),
 ).register()
 
@@ -72,11 +75,21 @@ config: WordCloudConfig = get_config('wordcloud.json', WordCloudConfig())
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wordcloud\ ')], {'wc_target': WildcardMatch()}))],
+        inline_dispatchers=[
+            Twilight(
+                Sparkle(
+                    [RegexMatch(r'[!！.]wordcloud')],
+                    {
+                        'wc_target': WildcardMatch(),
+                        'day_length': ArgumentMatch('--day', '-D', regex=r'\d+', default='7'),
+                    },
+                )
+            )
+        ],
         decorators=[GroupPermission.require()],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMatch):
+async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMatch, day_length: ArgumentMatch):
     if 'LogMsgHistory' in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups['LogMsgHistory']:
             return
@@ -85,7 +98,9 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
             return
     global Generating_list
     target_type = 'member'
-    target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - 518400
+    target_timestamp = (
+        int(time.mktime(datetime.date.today().timetuple())) - (int(day_length.result.asDisplay()) - 1) * 86400
+    )
     match_result: MessageChain = wc_target.result  # noqa: E275
 
     if len(Generating_list) > 2:
@@ -144,14 +159,22 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
         return
 
     await app.sendGroupMessage(
-        group, MessageChain.create(Plain(f'正在为 {target} 生成词云，其最近7天共 {len(msg_list)} 条记录，请稍后...'))
+        group,
+        MessageChain.create(
+            Plain(f'正在为 {target} 生成词云，其最近{day_length.result.asDisplay()}天共 {len(msg_list)} 条记录，请稍后...')
+        ),
     )
     words = await get_frequencies(msg_list)
-    image = await gen_wordcloud(words)
+    image_bytes = await gen_wordcloud(words)
 
     if target_type == 'group':
         try:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('本群最近7天内的聊天词云 👇\n'), Image(data_bytes=image)))
+            await app.sendGroupMessage(
+                group,
+                MessageChain.create(
+                    Plain(f'本群最近{day_length.result.asDisplay()}天内的聊天词云 👇\n'), Image(data_bytes=image_bytes)
+                ),
+            )
         except UnknownError:
             await app.sendGroupMessage(group, MessageChain.create(Plain('词云发送失败')))
         finally:
@@ -162,15 +185,16 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
                 group,
                 MessageChain.create(
                     At(target),
-                    Plain(f' {"你" if target_type == "me" else ""}最近7天内的聊天词云 👇\n'),
-                    Image(data_bytes=image),
+                    Plain(f' {"你" if target_type == "me" else ""}最近{day_length.result.asDisplay()}天内的聊天词云 👇\n'),
+                    Image(data_bytes=image_bytes),
                 ),
             )
         except UnknownTarget:
             await app.sendGroupMessage(
                 group,
                 MessageChain.create(
-                    Plain(f'{"你" if target_type == "me" else target}最近7天内的聊天词云 👇\n'), Image(data_bytes=image)
+                    Plain(f'{"你" if target_type == "me" else target}最近{day_length.result.asDisplay()}天内的聊天词云 👇\n'),
+                    Image(data_bytes=image_bytes),
                 ),
             )
         except UnknownError:
@@ -179,20 +203,13 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
             Generating_list.remove(target)
 
 
-def skip(string: str) -> bool:
-    blacklist_word = config.blacklistWord
-    for word in blacklist_word:
-        if word in string:
-            return True
-    return False
-
-
 @cpu_bound
 def get_frequencies(msg_list: List[str]) -> dict:
     text = ''
     for persistent_string in msg_list:
-        if skip(persistent_string):
-            continue
+        for word in config.blacklistWord:
+            if word in persistent_string:
+                continue
         text += re.sub(r'\[mirai:.+\]', '', persistent_string)
         text += '\n'
 
