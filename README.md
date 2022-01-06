@@ -59,66 +59,7 @@
 
 ## 部署
 
-#### 环境要求
-
-- 必选
-  - `Python 3.10.x`（版本高于或低于均不可）
-  - `Mirai Api Http >=2.3.0, <3.0.0`（在 `Graia` 相关项目中通常被称作 `MAH` 或 `MAH2` 或 `MAHv2`）
-- 可选
-  - `Poetry` (仅作推荐，但若因使用 `pip` 出现问题则不提供任何帮助)
-
-#### 部署过程
-
-1. 部署 `Mirai`、`Mirai Console` 及 `Mirai Api Http`
-
-   > 请参阅 [`Ariadne` 文档](https://graia.readthedocs.io/appendix/mah-install/)
-
-2. 安装 `Poetry`
-
-   > 由于 `Poetry` 官方推荐的安装方式对于国内网络环境并不友好，因此这里推荐使用 `pip` 安装 `Poetry`
-
-   - Windows（请自行确保环境变量中的 `Python` 解释器版本为 `3.10.x`）
-
-     ```cmd
-     python -m pip install poetry poetry-core
-     ```
-
-   - Linux / macOS（此处假设你的 `Python 3.10.x` 版本的解释器是从源码通过 `make altinstall` 命令安装的）
-
-     ```bash
-     python3.10 -m pip install poetry poetry-core
-     ```
-
-3. 克隆 `redbot` 到本地并进入项目目录中
-
-   ```bash
-   git clone https://github.com/Redlnn/redbot.git
-   cd redbot
-   ```
-
-4. 创建虚拟环境并安装依赖
-
-   > 此处以 `Python 3.10.1` 为例
-   > 此过程耗时约 5 到 10 分钟
-   > 安装过程中若出现问题请自行搜寻解决方法
-
-   ```bash
-   poetry env use 3.10.1
-   poetry install
-   ```
-
-5. 修改配置文件
-
-   > 复制 `config.exp.yml` 并重命名为 `config.yml`
-   > 使用你常用的文本编辑器修改 `config.yml` 以满足你的需求
-
-6. 启动 `redbot`
-
-   > 请不要将以下命令写入 `*.sh`、`*.bat`、`*.cmd`、`*.ps1` 等脚本中使用
-
-   ```bash
-   poetry run python main.py
-   ```
+请参阅 [部署](./deploy.md)
 
 ## 鸣谢 & 相关项目
 
