@@ -203,13 +203,19 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
             Generating_list.remove(target)
 
 
+def skip(persistent_string: str):
+    for word in config.blacklistWord:
+        if word in persistent_string:
+            return True
+    return False
+
+
 @cpu_bound
 def get_frequencies(msg_list: List[str]) -> dict:
     text = ''
     for persistent_string in msg_list:
-        for word in config.blacklistWord:
-            if word in persistent_string:
-                continue
+        if skip(persistent_string):
+            continue
         text += re.sub(r'\[mirai:.+\]', '', persistent_string)
         text += '\n'
 
