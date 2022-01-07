@@ -12,7 +12,7 @@ aiodns = "^3.0.0"
 aiofile = "^3.7.4"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 dnspython = "^2.1.0"
-gitpython = "^3.1.24"
+gitpython = "^3.1.25"
 graia-ariadne = "^0.5.0"
 graia-broadcast = "^0.14.4"
 graia-saya = "^0.0.13"
