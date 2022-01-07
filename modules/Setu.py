@@ -103,10 +103,9 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
             forward_nodes.extend(
                 [
                     ForwardNode(
-                        senderId=member.id,
+                        target=member,
                         time=datetime.now(),
-                        senderName=member.name,
-                        messageChain=MessageChain.create(
+                        message=MessageChain.create(
                             Plain(
                                 f'作品名称：{img["name"]}\n'
                                 f'pixiv id：{img["pic"]}\n'
@@ -118,10 +117,9 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
                         ),
                     ),
                     ForwardNode(
-                        senderId=member.id,
+                        target=member,
                         time=datetime.now(),
-                        senderName=member.name,
-                        messageChain=MessageChain.create(
+                        message=MessageChain.create(
                             Image(url=img['url']),
                         ),
                     ),
@@ -129,9 +127,8 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
             )
         forward_nodes.append(
             ForwardNode(
-                senderId=member.id,
+                target=member,
                 time=datetime.now(),
-                senderName=member.name,
                 messageChain=MessageChain.create(
                     Plain('看够了吗？看够了就没了噢~'),
                 ),
