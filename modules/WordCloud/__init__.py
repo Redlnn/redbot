@@ -220,7 +220,7 @@ def get_frequencies(msg_list: List[str]) -> dict:
         text += '\n'
 
     jieba.load_userdict(str(Path(Path(__file__).parent, 'user_dict.txt')))
-    words = jieba.analyse.extract_tags(text, topK=600, withWeight=True)
+    words = jieba.analyse.extract_tags(text, topK=700, withWeight=True)
     return dict(words)
 
 
@@ -229,13 +229,13 @@ def gen_wordcloud(words: dict) -> bytes:
     bg_list = os.listdir(Path(Path(__file__).parent, 'bg'))
     mask = numpy.array(Img.open(Path(Path(__file__).parent, 'bg', random.choice(bg_list))))
     font_path = str(Path(Path.cwd(), 'fonts', config.fontName))
-    wordcloud = WordCloud(font_path=font_path, background_color="white", mask=mask, max_words=600, scale=2)
+    wordcloud = WordCloud(font_path=font_path, background_color='#f0f0f0', mask=mask, max_words=700, scale=2)
     wordcloud.generate_from_frequencies(words)
     image_colors = ImageColorGenerator(mask, default_color=(255, 255, 255))
     wordcloud.recolor(color_func=image_colors)
-    pyplot.imshow(wordcloud.recolor(color_func=image_colors), interpolation="bilinear")
-    pyplot.axis("off")
+    pyplot.imshow(wordcloud.recolor(color_func=image_colors), interpolation='bilinear')
+    pyplot.axis('off')
     image = wordcloud.to_image()
     imageio = BytesIO()
-    image.save(imageio, format="JPEG", quality=98)
+    image.save(imageio, format='JPEG', quality=90, optimize=True, progressive=True, subsampling=2, qtables='web_high')
     return imageio.getvalue()
