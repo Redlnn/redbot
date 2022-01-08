@@ -26,6 +26,7 @@ from utils.config import get_modules_config
 from utils.control.interval import GroupInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
+from utils.send_message import safeSendGroupMessage
 from utils.text2img import async_generate_img
 
 saya = Saya.current()
@@ -61,15 +62,15 @@ async def main(app: Ariadne, group: Group, member: Member, message: MessageChain
         if waiter_group.id == group.id and waiter_member.id == member.id:
             return waiter_message.include(Plain, At, Image)
 
-    await app.sendGroupMessage(group, MessageChain.create(Plain('请发送要转换的内容')), quote=message.get(Source).pop(0))
+    await safeSendGroupMessage(group, MessageChain.create(Plain('请发送要转换的内容')), quote=message.get(Source).pop(0))
     try:
         answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
     except asyncio.exceptions.TimeoutError:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('已超时取消')), quote=message.get(Source).pop(0))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('已超时取消')), quote=message.get(Source).pop(0))
         return
 
     if len(answer) == 0:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('你所发送的消息的类型错误')), quote=message.get(Source).pop(0))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('你所发送的消息的类型错误')), quote=message.get(Source).pop(0))
         return
 
     img_list: List[str | bytes] = []
@@ -83,4 +84,4 @@ async def main(app: Ariadne, group: Group, member: Member, message: MessageChain
 
     if img_list:
         img_bytes = await async_generate_img(img_list)
-        await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
+        await safeSendGroupMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))

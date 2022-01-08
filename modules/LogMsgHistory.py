@@ -8,7 +8,6 @@ from typing import Optional
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
-from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import App, At, Json, Plain, Source, Xml
 from graia.ariadne.message.parser.twilight import (
@@ -31,6 +30,7 @@ from utils.database.msg_history import (
     log_msg,
 )
 from utils.module_register import Module
+from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
@@ -122,7 +122,7 @@ async def get_msg_count(
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
     if not arg_day.result.asDisplay().isdigit():
-        await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
         return
     today_timestamp = int(time.mktime(datetime.date.today().timetuple()))
     target_timestamp = today_timestamp - (86400 * (int(arg_day.result.asDisplay()) - 1))
@@ -143,63 +143,47 @@ async def get_msg_count(
         else:
             target = group.id
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标类型不存在')))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('参数错误，目标类型不存在')))
         return
 
     if arg_type.result.asDisplay() == 'member':
         if not target:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
+            await safeSendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
             return
         count = await get_member_talk_count(group.id, target, target_timestamp)
         if not count:
-            try:
-                await app.sendGroupMessage(
-                    group,
-                    MessageChain.create(
-                        At(target),
-                        Plain(f'({target}) 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
-                    ),
-                )
-            except UnknownTarget:
-                await app.sendGroupMessage(
-                    group,
-                    MessageChain.create(
-                        Plain(f'{target} 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
-                    ),
-                )
-            return
-        try:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     At(target),
-                    Plain(f'({target}) 最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
+                    Plain(f' 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
                 ),
             )
-        except UnknownTarget:
-            await app.sendGroupMessage(
-                group,
-                MessageChain.create(
-                    Plain(f'{target} 最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
-                ),
-            )
+            return
+        await safeSendGroupMessage(
+            group,
+            MessageChain.create(
+                At(target),
+                Plain(f' 最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
+            ),
+        )
     else:
         if not target:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是群号')))
+            await safeSendGroupMessage(group, MessageChain.create(Plain('参数错误，目标不是群号')))
             return
         count = await get_group_talk_count(group.id, target_timestamp)
         if not count:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'群 {target} 木有过发言')))
+            await safeSendGroupMessage(group, MessageChain.create(Plain(f'群 {target} 木有过发言')))
             return
         if target == group.id:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     Plain(f'本群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
                 ),
             )
         else:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     Plain(f'该群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
@@ -234,16 +218,12 @@ async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: Re
     elif at.matched and not qq.matched:
         target = message.getFirst(At).target
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('无效的指令，参数过多')))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('无效的指令，参数过多')))
         return
     msg, send_time = await get_member_last_message(group.id, target)
     if not msg:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'{target} 木有说过话')))
+        await safeSendGroupMessage(group, MessageChain.create(Plain(f'{target} 木有说过话')))
         return
     chain = MessageChain.fromPersistentString(msg)
-    at_send = MessageChain.create(At(target), Plain(f'({target}) 在 {send_time} 说过最后一句话：\n')).extend(chain)
-    send = MessageChain.create(Plain(f'{target} 在 {send_time} 说过最后一句话：\n')).extend(chain)
-    try:
-        await app.sendGroupMessage(group, at_send)
-    except UnknownTarget:
-        await app.sendGroupMessage(group, send)
+    send = MessageChain.create(At(target), Plain(f' 在 {send_time} 说过最后一句话：\n')).extend(chain)
+    await safeSendGroupMessage(group, send)

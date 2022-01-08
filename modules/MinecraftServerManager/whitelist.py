@@ -13,6 +13,8 @@ from graia.ariadne.message.element import At, Plain, Source
 from graia.ariadne.model import Group, Member
 from loguru import logger
 
+from utils.send_message import safeSendGroupMessage
+
 from .config import config
 from .database import PlayersTable
 from .rcon import execute_command
@@ -35,12 +37,12 @@ async def add_whitelist_to_qq(
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
     # except (requests.exceptions.Timeout, urllib3.exceptions.TimeoutError):
-    #     await app.sendGroupMessage(group, MessageChain.create(
+    #     await sendGroupMessage(group, MessageChain.create(
     #         Plain(f'向 mojang 查询【{mc_id}】的 uuid 超时')
     #     ), quote=message.get(Source).pop(0))
     #     return
     except Exception as e:
-        await app.sendGroupMessage(
+        await safeSendGroupMessage(
             group,
             MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误:  ↓\n{e}')),
             quote=message.get(Source).pop(0),
@@ -50,12 +52,12 @@ async def add_whitelist_to_qq(
         return
     if not isinstance(real_mc_id, str):
         if real_mc_id.status == 204:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group, MessageChain.create(Plain('你选择的不是一个正版ID')), quote=message.get(Source).pop(0)
             )
             return
         else:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时获得意外内容:  ↓\n{real_mc_id.text}')),
                 quote=message.get(Source).pop(0),
@@ -63,22 +65,22 @@ async def add_whitelist_to_qq(
 
     user = await query_qq_by_uuid(mc_uuid)
     if user == qq:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('这个id本来就是你哒')), quote=message.get(Source).pop(0))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('这个id本来就是你哒')), quote=message.get(Source).pop(0))
     elif isinstance(user, int):
         try:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     [
                         Plain('你想要这个吗？\n这个是 '),
                         At(user),
-                        Plain(f'({user}) 哒~'),
+                        Plain(f' 哒~'),
                     ]
                 ),
                 quote=message.get(Source).pop(0),
             )
         except UnknownTarget:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     [
@@ -110,7 +112,7 @@ async def add_whitelist_to_qq(
             joinTimestamp=member.joinTimestamp,
         )
     elif blocked:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'你的账号已被封禁，封禁原因：{blockReason}')))
+        await safeSendGroupMessage(group, MessageChain.create(Plain(f'你的账号已被封禁，封禁原因：{blockReason}')))
         return
     elif not uuid1 and not uuid2:
         PlayersTable.update(
@@ -122,7 +124,7 @@ async def add_whitelist_to_qq(
                 {PlayersTable.uuid2: uuid.UUID(mc_uuid), PlayersTable.uuid2AddedTime: int(time.time())}
             ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
         else:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     [
@@ -138,7 +140,7 @@ async def add_whitelist_to_qq(
                 {PlayersTable.uuid1: uuid.UUID(mc_uuid), PlayersTable.uuid1AddedTime: int(time.time())}
             ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
         else:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     [
@@ -150,7 +152,7 @@ async def add_whitelist_to_qq(
             return
     else:
         if admin:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     [
@@ -161,7 +163,7 @@ async def add_whitelist_to_qq(
             )
             return
         else:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     [
@@ -175,18 +177,18 @@ async def add_whitelist_to_qq(
     try:
         res: str = execute_command(f'whitelist add {real_mc_id}')
     except Exception as e:
-        await app.sendGroupMessage(
+        await safeSendGroupMessage(
             group,
             MessageChain.create(Plain(f'添加白名单时已写入数据库但无法连接到服务器，请联系管理解决: ↓\n{str(e)}')),
             quote=message.get(Source).pop(0),
         )
         return
     if res.startswith('Added'):
-        await app.sendGroupMessage(
+        await safeSendGroupMessage(
             group, MessageChain.create(At(qq), Plain(' 呐呐呐，白名单给你!')), quote=message.get(Source).pop(0)
         )
     else:
-        await app.sendGroupMessage(
+        await safeSendGroupMessage(
             group,
             MessageChain.create(Plain(f'添加白名单时已写入数据库但服务器返回预料之外的内容: ↓\n{res}')),
             quote=message.get(Source).pop(0),
@@ -197,12 +199,12 @@ async def del_whitelist_from_server(mc_uuid: str, app: Ariadne, group: Group) ->
     try:
         mc_id = await get_mc_id(mc_uuid)
     except Exception as e:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'无法查询【{mc_uuid}】对应的正版id: ↓\n{str(e)}')))
+        await safeSendGroupMessage(group, MessageChain.create(Plain(f'无法查询【{mc_uuid}】对应的正版id: ↓\n{str(e)}')))
         logger.error(f'无法查询【{mc_uuid}】对应的正版id')
         logger.exception(e)
         return False
     if not isinstance(mc_id, str):
-        await app.sendGroupMessage(
+        await safeSendGroupMessage(
             group,
             MessageChain.create(Plain(f'向 mojang 查询【{mc_uuid}】的 uuid 时获得意外内容:  ↓\n{mc_id.text}')),
         )
@@ -211,12 +213,12 @@ async def del_whitelist_from_server(mc_uuid: str, app: Ariadne, group: Group) ->
         try:
             result = execute_command(f'whitelist remove {mc_id}')
         except Exception as e:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'无法连接至服务器：{e}')))
+            await safeSendGroupMessage(group, MessageChain.create(Plain(f'无法连接至服务器：{e}')))
             return False
         if result.startswith('Removed '):
             return True
         else:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group, MessageChain.create(Plain(f'从服务器删除id为【{mc_id}】的白名单时，服务器返回意料之外的内容：↓\n{result}'))
             )
             return False
@@ -235,10 +237,7 @@ async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
         blockReason,
     ) = await query_uuid_by_qq(qq)
     if not uuid1 and not uuid2:
-        try:
-            await app.sendGroupMessage(group, MessageChain.create(At(qq), Plain(f'({qq}) 好像一个白名单都没有呢~')))
-        except UnknownTarget:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'{qq} 一个白名单都没有')))
+        await safeSendGroupMessage(group, MessageChain.create(At(qq), Plain(f' 好像一个白名单都没有呢~')))
         return
 
     PlayersTable.update(
@@ -255,32 +254,18 @@ async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
     if uuid2:
         target.add(await del_whitelist_from_server(str(uuid2), app, group))
     if False in target and True in target:
-        try:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('只从服务器上删除了 '), At(qq), Plain(f'({qq}) 的部分白名单')))
-        except UnknownTarget:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'只从服务器上删除了 {qq} 的部分白名单')))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('只从服务器上删除了 '), At(qq), Plain(f' 的部分白名单')))
     elif False in target:
-        try:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('从服务器上删除 '), At(qq), Plain(f'({qq}) 的白名单时失败')))
-        except UnknownTarget:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'从服务器上删除 {qq} 的白名单时失败')))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('从服务器上删除 '), At(qq), Plain(f' 的白名单时失败')))
     else:
-        try:
-            await app.sendGroupMessage(group, MessageChain.create(At(qq), Plain(f'({qq}) 的白名单都删掉啦~')))
-        except UnknownTarget:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'{qq} 的白名单都删掉啦~')))
+        await safeSendGroupMessage(group, MessageChain.create(At(qq), Plain(f' 的白名单都删掉啦~')))
 
 
 async def del_whitelist_by_id(mc_id: str, app: Ariadne, group: Group):
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
-        # except (requests.exceptions.Timeout, urllib3.exceptions.TimeoutError):
-        #     await app.sendGroupMessage(group, MessageChain.create(
-        #         Plain(f'向 mojang 查询【{mc_id}】的 uuid 超时')
-        #     ), quote=message.get(Source).pop(0))
-        #     return
     except Exception as e:
-        await app.sendGroupMessage(
+        await safeSendGroupMessage(
             group,
             MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误:  ↓\n{e}')),
         )
@@ -289,10 +274,10 @@ async def del_whitelist_by_id(mc_id: str, app: Ariadne, group: Group):
         return None, None, None
     if not isinstance(real_mc_id, str):
         if real_mc_id.status == 204:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('你选择的不是一个正版ID')))
+            await safeSendGroupMessage(group, MessageChain.create(Plain('你选择的不是一个正版ID')))
             return None, None, None
         else:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时获得意外内容:  ↓\n{real_mc_id.text}')),
             )
@@ -319,8 +304,8 @@ async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> Non
         ).execute()
         del_result = await del_whitelist_from_server(mc_uuid, app, group)
         if del_result:
-            await app.sendGroupMessage(
-                group, MessageChain.create(Plain('已从服务器删除 '), At(qq), Plain(f'({qq}) 的 uuid 为 {mc_uuid} 的白名单'))
+            await safeSendGroupMessage(
+                group, MessageChain.create(Plain('已从服务器删除 '), At(qq), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
             )
     if uuid2.replace('-', '') == mc_uuid.replace('-', ''):
         PlayersTable.update({PlayersTable.uuid2: None, PlayersTable.uuid2AddedTime: None}).where(
@@ -328,8 +313,8 @@ async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> Non
         ).execute()
         del_result = await del_whitelist_from_server(mc_uuid, app, group)
         if del_result:
-            await app.sendGroupMessage(
-                group, MessageChain.create(Plain('已从服务器删除 '), At(qq), Plain(f'({qq}) 的 uuid 为 {mc_uuid} 的白名单'))
+            await safeSendGroupMessage(
+                group, MessageChain.create(Plain('已从服务器删除 '), At(qq), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
             )
 
 
@@ -353,7 +338,7 @@ async def query_whitelist_by_uuid(
             & ((PlayersTable.uuid1 == query_target) | (PlayersTable.uuid2 == query_target))
         )
     except PlayersTable.DoesNotExist:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'好像没有使用{mc_uuid}的玩家呢~')))
+        await safeSendGroupMessage(group, MessageChain.create(Plain(f'好像没有使用{mc_uuid}的玩家呢~')))
         return None, None, None, None, None, None, None, None, None
     return (
         int(data.qq),
@@ -384,12 +369,12 @@ async def query_whitelist_by_id(
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
         # except (requests.exceptions.Timeout, urllib3.exceptions.TimeoutError):
-        #     await app.sendGroupMessage(group, MessageChain.create(
+        #     await sendGroupMessage(group, MessageChain.create(
         #         Plain(f'向 mojang 查询【{mc_id}】的 uuid 超时')
         #     ), quote=message.get(Source).pop(0))
         #     return
     except Exception as e:
-        await app.sendGroupMessage(
+        await safeSendGroupMessage(
             group,
             MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误:  ↓\n{e}')),
         )
@@ -398,10 +383,10 @@ async def query_whitelist_by_id(
         return None, None, None, None, None, None, None, None, None
     if not isinstance(real_mc_id, str):
         if real_mc_id.status == 204:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('你选择的不是一个正版ID')))
+            await safeSendGroupMessage(group, MessageChain.create(Plain('你选择的不是一个正版ID')))
             return None, None, None, None, None, None, None, None, None
         else:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时获得意外内容:  ↓\n{real_mc_id.text}')),
             )
@@ -423,16 +408,10 @@ async def gen_query_info_text(
     group: Group,
 ):
     if blocked:
-        try:
-            await app.sendGroupMessage(group, MessageChain.create(At(qq), Plain(f'({qq}) 已被封禁，封禁原因：{block_reason}')))
-        except UnknownTarget:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'{qq} 已被封禁，封禁原因：{block_reason}')))
+        await safeSendGroupMessage(group, MessageChain.create(At(qq), Plain(f' 已被封禁，封禁原因：{block_reason}')))
         return
     if not uuid1 and not uuid2:
-        try:
-            await app.sendGroupMessage(group, MessageChain.create(At(qq), Plain(f'({qq}) 一个白名单都没有呢')))
-        except UnknownTarget:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'{qq} 一个白名单都没有呢')))
+        await safeSendGroupMessage(group, MessageChain.create(At(qq), Plain(f' 一个白名单都没有呢')))
         return
     info_text = f'{qq} 的白名单信息如下：\n | 入群时间: {join_timestamp}\n'
     if leave_timestamp:
@@ -481,4 +460,4 @@ async def gen_query_info_text(
                 info_text += f' | ID 2: {mc_id2}\n'
         info_text += f' | ID 2添加时间：{uuid2_added_time}\n'
 
-    await app.sendGroupMessage(group, MessageChain.create(Plain(info_text.rstrip())))
+    await safeSendGroupMessage(group, MessageChain.create(Plain(info_text.rstrip())))
