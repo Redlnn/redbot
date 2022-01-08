@@ -29,6 +29,7 @@ from utils.config import get_modules_config
 from utils.control.interval import MemberInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
+from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
@@ -58,4 +59,4 @@ async def main(app: Ariadne, group: Group, message: MessageChain, target: Wildca
         chain = MessageChain.create(Plain(f'{target.result.asDisplay().strip()}的概率为：{randint(0, 100)}'))
     else:
         chain = MessageChain.create(Plain(str(randint(0, 100))))
-    await app.sendGroupMessage(group, chain, quote=message.get(Source).pop(0))
+    await safeSendGroupMessage(group, chain, quote=message.get(Source).pop(0))

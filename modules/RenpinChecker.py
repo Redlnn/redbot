@@ -37,6 +37,7 @@ from utils.control.interval import MemberInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
 from utils.path import data_path
+from utils.send_message import safeSendGroupMessage
 from utils.text2img import async_generate_img, hr
 
 channel = Channel.current()
@@ -117,11 +118,11 @@ async def main(app: Ariadne, group: Group, member: Member):
     is_new, renpin, qianwen = await read_data(str(member.id))
     img_bytes = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
-        await app.sendGroupMessage(
+        await safeSendGroupMessage(
             group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes))
         )
     else:
-        await app.sendGroupMessage(
+        await safeSendGroupMessage(
             group,
             MessageChain.create(
                 At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'), Image(data_bytes=img_bytes)

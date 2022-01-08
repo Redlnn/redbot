@@ -19,6 +19,8 @@ from graia.ariadne.model import Friend, Group, Member
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
+from utils.send_message import safeSendGroupMessage
+
 from ..config import get_main_config
 from .permission import Permission
 
@@ -138,7 +140,7 @@ class MemberInterval:
                 if send_alert:
                     if member.id not in cls.sent_alert:
                         m, s = divmod(last[1] + suspend_time - current, 60)
-                        await app.sendGroupMessage(
+                        await safeSendGroupMessage(
                             group,
                             MessageChain.create(
                                 [

@@ -27,6 +27,7 @@ from utils.config import get_main_config, get_modules_config, save_modules_confi
 from utils.control.interval import GroupInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module, Modules
+from utils.send_message import safeSendGroupMessage
 
 from .text2img import generate_img, hr
 
@@ -224,10 +225,10 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
             elif saying == '.cancel':
                 return False
             else:
-                await app.sendGroupMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
+                await safeSendGroupMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
 
     # 重载即卸载重新加载，在加载含有 `saya = Saya.current()` 的模块时 100% 报错
-    await app.sendGroupMessage(
+    await safeSendGroupMessage(
         group,
         MessageChain.create(
             At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')
@@ -280,10 +281,10 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
             elif saying == '.cancel':
                 return False
             else:
-                await app.sendGroupMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
+                await safeSendGroupMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
 
     # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
-    await app.sendGroupMessage(
+    await safeSendGroupMessage(
         group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
     )
     try:

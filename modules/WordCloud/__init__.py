@@ -33,6 +33,7 @@ from graia.ariadne.model import Group, Member
 from graia.ariadne.util.async_exec import cpu_bound
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
+from jieba import load_userdict
 from matplotlib import pyplot
 from PIL import Image as Img
 from pydantic import BaseModel
@@ -43,6 +44,7 @@ from utils.control.interval import ManualInterval
 from utils.control.permission import GroupPermission
 from utils.database.msg_history import get_group_msg, get_member_msg
 from utils.module_register import Module
+from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
@@ -107,7 +109,9 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
         await app.sendGroupMessage(group, MessageChain.create(Plain('词云生成队列已满，请稍后再试')))
         return
 
-    if match_result.asDisplay() == 'group':
+    if len(match_result) == 0:
+        return
+    elif match_result.asDisplay() == 'group':
         target_type = 'group'
         target = group.id
         if target in Generating_list:
@@ -181,19 +185,11 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
             Generating_list.remove(target)
     else:
         try:
-            await app.sendGroupMessage(
+            await safeSendGroupMessage(
                 group,
                 MessageChain.create(
                     At(target),
                     Plain(f' {"你" if target_type == "me" else ""}最近{day_length.result.asDisplay()}天内的聊天词云 👇\n'),
-                    Image(data_bytes=image_bytes),
-                ),
-            )
-        except UnknownTarget:
-            await app.sendGroupMessage(
-                group,
-                MessageChain.create(
-                    Plain(f'{"你" if target_type == "me" else target}最近{day_length.result.asDisplay()}天内的聊天词云 👇\n'),
                     Image(data_bytes=image_bytes),
                 ),
             )
@@ -219,7 +215,7 @@ def get_frequencies(msg_list: List[str]) -> dict:
         text += re.sub(r'\[mirai:.+\]', '', persistent_string)
         text += '\n'
 
-    jieba.load_userdict(str(Path(Path(__file__).parent, 'user_dict.txt')))
+    load_userdict(str(Path(Path(__file__).parent, 'user_dict.txt')))
     words = jieba.analyse.extract_tags(text, topK=700, withWeight=True)
     return dict(words)
 

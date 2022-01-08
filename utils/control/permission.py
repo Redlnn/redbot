@@ -17,6 +17,8 @@ from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 from pydantic import BaseModel
 
+from utils.send_message import safeSendGroupMessage
+
 from ..config import get_config, get_main_config
 
 __all__ = ['BlacklistConfig', 'blacklist_cfg', 'Permission', 'GroupPermission', 'TempPermission', 'FriendPermission']
@@ -107,12 +109,12 @@ class GroupPermission(Permission):
             if isinstance(perm, MemberPerm):
                 if level < cls._levels[perm]:
                     if send_alert:
-                        await app.sendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
+                        await safeSendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
                     raise ExecutionStop()
             elif isinstance(perm, int):
                 if level < perm:
                     if send_alert:
-                        await app.sendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
+                        await safeSendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
                     raise ExecutionStop()
 
         return Depend(check_wrapper)

@@ -19,6 +19,7 @@ from utils.config import get_modules_config
 from utils.control.interval import MemberInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
+from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
@@ -53,4 +54,4 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
             return
     food = await get_food()
     chain = MessageChain.create(Plain(f'吃{food}'))
-    await app.sendGroupMessage(group, chain, quote=message.get(Source).pop(0))
+    await safeSendGroupMessage(group, chain, quote=message.get(Source).pop(0))
