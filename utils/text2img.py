@@ -8,7 +8,7 @@
 import os
 import time
 from io import BytesIO
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
@@ -189,11 +189,11 @@ def _cut_text(
 
 
 @cpu_bound
-def async_generate_img(*args: List[str | bytes]) -> bytes:
-    return generate_img(*args)
+def async_generate_img(text_and_img: List[str | bytes] = None, chars_per_line: Optional[int] = None) -> bytes:
+    return generate_img(text_and_img, chars_per_line)
 
 
-def generate_img(text_and_img: List[str | bytes] = None) -> bytes:
+def generate_img(text_and_img: List[str | bytes] = None, chars_per_line: Optional[int] = None) -> bytes:
     """
     根据输入的文本，生成一张图并返回图片文件的路径
 
@@ -212,7 +212,10 @@ def generate_img(text_and_img: List[str | bytes] = None) -> bytes:
     extra_text1 = f'由 {basic_cfg.botName} 生成'  # 额外文本1
     extra_text2 = _get_time()  # 额外文本2
 
-    line_width = int(_chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
+    if chars_per_line is not None:
+        line_width = int(chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
+    else:
+        line_width = int(_chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
 
     content_height = 0
     contents: List[Dict[str, str | Img.Image | int]] = []
