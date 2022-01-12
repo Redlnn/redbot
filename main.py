@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import importlib.metadata
+import asyncio
 import os
-from datetime import datetime
 from os.path import abspath, isdir, isfile, join
 
 from graia.ariadne.app import Ariadne
+from graia.ariadne.adapter import DefaultAdapter
 from graia.ariadne.console import Console
 from graia.ariadne.console.saya import ConsoleBehaviour
 from graia.ariadne.model import MiraiSession
+from graia.broadcast import Broadcast
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
 from graia.scheduler import GraiaScheduler
@@ -26,17 +27,23 @@ modules_cfg = get_modules_config()
 ignore = ('__init__.py', '__pycache__')
 
 if __name__ == '__main__':
+    loop = asyncio.new_event_loop()
+    bcc = Broadcast(loop=loop)
     app = Ariadne(
-        MiraiSession(
-            host=basic_cfg.miraiApiHttp.host,  # 填入 httpapi 服务运行的地址
-            account=basic_cfg.miraiApiHttp.account,  # 你的机器人的 qq 号
-            verify_key=basic_cfg.miraiApiHttp.verifyKey,  # 填入 verifyKey
+        DefaultAdapter(
+            broadcast=bcc,
+            mirai_session=MiraiSession(
+                host=basic_cfg.miraiApiHttp.host,  # 填入 httpapi 服务运行的地址
+                account=basic_cfg.miraiApiHttp.account,  # 你的机器人的 qq 号
+                verify_key=basic_cfg.miraiApiHttp.verifyKey,  # 填入 verifyKey
+            ),
+            log=False,
         ),
         chat_log_config=None if basic_cfg.logChat else False,
     )
     console = Console(
-        broadcast=app.broadcast,
-        prompt=HTML('<split_1></split_1>' '<redbot> redbot </redbot>' '<split_2></split_2> '),
+        broadcast=bcc,
+        prompt=HTML('<split_1></split_1><redbot> redbot </redbot><split_2></split_2> '),
         style=Style(
             [
                 ('split_1', 'fg:#61afef'),
@@ -46,12 +53,12 @@ if __name__ == '__main__':
         ),
         replace_logger=False,
     )
-    saya = Saya(app.broadcast)
-    saya.install_behaviours(BroadcastBehaviour(app.broadcast))
+    saya = Saya(bcc)
+    saya.install_behaviours(BroadcastBehaviour(bcc))
     saya.install_behaviours(ConsoleBehaviour(console))
-    saya.install_behaviours(GraiaSchedulerBehaviour(GraiaScheduler(app.loop, app.broadcast)))
+    saya.install_behaviours(GraiaSchedulerBehaviour(GraiaScheduler(loop, bcc)))
     console.start()
-    change_logger(basic_cfg.debug, True)  # 对logger进行调整，必须放在这里
+    change_logger(basic_cfg.debug, True if console else False)  # 对logger进行调整，必须放在这里
 
     with saya.module_context():
         core_modules_path = abspath(join(root_path, 'core_modules'))
