@@ -52,7 +52,7 @@ Module(
         decorators=[GroupPermission.require(), GroupInterval.require(15)],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):
+async def main(group: Group, member: Member, source: Source):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
@@ -62,15 +62,15 @@ async def main(app: Ariadne, group: Group, member: Member, message: MessageChain
         if waiter_group.id == group.id and waiter_member.id == member.id:
             return waiter_message.include(Plain, At, Image)
 
-    await safeSendGroupMessage(group, MessageChain.create(Plain('请发送要转换的内容')), quote=message.get(Source).pop(0))
+    await safeSendGroupMessage(group, MessageChain.create(Plain('请发送要转换的内容')), quote=source)
     try:
         answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
     except asyncio.exceptions.TimeoutError:
-        await safeSendGroupMessage(group, MessageChain.create(Plain('已超时取消')), quote=message.get(Source).pop(0))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('已超时取消')), quote=source)
         return
 
     if len(answer) == 0:
-        await safeSendGroupMessage(group, MessageChain.create(Plain('你所发送的消息的类型错误')), quote=message.get(Source).pop(0))
+        await safeSendGroupMessage(group, MessageChain.create(Plain('你所发送的消息的类型错误')), quote=source)
         return
 
     img_list: List[str | bytes] = []

@@ -45,7 +45,7 @@ Module(
         decorators=[GroupPermission.require(), MemberInterval.require(2)],
     )
 )
-async def main(app: Ariadne, group: Group, message: MessageChain, at: ElementMatch):
+async def main(group: Group, source: Source, message: MessageChain, at: ElementMatch):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
@@ -76,4 +76,4 @@ async def main(app: Ariadne, group: Group, message: MessageChain, at: ElementMat
             chain = MessageChain.create(Plain(subject + re2_match[2] + preposition + action))
     else:
         return
-    await safeSendGroupMessage(group, chain, quote=message.get(Source).pop(0))
+    await safeSendGroupMessage(group, chain, quote=source)

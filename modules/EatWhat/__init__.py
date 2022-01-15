@@ -48,10 +48,10 @@ def get_food():
         decorators=[GroupPermission.require(), MemberInterval.require(2)],
     )
 )
-async def main(app: Ariadne, group: Group, message: MessageChain):
+async def main(group: Group, source: Source):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
     food = await get_food()
     chain = MessageChain.create(Plain(f'吃{food}'))
-    await safeSendGroupMessage(group, chain, quote=message.get(Source).pop(0))
+    await safeSendGroupMessage(group, chain, quote=source)

@@ -111,7 +111,6 @@ async def main(group: Group, member: Member, message: MessageChain):
     )
 )
 async def get_msg_count(
-    app: Ariadne,
     group: Group,
     member: Member,
     arg_type: ArgumentMatch,

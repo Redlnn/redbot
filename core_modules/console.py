@@ -30,6 +30,6 @@ async def stop(app: Ariadne, console: Console):
 
 
 @channel.use(ConsoleSchema([Twilight.from_command('send_goup {0} {1}')]))
-async def group_chat(app: Ariadne, spark: Sparkle):
+async def group_chat(spark: Sparkle):
     group, message = spark[ParamMatch]
     await safeSendGroupMessage(int(group.result.asDisplay()), message.result)

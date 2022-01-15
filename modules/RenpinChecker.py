@@ -111,7 +111,7 @@ lucky_things = {
         decorators=[GroupPermission.require(), MemberInterval.require(10)],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member):
+async def main(group: Group, member: Member):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return

@@ -51,7 +51,7 @@ Module(
         decorators=[GroupPermission.require(), MemberInterval.require(2)],
     )
 )
-async def main(app: Ariadne, group: Group, message: MessageChain, target: WildcardMatch):
+async def main(group: Group, source: Source, target: WildcardMatch):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
@@ -59,4 +59,4 @@ async def main(app: Ariadne, group: Group, message: MessageChain, target: Wildca
         chain = MessageChain.create(Plain(f'{target.result.asDisplay().strip()}的概率为：{randint(0, 100)}'))
     else:
         chain = MessageChain.create(Plain(str(randint(0, 100))))
-    await safeSendGroupMessage(group, chain, quote=message.get(Source).pop(0))
+    await safeSendGroupMessage(group, chain, quote=source)

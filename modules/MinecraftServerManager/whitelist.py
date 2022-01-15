@@ -5,7 +5,7 @@ import time
 import uuid
 from datetime import datetime
 from typing import Optional, Tuple
-
+from graia.ariadne.context import ariadne_ctx
 from graia.ariadne.app import Ariadne
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
@@ -32,7 +32,7 @@ __all__ = [
 
 
 async def add_whitelist_to_qq(
-    qq: int, mc_id: str, admin: bool, app: Ariadne, message: MessageChain, group: Group
+    qq: int, mc_id: str, admin: bool, message: MessageChain, group: Group
 ) -> None:
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
@@ -103,6 +103,7 @@ async def add_whitelist_to_qq(
         blockReason,
     ) = await query_uuid_by_qq(qq)
     if not had_status:
+        app = ariadne_ctx.get()
         member: Member = await app.getMember(group, message.getFirst(At).target)
         PlayersTable.create(
             group=config.serverGroup,
@@ -195,7 +196,7 @@ async def add_whitelist_to_qq(
         )
 
 
-async def del_whitelist_from_server(mc_uuid: str, app: Ariadne, group: Group) -> bool:
+async def del_whitelist_from_server(mc_uuid: str, group: Group) -> bool:
     try:
         mc_id = await get_mc_id(mc_uuid)
     except Exception as e:
@@ -224,7 +225,7 @@ async def del_whitelist_from_server(mc_uuid: str, app: Ariadne, group: Group) ->
             return False
 
 
-async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
+async def del_whitelist_by_qq(qq: int, group: Group) -> None:
     (
         had_status,
         joinTimestamp,
@@ -250,9 +251,9 @@ async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
     ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
     target = set()
     if uuid1:
-        target.add(await del_whitelist_from_server(str(uuid1), app, group))
+        target.add(await del_whitelist_from_server(str(uuid1), group))
     if uuid2:
-        target.add(await del_whitelist_from_server(str(uuid2), app, group))
+        target.add(await del_whitelist_from_server(str(uuid2), group))
     if False in target and True in target:
         await safeSendGroupMessage(group, MessageChain.create(Plain('只从服务器上删除了 '), At(qq), Plain(f' 的部分白名单')))
     elif False in target:
@@ -261,7 +262,7 @@ async def del_whitelist_by_qq(qq: int, app: Ariadne, group: Group) -> None:
         await safeSendGroupMessage(group, MessageChain.create(At(qq), Plain(f' 的白名单都删掉啦~')))
 
 
-async def del_whitelist_by_id(mc_id: str, app: Ariadne, group: Group):
+async def del_whitelist_by_id(mc_id: str, group: Group):
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
     except Exception as e:
@@ -281,10 +282,10 @@ async def del_whitelist_by_id(mc_id: str, app: Ariadne, group: Group):
                 group,
                 MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时获得意外内容:  ↓\n{real_mc_id.text}')),
             )
-    await del_whitelist_by_uuid(mc_uuid, app, group)
+    await del_whitelist_by_uuid(mc_uuid, group)
 
 
-async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> None:
+async def del_whitelist_by_uuid(mc_uuid: str, group: Group) -> None:
     (
         qq,
         joinTimestamp,
@@ -295,14 +296,14 @@ async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> Non
         uuid2AddedTime,
         blocked,
         blockReason,
-    ) = await query_whitelist_by_uuid(mc_uuid, app, group)
+    ) = await query_whitelist_by_uuid(mc_uuid, group)
     if not qq:
         return
     if uuid1.replace('-', '') == mc_uuid.replace('-', ''):
         PlayersTable.update({PlayersTable.uuid1: None, PlayersTable.uuid1AddedTime: None}).where(
             (PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)
         ).execute()
-        del_result = await del_whitelist_from_server(mc_uuid, app, group)
+        del_result = await del_whitelist_from_server(mc_uuid, group)
         if del_result:
             await safeSendGroupMessage(
                 group, MessageChain.create(Plain('已从服务器删除 '), At(qq), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
@@ -311,7 +312,7 @@ async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> Non
         PlayersTable.update({PlayersTable.uuid2: None, PlayersTable.uuid2AddedTime: None}).where(
             (PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)
         ).execute()
-        del_result = await del_whitelist_from_server(mc_uuid, app, group)
+        del_result = await del_whitelist_from_server(mc_uuid, group)
         if del_result:
             await safeSendGroupMessage(
                 group, MessageChain.create(Plain('已从服务器删除 '), At(qq), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
@@ -319,7 +320,7 @@ async def del_whitelist_by_uuid(mc_uuid: str, app: Ariadne, group: Group) -> Non
 
 
 async def query_whitelist_by_uuid(
-    mc_uuid: str, app: Ariadne, group: Group
+    mc_uuid: str, group: Group
 ) -> Tuple[
     Optional[int],
     Optional[datetime],
@@ -354,7 +355,7 @@ async def query_whitelist_by_uuid(
 
 
 async def query_whitelist_by_id(
-    mc_id: str, app: Ariadne, group: Group
+    mc_id: str, group: Group
 ) -> Tuple[
     Optional[int],
     Optional[datetime],
@@ -391,7 +392,7 @@ async def query_whitelist_by_id(
                 MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时获得意外内容:  ↓\n{real_mc_id.text}')),
             )
 
-    return await query_whitelist_by_uuid(mc_uuid, app, group)
+    return await query_whitelist_by_uuid(mc_uuid, group)
 
 
 async def gen_query_info_text(
@@ -404,7 +405,6 @@ async def gen_query_info_text(
     uuid2_added_time: Optional[datetime],
     blocked: bool,
     block_reason: str,
-    app: Ariadne,
     group: Group,
 ):
     if blocked:
@@ -413,7 +413,7 @@ async def gen_query_info_text(
     if not uuid1 and not uuid2:
         await safeSendGroupMessage(group, MessageChain.create(At(qq), Plain(f' 一个白名单都没有呢')))
         return
-    info_text = f'{qq} 的白名单信息如下：\n | 入群时间: {join_timestamp}\n'
+    info_text = f' 的白名单信息如下：\n | 入群时间: {join_timestamp}\n'
     if leave_timestamp:
         info_text += f' | 退群时间: {leave_timestamp}\n'
     if uuid1 and not uuid2:
@@ -460,4 +460,4 @@ async def gen_query_info_text(
                 info_text += f' | ID 2: {mc_id2}\n'
         info_text += f' | ID 2添加时间：{uuid2_added_time}\n'
 
-    await safeSendGroupMessage(group, MessageChain.create(Plain(info_text.rstrip())))
+    await safeSendGroupMessage(group, MessageChain.create(At(qq), Plain(info_text.rstrip())))
