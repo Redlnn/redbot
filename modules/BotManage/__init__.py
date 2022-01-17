@@ -179,6 +179,7 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        return
     target_module: Module = Modules[target_id]
     disabled_groups = (
         modules_cfg.disabledGroups[target_module.file_name]

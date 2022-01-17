@@ -34,7 +34,7 @@ from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
-module_name = basename(__file__)
+module_name = basename(__file__)[:-3]
 
 Module(
     name='历史聊天数据记录',

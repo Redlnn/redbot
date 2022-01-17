@@ -26,7 +26,7 @@ from utils.module_register import Module
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
-module_name = basename(__file__)
+module_name = basename(__file__)[:-3]
 
 Module(
     name='搜索我的世界中文Wiki',

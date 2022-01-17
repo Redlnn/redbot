@@ -39,6 +39,7 @@ if __name__ == '__main__':
             ),
             log=False,
         ),
+        loop = loop,
         chat_log_config=None if basic_cfg.logChat else False,
     )
     console = Console(
@@ -63,7 +64,7 @@ if __name__ == '__main__':
     with saya.module_context():
         core_modules_path = abspath(join(root_path, 'core_modules'))
         for module in os.listdir(core_modules_path):
-            if module in modules_cfg.globalDisabledModules:
+            if module in modules_cfg.globalDisabledModules or module[:-3] in modules_cfg.globalDisabledModules:
                 continue
             elif module in ignore or module[0] in ('!', '#', '.'):
                 continue
@@ -75,7 +76,7 @@ if __name__ == '__main__':
     if modules_cfg.enabled:
         with saya.module_context():
             for module in os.listdir(modules_path):
-                if module in modules_cfg.globalDisabledModules:
+                if module in modules_cfg.globalDisabledModules or module[:-3] in modules_cfg.globalDisabledModules:
                     continue
                 elif module in ignore or module[0] in ('!', '#', '.'):
                     continue

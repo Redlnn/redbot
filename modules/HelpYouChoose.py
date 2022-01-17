@@ -20,14 +20,13 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from utils.config import get_main_config, get_modules_config
-from utils.control.interval import MemberInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
 from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
-module_name = basename(__file__)
+module_name = basename(__file__)[:-3]
 basic_cfg = get_main_config()
 
 Module(
@@ -42,7 +41,7 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle({'at': ElementMatch(At), 'any': WildcardMatch()}))],
-        decorators=[GroupPermission.require(), MemberInterval.require(2)],
+        decorators=[GroupPermission.require()],
     )
 )
 async def main(group: Group, source: Source, message: MessageChain, at: ElementMatch):

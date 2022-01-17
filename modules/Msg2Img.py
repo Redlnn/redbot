@@ -34,7 +34,7 @@ channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 
 modules_cfg = get_modules_config()
-module_name = basename(__file__)
+module_name = basename(__file__)[:-3]
 
 Module(
     name='消息转图片',

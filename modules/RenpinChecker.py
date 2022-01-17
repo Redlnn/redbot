@@ -42,7 +42,7 @@ from utils.text2img import async_generate_img, hr
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
-module_name = basename(__file__)
+module_name = basename(__file__)[:-3]
 
 Module(
     name='人品测试',

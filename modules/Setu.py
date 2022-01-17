@@ -29,7 +29,7 @@ from utils.module_register import Module
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
-module_name = basename(__file__)
+module_name = basename(__file__)[:-3]
 basic_cfg = get_main_config()
 
 Module(
