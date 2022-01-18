@@ -14,9 +14,9 @@ redbot  根目录
 │   ├── EatWhat/  吃啥？
 │   ├── MinecraftServerManager/  我的世界服务器管理
 │   ├── MinecraftServerPing/  我的世界服务器 Motd Ping
-│   ├── WordCloud/ 聊天历史词云生成
 │   ├── BiliVideoInfo.py  BiliBili 视频解析
 │   ├── BotStatus.py  Bot版本与系统运行情况查询
+│   ├── DontNudgeMe.py  别搓我
 │   ├── HelpYouChoose  帮你做选择
 │   ├── LogMsgHistory.py  历史聊天数据记录
 │   ├── Msg2Img.py  消息内容转图片
@@ -24,7 +24,8 @@ redbot  根目录
 │   ├── RenpinChecker.py  每日抽签（人品检测）
 │   ├── RollNumber.py  随机数抽取
 │   ├── SearchMinecraftWiki.py  我的世界中文 Wiki 搜索
-│   └── Setu.py  涩图（不可以色色噢）
+│   ├── Setu.py  涩图（不可以色色噢）
+│   └── WordCloud 聊天历史词云生成
 └── utils  通用功能目录
     ├── control  Bot 触发限制相关
     │   ├── interval.py  群、私聊、临时会话调用频率限制
