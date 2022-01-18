@@ -5,8 +5,9 @@ import time
 import uuid
 from datetime import datetime
 from typing import Optional, Tuple
-from graia.ariadne.context import ariadne_ctx
+
 from graia.ariadne.app import Ariadne
+from graia.ariadne.context import ariadne_ctx
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain, Source
@@ -31,9 +32,7 @@ __all__ = [
 ]
 
 
-async def add_whitelist_to_qq(
-    qq: int, mc_id: str, admin: bool, message: MessageChain, group: Group
-) -> None:
+async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool, message: MessageChain, group: Group) -> None:
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
     # except (requests.exceptions.Timeout, urllib3.exceptions.TimeoutError):

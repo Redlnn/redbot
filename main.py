@@ -5,8 +5,8 @@ import asyncio
 import os
 from os.path import abspath, isdir, isfile, join
 
-from graia.ariadne.app import Ariadne
 from graia.ariadne.adapter import DefaultAdapter
+from graia.ariadne.app import Ariadne
 from graia.ariadne.console import Console
 from graia.ariadne.console.saya import ConsoleBehaviour
 from graia.ariadne.model import MiraiSession
@@ -39,7 +39,7 @@ if __name__ == '__main__':
             ),
             log=False,
         ),
-        loop = loop,
+        loop=loop,
         chat_log_config=None if basic_cfg.logChat else False,
     )
     console = Console(

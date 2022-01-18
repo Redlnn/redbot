@@ -102,7 +102,7 @@ class GroupPermission(Permission):
         :param allow_override: 是否允许bot主人和bot管理员无视权限控制
         """
 
-        async def check_wrapper(app: Ariadne, group: Group, member: Member):
+        async def check_wrapper(group: Group, member: Member):
             if group.id in blacklist_cfg.groups or member.id in blacklist_cfg.users:
                 raise ExecutionStop()
             level = await cls.get(member, allow_override)
