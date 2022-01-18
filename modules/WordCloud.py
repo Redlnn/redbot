@@ -10,7 +10,7 @@ import os
 import random
 import time
 from io import BytesIO
-from os.path import dirname
+from os.path import basename
 from pathlib import Path
 from typing import List
 
@@ -19,7 +19,7 @@ import numpy
 import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
-from graia.ariadne.exception import UnknownError, UnknownTarget
+from graia.ariadne.exception import UnknownError
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import (
@@ -44,11 +44,12 @@ from utils.control.interval import ManualInterval
 from utils.control.permission import GroupPermission
 from utils.database.msg_history import get_group_msg, get_member_msg
 from utils.module_register import Module
+from utils.path import data_path
 from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
-module_name = dirname(__file__)
+module_name = basename(__file__)[:-3]
 
 Module(
     name='聊天历史词云生成',
@@ -214,16 +215,22 @@ def get_frequencies(msg_list: List[str]) -> dict:
             continue
         text += re.sub(r'\[mirai:.+\]', '', persistent_string)
         text += '\n'
-
-    load_userdict(str(Path(Path(__file__).parent, 'user_dict.txt')))
+    if not Path(data_path, 'WordCloud', 'user_dict.txt').exists():
+        f = open(Path(data_path, 'WordCloud', 'user_dict.txt'), 'a+')
+        f.close()
+    load_userdict(str(Path(data_path, 'WordCloud', 'user_dict.txt')))
     words = jieba.analyse.extract_tags(text, topK=700, withWeight=True)
     return dict(words)
 
 
 @cpu_bound
 def gen_wordcloud(words: dict) -> bytes:
-    bg_list = os.listdir(Path(Path(__file__).parent, 'bg'))
-    mask = numpy.array(Img.open(Path(Path(__file__).parent, 'bg', random.choice(bg_list))))
+    if not Path(data_path, 'WordCloud', 'mask').exists():
+        Path(data_path, 'WordCloud', 'mask').mkdir()
+    elif len(os.listdir(Path(data_path, 'WordCloud', 'mask'))) == 0:
+        raise ValueError('找不到可用的词云遮罩图，请在 data/WordCloud/mask 文件夹内放置图片文件')
+    bg_list = os.listdir(Path(data_path, 'WordCloud', 'mask'))
+    mask = numpy.array(Img.open(Path(data_path, 'WordCloud', 'mask', random.choice(bg_list))))
     font_path = str(Path(Path.cwd(), 'fonts', config.fontName))
     wordcloud = WordCloud(font_path=font_path, background_color='#f0f0f0', mask=mask, max_words=700, scale=2)
     wordcloud.generate_from_frequencies(words)
