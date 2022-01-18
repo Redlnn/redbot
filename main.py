@@ -10,6 +10,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.console import Console
 from graia.ariadne.console.saya import ConsoleBehaviour
 from graia.ariadne.model import MiraiSession
+from graia.ariadne.util.send import Safe
 from graia.broadcast import Broadcast
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
@@ -42,6 +43,7 @@ if __name__ == '__main__':
         loop=loop,
         chat_log_config=None if basic_cfg.logChat else False,
     )
+    app.default_send_action = Safe
     console = Console(
         broadcast=bcc,
         prompt=HTML('<split_1></split_1><redbot> redbot </redbot><split_2></split_2> '),
