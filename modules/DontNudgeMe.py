@@ -55,7 +55,7 @@ async def getMessage(event: NudgeEvent):
         elif len(os.listdir(Path(data_path, 'Nudge'))) == 0:
             return MessageChain.create(Plain(choice(msg).replace('{}', event.msg_action[0])))
         return MessageChain.create(
-            Image(path=Path(data_path, 'Nudge', os.listdir(Path(data_path, 'Nudge'))[len(msg) + tmp]))
+            Image(path=Path(data_path, 'Nudge', os.listdir(Path(data_path, 'Nudge'))[tmp - len(msg)]))
         )
 
 
