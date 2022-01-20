@@ -705,18 +705,18 @@ async def member_leave(group: Group, member: Member):
         listening_events=[MemberLeaveEventKick],
     )
 )
-async def member_kick(group: Group, event: MemberLeaveEventKick):
+async def member_kick(group: Group, target: Member):
     if not is_init:
         return
     elif group.id != config.serverGroup:
         return
     try:
-        PlayersTable.get((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == event.member.id))
+        PlayersTable.get((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == target.id))
     except PlayersTable.DoesNotExist:
         PlayersTable.create(
             group=config.serverGroup,
-            qq=event.member.id,
-            joinTimestamp=event.member.joinTimestamp,
+            qq=target.id,
+            joinTimestamp=target.joinTimestamp,
             leaveTimestamp=time.time(),
         )
     else:
@@ -726,8 +726,8 @@ async def member_kick(group: Group, event: MemberLeaveEventKick):
                 PlayersTable.blocked: True,
                 PlayersTable.blockReason: 'Kick',
             }
-        ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == event.member.id)).execute()
-        await del_whitelist_by_qq(event.member.id, group)
+        ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == target.id)).execute()
+        await del_whitelist_by_qq(target.id, group)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
