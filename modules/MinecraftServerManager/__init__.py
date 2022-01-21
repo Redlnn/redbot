@@ -196,16 +196,12 @@ async def add_whitelist(group: Group, source: Source, message: MessageChain):
     elif msg[2].onlyContains(At):
         target = msg[2].getFirst(At).target
     else:
-        await safeSendGroupMessage(
-            group, MessageChain.create(Plain('目标用户不是有效的 QQ 号或 at 对象')), quote=source
-        )
+        await safeSendGroupMessage(group, MessageChain.create(Plain('目标用户不是有效的 QQ 号或 at 对象')), quote=source)
         return
 
     mc_id = msg[3].asDisplay()
     if not msg[3].onlyContains(Plain) or not await is_mc_id(mc_id):
-        await safeSendGroupMessage(
-            group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source
-        )
+        await safeSendGroupMessage(group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
         return
 
     await add_whitelist_to_qq(target, mc_id, True, message, group)
@@ -253,9 +249,7 @@ async def del_whitelist(group: Group, source: Source, message: MessageChain):
                         if target.isdigit():
                             await del_whitelist_by_qq(int(target), group)
                         else:
-                            await safeSendGroupMessage(
-                                group, MessageChain.create(Plain('无效的 QQ 号')), quote=source
-                            )
+                            await safeSendGroupMessage(group, MessageChain.create(Plain('无效的 QQ 号')), quote=source)
                         return
                 elif func == 'id' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
@@ -273,9 +267,7 @@ async def del_whitelist(group: Group, source: Source, message: MessageChain):
                     if await is_uuid(target):
                         await del_whitelist_by_uuid(target, group)
                     else:
-                        await safeSendGroupMessage(
-                            group, MessageChain.create(Plain('目标不是有效的 UUID')), quote=source
-                        )
+                        await safeSendGroupMessage(group, MessageChain.create(Plain('目标不是有效的 UUID')), quote=source)
                         return
 
     await safeSendGroupMessage(group, MessageChain.create(Plain('无效的命令')), quote=source)
@@ -291,7 +283,7 @@ async def del_whitelist(group: Group, source: Source, message: MessageChain):
         decorators=[GroupPermission.require()],
     )
 )
-async def info_whitelist( group: Group, source: Source, message: MessageChain):
+async def info_whitelist(group: Group, source: Source, message: MessageChain):
     if not is_init:
         return
     elif group.id not in config.activeGroups:
@@ -314,9 +306,7 @@ async def info_whitelist( group: Group, source: Source, message: MessageChain):
                     blockReason,
                 ) = await query_uuid_by_qq(target)
                 if not had_status:
-                    await safeSendGroupMessage(
-                        group, MessageChain.create(At(target), Plain(f' 好像一个白名单都没有呢~'))
-                    )
+                    await safeSendGroupMessage(group, MessageChain.create(At(target), Plain(f' 好像一个白名单都没有呢~')))
                     return
                 await gen_query_info_text(
                     target,
@@ -349,9 +339,7 @@ async def info_whitelist( group: Group, source: Source, message: MessageChain):
                             blockReason,
                         ) = await query_uuid_by_qq(target)
                         if not had_status:
-                            await safeSendGroupMessage(
-                                group, MessageChain.create(At(target), Plain(f' 好像一个白名单都没有呢~'))
-                            )
+                            await safeSendGroupMessage(group, MessageChain.create(At(target), Plain(f' 好像一个白名单都没有呢~')))
                             return
                         await gen_query_info_text(
                             target,
@@ -399,9 +387,7 @@ async def info_whitelist( group: Group, source: Source, message: MessageChain):
                             )
                             return
                         else:
-                            await safeSendGroupMessage(
-                                group, MessageChain.create(Plain('无效的 QQ 号')), quote=source
-                            )
+                            await safeSendGroupMessage(group, MessageChain.create(Plain('无效的 QQ 号')), quote=source)
                         return
                 elif func == 'id' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
@@ -467,9 +453,7 @@ async def info_whitelist( group: Group, source: Source, message: MessageChain):
                             )
                         return
                     else:
-                        await safeSendGroupMessage(
-                            group, MessageChain.create(Plain('目标不是有效的 UUID')), quote=source
-                        )
+                        await safeSendGroupMessage(group, MessageChain.create(Plain('目标不是有效的 UUID')), quote=source)
                         return
 
     await safeSendGroupMessage(group, MessageChain.create(Plain('无效的命令')), quote=source)
@@ -561,14 +545,10 @@ async def myid(group: Group, member: Member, source: Source, message: MessageCha
 
     mc_id = msg[1].asDisplay()
     if not await is_mc_id(mc_id):
-        await safeSendGroupMessage(
-            group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source
-        )
+        await safeSendGroupMessage(group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
         return
     if mc_id.lower() not in member.name.lower():
-        await safeSendGroupMessage(
-            group, MessageChain.create(Plain('请确保你的群名片包含你要申请白名单的ID')), quote=source
-        )
+        await safeSendGroupMessage(group, MessageChain.create(Plain('请确保你的群名片包含你要申请白名单的ID')), quote=source)
         return
 
     target = member.id

@@ -8,15 +8,18 @@ redbot  根目录
 ├── data/  数据目录
 ├── fonts/  字体目录（文本转图片与词云所用）
 ├── logs/  日志目录
+├── core_modules  核心插件目录
+│   ├── bot_manage/  Bot菜单及模块管理
+│   ├── bot_status.py  Bot版本与系统运行情况查询
+│   ├── condole.py  Bot控制台相关功能
+│   └── error_handler.py  捕捉Bot运行异常发送给机器人主人
 ├── modules  插件目录
 │   ├── AvatarImgGen/  用你的头像生成点啥
-│   ├── BotManage/  Bot菜单及模块管理
 │   ├── EatWhat/  吃啥？
 │   ├── MinecraftServerManager/  我的世界服务器管理
 │   ├── MinecraftServerPing/  我的世界服务器 Motd Ping
 │   ├── BiliVideoInfo.py  BiliBili 视频解析
-│   ├── BotStatus.py  Bot版本与系统运行情况查询
-│   ├── DontNudgeMe.py  别搓我
+│   ├── DontNudgeMe.py  别戳我
 │   ├── HelpYouChoose  帮你做选择
 │   ├── LogMsgHistory.py  历史聊天数据记录
 │   ├── Msg2Img.py  消息内容转图片
@@ -25,7 +28,7 @@ redbot  根目录
 │   ├── RollNumber.py  随机数抽取
 │   ├── SearchMinecraftWiki.py  我的世界中文 Wiki 搜索
 │   ├── Setu.py  涩图（不可以色色噢）
-│   └── WordCloud 聊天历史词云生成
+│   └── WordCloud.py 聊天历史词云生成
 └── utils  通用功能目录
     ├── control  Bot 触发限制相关
     │   ├── interval.py  群、私聊、临时会话调用频率限制
