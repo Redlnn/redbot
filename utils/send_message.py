@@ -7,7 +7,7 @@ from graia.ariadne.context import ariadne_ctx
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain, Source
-from graia.ariadne.model import BotMessage, Group, Member
+from graia.ariadne.model import BotMessage, Group
 
 
 async def safeSendGroupMessage(

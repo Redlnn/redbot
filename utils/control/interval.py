@@ -21,13 +21,13 @@ from graia.broadcast.builtin.decorators import Depend
 
 from utils.send_message import safeSendGroupMessage
 
-from ..config import get_main_config
+from ..config import get_basic_config
 from .permission import Permission
 
 __all__ = ['GroupInterval', 'MemberInterval', 'FriendInterval', 'TempInterval', 'ManualInterval']
 
 
-basic_cfg = get_main_config()
+basic_cfg = get_basic_config()
 
 
 class GroupInterval:
@@ -38,6 +38,13 @@ class GroupInterval:
     last_exec: DefaultDict[int, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[int, float] = defaultdict(float)
     sent_alert: Set[int] = set()
+    lock: Optional[Lock] = None
+
+    @classmethod
+    async def get_lock(cls):
+        if not cls.lock:
+            cls.lock = Lock()
+        return cls.lock
 
     @classmethod
     def require(
@@ -63,7 +70,7 @@ class GroupInterval:
             if await Permission.get(member) >= override_level:
                 return
             current = time.time()
-            async with Lock():
+            async with (await cls.get_lock()):
                 last = cls.last_exec[group.id]
                 if current - last[1] >= suspend_time:
                     cls.last_exec[group.id] = (1, current)
@@ -99,6 +106,13 @@ class MemberInterval:
     last_exec: DefaultDict[str, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[str, float] = defaultdict(float)
     sent_alert: Set[str] = set()
+    lock: Optional[Lock] = None
+
+    @classmethod
+    async def get_lock(cls):
+        if not cls.lock:
+            cls.lock = Lock()
+        return cls.lock
 
     @classmethod
     def require(
@@ -125,7 +139,7 @@ class MemberInterval:
                 return
             current = time.time()
             name = f'{member.id}_{group.id}'
-            async with Lock():
+            async with (await cls.get_lock()):
                 last = cls.last_exec[name]
                 if current - cls.last_exec[name][1] >= suspend_time:
                     cls.last_exec[name] = (1, current)
@@ -166,6 +180,13 @@ class FriendInterval:
     last_exec: DefaultDict[int, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[int, float] = defaultdict(float)
     sent_alert: Set[int] = set()
+    lock: Optional[Lock] = None
+
+    @classmethod
+    async def get_lock(cls):
+        if not cls.lock:
+            cls.lock = Lock()
+        return cls.lock
 
     @classmethod
     def require(
@@ -185,7 +206,7 @@ class FriendInterval:
             if friend.id in basic_cfg.admin.admins:
                 return
             current = time.time()
-            async with Lock():
+            async with (await cls.get_lock()):
                 last = cls.last_exec[friend.id]
                 if current - cls.last_exec[friend.id][1] >= suspend_time:
                     cls.last_exec[friend.id] = (1, current)
@@ -229,6 +250,13 @@ class TempInterval:
     last_exec: DefaultDict[str, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[str, float] = defaultdict(float)
     sent_alert: Set[str] = set()
+    lock: Optional[Lock] = None
+
+    @classmethod
+    async def get_lock(cls):
+        if not cls.lock:
+            cls.lock = Lock()
+        return cls.lock
 
     @classmethod
     def require(
@@ -255,7 +283,7 @@ class TempInterval:
                 return
             current = time.time()
             name = f'{member.id}_{group.id}'
-            async with Lock():
+            async with (await cls.get_lock()):
                 last = cls.last_exec[name]
                 if current - cls.last_exec[name][1] >= suspend_time:
                     cls.last_exec[name] = (1, current)

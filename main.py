@@ -19,11 +19,11 @@ from graia.scheduler.saya import GraiaSchedulerBehaviour
 from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.styles import Style
 
-from utils.config import get_main_config, get_modules_config
+from utils.config import get_basic_config, get_modules_config
 from utils.logger import change_logger
 from utils.path import modules_path, root_path
 
-basic_cfg = get_main_config()
+basic_cfg = get_basic_config()
 modules_cfg = get_modules_config()
 ignore = ('__init__.py', '__pycache__')
 

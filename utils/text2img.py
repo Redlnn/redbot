@@ -15,7 +15,7 @@ from PIL import Image as Img
 from PIL import ImageDraw, ImageFont
 from pydantic import BaseModel
 
-from .config import get_config, get_main_config
+from .config import get_basic_config, get_config
 
 __all__ = ['async_generate_img', 'generate_img', 'hr']
 
@@ -44,7 +44,7 @@ class Text2ImgConfig(BaseModel):
 
 
 config: Text2ImgConfig = get_config('text2img.json', Text2ImgConfig())
-basic_cfg = get_main_config()
+basic_cfg = get_basic_config()
 
 _font_name: str = config.FontName
 _font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径

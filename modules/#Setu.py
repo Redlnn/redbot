@@ -21,8 +21,9 @@ from graia.ariadne.message.parser.twilight import (
 from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
+from pydantic import AnyHttpUrl, BaseModel
 
-from utils.config import get_main_config, get_modules_config
+from utils.config import get_basic_config, get_config, get_modules_config
 from utils.control.interval import MemberInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
@@ -30,7 +31,7 @@ from utils.module_register import Module
 channel = Channel.current()
 modules_cfg = get_modules_config()
 module_name = basename(__file__)[:-3]
-basic_cfg = get_main_config()
+basic_cfg = get_basic_config()
 
 Module(
     name='涩图（不可以色色o）',
@@ -39,6 +40,13 @@ Module(
     description='提供白名单管理、在线列表查询、服务器命令执行功能',
     usage=' - [!！.]涩图 —— 获取随机涩图\n' ' - [!！.]{关键词}涩图 —— 获取指定关键词的涩图',
 ).register()
+
+
+class Setu(BaseModel):
+    apiUrl: AnyHttpUrl = 'http://localhost:8080'
+
+
+setu_config: Setu = get_config('setu.json', Setu())
 
 
 @channel.use(
@@ -74,7 +82,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
     if tag.matched:
         target_tag = tag.result.getFirst(Plain).text
         async with session.get(
-            f'http://a60.one:404/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
+            f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
         ) as resp:
             if resp.status in (200, 404):
                 res: dict = await resp.json()
@@ -82,7 +90,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
                 res = {'code': 500}
     else:
         async with session.get(
-            f'http://a60.one:404/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
+            f'{setu_config.apiUrl}/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
         ) as resp:
             if resp.status == 200:
                 res: dict = await resp.json()

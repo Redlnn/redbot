@@ -23,7 +23,7 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
-from utils.config import get_main_config, get_modules_config, save_modules_config
+from utils.config import get_basic_config, get_modules_config, save_modules_config
 from utils.control.interval import GroupInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module, Modules
@@ -35,7 +35,7 @@ saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 
-basic_cfg = get_main_config()
+basic_cfg = get_basic_config()
 modules_cfg = get_modules_config()
 module_name = dirname(__file__)
 
@@ -169,7 +169,7 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexMatch):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]用法')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupInterval.require(5)],
     )
 )
 async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):

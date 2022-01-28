@@ -19,7 +19,7 @@ from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from utils.config import get_main_config, get_modules_config
+from utils.config import get_basic_config, get_modules_config
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
 from utils.send_message import safeSendGroupMessage
@@ -27,7 +27,7 @@ from utils.send_message import safeSendGroupMessage
 channel = Channel.current()
 modules_cfg = get_modules_config()
 module_name = basename(__file__)[:-3]
-basic_cfg = get_main_config()
+basic_cfg = get_basic_config()
 
 Module(
     name='帮你做选择',

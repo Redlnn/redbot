@@ -11,12 +11,12 @@ from graia.broadcast.builtin.event import ExceptionThrowed
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 
-from utils.config import get_main_config
+from utils.config import get_basic_config
 from utils.text2img import async_generate_img
 
 channel = Channel.current()
 
-basic_cfg = get_main_config()
+basic_cfg = get_basic_config()
 
 
 @channel.use(ListenerSchema(listening_events=[ExceptionThrowed]))
@@ -34,6 +34,6 @@ async def except_handle(app: Ariadne, event: ExceptionThrowed):
             f'异常追踪：\n{tb}'
         ]
         img_bytes = await async_generate_img(msg, 100)
-        await app.sendTempMessage(
+        await app.sendFriendMessage(
             basic_cfg.admin.masterId, MessageChain.create(Plain('发生异常\n'), Image(data_bytes=img_bytes))
         )

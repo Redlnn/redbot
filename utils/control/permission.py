@@ -19,9 +19,17 @@ from pydantic import BaseModel
 
 from utils.send_message import safeSendGroupMessage
 
-from ..config import get_config, get_main_config
+from ..config import get_basic_config, get_config
 
-__all__ = ['BlacklistConfig', 'blacklist_cfg', 'Permission', 'GroupPermission', 'TempPermission', 'FriendPermission']
+__all__ = [
+    'BlacklistConfig',
+    'blacklist_cfg',
+    'whitelist_cfg',
+    'Permission',
+    'GroupPermission',
+    'TempPermission',
+    'FriendPermission',
+]
 
 
 class BlacklistConfig(BaseModel):
@@ -29,8 +37,13 @@ class BlacklistConfig(BaseModel):
     users: List[int] = []
 
 
-basic_cfg = get_main_config()
+class WhitelistConfig(BaseModel):
+    groups: List[int] = []
+
+
+basic_cfg = get_basic_config()
 blacklist_cfg: BlacklistConfig = get_config('blacklist.json', BlacklistConfig())
+whitelist_cfg: BlacklistConfig = get_config('whitelist.json', WhitelistConfig())
 
 
 class Permission:
@@ -103,7 +116,11 @@ class GroupPermission(Permission):
         """
 
         async def check_wrapper(group: Group, member: Member):
-            if group.id in blacklist_cfg.groups or member.id in blacklist_cfg.users:
+            if (
+                group.id in blacklist_cfg.groups
+                or member.id in blacklist_cfg.users
+                or group.id not in whitelist_cfg.groups
+            ):
                 raise ExecutionStop()
             level = await cls.get(member, allow_override)
             if isinstance(perm, MemberPerm):
@@ -140,8 +157,12 @@ class TempPermission(Permission):
         :param allow_override: 是否允许bot主人和bot管理员无视权限控制
         """
 
-        async def check_wrapper(app: Ariadne, member: Member):
-            if member.id in blacklist_cfg.users:
+        async def check_wrapper(app: Ariadne, group: Group, member: Member):
+            if (
+                group.id in blacklist_cfg.groups
+                or member.id in blacklist_cfg.users
+                or group.id not in whitelist_cfg.groups
+            ):
                 raise ExecutionStop()
             level = await cls.get(member, allow_override)
             if isinstance(perm, MemberPerm):
@@ -162,7 +183,7 @@ class FriendPermission(Permission):
     @classmethod
     def require(
         cls,
-        perm: int = 10,
+        perm: int = Permission.USER,
         send_alert: bool = False,
         alert_text: str = '你没有权限执行此指令',
         allow_override: bool = True,
@@ -182,7 +203,7 @@ class FriendPermission(Permission):
             if friend.id in blacklist_cfg.users:
                 raise ExecutionStop()
             level = await cls.get(friend, allow_override)
-            if level < perm:
+            if level <= perm:
                 if send_alert:
                     await app.sendFriendMessage(friend, MessageChain.create(Plain(alert_text)))
                 raise ExecutionStop()

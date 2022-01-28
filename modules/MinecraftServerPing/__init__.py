@@ -63,7 +63,7 @@ ping_cfg: McServerPingConfig = get_config('mc_server_ping.json', McServerPingCon
                 Sparkle(
                     [RegexMatch(r'[!！.]ping')],
                     {
-                        'ping_target': RegexMatch(r'\ \S+', optional=True),
+                        'ping_target': RegexMatch(r'\S+', optional=True),
                     },
                 )
             )

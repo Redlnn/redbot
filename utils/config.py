@@ -74,7 +74,7 @@ def get_config(filename: str, config_model: BaseModel, folder: str = None, in_da
         return config_model.parse_file(file_path)
 
 
-def get_main_config():
+def get_basic_config():
     if not exists(join(config_path, 'redbot.json')):
         save_config('redbot.json', BasicConfig())
         raise ValueError('在? 爷的配置文件哪去了? 给你放了一份，改好了再叫爷!')

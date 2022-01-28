@@ -41,7 +41,7 @@ Module(
     file_name=module_name,
     author=['Red_lnn'],
     description='仿锤子便签样式的消息转图片，支持纯文本与图像',
-    usage='[!！.]img <文本、图像>',
+    usage='[!！.](文本转图片|消息转图片)',
 ).register()
 
 
