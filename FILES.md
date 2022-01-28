@@ -9,7 +9,8 @@ redbot  根目录
 ├── fonts/  字体目录（文本转图片与词云所用）
 ├── logs/  日志目录
 ├── core_modules  核心插件目录
-│   ├── bot_manage/  Bot菜单及模块管理
+│   ├── module_manage/  Bot 菜单及模块管理
+│   ├── bot_manage.py  Bot 管理
 │   ├── bot_status.py  Bot版本与系统运行情况查询
 │   ├── condole.py  Bot控制台相关功能
 │   └── error_handler.py  捕捉Bot运行异常发送给机器人主人

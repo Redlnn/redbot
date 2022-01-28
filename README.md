@@ -20,7 +20,7 @@
 
 <div align="center">
 
-**本 Bot 的设计只考虑本人需求，因此配置文件格式及部分模块可能会大改，推荐 [`A60(djkcyl)`](https://github.com/djkcyl/) 的 [`ABot`](https://github.com/djkcyl/ABot-Graia/)**
+**本 Bot 的设计只考虑本人需求，因此配置文件格式及部分模块可能会大改，推荐 [`A60(djkcyl)`](https://github.com/djkcyl/) 的 [`ABot`](https://github.com/djkcyl/ABot-Graia/) 和 [`SAGIRI-kawaii`](https://github.com/SAGIRI-kawaii/) 的 [`sagiri-bot`](https://github.com/SAGIRI-kawaii/sagiri-bot)**
 
 **本仓库偶尔会 Force Push，不建议 Fork**
 
@@ -30,7 +30,8 @@
 
 ## 功能列表
 
-- Bot菜单、模块管理及查询
+- Bot 菜单、模块管理及查询
+- Bot 管理
 - Bot 版本与系统运行情况查询
 - 消息触发支持：全局黑名单控制、成员权限控制、频率限制
 - BiliBili 视频解析：支持小程序、卡片分享、av号、BV号、B站链接
