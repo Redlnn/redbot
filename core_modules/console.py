@@ -4,6 +4,7 @@
 from graia.ariadne.app import Ariadne
 from graia.ariadne.console import Console
 from graia.ariadne.console.saya import ConsoleSchema
+from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.parser.twilight import (
     FullMatch,
     ParamMatch,
@@ -33,3 +34,12 @@ async def stop(app: Ariadne, console: Console):
 async def group_chat(spark: Sparkle):
     group, message = spark[ParamMatch]
     await safeSendGroupMessage(int(group.result.asDisplay()), message.result)
+
+
+@channel.use(ConsoleSchema([Twilight.from_command('send_friend {0} {1}')]))
+async def friend_chat(app: Ariadne, spark: Sparkle):
+    friend, message = spark[ParamMatch]
+    try:
+        await app.sendFriendMessage(int(friend.result.asDisplay()), message.result)
+    except UnknownTarget:
+        pass
