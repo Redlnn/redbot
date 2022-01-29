@@ -115,7 +115,7 @@ async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
         await app.sendGroupMessage(group, MessageChain.create(Plain('连接被目标拒绝，该地址（及端口）可能不存在 Minecraft 服务器')))
         logger.warning(f'连接被目标拒绝，该地址（及端口）可能不存在Minecraft服务器，目标地址：{server_address}')
         return
-    except (Timeout, ReadTimeout, ConnectTimeout, TimeoutError, socket.timeout):
+    except socket.timeout:
         await app.sendGroupMessage(group, MessageChain.create(Plain('连接超时')))
         logger.warning(f'连接超时，目标地址：{server_address}')
         return
@@ -145,7 +145,7 @@ async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
     else:
         players_list = ''
         for _ in ping_result['player_list']:
-            players_list += f' | {_[0]}\n'
+            players_list += f' | {_["name"]}\n'
         if online_player <= 10:
             msg_send = (
                 f'咕咕咕！！！\n'

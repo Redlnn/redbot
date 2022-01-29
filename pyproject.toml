@@ -13,13 +13,13 @@ aiofile = "^3.7.4"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 dnspython = "^2.2.0"
 gitpython = "^3.1.26"
-graia-ariadne = {extras = ["full"], version = "^0.5.1rc3", allow-prereleases=true}
-httpx = "^0.21.3"
+graia-ariadne = {extras = ["full"], version = "^0.5.1", allow-prereleases=true}
+httpx = "^0.22.0"
 jieba = "^0.42.1"
 loguru = "^0.5.3"
 mctools = "^1.1.2"
 numpy = "^1.22.1"
-orjson = "^3.6.5"
+orjson = "^3.6.6"
 peewee = "^3.14.8"
 pillow = "^9.0.0"
 psutil = "^5.9.0"
