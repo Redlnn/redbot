@@ -13,7 +13,12 @@ aiofile = "^3.7.4"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 dnspython = "^2.2.0"
 gitpython = "^3.1.26"
-graia-ariadne = {extras = ["full"], version = "^0.5.1", allow-prereleases=true}
+graia-ariadne = {extras = ["full"], version = "^0.5.2rc1", allow-prereleases=true}
+# graia-ariadne = "0.5.2rc1"
+# graia-broadcast = "0.15.2"
+# arclet-alconna = "^0.4.1"
+# graia-scheduler = "^0.0.6"
+# graia-saya = "^0.0.13"
 httpx = "^0.22.0"
 jieba = "^0.42.1"
 loguru = "^0.5.3"
@@ -26,7 +31,7 @@ psutil = "^5.9.0"
 pydantic = "^1.9.0"
 pymysql = "^1.0.2"
 pyyaml = "^6.0"
-regex = "^2021.11.10"
+regex = "^2022.1.18"
 requests = "^2.27.1"
 wordcloud = "^1.8.1"
 
