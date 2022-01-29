@@ -26,7 +26,7 @@ psutil = "^5.9.0"
 pydantic = "^1.9.0"
 pymysql = "^1.0.2"
 pyyaml = "^6.0"
-regex = "^2021.11.10"
+regex = "^2022.1.18"
 requests = "^2.27.1"
 wordcloud = "^1.8.1"
 
