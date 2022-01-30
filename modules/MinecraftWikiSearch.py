@@ -29,7 +29,7 @@ modules_cfg = get_modules_config()
 module_name = basename(__file__)[:-3]
 
 Module(
-    name='搜索我的世界中文Wiki',
+    name='我的世界中文Wiki搜索',
     file_name=module_name,
     author=['Red_lnn'],
     usage='[!！.]wiki <要搜索的关键词>',
@@ -47,14 +47,15 @@ async def main(app: Ariadne, group: Group, keyword: RegexMatch):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
-    arg: str = keyword.result.asDisplay()
-    search_parm: str = quote(arg, encoding='utf-8')
+    keyword: str = keyword.result.asDisplay()
+    search_parm: str = quote(keyword, encoding='utf-8')
     await app.sendGroupMessage(
         group,
         MessageChain.create(
             Plain(
-                f'Bilibili 镜像Wiki: https://searchwiki.biligame.com/mc/index.php?search={search_parm}\n'
-                f'Fandom Wiki: https://minecraft.fandom.com/zh/index.php?search={search_parm}'
+                f'在 Minecraft Wiki 中搜索【{keyword}】\n'
+                f'Bilibili 镜像: https://searchwiki.biligame.com/mc/index.php?search={search_parm}\n'
+                f'Fandom: https://minecraft.fandom.com/zh/index.php?search={search_parm}'
             )
         ),
     )

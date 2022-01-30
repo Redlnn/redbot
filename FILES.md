@@ -23,11 +23,11 @@ redbot  根目录
 │   ├── DontNudgeMe.py  别戳我
 │   ├── HelpYouChoose  帮你做选择
 │   ├── LogMsgHistory.py  历史聊天数据记录
+│   ├── MinecraftWikiSearch.py  我的世界中文 Wiki 搜索
 │   ├── Msg2Img.py  消息内容转图片
 │   ├── ReadAndSend.py  读取/发送消息的可持久化字符串
 │   ├── RenpinChecker.py  每日抽签（人品检测）
 │   ├── RollNumber.py  随机数抽取
-│   ├── SearchMinecraftWiki.py  我的世界中文 Wiki 搜索
 │   ├── Setu.py  涩图（不可以色色噢）
 │   └── WordCloud.py 聊天历史词云生成
 └── utils  通用功能目录
