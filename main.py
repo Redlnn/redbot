@@ -3,6 +3,7 @@
 
 import asyncio
 import os
+import pkgutil
 from os.path import abspath, isdir, isfile, join
 
 from graia.ariadne.adapter import DefaultAdapter
@@ -65,27 +66,27 @@ if __name__ == '__main__':
 
     with saya.module_context():
         core_modules_path = abspath(join(root_path, 'core_modules'))
-        for module in os.listdir(core_modules_path):
-            if module in modules_cfg.globalDisabledModules or module[:-3] in modules_cfg.globalDisabledModules:
+        for module in pkgutil.iter_modules([core_modules_path]):
+            if (
+                module.name in modules_cfg.globalDisabledModules
+                or module.name[:-3] in modules_cfg.globalDisabledModules
+            ):
                 continue
-            elif module in ignore or module[0] in ('!', '#', '.'):
+            elif module.name in ignore or module.name[0] in ('!', '#', '.'):
                 continue
-            elif isdir(join(core_modules_path, module)):
-                saya.require(f'core_modules.{module}')
-            elif isfile(join(core_modules_path, module)) and module[-3:] == '.py':
-                saya.require(f'core_modules.{module[:-3]}')
+            saya.require(f"core_modules.{module.name}")
 
     if modules_cfg.enabled:
         with saya.module_context():
-            for module in os.listdir(modules_path):
-                if module in modules_cfg.globalDisabledModules or module[:-3] in modules_cfg.globalDisabledModules:
+            for module in pkgutil.iter_modules([modules_path]):
+                if (
+                    module.name in modules_cfg.globalDisabledModules
+                    or module.name[:-3] in modules_cfg.globalDisabledModules
+                ):
                     continue
-                elif module in ignore or module[0] in ('!', '#', '.'):
+                elif module.name in ignore or module.name[0] in ('!', '#', '.'):
                     continue
-                elif isdir(join(modules_path, module)):
-                    saya.require(f'modules.{module}')
-                elif isfile(join(modules_path, module)) and module[-3:] == '.py':
-                    saya.require(f'modules.{module[:-3]}')
+                saya.require(f"modules.{module.name}")
 
     app.launch_blocking()
     console.stop()
