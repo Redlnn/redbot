@@ -175,7 +175,7 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool, message: Message
             return
 
     try:
-        res: str = execute_command(f'whitelist add {real_mc_id}')
+        res: str = await execute_command(f'whitelist add {real_mc_id}')
     except Exception as e:
         await safeSendGroupMessage(
             group,
@@ -211,7 +211,7 @@ async def del_whitelist_from_server(mc_uuid: str, group: Group) -> bool:
         return False
     else:
         try:
-            result = execute_command(f'whitelist remove {mc_id}')
+            result = await execute_command(f'whitelist remove {mc_id}')
         except Exception as e:
             await safeSendGroupMessage(group, MessageChain.create(Plain(f'无法连接至服务器：{e}')))
             return False
