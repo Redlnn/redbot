@@ -4,7 +4,7 @@
 import asyncio
 import os
 import pkgutil
-from os.path import abspath, isdir, isfile, join
+from os.path import abspath, join
 
 from graia.ariadne.adapter import DefaultAdapter
 from graia.ariadne.app import Ariadne

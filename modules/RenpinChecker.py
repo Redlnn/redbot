@@ -19,7 +19,6 @@ from typing import Tuple
 import orjson as json
 import regex as re
 from aiofile import async_open
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain

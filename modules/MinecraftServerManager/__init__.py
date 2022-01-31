@@ -24,7 +24,6 @@ from loguru import logger
 
 from utils.control.permission import GroupPermission
 from utils.send_message import safeSendGroupMessage
-# from utils.module_register import Module
 from utils.text2img import generate_img
 
 from .config import config
@@ -45,6 +44,7 @@ saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 
+# from utils.module_register import Module
 # Module(
 #         name='我的世界服务器管理',
 #         file_name=os.path.dirname(__file__),
