@@ -5,6 +5,7 @@ import random
 from os.path import dirname
 from pathlib import Path
 
+from aiofile import async_open
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -33,12 +34,11 @@ Module(
 ).register()
 
 
-@io_bound
-def get_food():
-    with open(Path(Path(__file__).parent, 'foods.txt')) as fp:
-        foods = fp.readlines()
-    food = random.choice(foods)
-    return food.rstrip()
+async def get_food():
+    async with async_open(Path(Path(__file__).parent, 'foods.txt')) as afp:
+        foods = await afp.read()
+    food = random.choice(foods.strip().split('\n'))
+    return food
 
 
 @channel.use(
