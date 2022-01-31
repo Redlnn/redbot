@@ -571,7 +571,7 @@ async def get_player_list(group: Group):
     elif group.id not in config.activeGroups:
         return
     try:
-        exec_result: str = execute_command('list')  # noqa
+        exec_result: str = await execute_command('list')  # noqa
     except Exception as e:
         await safeSendGroupMessage(group, MessageChain.create(Plain(f'在服务器执行命令时出错：{e}')))
         logger.error('在服务器执行命令时出错')
@@ -609,7 +609,7 @@ async def run_command_list(group: Group, message: MessageChain):
         await safeSendGroupMessage(group, MessageChain.create(Plain('无效的命令')))
         return
     try:
-        exec_result: str = execute_command(split_msg[1])
+        exec_result: str = await execute_command(split_msg[1])
         logger.info(f'在服务器上执行命令：{split_msg[1]}')
     except Exception as e:
         await safeSendGroupMessage(group, MessageChain.create(Plain(f'在服务器执行命令时出错：{e}')))
@@ -762,7 +762,7 @@ async def pardon(group: Group, message: MessageChain):
     if uuid1:
         mc_id = await get_mc_id(uuid1)
         if isinstance(mc_id, str):
-            res = execute_command(f'pardon {mc_id}')
+            res = await execute_command(f'pardon {mc_id}')
             if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
                 await safeSendGroupMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')))
                 flags.append(False)
@@ -772,7 +772,7 @@ async def pardon(group: Group, message: MessageChain):
     if uuid2:
         mc_id = await get_mc_id(uuid2)
         if isinstance(mc_id, str):
-            res = execute_command(f'pardon {mc_id}')
+            res = await execute_command(f'pardon {mc_id}')
             if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
                 await safeSendGroupMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')))
                 flags.append(False)
@@ -880,7 +880,7 @@ async def ban(group: Group, message: MessageChain):
     if uuid1:
         mc_id = await get_mc_id(uuid1)
         if isinstance(mc_id, str):
-            res = execute_command(f'ban {mc_id} {block_reason}')
+            res = await execute_command(f'ban {mc_id} {block_reason}')
             if not res.startswith('Banned') and res != 'Nothing changed. The player is already banned':
                 await safeSendGroupMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')))
                 flags.append(False)
@@ -890,7 +890,7 @@ async def ban(group: Group, message: MessageChain):
     if uuid2:
         mc_id = await get_mc_id(uuid2)
         if isinstance(mc_id, str):
-            res = execute_command(f'ban {mc_id} {block_reason}')
+            res = await execute_command(f'ban {mc_id} {block_reason}')
             if not res.startswith('Banned') and res != 'Nothing changed. The player is already banned':
                 await safeSendGroupMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')))
                 flags.append(False)
