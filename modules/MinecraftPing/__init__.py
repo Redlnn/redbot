@@ -132,39 +132,20 @@ async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
     motd = f' | {motd_list[0].strip()}'
     if len(motd_list) == 2:
         motd += f'\n | {motd_list[1].strip()}'
-    online_player = int(ping_result['online_player'])
-    if online_player == 0 or not ping_result['player_list']:
-        msg_send = (
-            f'咕咕咕！！！\n'
-            f'服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
-            f'MOTD:\n{motd}\n'
-            f'延迟: {ping_result["delay"]}ms\n'
-            f'在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}\n'
-            f'にゃ～'
-        )
-    else:
+    msg_send = (
+        f'咕？咕咕？咕咕咕！！\n'
+        f'服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
+        f'MOTD:\n{motd}\n'
+        f'延迟: {ping_result["delay"]}ms\n'
+        f'在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}\n'
+    )
+    if ping_result['online_player'] != '0' and ping_result['player_list']:
         players_list = ''
         for _ in ping_result['player_list']:
             players_list += f' | {_["name"]}\n'
-        if online_player <= 10:
-            msg_send = (
-                f'咕咕咕！！！\n'
-                f'服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
-                f'MOTD:\n{motd}\n'
-                f'延迟: {ping_result["delay"]}ms\n'
-                f'在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}\n'
-                f'在线列表：\n{players_list}'
-                f'にゃ～'
-            )
+        if int(ping_result['online_player']) <= 10:
+            msg_send += f'在线列表（不完整）：\n{players_list.rstrip()}'
         else:
-            msg_send = (
-                f'咕咕咕！！！\n'
-                f'服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
-                f'MOTD:\n{motd}\n'
-                f'延迟: {ping_result["delay"]}ms\n'
-                f'在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}\n'
-                f'在线列表（不完整）：\n{players_list}'
-                f'にゃ～'
-            )
+            msg_send += f'在线列表：\n{players_list.rstrip()}'
 
     await app.sendGroupMessage(group, MessageChain.create(Plain(msg_send)))
