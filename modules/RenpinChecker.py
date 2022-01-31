@@ -18,6 +18,7 @@ from typing import Tuple
 
 import orjson as json
 import regex as re
+from aiofile import async_open
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
@@ -25,7 +26,6 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group, Member
-from graia.ariadne.util.async_exec import io_bound
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from graia.scheduler.saya import SchedulerSchema
@@ -191,15 +191,14 @@ def gen_qianwen(renpin: int) -> str:
             return ''
 
 
-@io_bound
-def read_data(qq: str) -> Tuple[bool, int, str]:
+async def read_data(qq: str) -> Tuple[bool, int, str]:
     """
     在文件中读取指定QQ今日已生成过的随机数，若今日未生成，则新生成一个随机数并写入文件
     """
     data_file_path = Path(data_path, f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json')
     try:
-        with open(data_file_path, 'r', encoding='utf-8') as fp:  # 以 追加+读 的方式打开文件
-            f_data = fp.read()
+        async with async_open(data_file_path, 'r', encoding='utf-8') as afp:  # 以 追加+读 的方式打开文件
+            f_data = await afp.read()
             if len(f_data) > 0:
                 data: dict = json.loads(f_data)  # 读写
             else:
@@ -212,6 +211,6 @@ def read_data(qq: str) -> Tuple[bool, int, str]:
         renpin = random.randint(0, 100)
         qianwen = gen_qianwen(renpin)
         data[qq] = {'renpin': renpin, 'qianwen': qianwen}
-        with open(data_file_path, 'wb') as fp:
-            fp.write(json.dumps(data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE))
+        async with async_open(data_file_path, 'wb') as afp:
+            await afp.write(json.dumps(data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE))
         return True, renpin, qianwen
