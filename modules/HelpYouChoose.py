@@ -22,7 +22,6 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from utils.config import get_basic_config, get_modules_config
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
-from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
@@ -44,7 +43,7 @@ Module(
         decorators=[GroupPermission.require()],
     )
 )
-async def main(group: Group, source: Source, message: MessageChain, at: ElementMatch):
+async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: ElementMatch):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
@@ -75,4 +74,4 @@ async def main(group: Group, source: Source, message: MessageChain, at: ElementM
             chain = MessageChain.create(Plain(subject + re2_match[2] + preposition + action))
     else:
         return
-    await safeSendGroupMessage(group, chain, quote=source)
+    await app.sendMessage(group, chain, quote=source)

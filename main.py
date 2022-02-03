@@ -11,7 +11,6 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.console import Console
 from graia.ariadne.console.saya import ConsoleBehaviour
 from graia.ariadne.model import MiraiSession
-from graia.ariadne.util.send import Safe
 from graia.broadcast import Broadcast
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
@@ -23,6 +22,7 @@ from prompt_toolkit.styles import Style
 from utils.config import get_basic_config, get_modules_config
 from utils.logger import change_logger
 from utils.path import modules_path, root_path
+from utils.send_action import Safe
 
 basic_cfg = get_basic_config()
 modules_cfg = get_modules_config()

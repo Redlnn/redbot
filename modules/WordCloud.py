@@ -12,7 +12,6 @@ import time
 from io import BytesIO
 from os.path import basename
 from pathlib import Path
-from typing import List
 
 import jieba.analyse
 import numpy
@@ -45,7 +44,6 @@ from utils.control.permission import GroupPermission
 from utils.database.msg_history import get_group_msg, get_member_msg
 from utils.module_register import Module
 from utils.path import data_path
-from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
@@ -67,11 +65,11 @@ Module(
 
 
 class WordCloudConfig(BaseModel):
-    blacklistWord: List[str] = ['[APP消息]', '[XML消息]', '[JSON消息]', '视频短片']
+    blacklistWord: list[str] = ['[APP消息]', '[XML消息]', '[JSON消息]', '视频短片']
     fontName: str = 'OPPOSans-B.ttf'
 
 
-Generating_list: List[int | str] = []
+Generating_list: list[int | str] = []
 config: WordCloudConfig = get_config('wordcloud.json', WordCloudConfig())
 
 
@@ -107,7 +105,7 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
     match_result: MessageChain = wc_target.result  # noqa: E275
 
     if len(Generating_list) > 2:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('词云生成队列已满，请稍后再试')))
+        await app.sendMessage(group, MessageChain.create(Plain('词云生成队列已满，请稍后再试')))
         return
 
     if len(match_result) == 0:
@@ -116,11 +114,11 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
         target_type = 'group'
         target = group.id
         if target in Generating_list:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
+            await app.sendMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
         rate_limit, remaining_time = ManualInterval.require(f'wordcloud_{target}', 600, 1)
         if not rate_limit:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+            await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
             return
         Generating_list.append(target)
         msg_list = await get_group_msg(group.id, target_timestamp)
@@ -128,42 +126,42 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
         target_type = 'me'
         target = member.id
         if target in Generating_list:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
+            await app.sendMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
         rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
         if not rate_limit:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+            await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
             return
         Generating_list.append(target)
         msg_list = await get_member_msg(group.id, target, target_timestamp)
     elif match_result.onlyContains(At):
         target = match_result.getFirst(At).target
         if target in Generating_list:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
+            await app.sendMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
         rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
         if not rate_limit:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+            await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
             return
         Generating_list.append(target)
         msg_list = await get_member_msg(group.id, target, target_timestamp)
     elif match_result.asDisplay().isdigit():
         target = int(match_result.asDisplay())
         if target in Generating_list:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
+            await app.sendMessage(group, MessageChain.create(Plain('目标已在生成词云中，请稍后')))
             return
         Generating_list.append(target)
         msg_list = await get_member_msg(group.id, target, target_timestamp)
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('无效的命令，参数错误')))
+        await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')))
         return
 
     if len(msg_list) < 50:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'目标 {target} 的样本数量较少，无法生成词云')))
+        await app.sendMessage(group, MessageChain.create(Plain(f'目标 {target} 的样本数量较少，无法生成词云')))
         Generating_list.remove(target)
         return
 
-    await app.sendGroupMessage(
+    await app.sendMessage(
         group,
         MessageChain.create(
             Plain(f'正在为 {target} 生成词云，其最近{day_length.result.asDisplay()}天共 {len(msg_list)} 条记录，请稍后...')
@@ -174,19 +172,19 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
 
     if target_type == 'group':
         try:
-            await app.sendGroupMessage(
+            await app.sendMessage(
                 group,
                 MessageChain.create(
                     Plain(f'本群最近{day_length.result.asDisplay()}天内的聊天词云 👇\n'), Image(data_bytes=image_bytes)
                 ),
             )
         except UnknownError:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('词云发送失败')))
+            await app.sendMessage(group, MessageChain.create(Plain('词云发送失败')))
         finally:
             Generating_list.remove(target)
     else:
         try:
-            await safeSendGroupMessage(
+            await app.sendMessage(
                 group,
                 MessageChain.create(
                     At(target),
@@ -195,7 +193,7 @@ async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMa
                 ),
             )
         except UnknownError:
-            await app.sendGroupMessage(group, MessageChain.create(Plain('词云发送失败')))
+            await app.sendMessage(group, MessageChain.create(Plain('词云发送失败')))
         finally:
             Generating_list.remove(target)
 
@@ -208,7 +206,7 @@ def skip(persistent_string: str):
 
 
 @cpu_bound
-def get_frequencies(msg_list: List[str]) -> dict:
+def get_frequencies(msg_list: list[str]) -> dict:
     text = ''
     for persistent_string in msg_list:
         if skip(persistent_string):

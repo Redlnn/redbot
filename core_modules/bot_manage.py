@@ -4,7 +4,6 @@
 import asyncio
 from os.path import basename
 from random import uniform
-from typing import Optional
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.context import ariadne_ctx
@@ -105,7 +104,7 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
         )
         return
 
-    sourceGroup: Optional[int] = event.sourceGroup
+    sourceGroup: int | None = event.sourceGroup
     groupname = '未知'
     if sourceGroup:
         group = await app.getGroup(sourceGroup)

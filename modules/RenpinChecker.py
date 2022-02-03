@@ -14,11 +14,11 @@ import os
 import random
 from os.path import basename
 from pathlib import Path
-from typing import Tuple
 
 import orjson as json
 import regex as re
 from aiofile import async_open
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -36,7 +36,6 @@ from utils.control.interval import MemberInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
 from utils.path import data_path
-from utils.send_message import safeSendGroupMessage
 from utils.text2img import async_generate_img, hr
 
 channel = Channel.current()
@@ -110,18 +109,16 @@ lucky_things = {
         decorators=[GroupPermission.require(), MemberInterval.require(10)],
     )
 )
-async def main(group: Group, member: Member):
+async def main(app: Ariadne, group: Group, member: Member):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
     is_new, renpin, qianwen = await read_data(str(member.id))
     img_bytes = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
-        await safeSendGroupMessage(
-            group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes))
-        )
+        await app.sendMessage(group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
     else:
-        await safeSendGroupMessage(
+        await app.sendMessage(
             group,
             MessageChain.create(
                 At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'), Image(data_bytes=img_bytes)
@@ -190,7 +187,7 @@ def gen_qianwen(renpin: int) -> str:
             return ''
 
 
-async def read_data(qq: str) -> Tuple[bool, int, str]:
+async def read_data(qq: str) -> tuple[bool, int, str]:
     """
     在文件中读取指定QQ今日已生成过的随机数，若今日未生成，则新生成一个随机数并写入文件
     """

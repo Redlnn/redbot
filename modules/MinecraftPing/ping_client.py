@@ -4,7 +4,6 @@
 import socket
 import struct
 import time
-from typing import Optional, Union
 
 import orjson as json
 import regex as re
@@ -124,7 +123,7 @@ class PingClient:
         return status
 
 
-async def ping(ip: Optional[str] = None, url: Optional[str] = None, port: Optional[int] = None) -> dict:
+async def ping(ip: str | None = None, url: str | None = None, port: int | None = None) -> dict:
     if not ip and not url:
         raise ValueError('Neither IP nor URL exists')
     elif ip and url:

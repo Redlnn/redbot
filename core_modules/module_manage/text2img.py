@@ -8,7 +8,6 @@
 import os
 import time
 from io import BytesIO
-from typing import Dict, List
 
 from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
@@ -143,7 +142,7 @@ def _cut_text(
 
 
 @cpu_bound
-def generate_img(text_and_img: List[str | bytes] = None) -> bytes:
+def generate_img(text_and_img: list[str | bytes] = None) -> bytes:
     """
     根据输入的文本，生成一张图并返回图片文件的路径
 
@@ -165,7 +164,7 @@ def generate_img(text_and_img: List[str | bytes] = None) -> bytes:
     line_width = int(_chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
 
     content_height = 0
-    contents: List[Dict[str, str | Img.Image | int]] = []
+    contents: list[dict[str, str | Img.Image | int]] = []
     # contents = [{
     #     'content': str/byte,
     #     'height': 区域高度

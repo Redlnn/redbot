@@ -2,17 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import time
-import uuid
-from datetime import datetime
-from typing import Optional, Tuple
+from uuid import UUID
 
 import regex as re
 from aiohttp import ClientResponse
 from graia.ariadne.context import adapter_ctx
 
-from .database import PlayersTable
-
-__all__ = ['get_time', 'is_mc_id', 'is_uuid', 'get_mc_id', 'get_uuid', 'query_uuid_by_qq', 'query_qq_by_uuid']
+__all__ = ['get_time', 'is_mc_id', 'is_uuid', 'get_mc_id', 'get_uuid']
 
 
 async def get_time() -> str:
@@ -40,7 +36,7 @@ async def is_uuid(mc_uuid: str) -> bool:
     判断是否为合法uuid
     """
     try:
-        uuid.UUID(mc_uuid)
+        UUID(mc_uuid)
     except ValueError:
         return False
     else:
@@ -63,7 +59,7 @@ async def get_uuid(mc_id: str) -> tuple[str | ClientResponse, str]:
             return resp, ''
 
 
-async def get_mc_id(mc_uuid: str) -> str | ClientResponse:
+async def get_mc_id(mc_uuid: str | UUID) -> str | ClientResponse:
     """
     通过 uuid 从 Mojang 获取正版 id
 
@@ -78,44 +74,3 @@ async def get_mc_id(mc_uuid: str) -> str | ClientResponse:
         # elif resp.status == 400:
         else:
             return resp
-
-
-async def query_uuid_by_qq(
-    qq: int | str,
-) -> Tuple[
-    bool,
-    Optional[datetime],
-    Optional[datetime],
-    Optional[str],
-    Optional[datetime],
-    Optional[str],
-    Optional[datetime],
-    Optional[bool],
-    Optional[str],
-]:
-    try:
-        data: PlayersTable = PlayersTable.get(PlayersTable.qq == qq)
-    except PlayersTable.DoesNotExist:
-        return False, None, None, None, None, None, None, None, None
-    else:
-        return (
-            True,
-            data.joinTimestamp,
-            data.leaveTimestamp,
-            str(data.uuid1) if data.uuid1 else None,
-            data.uuid1AddedTime,
-            str(data.uuid2) if data.uuid2 else None,
-            data.uuid2AddedTime,
-            data.blocked,
-            data.blockReason,
-        )
-
-
-async def query_qq_by_uuid(mc_uuid: str) -> Optional[int]:
-    target = uuid.UUID(mc_uuid)
-    try:
-        data: PlayersTable = PlayersTable.get((PlayersTable.uuid1 == target) | (PlayersTable.uuid2 == target))
-    except PlayersTable.DoesNotExist:
-        return None
-    else:
-        return int(data.qq)

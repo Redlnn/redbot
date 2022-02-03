@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from typing import List, Optional, Tuple
 
 from peewee import CharField, IntegerField, Model, TextField, TimestampField, fn
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
@@ -94,7 +93,7 @@ async def log_msg(group: int | str, qq: int | str, timestamp: int, msg_id: int, 
     MsgLog.create(group=group, qq=qq, timestamp=timestamp, msg_id=msg_id, msg_chain=msg_chain)
 
 
-async def get_member_talk_count(group: int | str, qq: int | str, timestamp: int = 0) -> Optional[int]:
+async def get_member_talk_count(group: int | str, qq: int | str, timestamp: int = 0) -> int | None:
     try:
         data = MsgLog.select(fn.Count(MsgLog.msg_id).alias('count')).where(
             (MsgLog.group == group) & (MsgLog.qq == qq) & (MsgLog.timestamp >= timestamp)
@@ -105,7 +104,7 @@ async def get_member_talk_count(group: int | str, qq: int | str, timestamp: int 
         return data.get().count
 
 
-async def get_group_talk_count(group: int | str, timestamp: int = 0) -> Optional[int]:
+async def get_group_talk_count(group: int | str, timestamp: int = 0) -> int | None:
     try:
         data = MsgLog.select(fn.Count(MsgLog.msg_id).alias('count')).where(
             (MsgLog.group == group) & (MsgLog.timestamp >= timestamp)
@@ -116,7 +115,7 @@ async def get_group_talk_count(group: int | str, timestamp: int = 0) -> Optional
         return data.get().count
 
 
-async def get_member_last_message(group: int | str, qq: int | str) -> Tuple[Optional[str], Optional[int]]:
+async def get_member_last_message(group: int | str, qq: int | str) -> tuple[str | None, int | None]:
     try:
         data = MsgLog.select(MsgLog.msg_chain, MsgLog.timestamp).where(
             (MsgLog.group == group)
@@ -132,7 +131,7 @@ async def get_member_last_message(group: int | str, qq: int | str) -> Tuple[Opti
     return data_get.msg_chain, data_get.timestamp
 
 
-async def get_group_last_message(group: int | str) -> Tuple[Optional[str], Optional[str], Optional[int]]:
+async def get_group_last_message(group: int | str) -> tuple[str | None, str | None, int | None]:
     try:
         data = MsgLog.select(MsgLog.qq, MsgLog.msg_chain, MsgLog.timestamp).where(
             (MsgLog.group == group)
@@ -144,7 +143,7 @@ async def get_group_last_message(group: int | str) -> Tuple[Optional[str], Optio
     return data_get.qq, data_get.msg_chain, data_get.timestamp
 
 
-async def get_member_last_message_id(group: int | str, qq: int | str) -> Optional[int]:
+async def get_member_last_message_id(group: int | str, qq: int | str) -> int | None:
     try:
         data = MsgLog.select(fn.Max(MsgLog.msg_id).alias('last_id')).where((MsgLog.group == group) & (MsgLog.qq == qq))
     except MsgLog.DoesNotExist:
@@ -152,7 +151,7 @@ async def get_member_last_message_id(group: int | str, qq: int | str) -> Optiona
     return data.get().last_id
 
 
-async def get_group_last_message_id(group: int | str) -> Optional[int]:
+async def get_group_last_message_id(group: int | str) -> int | None:
     try:
         data = MsgLog.select(fn.Max(MsgLog.msg_id).alias('last_id')).where(MsgLog.group == group)
     except MsgLog.DoesNotExist:
@@ -160,7 +159,7 @@ async def get_group_last_message_id(group: int | str) -> Optional[int]:
     return data.get().last_id
 
 
-async def get_member_last_time(group: int | str, qq: int | str) -> Optional[int]:
+async def get_member_last_time(group: int | str, qq: int | str) -> int | None:
     try:
         data = MsgLog.select(fn.Max(MsgLog.timestamp).alias('last_time')).where(
             (MsgLog.group == group) & (MsgLog.qq == qq)
@@ -170,7 +169,7 @@ async def get_member_last_time(group: int | str, qq: int | str) -> Optional[int]
     return data.get().last_time
 
 
-async def get_group_last_time(group: int | str) -> Optional[int]:
+async def get_group_last_time(group: int | str) -> int | None:
     try:
         data = MsgLog.select(fn.Max(MsgLog.timestamp).alias('last_time')).where(MsgLog.group == group)
     except MsgLog.DoesNotExist:
@@ -178,7 +177,7 @@ async def get_group_last_time(group: int | str) -> Optional[int]:
     return data.get().last_time
 
 
-async def get_group_msg_by_id(group: int | str) -> Optional[str]:
+async def get_group_msg_by_id(group: int | str) -> str | None:
     try:
         data = MsgLog.select(MsgLog.msg_chain).where(MsgLog.group == group)
     except MsgLog.DoesNotExist:
@@ -186,7 +185,7 @@ async def get_group_msg_by_id(group: int | str) -> Optional[str]:
     return data.get().msg_chain
 
 
-async def get_member_msg(group: int | str, qq: int | str, timestamp: int = 0) -> List[str]:
+async def get_member_msg(group: int | str, qq: int | str, timestamp: int = 0) -> list[str]:
     try:
         data = MsgLog.select().where((MsgLog.group == group) & (MsgLog.qq == qq) & (MsgLog.timestamp >= timestamp))
     except MsgLog.DoesNotExist:
@@ -194,7 +193,7 @@ async def get_member_msg(group: int | str, qq: int | str, timestamp: int = 0) ->
     return [msg.msg_chain for msg in data]
 
 
-async def get_group_msg(group: int | str, timestamp: int = 0) -> List[str]:
+async def get_group_msg(group: int | str, timestamp: int = 0) -> list[str]:
     try:
         data = MsgLog.select().where((MsgLog.group == group) & (MsgLog.timestamp >= timestamp))
     except MsgLog.DoesNotExist:

@@ -76,7 +76,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
     if int(san.result.asDisplay()) >= 4 and not (
         member.permission in (MemberPerm.Administrator, MemberPerm.Owner) or member.id in basic_cfg.admin.admins
     ):
-        await app.sendGroupMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
+        await app.sendMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
         return
     session = adapter_ctx.get().session
     if tag.matched:
@@ -97,7 +97,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
             else:
                 res = {'code': 500}
     if res.get('code', False) == 404 and tag.matched:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('未找到相应tag的色图')))
+        await app.sendMessage(group, MessageChain.create(Plain('未找到相应tag的色图')))
     elif res.get('code', False) == 200:
         forward_nodes = [
             ForwardNode(
@@ -143,11 +143,11 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
             ),
         )
         message = MessageChain.create(Forward(nodeList=forward_nodes))
-        msg_id = await app.sendGroupMessage(group, message)
+        msg_id = await app.sendMessage(group, message)
         await asyncio.sleep(40)
         try:
             await app.recallMessage(msg_id)
         except:
             pass
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('慢一点慢一点，别冲辣！')))
+        await app.sendMessage(group, MessageChain.create(Plain('慢一点慢一点，别冲辣！')))

@@ -14,8 +14,6 @@ from graia.ariadne.message.parser.twilight import (
 from graia.saya import Channel
 from prompt_toolkit.styles import Style
 
-from utils.send_message import safeSendGroupMessage
-
 channel = Channel.current()
 
 
@@ -31,9 +29,9 @@ async def stop(app: Ariadne, console: Console):
 
 
 @channel.use(ConsoleSchema([Twilight.from_command('send_goup {0} {1}')]))
-async def group_chat(spark: Sparkle):
+async def group_chat(app: Ariadne, spark: Sparkle):
     group, message = spark[ParamMatch]
-    await safeSendGroupMessage(int(group.result.asDisplay()), message.result)
+    await app.sendGroupMessage(int(group.result.asDisplay()), message.result)
 
 
 @channel.use(ConsoleSchema([Twilight.from_command('send_friend {0} {1}')]))
