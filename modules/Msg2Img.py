@@ -8,7 +8,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.context import adapter_ctx
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import At, Image, Plain, Source
+from graia.ariadne.message.element import At, AtAll, Image, Plain, Source
 from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group, Member
 from graia.broadcast.interrupt import InterruptControl
@@ -68,7 +68,10 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
 
     img_list: list[str | bytes] = []
     session = adapter_ctx.get().session
-    for i in answer.__root__:
+    for ind, elem in enumerate(answer[:]):
+        if type(elem) in (At, AtAll):
+            answer.__root__[ind] = Plain(elem.asDisplay())
+    for i in answer[:]:
         if isinstance(i, Image):
             async with session.get(i.url) as resp:
                 img_list.append(await resp.content.read())

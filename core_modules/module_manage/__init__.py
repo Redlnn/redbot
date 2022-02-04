@@ -28,7 +28,7 @@ from utils.control.interval import GroupInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module, Modules
 
-from .text2img import generate_img, hr
+from .text2img import async_generate_img, hr
 
 saya = Saya.current()
 channel = Channel.current()
@@ -97,7 +97,7 @@ async def menu(app: Ariadne, group: Group):
         '或是命令中有无多余空格，除了特别说明，其他模块均不需要@bot\n'
         '全局禁用的模块不能重新开启\n'
     )
-    img_bytes = await generate_img([msg_send])
+    img_bytes = await async_generate_img([msg_send])
     await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
 
 
@@ -200,7 +200,7 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
         msg_send += '>>>>>>>>>>>>>>>>>>>>> 模块用法 <<<<<<<<<<<<<<<<<<<<<\n' + target_module.usage + '\n\n'
     if target_module.arg_description:
         msg_send += '>>>>>>>>>>>>>>>>>>>>> 参数介绍 <<<<<<<<<<<<<<<<<<<<<\n' + target_module.arg_description
-    img_bytes = await generate_img([msg_send])
+    img_bytes = await async_generate_img([msg_send])
     await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
 
 

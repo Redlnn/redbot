@@ -8,7 +8,6 @@
 import os
 import time
 from io import BytesIO
-from typing import Dict, List, Optional
 
 from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
@@ -61,7 +60,7 @@ _line_space = config.LineSpace
 _text_margin = config.TextMargin
 _chars_per_line = config.CharsPerLine
 
-hr = _chars_per_line * '—'
+hr = '{hr}'
 
 _background_color = config.BackgroundColor
 _border_side_margin = config.BorderSideMargin
@@ -117,83 +116,43 @@ def _get_time(mode: int = 1) -> str:
     return dt
 
 
-def _cut_line_to_list(
-    text: str,
-    chars_per_line: int,
+def _cut_text(
+    origin: str,
     line_width: int,
-    font_size: int,
 ):
-    start_index = 0
-    index_offset = 0
-    text_list = []
+    target = ''
     start_symbol = '[{<(【《（〈〖［〔“‘『「〝'
     end_symbol = ',.!?;:]}>)%~…，。！？；：】》）〉〗］〕”’～』」〞'
-    while True:
-        tmp_text = text[start_index : start_index + chars_per_line + index_offset]
-        width = font.getlength(tmp_text)
-        if abs(width - line_width) < font_size:
-            if start_index + chars_per_line + index_offset < len(text):
-                if text[start_index + chars_per_line + index_offset] in end_symbol:
-                    index_offset += 1
-                    text_list.append(text[start_index : start_index + chars_per_line + index_offset])
-                elif text[start_index + chars_per_line + index_offset] in start_symbol:
-                    index_offset -= 1
-                    text_list.append(text[start_index : start_index + chars_per_line + index_offset])
-                elif text[start_index + chars_per_line + index_offset] == ' ':
-                    text_list.append(tmp_text)
-                    index_offset += 1
-                else:
-                    text_list.append(tmp_text)
-            else:
-                text_list.append(tmp_text)
-            start_index += chars_per_line + index_offset
-            index_offset = 0
-        elif chars_per_line + index_offset > len(tmp_text):
-            text_list.append(tmp_text)
-            start_index += chars_per_line + index_offset
-            # index_offset = 0
-            break
-        elif width > line_width:
-            index_offset -= 1
+    for i in origin.splitlines(False):
+        if i == '':
+            target += '\n'
             continue
-        elif width < line_width:
-            index_offset += 1
-            continue
-        if start_index >= len(text):
-            break
-    del tmp_text
-    return text_list
-
-
-def _cut_text(
-    text: str,
-    char_per_line: int,
-    line_width: int,
-    font_size: int,
-):
-    text_list = text.splitlines(False)
-    n_text_list = []
-    n_text = ''
-    for _ in text_list:
-        if _ == '':
-            n_text_list.append('')
-        else:
-            n_text_list.extend(_cut_line_to_list(_, char_per_line, line_width, font_size))
-    for _ in n_text_list:
-        if _ == '':
-            n_text += '\n'
-            continue
-        n_text += _
-        n_text += '\n'
-    return n_text.rstrip()
+        j = 0
+        for ind, elem in enumerate(i):
+            if i[j : ind + 1] == i[j:]:
+                target += i[j : ind + 1] + '\n'
+                continue
+            elif font.getlength(i[j : ind + 1]) <= line_width:
+                continue
+            elif ind - j > 3:
+                if i[ind] in end_symbol and i[ind - 1] != i[ind]:
+                    target += i[j : ind + 1] + '\n'
+                    j = ind + 1
+                    continue
+                elif i[ind] in start_symbol and i[ind - 1] != i[ind]:
+                    target += i[j:ind] + '\n'
+                    continue
+            target += i[j:ind] + '\n'
+            j = ind
+    return target.rstrip()
 
 
 @cpu_bound
-def async_generate_img(text_and_img: List[str | bytes] = None, chars_per_line: Optional[int] = None) -> bytes:
+def async_generate_img(text_and_img: list[str | bytes] = None, chars_per_line: int = _chars_per_line) -> bytes:
     return generate_img(text_and_img, chars_per_line)
 
 
-def generate_img(text_and_img: List[str | bytes] = None, chars_per_line: Optional[int] = None) -> bytes:
+def generate_img(text_and_img: list[str | bytes] = None, chars_per_line: int = _chars_per_line) -> bytes:
     """
     根据输入的文本，生成一张图并返回图片文件的路径
 
@@ -201,6 +160,7 @@ def generate_img(text_and_img: List[str | bytes] = None, chars_per_line: Optiona
     - 网络文件转 bytes 方法：requests.get('http://localhost/1.jpg'.content)
 
     :param text_and_img: 要放到图里的文本（str）/图片（bytes）
+    :param chars_per_line: 每行几个字
     :return: 图片文件的路径
     """
 
@@ -212,24 +172,21 @@ def generate_img(text_and_img: List[str | bytes] = None, chars_per_line: Optiona
     extra_text1 = f'由 {basic_cfg.botName} 生成'  # 额外文本1
     extra_text2 = _get_time()  # 额外文本2
 
-    if chars_per_line is not None:
-        line_width = int(chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
-    else:
-        line_width = int(_chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
+    line_width = int(chars_per_line * font.getlength('一'))  # 行宽 = 每行全角宽度的字符数 * 一个字符框的宽度
 
     content_height = 0
-    contents: List[Dict[str, str | Img.Image | int]] = []
+    contents: list = []
     # contents = [{
-    #     'content': str/byte,
+    #     'content': str/Img.Image,
     #     'height': 区域高度
     # }]
 
     for i in text_and_img:
         if isinstance(i, str):
-            text = _cut_text(i, _chars_per_line, line_width, _font_size)
+            text = _cut_text(i.replace('{hr}', chars_per_line * '—'), line_width)
             text_height = font.getsize_multiline(text, spacing=_line_space)[1]
             contents.append({'content': text, 'height': text_height})
-            content_height += text_height
+            content_height += text_height + _line_space
             del text_height
         elif isinstance(i, bytes):
             img: Img.Image = Img.open(BytesIO(i))
@@ -245,6 +202,7 @@ def generate_img(text_and_img: List[str | bytes] = None, chars_per_line: Optiona
         + (2 * _text_margin)
         + (_border_top_margin + (4 * _border_outline_width) + (2 * _border_interval))
         + _border_bottom_margin
+        + _line_space
     )
     # 画布宽度=行宽+2*正文侧面边距+2*(边框侧面边距+(2*边框厚度)+内外框距离)
     bg_width = (
@@ -383,6 +341,8 @@ def generate_img(text_and_img: List[str | bytes] = None, chars_per_line: Optiona
     content_area_x = _border_side_margin + (2 * _border_outline_width) + _border_interval + _text_margin
     content_area_y = _border_top_margin + (2 * _border_outline_width) + _border_interval + _text_margin - 7
 
+    content_area_y += _line_space
+
     for i in contents:
         if isinstance(i['content'], str):
             draw.text(
@@ -392,7 +352,7 @@ def generate_img(text_and_img: List[str | bytes] = None, chars_per_line: Optiona
                 font=font,
                 spacing=_line_space,
             )
-            content_area_y += i['height']
+            content_area_y += i['height'] + _line_space
         elif isinstance(i['content'], Img.Image):
             canvas.paste(i['content'], (content_area_x, content_area_y + _line_space))
             content_area_y += i['height'] + (2 * _line_space)
