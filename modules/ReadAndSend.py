@@ -16,7 +16,6 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from utils.config import get_modules_config
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
-from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
@@ -50,13 +49,11 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         try:
             message_event = await app.getMessageFromId(quote_id)
         except UnknownTarget:
-            await safeSendGroupMessage(group, MessageChain.create(Plain('找不到该消息，对象不存在')))
+            await app.sendMessage(group, MessageChain.create(Plain('找不到该消息，对象不存在')))
             return
         chain = message_event.messageChain
-        await safeSendGroupMessage(
-            group, MessageChain.create(Plain(f'消息ID: {quote_id}\n消息内容：{chain.asPersistentString()}'))
-        )
+        await app.sendMessage(group, MessageChain.create(Plain(f'消息ID: {quote_id}\n消息内容：{chain.asPersistentString()}')))
     elif re.match(r'^[!！.]发送消息\ .+', message.asDisplay()):
         msg = re.sub(r'[!！.]发送消息\ ', '', message.asDisplay(), count=1)
         if msg:
-            await safeSendGroupMessage(group, MessageChain.fromPersistentString(msg))
+            await app.sendMessage(group, MessageChain.fromPersistentString(msg))

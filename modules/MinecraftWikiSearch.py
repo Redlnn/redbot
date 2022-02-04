@@ -49,7 +49,7 @@ async def main(app: Ariadne, group: Group, keyword: RegexMatch):
             return
     keyword: str = keyword.result.asDisplay()
     search_parm: str = quote(keyword, encoding='utf-8')
-    await app.sendGroupMessage(
+    await app.sendMessage(
         group,
         MessageChain.create(
             Plain(

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import List
-
 from pydantic import BaseModel
 
 from utils.config import get_config, save_config
@@ -25,7 +23,7 @@ class DatabaseConfig(BaseModel):
 
 class McServerMangerConfig(BaseModel):
     serverGroup: int = 123456789  # 服务器群群号
-    activeGroups: List[int] = [123456789]
+    activeGroups: list[int] = [123456789]
     rcon: RconConfig = RconConfig()
     database: DatabaseConfig = DatabaseConfig()
 

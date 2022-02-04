@@ -4,7 +4,6 @@
 import socket
 import struct
 import time
-from typing import Optional, Union
 
 import orjson as json
 import regex as re
@@ -106,7 +105,7 @@ class PingClient:
             return re.sub(r'§[0-9a-gk-r]', '', data['text'])
 
     @io_bound
-    def get_ping(self, format: bool = True) -> dict:
+    def get_ping(self, format_: bool = True) -> dict:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.settimeout(5)
             sock.connect((self._host, self._port))
@@ -118,13 +117,13 @@ class PingClient:
             unix = self._read_fully(sock)
 
         status = json.loads(data.decode('utf8'))
-        if format:
+        if format_:
             status['description'] = self._format_desc(status['description'])
         status['delay'] = time.time() * 1000 - struct.unpack('Q', unix)[0]
         return status
 
 
-async def ping(ip: Optional[str] = None, url: Optional[str] = None, port: Optional[int] = None) -> dict:
+async def ping(ip: str | None = None, url: str | None = None, port: int | None = None) -> dict:
     if not ip and not url:
         raise ValueError('Neither IP nor URL exists')
     elif ip and url:

@@ -3,19 +3,13 @@
 
 import asyncio
 from os.path import basename
-from typing import List
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.context import adapter_ctx
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import At, Image, Plain, Quote, Source
-from graia.ariadne.message.parser.twilight import (
-    RegexMatch,
-    Sparkle,
-    Twilight,
-    WildcardMatch,
-)
+from graia.ariadne.message.element import At, Image, Plain, Source
+from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group, Member
 from graia.broadcast.interrupt import InterruptControl
 from graia.broadcast.interrupt.waiter import Waiter
@@ -26,7 +20,6 @@ from utils.config import get_modules_config
 from utils.control.interval import GroupInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
-from utils.send_message import safeSendGroupMessage
 from utils.text2img import async_generate_img
 
 saya = Saya.current()
@@ -52,7 +45,7 @@ Module(
         decorators=[GroupPermission.require(), GroupInterval.require(15)],
     )
 )
-async def main(group: Group, member: Member, source: Source):
+async def main(app: Ariadne, group: Group, member: Member, source: Source):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
@@ -62,21 +55,21 @@ async def main(group: Group, member: Member, source: Source):
         if waiter_group.id == group.id and waiter_member.id == member.id:
             return waiter_message.include(Plain, At, Image)
 
-    await safeSendGroupMessage(group, MessageChain.create(Plain('请发送要转换的内容')), quote=source)
+    await app.sendMessage(group, MessageChain.create(Plain('请发送要转换的内容')), quote=source)
     try:
         answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
     except asyncio.exceptions.TimeoutError:
-        await safeSendGroupMessage(group, MessageChain.create(Plain('已超时取消')), quote=source)
+        await app.sendMessage(group, MessageChain.create(Plain('已超时取消')), quote=source)
         return
 
     if len(answer) == 0:
-        await safeSendGroupMessage(group, MessageChain.create(Plain('你所发送的消息的类型错误')), quote=source)
+        await app.sendMessage(group, MessageChain.create(Plain('你所发送的消息的类型错误')), quote=source)
         return
 
-    img_list: List[str | bytes] = []
+    img_list: list[str | bytes] = []
     session = adapter_ctx.get().session
     for i in answer.__root__:
-        if type(i) == Image:
+        if isinstance(i, Image):
             async with session.get(i.url) as resp:
                 img_list.append(await resp.content.read())
         else:
@@ -84,4 +77,4 @@ async def main(group: Group, member: Member, source: Source):
 
     if img_list:
         img_bytes = await async_generate_img(img_list)
-        await safeSendGroupMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
+        await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))

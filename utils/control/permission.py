@@ -7,8 +7,6 @@
 移植自 Xenon：https://github.com/McZoo/Xenon/blob/master/lib/control.py
 """
 
-from typing import List
-
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
@@ -16,8 +14,6 @@ from graia.ariadne.model import Friend, Group, Member, MemberPerm
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 from pydantic import BaseModel
-
-from utils.send_message import safeSendGroupMessage
 
 from ..config import get_basic_config, get_config
 
@@ -33,12 +29,12 @@ __all__ = [
 
 
 class BlacklistConfig(BaseModel):
-    groups: List[int] = []
-    users: List[int] = []
+    groups: list[int] = []
+    users: list[int] = []
 
 
 class WhitelistConfig(BaseModel):
-    groups: List[int] = []
+    groups: list[int] = []
 
 
 basic_cfg = get_basic_config()
@@ -115,7 +111,7 @@ class GroupPermission(Permission):
         :param allow_override: 是否允许bot主人和bot管理员无视权限控制
         """
 
-        async def check_wrapper(group: Group, member: Member):
+        async def check_wrapper(app: Ariadne, group: Group, member: Member):
             if (
                 group.id in blacklist_cfg.groups
                 or member.id in blacklist_cfg.users
@@ -126,12 +122,12 @@ class GroupPermission(Permission):
             if isinstance(perm, MemberPerm):
                 if level < cls._levels[perm]:
                     if send_alert:
-                        await safeSendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
+                        await app.sendMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
                     raise ExecutionStop()
             elif isinstance(perm, int):
                 if level < perm:
                     if send_alert:
-                        await safeSendGroupMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
+                        await app.sendMessage(group, MessageChain.create(At(member.id), Plain(' ' + alert_text)))
                     raise ExecutionStop()
 
         return Depend(check_wrapper)
@@ -205,7 +201,7 @@ class FriendPermission(Permission):
             level = await cls.get(friend, allow_override)
             if level <= perm:
                 if send_alert:
-                    await app.sendFriendMessage(friend, MessageChain.create(Plain(alert_text)))
+                    await app.sendMessage(friend, MessageChain.create(Plain(alert_text)))
                 raise ExecutionStop()
 
         return Depend(check_wrapper)

@@ -6,7 +6,7 @@ import regex as re
 
 def is_domain(value: str) -> bool:
     """
-    Return whether or not given value is a valid domain.
+    Return whether given value is a valid domain.
     If the value is valid domain name this function returns ``True``, otherwise False
     :param value: domain string to validate
     """

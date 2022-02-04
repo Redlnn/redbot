@@ -4,7 +4,6 @@
 import asyncio
 from os.path import basename
 from random import uniform
-from typing import Optional
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.context import ariadne_ctx
@@ -22,7 +21,7 @@ from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
-from graia.ariadne.model import Friend, Group
+from graia.ariadne.model import Friend
 from graia.broadcast.interrupt import InterruptControl
 from graia.broadcast.interrupt.waiter import Waiter
 from graia.saya import Channel, Saya
@@ -30,12 +29,7 @@ from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
 from utils.config import get_basic_config, save_config
-from utils.control.permission import (
-    FriendPermission,
-    GroupPermission,
-    blacklist_cfg,
-    whitelist_cfg,
-)
+from utils.control.permission import FriendPermission, blacklist_cfg, whitelist_cfg
 from utils.module_register import Module
 
 saya = Saya.current()
@@ -105,7 +99,7 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
         )
         return
 
-    sourceGroup: Optional[int] = event.sourceGroup
+    sourceGroup: int | None = event.sourceGroup
     groupname = '未知'
     if sourceGroup:
         group = await app.getGroup(sourceGroup)

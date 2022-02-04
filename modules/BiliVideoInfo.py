@@ -19,7 +19,6 @@
 import time
 from dataclasses import dataclass
 from os.path import basename
-from typing import List
 from xml.dom.minidom import parseString
 
 import orjson as json
@@ -121,22 +120,22 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
 
     rate_limit, remaining_time = ManualInterval.require(f'{group.id}_{member.id}_bilibiliVideoInfo', 5, 2)
     if not rate_limit:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
 
     video_info = await get_video_info(video_id.group(0))
     if video_info['code'] == -404:
-        return await app.sendGroupMessage(group, MessageChain.create(Plain('视频不存在')))
+        return await app.sendMessage(group, MessageChain.create(Plain('视频不存在')))
     elif video_info['code'] != 0:
         error_text = (
-            f'在请求 {video_id.group(0)} 的视频信息时，B站服务器返回错误：↓\n错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
+            f'在请求 {video_id.group(0)} 的视频信息时，B站服务器返回错误：👇\n错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
         )
         logger.error(error_text)
-        return await app.sendGroupMessage(group, MessageChain.create(Plain(error_text)))
+        return await app.sendMessage(group, MessageChain.create(Plain(error_text)))
     else:
         video_info = await info_json_dump(video_info['data'])
         img: bytes = await gen_img(video_info)
-        await app.sendGroupMessage(
+        await app.sendMessage(
             group,
             MessageChain.create(
                 [
@@ -269,5 +268,5 @@ async def gen_img(data: VideoInfo) -> bytes:
 
     session = adapter_ctx.get().session
     async with session.get(data.cover_url) as resp:
-        img_contents: List[str | bytes] = [await resp.content.read(), info_text]
+        img_contents: list[str | bytes] = [await resp.content.read(), info_text]
     return await async_generate_img(img_contents)

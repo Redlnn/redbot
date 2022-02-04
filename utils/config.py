@@ -3,7 +3,7 @@
 
 from os import mkdir, remove, unlink
 from os.path import exists, isdir, isfile, join
-from typing import Dict, List, TypeVar
+from typing import TypeVar
 
 from pydantic import AnyHttpUrl, BaseModel
 
@@ -21,7 +21,7 @@ class MAHConfig(BaseModel):
 class AdminConfig(BaseModel):
     masterId: int = 731347477  # 机器人主人的QQ号
     masterName: str = 'Red_lnn'
-    admins: List[int] = [731347477]
+    admins: list[int] = [731347477]
 
 
 class BasicConfig(BaseModel):
@@ -34,8 +34,8 @@ class BasicConfig(BaseModel):
 
 class ModulesConfig(BaseModel):
     enabled: bool = True  # 是否允许加载模块
-    globalDisabledModules: List[str] = []  # 全局禁用的模块列表
-    disabledGroups: Dict[str, List[int]] = {'BotManage': [123456789, 123456780]}  # 分群禁用模块的列表
+    globalDisabledModules: list[str] = []  # 全局禁用的模块列表
+    disabledGroups: dict[str, list[int]] = {'BotManage': [123456789, 123456780]}  # 分群禁用模块的列表
 
 
 module_cfg: ModulesConfig

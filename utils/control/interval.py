@@ -19,13 +19,10 @@ from graia.ariadne.model import Friend, Group, Member
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
-from utils.send_message import safeSendGroupMessage
-
 from ..config import get_basic_config
 from .permission import Permission
 
 __all__ = ['GroupInterval', 'MemberInterval', 'FriendInterval', 'TempInterval', 'ManualInterval']
-
 
 basic_cfg = get_basic_config()
 
@@ -85,7 +82,7 @@ class GroupInterval:
                 if send_alert:
                     if group.id not in cls.sent_alert:
                         m, s = divmod(last[1] + suspend_time - current, 60)
-                        await app.sendGroupMessage(
+                        await app.sendMessage(
                             group,
                             MessageChain.create(Plain(f'功能冷却中...\n还有{str(m) + "分" if m else ""}{"%d" % s}秒结束')),
                         )
@@ -154,7 +151,7 @@ class MemberInterval:
                 if send_alert:
                     if member.id not in cls.sent_alert:
                         m, s = divmod(last[1] + suspend_time - current, 60)
-                        await safeSendGroupMessage(
+                        await app.sendMessage(
                             group,
                             MessageChain.create(
                                 [
@@ -221,7 +218,7 @@ class FriendInterval:
                 if send_alert:
                     if friend.id not in cls.sent_alert:
                         m, s = divmod(last[1] + suspend_time - current, 60)
-                        await app.sendFriendMessage(
+                        await app.sendMessage(
                             friend,
                             MessageChain.create(
                                 [
@@ -298,7 +295,7 @@ class TempInterval:
                 if send_alert:
                     if name not in cls.sent_alert:
                         m, s = divmod(last[1] + suspend_time - current, 60)
-                        await app.sendGroupMessage(
+                        await app.sendMessage(
                             group,
                             MessageChain.create(
                                 [

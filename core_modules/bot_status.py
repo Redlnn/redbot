@@ -83,4 +83,4 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
     )
 
     img_bytes = await async_generate_img([msg_send])
-    await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
+    await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))

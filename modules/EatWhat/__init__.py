@@ -12,7 +12,6 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
 from graia.ariadne.model import Group
-from graia.ariadne.util.async_exec import io_bound
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
@@ -20,7 +19,6 @@ from utils.config import get_modules_config
 from utils.control.interval import MemberInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module
-from utils.send_message import safeSendGroupMessage
 
 channel = Channel.current()
 modules_cfg = get_modules_config()
@@ -48,10 +46,10 @@ async def get_food():
         decorators=[GroupPermission.require(), MemberInterval.require(2)],
     )
 )
-async def main(group: Group, source: Source):
+async def main(app: Ariadne, group: Group, source: Source):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
     food = await get_food()
     chain = MessageChain.create(Plain(f'吃{food}'))
-    await safeSendGroupMessage(group, chain, quote=source)
+    await app.sendMessage(group, chain, quote=source)

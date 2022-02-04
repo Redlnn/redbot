@@ -27,7 +27,6 @@ from utils.config import get_basic_config, get_modules_config, save_modules_conf
 from utils.control.interval import GroupInterval
 from utils.control.permission import GroupPermission
 from utils.module_register import Module, Modules
-from utils.send_message import safeSendGroupMessage
 
 from .text2img import generate_img, hr
 
@@ -99,7 +98,7 @@ async def menu(app: Ariadne, group: Group):
         '全局禁用的模块不能重新开启\n'
     )
     img_bytes = await generate_img([msg_send])
-    await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
+    await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
 
 
 @channel.use(
@@ -115,7 +114,7 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexMatch):
             return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
-        await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
     global_disabled: bool = True if target_module.file_name in modules_cfg.globalDisabledModules else False
     disabled_groups = (
@@ -124,14 +123,14 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexMatch):
         else []
     )
     if global_disabled:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('模块已全局禁用无法开启')))
+        await app.sendMessage(group, MessageChain.create(Plain('模块已全局禁用无法开启')))
     elif group.id in disabled_groups:
         disabled_groups.remove(group.id)
         modules_cfg.disabledGroups[target_module.file_name] = disabled_groups
         save_modules_config()
-        await app.sendGroupMessage(group, MessageChain.create(Plain('模块已启用')))
+        await app.sendMessage(group, MessageChain.create(Plain('模块已启用')))
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('无变化，模块已处于开启状态')))
+        await app.sendMessage(group, MessageChain.create(Plain('无变化，模块已处于开启状态')))
 
 
 @channel.use(
@@ -147,7 +146,7 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexMatch):
             return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
-        await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
     disabled_groups = (
         modules_cfg.disabledGroups[target_module.file_name]
@@ -155,14 +154,14 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexMatch):
         else []
     )
     if not target_module.can_disable:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不允许禁用')))
+        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不允许禁用')))
     elif group.id not in disabled_groups:
         disabled_groups.append(group.id)
         modules_cfg.disabledGroups[target_module.file_name] = disabled_groups
         save_modules_config()
-        await app.sendGroupMessage(group, MessageChain.create(Plain('模块已禁用')))
+        await app.sendMessage(group, MessageChain.create(Plain('模块已禁用')))
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('无变化，模块已处于禁用状态')))
+        await app.sendMessage(group, MessageChain.create(Plain('无变化，模块已处于禁用状态')))
 
 
 @channel.use(
@@ -178,7 +177,7 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
             return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
-        await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
         return
     target_module: Module = Modules[target_id]
     disabled_groups = (
@@ -187,7 +186,7 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
         else []
     )
     if group.id in disabled_groups:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('该模块已在本群禁用')))
+        await app.sendMessage(group, MessageChain.create(Plain('该模块已在本群禁用')))
         return
     authors = ''
     if target_module.author:
@@ -202,7 +201,7 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
     if target_module.arg_description:
         msg_send += '>>>>>>>>>>>>>>>>>>>>> 参数介绍 <<<<<<<<<<<<<<<<<<<<<\n' + target_module.arg_description
     img_bytes = await generate_img([msg_send])
-    await app.sendGroupMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
+    await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
 
 
 @channel.use(
@@ -226,10 +225,10 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
             elif saying == '.cancel':
                 return False
             else:
-                await safeSendGroupMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
+                await app.sendMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
 
     # 重载即卸载重新加载，在加载含有 `saya = Saya.current()` 的模块时 100% 报错
-    await safeSendGroupMessage(
+    await app.sendMessage(
         group,
         MessageChain.create(
             At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')
@@ -238,27 +237,27 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
     try:
         answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
     except asyncio.exceptions.TimeoutError:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('已超时取消')))
+        await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
         return
     if not answer:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('已取消操作')))
+        await app.sendMessage(group, MessageChain.create(Plain('已取消操作')))
         return
 
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
-        await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
     target_filename = target_module.file_name if target_module.file_name[-3:] != '.py' else target_module.file_name[:-3]
     logger.info(f'重载模块: {target_module.name} —— modules.{target_filename}')
     try:
         saya.reload_channel(saya.channels[f'modules.{target_filename}'])
     except Exception as e:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'重载模块 modules.{target_filename} 时出错')))
+        await app.sendMessage(group, MessageChain.create(Plain(f'重载模块 modules.{target_filename} 时出错')))
         Modules.remove(target_module)
         logger.error(f'重载模块 modules.{target_filename} 时出错')
         logger.exception(e)
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'重载模块 modules.{target_filename} 成功')))
+        await app.sendMessage(group, MessageChain.create(Plain(f'重载模块 modules.{target_filename} 成功')))
 
 
 @channel.use(
@@ -282,19 +281,19 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
             elif saying == '.cancel':
                 return False
             else:
-                await safeSendGroupMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
+                await app.sendMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
 
     # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
-    await safeSendGroupMessage(
+    await app.sendMessage(
         group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
     )
     try:
         answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
     except asyncio.exceptions.TimeoutError:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('已超时取消')))
+        await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
         return
     if not answer:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('已取消操作')))
+        await app.sendMessage(group, MessageChain.create(Plain('已取消操作')))
         return
     match_result = module_id.result.asDisplay()
     target_filename = match_result if match_result[-3:] != '.py' else match_result[:-3]
@@ -303,15 +302,15 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
         try:
             saya.require('modules.' + target_filename)
         except Exception as e:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'加载模块 modules.{target_filename} 时出错')))
+            await app.sendMessage(group, MessageChain.create(Plain(f'加载模块 modules.{target_filename} 时出错')))
             logger.error(f'加载模块 modules.{target_filename} 时出错')
             logger.exception(e)
             return
         else:
-            await app.sendGroupMessage(group, MessageChain.create(Plain(f'加载模块 modules.{target_filename} 成功')))
+            await app.sendMessage(group, MessageChain.create(Plain(f'加载模块 modules.{target_filename} 成功')))
             return
     else:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'模块 modules.{target_filename} 不存在')))
+        await app.sendMessage(group, MessageChain.create(Plain(f'模块 modules.{target_filename} 不存在')))
 
 
 @channel.use(
@@ -327,10 +326,10 @@ async def unload_module(app: Ariadne, group: Group, module_id: RegexMatch):
             return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
-        await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
     if not target_module.can_disable:
-        await app.sendGroupMessage(group, MessageChain.create(Plain('你指定的模块不允许禁用或卸载')))
+        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不允许禁用或卸载')))
         return
     target_filename = target_module.file_name if target_module.file_name[-3:] != '.py' else target_module.file_name[:-3]
     logger.debug(f'原channels: {saya.channels}')
@@ -339,11 +338,11 @@ async def unload_module(app: Ariadne, group: Group, module_id: RegexMatch):
     try:
         saya.uninstall_channel(saya.channels[f'modules.{target_filename}'])
     except Exception as e:
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'卸载模块 modules.{target_filename} 时出错')))
+        await app.sendMessage(group, MessageChain.create(Plain(f'卸载模块 modules.{target_filename} 时出错')))
         Modules.remove(target_module)
         logger.error(f'卸载模块 modules.{target_filename} 时出错')
         logger.exception(e)
     else:
         logger.debug(f'卸载后的channels: {saya.channels}')
-        await app.sendGroupMessage(group, MessageChain.create(Plain(f'卸载模块 modules.{target_filename} 成功')))
+        await app.sendMessage(group, MessageChain.create(Plain(f'卸载模块 modules.{target_filename} 成功')))
         Modules.remove(target_module)

@@ -43,4 +43,4 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
     if module_name in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
-    await app.sendGroupMessage(group, message + MessageChain.create(Plain('对')))
+    await app.sendMessage(group, message + MessageChain.create(Plain('对')))

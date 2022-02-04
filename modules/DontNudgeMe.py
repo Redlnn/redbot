@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-import base64
 import os
 from pathlib import Path
 from posixpath import basename
-from random import choice, randint, randrange, uniform
+from random import choice, randrange, uniform
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.mirai import NudgeEvent
@@ -31,7 +30,6 @@ Module(
     usage='戳一戳bot',
 ).register()
 
-
 msg = [
     '别{}啦别{}啦，无论你再怎么{}，我也不会多说一句话的~',
     '你再{}！你再{}！你再{}试试！！',
@@ -49,7 +47,7 @@ msg = [
 ]
 
 
-async def getMessage(event: NudgeEvent):
+async def get_message(event: NudgeEvent):
     tmp = randrange(0, len(os.listdir(Path(data_path, 'Nudge'))) + len(msg))
     if tmp < len(msg):
         return MessageChain.create(Plain(msg[tmp].replace('{}', event.msg_action[0])))
@@ -74,8 +72,8 @@ async def main(app: Ariadne, event: NudgeEvent):
         await app.sendNudge(event.supplicant, event.group_id)  # 当戳一戳来自好友时 event.group_id 为 None，因此这里不判断也可以
         await asyncio.sleep(uniform(0.2, 0.6))
         if event.context_type == "friend":
-            await app.sendFriendMessage(event.friend_id, (await getMessage(event)))
+            await app.sendFriendMessage(event.friend_id, (await get_message(event)))
         elif event.context_type == "group":
-            await app.sendGroupMessage(event.group_id, (await getMessage(event)))
-    except:
+            await app.sendGroupMessage(event.group_id, (await get_message(event)))
+    except Exception:  # noqa
         pass
