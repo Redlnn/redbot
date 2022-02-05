@@ -11,7 +11,9 @@ from graia.ariadne.message.parser.twilight import (
     Sparkle,
     Twilight,
 )
+from graia.ariadne.model import MemberPerm
 from graia.saya import Channel
+from loguru import logger
 from prompt_toolkit.styles import Style
 
 channel = Channel.current()
@@ -28,16 +30,37 @@ async def stop(app: Ariadne, console: Console):
         console.stop()
 
 
-@channel.use(ConsoleSchema([Twilight.from_command('send_goup {0} {1}')]))
+@channel.use(ConsoleSchema([Twilight.from_command('send {0} {1} {2}')]))
 async def group_chat(app: Ariadne, spark: Sparkle):
-    group, message = spark[ParamMatch]
-    await app.sendGroupMessage(int(group.result.asDisplay()), message.result)
+    target_type, target_id, message = spark[ParamMatch]
+    if target_type.result.asDisplay() == 'group':
+        await app.sendGroupMessage(int(target_id.result.asDisplay()), message.result)
+    elif target_type.result.asDisplay() == 'friend':
+        await app.sendFriendMessage(int(target_id.result.asDisplay()), message.result)
 
 
-@channel.use(ConsoleSchema([Twilight.from_command('send_friend {0} {1}')]))
-async def friend_chat(app: Ariadne, spark: Sparkle):
-    friend, message = spark[ParamMatch]
-    try:
-        await app.sendFriendMessage(int(friend.result.asDisplay()), message.result)
-    except UnknownTarget:
-        pass
+def get_perm_name(perm: MemberPerm):
+    match perm:
+        case MemberPerm.Member:
+            return '群成员'
+        case MemberPerm.Administrator:
+            return '管理员'
+        case MemberPerm.Owner:
+            return '群主'
+
+
+@channel.use(ConsoleSchema([Twilight.from_command('list {0}')]))
+async def list(app: Ariadne, spark: Sparkle):
+    (target,) = spark[ParamMatch]
+    match target.result.asDisplay():
+        case 'group':
+            for group in await app.getGroupList():
+                logger.opt(raw=True).info(f'{group.name}({group.id}) - {get_perm_name(group.accountPerm)}\n')
+        case 'friend':
+            for friend in await app.getFriendList():
+                logger.opt(raw=True).info(
+                    f'{friend.remark}({friend.id})'
+                    + (f' - {friend.nickname}\n' if friend.nickname != friend.remark else '\n')
+                )
+        case _:
+            logger.warning('参数错误')
