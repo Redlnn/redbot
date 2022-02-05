@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+该模块使用的不是 Lolicon API
+"""
+
 import asyncio
 from datetime import datetime
 from os.path import basename
