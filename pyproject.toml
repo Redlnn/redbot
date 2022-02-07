@@ -21,7 +21,7 @@ graia-ariadne = {extras = ["full"], version = "^0.5.2", allow-prereleases=true}
 httpx = "^0.22.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
-numpy = "^1.22.1"
+numpy = "^1.22.2"
 orjson = "^3.6.6"
 peewee = "^3.14.8"
 pillow = "^9.0.1"
