@@ -4,6 +4,10 @@ logs/
 test/
 test.py
 
+# Private modules
+*modules/fastapi/
+!removed_modules/fastapi/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

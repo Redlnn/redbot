@@ -34,6 +34,15 @@
 - Bot 管理
 - Bot 版本与系统运行情况查询
 - Bot 控制台命令
+- 自带 [FastAPI](https://fastapi.tiangolo.com/zh/) 支持，可通过模块启动 FastAPI 服务
+  > 为防止渣代码被喷，具体功能不做实现，仅提供启动 FastAPI 的示例，如需 web 管理之类的功能请自行实现  
+  > 启动 FastAPI 的示例位于 `removed_modules/fastapi/`，如有需要请自行修改  
+  > 因该示例默认并未启用，因此 `uvicorn` 与 `fastapi` 包为可选安装，如有需要请使用以下命令自行安装
+  >
+  > ```bash
+  > poetry install -E fastapi
+  > ```
+  >
 - 触发限制：全局黑名单控制、成员权限控制、频率限制
 - 用你的头像生成点啥
 - 吃啥？
