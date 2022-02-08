@@ -16,7 +16,7 @@ from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.styles import Style
 
 from util.config import get_basic_config, get_modules_config
-from util.logger import change_logger
+from util.logger_rewrite import rewrite_ariadne_logger, rewrite_logging_logger
 from util.path import modules_path, root_path
 from util.send_action import Safe
 
@@ -71,7 +71,9 @@ if __name__ == '__main__':
         GraiaSchedulerBehaviour(app.create(GraiaScheduler)),
     )
     console.start()
-    change_logger(basic_cfg.debug, True if console else False)  # 对logger进行调整，必须放在这里
+
+    rewrite_ariadne_logger(basic_cfg.debug, True if console else False)  # 对logger进行调整，必须放在这里
+    rewrite_logging_logger('peewee')
 
     with saya.module_context():
         core_modules_path = abspath(join(root_path, 'core_modules'))

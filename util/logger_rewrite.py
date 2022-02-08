@@ -8,7 +8,7 @@ from pathlib import Path
 from loguru import logger
 from prompt_toolkit.patch_stdout import StdoutProxy
 
-__all__ = ['change_logger']
+__all__ = ['rewrite_logging_logger', 'rewrite_ariadne_logger']
 
 
 # https://loguru.readthedocs.io/en/stable/overview.html?highlight=InterceptHandler#entirely-compatible-with-standard-logging
@@ -29,7 +29,15 @@ class InterceptHandler(logging.Handler):
         logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
 
 
-def change_logger(debug: bool = False, graia_console: bool = False):
+def rewrite_logging_logger(logger_name: str):
+    logging_logger = logging.getLogger(logger_name)
+    for handler in logging_logger.handlers:
+        logging_logger.removeHandler(handler)
+    logging_logger.addHandler(InterceptHandler())
+    logging_logger.setLevel(logging.DEBUG)
+
+
+def rewrite_ariadne_logger(debug: bool = False, graia_console: bool = False):
     logger.remove()
     if debug:
         log_format = (
@@ -70,9 +78,3 @@ def change_logger(debug: bool = False, graia_console: bool = False):
         diagnose=True,  # 异常跟踪是否应显示变量值以简化调试。这应该在生产中设置为 False 以避免泄露敏感数据。
         enqueue=True,  # 要记录的消息是否应在到达接收器之前首先通过多进程安全队列。这在通过多个进程记录到文件时很有用。这也具有使日志记录调用非阻塞的优点。
     )
-
-    peewee_logger = logging.getLogger('peewee')
-    peewee_logger.addHandler(InterceptHandler())
-    peewee_logger.setLevel(logging.DEBUG)
-
-    return logger
