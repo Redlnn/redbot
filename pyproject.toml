@@ -12,6 +12,7 @@ aiodns = "^3.0.0"
 aiofile = "^3.7.4"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
+fastapi = "^0.73.0"
 gitpython = "^3.1.26"
 graia-ariadne = {extras = ["full"], version = "^0.5.3rc1", allow-prereleases=true}
 # graia-ariadne = "^0.5.3rc1"
@@ -21,7 +22,7 @@ graia-ariadne = {extras = ["full"], version = "^0.5.3rc1", allow-prereleases=tru
 httpx = "^0.22.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
-numpy = "^1.22.1"
+numpy = "^1.22.2"
 orjson = "^3.6.6"
 peewee = "^3.14.8"
 pillow = "^9.0.1"
@@ -30,7 +31,7 @@ pydantic = "^1.9.0"
 pymysql = "^1.0.2"
 pyyaml = "^6.0"
 regex = "^2022.1.18"
-requests = "^2.27.1"
+uvicorn = {extras = ["standard"], version = "^0.17.4"}
 wordcloud = "^1.8.1"
 
 [tool.poetry.dev-dependencies]

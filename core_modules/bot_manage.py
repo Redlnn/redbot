@@ -43,6 +43,7 @@ Module(
     file_name=module_name,
     author=['Red_lnn', 'A60(djkcyl)'],
     usage='[.!！]添加群白名单 [群号]\n[.!！]添加群黑名单 [群号]\n[.!！]添加用户黑名单 [QQ号]\n',
+    can_disable=False
 ).register()
 
 
