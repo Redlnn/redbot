@@ -4,7 +4,7 @@
 import time
 from uuid import UUID
 
-from graia.ariadne.context import ariadne_ctx
+from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Member
@@ -44,7 +44,7 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
 
     player = await query_uuid_by_qq(qq)
     if player is None:
-        app = ariadne_ctx.get()
+        app = Ariadne.get_running(Ariadne)
         member: Member = await app.getMember(config.serverGroup, qq)
         PlayersTable.create(
             group=config.serverGroup,

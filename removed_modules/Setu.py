@@ -9,8 +9,8 @@ import asyncio
 from datetime import datetime
 from os.path import basename
 
+from graia.ariadne.adapter import Adapter
 from graia.ariadne.app import Ariadne
-from graia.ariadne.context import adapter_ctx
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Forward, ForwardNode, Image, Plain
@@ -82,7 +82,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, s
     ):
         await app.sendMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
         return
-    session = adapter_ctx.get().session
+    session = Ariadne.get_running(Adapter).session
     if tag.matched:
         target_tag = tag.result.getFirst(Plain).text
         async with session.get(

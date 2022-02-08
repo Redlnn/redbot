@@ -6,7 +6,6 @@ from os.path import basename
 from random import uniform
 
 from graia.ariadne.app import Ariadne
-from graia.ariadne.context import ariadne_ctx
 from graia.ariadne.event.lifecycle import ApplicationLaunched, ApplicationShutdowned
 from graia.ariadne.event.message import FriendMessage
 from graia.ariadne.event.mirai import (
@@ -43,12 +42,12 @@ Module(
     file_name=module_name,
     author=['Red_lnn', 'A60(djkcyl)'],
     usage='[.!！]添加群白名单 [群号]\n[.!！]添加群黑名单 [群号]\n[.!！]添加用户黑名单 [QQ号]\n',
-    can_disable=False
+    can_disable=False,
 ).register()
 
 
 async def send_to_admin(message: MessageChain):
-    app = ariadne_ctx.get()
+    app = Ariadne.get_running(Ariadne)
     for admin in basic_cfg.admin.admins:
         try:
             await app.sendFriendMessage(admin, message)
