@@ -11,8 +11,8 @@ from graia.broadcast.builtin.event import ExceptionThrowed
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 
-from utils.config import get_basic_config
-from utils.text2img import async_generate_img
+from util.config import get_basic_config
+from util.text2img import async_generate_img
 
 channel = Channel.current()
 

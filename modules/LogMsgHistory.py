@@ -20,15 +20,15 @@ from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from utils.config import get_modules_config
-from utils.control.permission import GroupPermission
-from utils.database.msg_history import (
+from util.config import get_modules_config
+from util.control.permission import GroupPermission
+from util.database.msg_history import (
     get_group_talk_count,
     get_member_last_message,
     get_member_talk_count,
     log_msg,
 )
-from utils.module_register import Module
+from util.module_register import Module
 
 channel = Channel.current()
 modules_cfg = get_modules_config()

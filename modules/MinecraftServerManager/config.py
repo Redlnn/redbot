@@ -3,7 +3,7 @@
 
 from pydantic import BaseModel
 
-from utils.config import get_config, save_config
+from util.config import get_config, save_config
 
 
 class RconConfig(BaseModel):

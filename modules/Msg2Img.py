@@ -16,11 +16,11 @@ from graia.broadcast.interrupt.waiter import Waiter
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from utils.config import get_modules_config
-from utils.control.interval import GroupInterval
-from utils.control.permission import GroupPermission
-from utils.module_register import Module
-from utils.text2img import async_generate_img
+from util.config import get_modules_config
+from util.control.interval import GroupInterval
+from util.control.permission import GroupPermission
+from util.module_register import Module
+from util.text2img import async_generate_img
 
 saya = Saya.current()
 channel = Channel.current()

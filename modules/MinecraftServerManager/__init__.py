@@ -27,8 +27,8 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
-from utils.control.permission import GroupPermission
-from utils.text2img import generate_img
+from util.control.permission import GroupPermission
+from util.text2img import generate_img
 
 from .config import config
 from .database import PlayersTable, db, init_table

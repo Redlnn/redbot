@@ -38,12 +38,12 @@ from PIL import Image as Img
 from pydantic import BaseModel
 from wordcloud import ImageColorGenerator, WordCloud
 
-from utils.config import get_config, get_modules_config
-from utils.control.interval import ManualInterval
-from utils.control.permission import GroupPermission
-from utils.database.msg_history import get_group_msg, get_member_msg
-from utils.module_register import Module
-from utils.path import data_path
+from util.config import get_config, get_modules_config
+from util.control.interval import ManualInterval
+from util.control.permission import GroupPermission
+from util.database.msg_history import get_group_msg, get_member_msg
+from util.module_register import Module
+from util.path import data_path
 
 channel = Channel.current()
 modules_cfg = get_modules_config()

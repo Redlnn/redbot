@@ -7,7 +7,7 @@ from peewee import BooleanField, CharField, Model, TextField, TimestampField, UU
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
 
-from utils.path import data_path
+from util.path import data_path
 
 from .config import config
 

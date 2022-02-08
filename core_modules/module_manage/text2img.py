@@ -13,7 +13,7 @@ from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
 from PIL import ImageDraw, ImageFont
 
-from utils.config import get_basic_config
+from util.config import get_basic_config
 
 __all__ = ['async_generate_img', 'generate_img', 'hr']
 

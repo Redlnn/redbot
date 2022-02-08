@@ -17,10 +17,10 @@ from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from utils.config import get_modules_config
-from utils.control.permission import GroupPermission
-from utils.module_register import Module
-from utils.text2img import async_generate_img, hr
+from util.config import get_modules_config
+from util.control.permission import GroupPermission
+from util.module_register import Module
+from util.text2img import async_generate_img, hr
 
 channel = Channel.current()
 modules_cfg = get_modules_config()

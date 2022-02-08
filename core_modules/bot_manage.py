@@ -28,9 +28,9 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
-from utils.config import get_basic_config, save_config
-from utils.control.permission import FriendPermission, blacklist_cfg, whitelist_cfg
-from utils.module_register import Module
+from util.config import get_basic_config, save_config
+from util.control.permission import FriendPermission, blacklist_cfg, whitelist_cfg
+from util.module_register import Module
 
 saya = Saya.current()
 channel = Channel.current()

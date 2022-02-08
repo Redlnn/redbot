@@ -31,12 +31,12 @@ from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
 from loguru import logger
 
-from utils.config import get_modules_config
-from utils.control.interval import MemberInterval
-from utils.control.permission import GroupPermission
-from utils.module_register import Module
-from utils.path import data_path
-from utils.text2img import async_generate_img, hr
+from util.config import get_modules_config
+from util.control.interval import MemberInterval
+from util.control.permission import GroupPermission
+from util.module_register import Module
+from util.path import data_path
+from util.text2img import async_generate_img, hr
 
 channel = Channel.current()
 modules_cfg = get_modules_config()

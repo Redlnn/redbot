@@ -8,7 +8,7 @@ from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
 from pydantic import BaseModel as PyDanticBaseModel
 
-from utils.config import get_config
+from util.config import get_config
 
 __all__ = ['BaseModel', 'database_cfg']
 

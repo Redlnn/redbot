@@ -15,10 +15,10 @@ from graia.scheduler.saya import GraiaSchedulerBehaviour
 from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.styles import Style
 
-from utils.config import get_basic_config, get_modules_config
-from utils.logger import change_logger
-from utils.path import modules_path, root_path
-from utils.send_action import Safe
+from util.config import get_basic_config, get_modules_config
+from util.logger import change_logger
+from util.path import modules_path, root_path
+from util.send_action import Safe
 
 basic_cfg = get_basic_config()
 modules_cfg = get_modules_config()

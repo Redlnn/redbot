@@ -23,10 +23,10 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 from pydantic import BaseModel
 
-from utils.config import get_config, get_modules_config
-from utils.control.interval import MemberInterval
-from utils.control.permission import GroupPermission
-from utils.module_register import Module
+from util.config import get_config, get_modules_config
+from util.control.interval import MemberInterval
+from util.control.permission import GroupPermission
+from util.module_register import Module
 
 from .ping_client import ping
 from .utils import is_domain, is_ip
