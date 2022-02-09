@@ -31,7 +31,7 @@ Module(
     file_name=module_name,
     author=['Red_lnn'],
     usage='[!！.](status|version)',
-    can_disable=False
+    can_disable=False,
 ).register()
 
 repo = Repo(os.getcwd())
