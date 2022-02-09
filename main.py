@@ -25,21 +25,6 @@ modules_cfg = get_modules_config()
 ignore = ('__init__.py', '__pycache__')
 
 if __name__ == '__main__':
-    # loop = asyncio.new_event_loop()
-    # bcc = Broadcast(loop=loop)
-    # app = Ariadne(
-    #     DefaultAdapter(
-    #         broadcast=bcc,
-    #         mirai_session=MiraiSession(
-    #             host=basic_cfg.miraiApiHttp.host,  # 填入 httpapi 服务运行的地址
-    #             account=basic_cfg.miraiApiHttp.account,  # 你的机器人的 qq 号
-    #             verify_key=basic_cfg.miraiApiHttp.verifyKey,  # 填入 verifyKey
-    #         ),
-    #         log=False,
-    #     ),
-    #     loop=loop,
-    #     chat_log_config=None if basic_cfg.logChat else False,
-    # )
     app = Ariadne(
         MiraiSession(
             host=basic_cfg.miraiApiHttp.host,  # 填入 httpapi 服务运行的地址
@@ -52,25 +37,27 @@ if __name__ == '__main__':
     app.default_send_action = Safe
     loop = app.loop
     bcc = app.broadcast
-    console = Console(
-        broadcast=bcc,
-        prompt=HTML('<split_1></split_1><redbot> redbot </redbot><split_2></split_2> '),
-        style=Style(
-            [
-                ('split_1', 'fg:#61afef'),
-                ('redbot', 'bg:#61afef fg:#ffffff'),
-                ('split_2', 'fg:#61afef'),
-            ]
-        ),
-        replace_logger=False,
-    )
     saya = Saya(bcc)
     saya.install_behaviours(
         BroadcastBehaviour(bcc),
-        ConsoleBehaviour(console),
         GraiaSchedulerBehaviour(app.create(GraiaScheduler)),
     )
-    console.start()
+    if basic_cfg.console:
+        console = Console(
+            broadcast=bcc,
+            prompt=HTML('<split_1></split_1><redbot> redbot </redbot><split_2></split_2> '),
+            style=Style(
+                [
+                    ('split_1', 'fg:#61afef'),
+                    ('redbot', 'bg:#61afef fg:#ffffff'),
+                    ('split_2', 'fg:#61afef'),
+                ]
+            ),
+            replace_logger=False,
+        )
+        saya.install_behaviours(ConsoleBehaviour(console))
+    else:
+        console = None
 
     rewrite_ariadne_logger(basic_cfg.debug, True if console else False)  # 对logger进行调整，必须放在这里
     rewrite_logging_logger('peewee')
@@ -84,6 +71,8 @@ if __name__ == '__main__':
             ):
                 continue
             elif module.name in ignore or module.name[0] in ('!', '#', '.'):
+                continue
+            elif module.name == 'console' and not basic_cfg.console:
                 continue
             saya.require(f"core_modules.{module.name}")
 
@@ -100,4 +89,3 @@ if __name__ == '__main__':
                 saya.require(f"modules.{module.name}")
 
     app.launch_blocking()
-    console.stop()

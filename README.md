@@ -35,6 +35,8 @@
 - Bot 版本与系统运行情况查询
 - Bot 控制台命令
 - 自带 [FastAPI](https://fastapi.tiangolo.com/zh/) 支持，可通过模块启动 FastAPI 服务
+  > 注意：`Ariadne` 的 `console` 与 `uvicorn` 可能存在兼容性问题
+  >
   > 为防止渣代码被喷，具体功能不做实现，仅提供启动 FastAPI 的示例，如需 web 管理之类的功能请自行实现  
   > 启动 FastAPI 的示例位于 `removed_modules/fastapi/`，如有需要请自行修改  
   > 因该示例默认并未启用，因此 `uvicorn` 与 `fastapi` 包为可选安装，如有需要请使用以下命令自行安装

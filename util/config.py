@@ -27,6 +27,7 @@ class AdminConfig(BaseModel):
 class BasicConfig(BaseModel):
     botName: str = 'redbot'
     logChat: bool = False
+    console: bool = False
     debug: bool = False
     miraiApiHttp: MAHConfig = MAHConfig(account=123456789, verifyKey='VerifyKey')
     admin: AdminConfig = AdminConfig()
@@ -42,8 +43,8 @@ module_cfg: ModulesConfig
 
 
 def save_config(filename: str, config_model: BaseModel, folder: str = None, in_data_folder: bool = False):
-    target_path = join(data_path, folder) if in_data_folder else join(config_path)
-    if folder:
+    target_path = join(data_path) if in_data_folder else join(config_path)
+    if folder is not None:
         file_path = join(target_path, folder, filename)
     else:
         file_path = join(target_path, filename)
@@ -51,9 +52,11 @@ def save_config(filename: str, config_model: BaseModel, folder: str = None, in_d
         fp.write(config_model.json(indent=2, ensure_ascii=False))
 
 
-def get_config(filename: str, config_model: T_BaseModel, folder: str = None, in_data_folder: bool = False) -> T_BaseModel:
-    target_path = join(data_path, folder) if in_data_folder else join(config_path)
-    if folder:
+def get_config(
+    filename: str, config_model: T_BaseModel, folder: str = None, in_data_folder: bool = False
+) -> T_BaseModel:
+    target_path = join(data_path) if in_data_folder else join(config_path)
+    if folder is not None:
         folder_path = join(target_path, folder)
         if not exists(folder_path):
             mkdir(folder_path)
@@ -64,11 +67,11 @@ def get_config(filename: str, config_model: T_BaseModel, folder: str = None, in_
     else:
         file_path = join(target_path, filename)
     if not exists(file_path):
-        save_config(filename, config_model)
+        save_config(filename, config_model, folder, in_data_folder)
         return config_model
     elif isdir(file_path):
         remove(file_path)
-        save_config(filename, config_model)
+        save_config(filename, config_model, folder, in_data_folder)
         return config_model
     else:
         return config_model.parse_file(file_path)
