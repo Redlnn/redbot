@@ -42,7 +42,7 @@ class Text2ImgConfig(BaseModel):
     BorderOutlineWidth: int = 5  # 边框描边（内描边）厚度
 
 
-config: Text2ImgConfig = get_config('text2img.json', Text2ImgConfig())
+config = get_config('text2img.json', Text2ImgConfig())
 basic_cfg = get_basic_config()
 
 _font_name: str = config.FontName

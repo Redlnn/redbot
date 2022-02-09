@@ -50,7 +50,7 @@ class Setu(BaseModel):
     apiUrl: AnyHttpUrl = 'http://localhost:8080'
 
 
-setu_config: Setu = get_config('setu.json', Setu())
+setu_config = get_config('setu.json', Setu())
 
 
 @channel.use(

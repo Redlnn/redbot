@@ -28,7 +28,7 @@ class McServerMangerConfig(BaseModel):
     database: DatabaseConfig = DatabaseConfig()
 
 
-config: McServerMangerConfig = get_config('mc_server_manager.json', McServerMangerConfig())
+config = get_config('mc_server_manager.json', McServerMangerConfig())
 
 if config.serverGroup not in config.activeGroups:
     config.activeGroups.append(config.serverGroup)

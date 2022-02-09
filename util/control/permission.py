@@ -38,8 +38,8 @@ class WhitelistConfig(BaseModel):
 
 
 basic_cfg = get_basic_config()
-blacklist_cfg: BlacklistConfig = get_config('blacklist.json', BlacklistConfig())
-whitelist_cfg: BlacklistConfig = get_config('whitelist.json', WhitelistConfig())
+blacklist_cfg = get_config('blacklist.json', BlacklistConfig())
+whitelist_cfg = get_config('whitelist.json', WhitelistConfig())
 
 
 class Permission:

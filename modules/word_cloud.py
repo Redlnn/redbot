@@ -73,7 +73,7 @@ class WordCloudConfig(BaseModel):
 
 
 Generating_list: list[int | str] = []
-config: WordCloudConfig = get_config('wordcloud.json', WordCloudConfig())
+config = get_config('wordcloud.json', WordCloudConfig())
 
 
 @channel.use(

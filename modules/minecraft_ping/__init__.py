@@ -48,7 +48,7 @@ class McServerPingConfig(BaseModel):
     servers: dict[int, str] = {123456789: 'localhost:25565'}
 
 
-ping_cfg: McServerPingConfig = get_config('mc_server_ping.json', McServerPingConfig())
+ping_cfg = get_config('mc_server_ping.json', McServerPingConfig())
 
 
 @channel.use(

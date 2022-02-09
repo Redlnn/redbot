@@ -51,7 +51,7 @@ def save_config(filename: str, config_model: BaseModel, folder: str = None, in_d
         fp.write(config_model.json(indent=2, ensure_ascii=False))
 
 
-def get_config(filename: str, config_model: BaseModel, folder: str = None, in_data_folder: bool = False) -> T_BaseModel:
+def get_config(filename: str, config_model: T_BaseModel, folder: str = None, in_data_folder: bool = False) -> T_BaseModel:
     target_path = join(data_path, folder) if in_data_folder else join(config_path)
     if folder:
         folder_path = join(target_path, folder)
@@ -79,7 +79,7 @@ def get_basic_config():
         save_config('redbot.json', BasicConfig())
         raise ValueError('在? 爷的配置文件哪去了? 给你放了一份，改好了再叫爷!')
     else:
-        basic_cfg: BasicConfig = get_config('redbot.json', BasicConfig())
+        basic_cfg = get_config('redbot.json', BasicConfig())
         if basic_cfg.admin.masterId not in basic_cfg.admin.admins:
             basic_cfg.admin.admins.append(basic_cfg.admin.masterId)
             save_config('redbot.json', basic_cfg)

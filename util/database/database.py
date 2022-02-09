@@ -26,7 +26,7 @@ class DatabaseConfig(PyDanticBaseModel):
     mysql: MySQLConfig = MySQLConfig()
 
 
-database_cfg: DatabaseConfig = get_config('database.json', DatabaseConfig())
+database_cfg = get_config('database.json', DatabaseConfig())
 
 if database_cfg.mysql.enabled:
     # https://www.cnblogs.com/gcxblogs/p/14969019.html
