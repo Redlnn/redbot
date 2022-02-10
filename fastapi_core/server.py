@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import asyncio
+import logging
+import os
 import signal
-import threading
+import socket
 
+import click
 from uvicorn.server import Server
 
 HANDLED_SIGNALS = (
@@ -14,24 +16,38 @@ HANDLED_SIGNALS = (
 
 
 class ModifiedServer(Server):
-    def install_signal_handlers(self) -> None:
-        if threading.current_thread() is not threading.main_thread():
-            # Signals can only be listened to from the main thread.
+    async def serve(self, sockets: list[socket.socket] | None = None) -> None:
+        # 魔改 —— Start
+        logger = logging.getLogger('uvicorn.error')
+        self.shutdown_status = False
+        # 魔改 —— End
+
+        process_id = os.getpid()
+
+        config = self.config
+        if not config.loaded:
+            config.load()
+
+        self.lifespan = config.lifespan_class(config)
+
+        # 魔改 —— Start
+        # self.install_signal_handlers()
+        # 魔改 —— End
+
+        message = "Started server process [%d]"
+        color_message = "Started server process [" + click.style("%d", fg="cyan") + "]"
+        logger.info(message, process_id, extra={"color_message": color_message})
+
+        await self.startup(sockets=sockets)
+        if self.should_exit:
             return
+        await self.main_loop()
+        await self.shutdown(sockets=sockets)
 
-        loop = asyncio.get_event_loop()
+        message = "Finished server process [%d]"
+        color_message = "Finished server process [" + click.style("%d", fg="cyan") + "]"
+        logger.info(message, process_id, extra={"color_message": color_message})
 
-        try:
-            for sig in HANDLED_SIGNALS:
-                loop.add_signal_handler(sig, self.handle_exit, sig, None)
-        except NotImplementedError:  # pragma: no cover
-            # Windows
-            for sig in HANDLED_SIGNALS:
-                handler = signal.getsignal(sig)
-
-                def handler_wrapper(sig_num, frame):
-                    self.handle_exit(sig_num, frame)
-                    if handler:
-                        handler(sig_num, frame)
-
-                signal.signal(sig, handler_wrapper)
+        # 魔改 —— Start
+        self.shutdown_status = True
+        # 魔改 —— End

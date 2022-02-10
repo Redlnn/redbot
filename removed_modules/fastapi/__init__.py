@@ -31,6 +31,7 @@ rewrite_logging_logger('uvicorn.access')
 rewrite_logging_logger('uvicorn.asgi')
 
 task: Task
+server: Server
 channel = Channel.current()
 bcc = Ariadne.get_running(Broadcast)
 fastapi_app = FastAPI()
@@ -39,13 +40,23 @@ manager = ConnectionManager()
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
 async def on_launch():
-    global task
+    global task, server
     server = Server(Config(fastapi_app, host='localhost', port=18000, log_config=None, reload=False))
     task = asyncio.create_task(server.serve())
 
 
 @channel.use(ListenerSchema(listening_events=[ApplicationShutdowned]))
 async def on_shutdown():
+    global task, server
+    server.should_exit = True
+    times = 0
+    while not server.shutdown_status:
+        if times > 10:
+            server.force_exit = True
+        elif times > 20:
+            break
+        await asyncio.sleep(0.1)
+        times += 1
     task.cancel()
 
 
