@@ -471,7 +471,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.5.3rc1"
+version = "0.5.3.post2"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -480,7 +480,7 @@ python-versions = ">=3.8,<4.0"
 [package.dependencies]
 aiohttp = ">=3.7.4,<4.0.0"
 arclet-alconna = {version = ">=0.4.1,<0.5.0", optional = true, markers = "extra == \"alconna\" or extra == \"full\""}
-graia-broadcast = ">=0.15.4,<0.16.0"
+graia-broadcast = ">=0.15.6,<0.16.0"
 graia-saya = {version = ">=0.0.14,<0.0.15", optional = true, markers = "extra == \"graia\" or extra == \"full\""}
 graia-scheduler = {version = ">=0.0.6,<0.0.7", optional = true, markers = "extra == \"graia\" or extra == \"full\""}
 loguru = ">=0.6,<0.7"
@@ -883,7 +883,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "platformdirs"
-version = "2.4.1"
+version = "2.5.0"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
@@ -1422,7 +1422,7 @@ fastapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "0cd8e783c6aef4f95b8ec4b8a31774452132eb79f7809ad6a9e5746a434e5a5b"
+content-hash = "f61cdcbb84b9266cc193648f34b110cef9fc84f8d3880194f8f8ea08918ebd6c"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -1829,8 +1829,8 @@ gitpython = [
     {file = "GitPython-3.1.26.tar.gz", hash = "sha256:fc8868f63a2e6d268fb25f481995ba185a85a66fcad126f039323ff6635669ee"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.5.3rc1.tar.gz", hash = "sha256:4e3bf3016bf406b4456d7e6d2f1d5c971130f9e498c5cf88c5f6a27d95c1b4b4"},
-    {file = "graia_ariadne-0.5.3rc1-py3-none-any.whl", hash = "sha256:c144c54b0cc575d80b2ed9b72a732ea5ea1d948bc019a6d78bbc5ead6e4d335c"},
+    {file = "graia-ariadne-0.5.3.post2.tar.gz", hash = "sha256:9b5f465e8acff1a41c250572ebd46fb5825c29215ed2f64bc3f7b5a51f3ddffa"},
+    {file = "graia_ariadne-0.5.3.post2-py3-none-any.whl", hash = "sha256:86885a9a7ef9d8bea21d39dac91c701801598d9421bac003b2266d8b9bebac79"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.15.6.tar.gz", hash = "sha256:695648313018e82ba6ceedc068ff99a204abb39b277cec414982485eac99e68c"},
@@ -2153,8 +2153,8 @@ pipreqs = [
     {file = "pipreqs-0.4.11.tar.gz", hash = "sha256:c793b4e147ac437871b3a962c5ce467e129c859ece5ba79aca83c20f4d9c3aef"},
 ]
 platformdirs = [
-    {file = "platformdirs-2.4.1-py3-none-any.whl", hash = "sha256:1d7385c7db91728b83efd0ca99a5afb296cab9d0ed8313a45ed8ba17967ecfca"},
-    {file = "platformdirs-2.4.1.tar.gz", hash = "sha256:440633ddfebcc36264232365d7840a970e75e1018d15b4327d11f91909045fda"},
+    {file = "platformdirs-2.5.0-py3-none-any.whl", hash = "sha256:30671902352e97b1eafd74ade8e4a694782bd3471685e78c32d0fdfd3aa7e7bb"},
+    {file = "platformdirs-2.5.0.tar.gz", hash = "sha256:8ec11dfba28ecc0715eb5fb0147a87b1bf325f349f3da9aab2cd6b50b96b692b"},
 ]
 prompt-toolkit = [
     {file = "prompt_toolkit-3.0.27-py3-none-any.whl", hash = "sha256:cb7dae7d2c59188c85a1d6c944fad19aded6a26bd9c8ae115a4e1c20eb90b713"},
