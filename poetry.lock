@@ -471,7 +471,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.5.3.post2"
+version = "0.5.3.post3"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -1422,7 +1422,7 @@ fastapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "f61cdcbb84b9266cc193648f34b110cef9fc84f8d3880194f8f8ea08918ebd6c"
+content-hash = "06f7bc89da5b25cda7df9f634eabd2c779c9b065e083fc5214519d4541c145f9"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -1829,8 +1829,8 @@ gitpython = [
     {file = "GitPython-3.1.26.tar.gz", hash = "sha256:fc8868f63a2e6d268fb25f481995ba185a85a66fcad126f039323ff6635669ee"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.5.3.post2.tar.gz", hash = "sha256:9b5f465e8acff1a41c250572ebd46fb5825c29215ed2f64bc3f7b5a51f3ddffa"},
-    {file = "graia_ariadne-0.5.3.post2-py3-none-any.whl", hash = "sha256:86885a9a7ef9d8bea21d39dac91c701801598d9421bac003b2266d8b9bebac79"},
+    {file = "graia-ariadne-0.5.3.post3.tar.gz", hash = "sha256:2ce7c4812b1486a43783502a68b330d5114487b4ad05e50c00be42df73e33a65"},
+    {file = "graia_ariadne-0.5.3.post3-py3-none-any.whl", hash = "sha256:359eec463af7db9cec3b5074c9289b51bf59a1f327583ed08594d262ea91e0cf"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.15.6.tar.gz", hash = "sha256:695648313018e82ba6ceedc068ff99a204abb39b277cec414982485eac99e68c"},
