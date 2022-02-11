@@ -35,16 +35,15 @@ if __name__ == '__main__':
     )
     app.adapter.log = False
     app.default_send_action = Safe
-    loop = app.loop
-    bcc = app.broadcast
-    saya = Saya(bcc)
+    app.create(GraiaScheduler)
+    saya = app.create(Saya)
     saya.install_behaviours(
-        BroadcastBehaviour(bcc),
-        GraiaSchedulerBehaviour(app.create(GraiaScheduler)),
+        app.create(BroadcastBehaviour),
+        app.create(GraiaSchedulerBehaviour),
     )
     if basic_cfg.console:
         console = Console(
-            broadcast=bcc,
+            broadcast=app.broadcast,
             prompt=HTML('<split_1></split_1><redbot> redbot </redbot><split_2></split_2> '),
             style=Style(
                 [
@@ -55,7 +54,7 @@ if __name__ == '__main__':
             ),
             replace_logger=False,
         )
-        saya.install_behaviours(ConsoleBehaviour(console))
+        saya.install_behaviours(app.create(ConsoleBehaviour))
     else:
         console = None
 

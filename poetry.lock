@@ -471,7 +471,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.5.3.post2"
+version = "0.5.3.post3"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -900,7 +900,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.27"
+version = "3.0.28"
 description = "Library for building powerful interactive command lines in Python"
 category = "main"
 optional = false
@@ -1422,7 +1422,7 @@ fastapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "f61cdcbb84b9266cc193648f34b110cef9fc84f8d3880194f8f8ea08918ebd6c"
+content-hash = "06f7bc89da5b25cda7df9f634eabd2c779c9b065e083fc5214519d4541c145f9"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -1829,8 +1829,8 @@ gitpython = [
     {file = "GitPython-3.1.26.tar.gz", hash = "sha256:fc8868f63a2e6d268fb25f481995ba185a85a66fcad126f039323ff6635669ee"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.5.3.post2.tar.gz", hash = "sha256:9b5f465e8acff1a41c250572ebd46fb5825c29215ed2f64bc3f7b5a51f3ddffa"},
-    {file = "graia_ariadne-0.5.3.post2-py3-none-any.whl", hash = "sha256:86885a9a7ef9d8bea21d39dac91c701801598d9421bac003b2266d8b9bebac79"},
+    {file = "graia-ariadne-0.5.3.post3.tar.gz", hash = "sha256:2ce7c4812b1486a43783502a68b330d5114487b4ad05e50c00be42df73e33a65"},
+    {file = "graia_ariadne-0.5.3.post3-py3-none-any.whl", hash = "sha256:359eec463af7db9cec3b5074c9289b51bf59a1f327583ed08594d262ea91e0cf"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.15.6.tar.gz", hash = "sha256:695648313018e82ba6ceedc068ff99a204abb39b277cec414982485eac99e68c"},
@@ -2157,8 +2157,8 @@ platformdirs = [
     {file = "platformdirs-2.5.0.tar.gz", hash = "sha256:8ec11dfba28ecc0715eb5fb0147a87b1bf325f349f3da9aab2cd6b50b96b692b"},
 ]
 prompt-toolkit = [
-    {file = "prompt_toolkit-3.0.27-py3-none-any.whl", hash = "sha256:cb7dae7d2c59188c85a1d6c944fad19aded6a26bd9c8ae115a4e1c20eb90b713"},
-    {file = "prompt_toolkit-3.0.27.tar.gz", hash = "sha256:f2b6a8067a4fb959d3677d1ed764cc4e63e0f6f565b9a4fc7edc2b18bf80217b"},
+    {file = "prompt_toolkit-3.0.28-py3-none-any.whl", hash = "sha256:30129d870dcb0b3b6a53efdc9d0a83ea96162ffd28ffe077e94215b233dc670c"},
+    {file = "prompt_toolkit-3.0.28.tar.gz", hash = "sha256:9f1cd16b1e86c2968f2519d7fb31dd9d669916f515612c269d14e9ed52b51650"},
 ]
 psutil = [
     {file = "psutil-5.9.0-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:55ce319452e3d139e25d6c3f85a1acf12d1607ddedea5e35fb47a552c051161b"},
