@@ -114,7 +114,7 @@ async def main(app: Ariadne, group: Group, member: Member):
         if group.id in modules_cfg.disabledGroups[module_name]:
             return
     is_new, renpin, qianwen = await read_data(str(member.id))
-    img_bytes = await async_generate_img([qianwen, f'\n{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
+    img_bytes = await async_generate_img([qianwen, f'{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
         await app.sendMessage(group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
     else:
