@@ -494,6 +494,10 @@ async def get_player_list(app: Ariadne, group: Group):
         return
     try:
         exec_result: str = await execute_command('list')  # noqa
+    except TimeoutError:
+        await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
+        logger.error('rcon连接服务器超时')
+        return
     except Exception as e:
         await app.sendMessage(group, MessageChain.create(Plain(f'在服务器执行命令时出错：{e}')))
         logger.error('在服务器执行命令时出错')
@@ -531,6 +535,10 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain, so
     try:
         exec_result: str = await execute_command(split_msg[1])
         logger.info(f'在服务器上执行命令：{split_msg[1]}')
+    except TimeoutError:
+        await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
+        logger.error('rcon连接服务器超时')
+        return
     except Exception as e:
         await app.sendMessage(group, MessageChain.create(Plain(f'在服务器执行命令时出错：{e}')), quote=source)
         logger.error(f'在服务器执行命令 {split_msg[1]} 时出错')
@@ -684,10 +692,19 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
             flags.append(False)
         else:
             if isinstance(mc_id, str):
-                res = await execute_command(f'pardon {mc_id}')
-                if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                    await app.sendMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                try:
+                    res = await execute_command(f'pardon {mc_id}')
+                except TimeoutError:
+                    await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
+                    logger.error('rcon连接服务器超时')
                     flags.append(False)
+                except Exception as e:
+                    logger.exception(e)
+                    flags.append(False)
+                else:
+                    if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                        await app.sendMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        flags.append(False)
             else:
                 await app.sendMessage(
                     group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器解封该玩家\nUUID：{player.uuid1}')), quote=source
@@ -705,10 +722,19 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
             flags.append(False)
         else:
             if isinstance(mc_id, str):
-                res = await execute_command(f'pardon {mc_id}')
-                if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                    await app.sendMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                try:
+                    res = await execute_command(f'pardon {mc_id}')
+                except TimeoutError:
+                    await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
+                    logger.error('rcon连接服务器超时')
                     flags.append(False)
+                except Exception as e:
+                    logger.exception(e)
+                    flags.append(False)
+                else:
+                    if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                        await app.sendMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        flags.append(False)
             else:
                 await app.sendMessage(
                     group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器解封该玩家\nUUID：{player.uuid2}')), quote=source
@@ -817,10 +843,19 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
             flags.append(False)
         else:
             if isinstance(mc_id, str):
-                res = await execute_command(f'ban {mc_id} {block_reason}')
-                if not res.startswith('Banned') and res != 'Nothing changed. The player is already banned':
-                    await app.sendMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                try:
+                    res = await execute_command(f'pardon {mc_id}')
+                except TimeoutError:
+                    await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
+                    logger.error('rcon连接服务器超时')
                     flags.append(False)
+                except Exception as e:
+                    logger.exception(e)
+                    flags.append(False)
+                else:
+                    if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                        await app.sendMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        flags.append(False)
             else:
                 await app.sendMessage(
                     group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{player.uuid1}')), quote=source
@@ -838,10 +873,19 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
             flags.append(False)
         else:
             if isinstance(mc_id, str):
-                res = await execute_command(f'ban {mc_id} {block_reason}')
-                if not res.startswith('Banned') and res != 'Nothing changed. The player is already banned':
-                    await app.sendMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                try:
+                    res = await execute_command(f'pardon {mc_id}')
+                except TimeoutError:
+                    await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
+                    logger.error('rcon连接服务器超时')
                     flags.append(False)
+                except Exception as e:
+                    logger.exception(e)
+                    flags.append(False)
+                else:
+                    if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                        await app.sendMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        flags.append(False)
             else:
                 await app.sendMessage(
                     group, MessageChain.create(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{player.uuid2}')), quote=source

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import time
+from asyncio.exceptions import TimeoutError
 from uuid import UUID
 
 from graia.ariadne.app import Ariadne
@@ -87,6 +88,8 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
 
     try:
         res: str = await execute_command(f'whitelist add {real_mc_id}')
+    except TimeoutError:
+        return MessageChain.create(Plain('添加白名单时已写入数据库，但连接服务器超时，请联系管理解决'))
     except Exception as e:
         logger.exception(e)
         return MessageChain.create(Plain(f'添加白名单时已写入数据库但无法连接到服务器，请联系管理解决: 👇\n{e}'))

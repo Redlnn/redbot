@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from typing import Literal
+from asyncio.exceptions import TimeoutError
 from uuid import UUID
 
 from graia.ariadne.message.chain import MessageChain
@@ -33,6 +34,8 @@ async def del_whitelist_from_server(mc_uuid: str | UUID) -> Literal[True] | Mess
     else:
         try:
             result = await execute_command(f'whitelist remove {mc_id}')
+        except TimeoutError:
+            return MessageChain.create(Plain(f'连接服务器超时'))
         except Exception as e:
             logger.exception(e)
             return MessageChain.create(Plain(f'无法连接至服务器：{e}'))
