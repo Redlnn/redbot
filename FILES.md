@@ -24,6 +24,7 @@ redbot  根目录
 │   ├── bili_share_resolver.py  BiliBili 视频分享解析
 │   ├── dont_nudge_me.py  别戳我
 │   ├── help_you_choose.py  帮你做选择
+│   ├── mc_skin.py  我的世界正版皮肤获取
 │   ├── mc_wiki_searcher.py  我的世界中文 Wiki 搜索
 │   ├── msg2img.py  消息转图片
 │   ├── msg_logger.py  历史聊天数据记录
