@@ -13,7 +13,7 @@ from graia.broadcast.interrupt import InterruptControl
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import ModulesConfig
+from util.config import modules_cfg
 from util.control.permission import GroupPermission
 from util.module_register import Module
 
@@ -21,7 +21,6 @@ saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 
-modules_cfg = ModulesConfig()
 module_name = basename(__file__)[:-3]
 
 Module(

@@ -13,12 +13,11 @@ from graia.ariadne.model import Group, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import ModulesConfig
+from util.config import modules_cfg
 from util.control.permission import GroupPermission
 from util.module_register import Module
 
 channel = Channel.current()
-modules_cfg = ModulesConfig()
 module_name = basename(__file__)[:-3]
 
 Module(
@@ -33,7 +32,7 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        decorators=[GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator, send_alert=False)],
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):

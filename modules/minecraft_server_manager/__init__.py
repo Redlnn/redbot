@@ -182,8 +182,6 @@ async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
         decorators=[
             GroupPermission.require(
                 MemberPerm.Administrator,
-                send_alert=True,
-                allow_override=False,
             ),
         ],
     )
@@ -224,8 +222,6 @@ async def add_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
         decorators=[
             GroupPermission.require(
                 MemberPerm.Administrator,
-                send_alert=True,
-                allow_override=False,
             ),
         ],
     )
@@ -388,7 +384,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ clear')]))],
         decorators=[
-            GroupPermission.require(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            GroupPermission.require(MemberPerm.Administrator),
         ],
     )
 )
@@ -521,7 +517,7 @@ async def get_player_list(app: Ariadne, group: Group):
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]run'), WildcardMatch()]))],
         decorators=[
-            GroupPermission.require(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            GroupPermission.require(MemberPerm.Administrator),
         ],
     )
 )
@@ -646,7 +642,7 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]pardon\ '), WildcardMatch()]))],
         decorators=[
-            GroupPermission.require(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            GroupPermission.require(MemberPerm.Administrator),
         ],
     )
 )
@@ -758,7 +754,7 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]clear_leave_time\ '), WildcardMatch()]))],
         decorators=[
-            GroupPermission.require(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            GroupPermission.require(MemberPerm.Administrator),
         ],
     )
 )
@@ -793,7 +789,7 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, so
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]ban\ '), WildcardMatch()]))],
         decorators=[
-            GroupPermission.require(MemberPerm.Administrator, send_alert=True, allow_override=False),
+            GroupPermission.require(MemberPerm.Administrator),
         ],
     )
 )

@@ -15,7 +15,7 @@ from PIL import ImageDraw, ImageFont
 
 from util.path import root_path
 
-from .config import BasicConfig, RConfig
+from .config import RConfig, basic_cfg
 
 
 class Text2ImgConfig(RConfig):
@@ -43,7 +43,6 @@ class Text2ImgConfig(RConfig):
 
 
 config = Text2ImgConfig()
-basic_cfg = BasicConfig()
 
 _font_name: str = config.FontName
 _font_path = Path(root_path, 'fonts', _font_name)  # 字体文件的路径

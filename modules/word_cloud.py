@@ -6,10 +6,10 @@
 """
 
 import datetime
-from os import listdir
 import random
 import time
 from io import BytesIO
+from os import listdir
 from os.path import basename
 from pathlib import Path
 
@@ -37,7 +37,7 @@ from matplotlib import pyplot
 from PIL import Image as Img
 from wordcloud import ImageColorGenerator, WordCloud
 
-from util.config import ModulesConfig, RConfig
+from util.config import RConfig, modules_cfg
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.database.msg_history import get_group_msg, get_member_msg
@@ -45,7 +45,6 @@ from util.module_register import Module
 from util.path import data_path
 
 channel = Channel.current()
-modules_cfg = ModulesConfig()
 module_name = basename(__file__)[:-3]
 
 Module(

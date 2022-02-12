@@ -27,15 +27,14 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
-from util.config import BasicConfig
-from util.control.permission import FriendPermission, blacklist_cfg, whitelist_cfg
+from util.config import basic_cfg
+from util.control.permission import perm_cfg
 from util.module_register import Module
 
 saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 module_name = basename(__file__)[:-3]
-basic_cfg = BasicConfig()
 
 Module(
     name='Bot管理',
@@ -88,7 +87,6 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
     """
     收到好友申请
     """
-
     if event.supplicant in basic_cfg.admin.admins:
         await event.accept()
         await app.sendFriendMessage(
@@ -151,11 +149,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
     """
     被邀请入群
     """
-
-    if event.groupId in blacklist_cfg.groups:
-        await event.reject('该群在本 Bot 的黑名单中，自动拒绝邀请')
-        return
-    elif event.groupId in whitelist_cfg.groups:
+    if event.groupId in perm_cfg.group_whitelist:
         await event.accept()
         await send_to_admin(
             MessageChain.create(
@@ -211,8 +205,8 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
         if result:
             await event.accept()
             if event.groupId:
-                whitelist_cfg.groups.append(event.groupId)
-                whitelist_cfg.save()
+                perm_cfg.group_whitelist.append(event.groupId)
+                perm_cfg.save()
             await send_to_admin(
                 MessageChain.create(
                     Plain(
@@ -236,7 +230,6 @@ async def join_group(app: Ariadne, event: BotJoinGroupEvent):
     """
     收到入群事件
     """
-
     member_num = len(await app.getMemberList(event.group))
     await send_to_admin(
         MessageChain.create(
@@ -244,7 +237,7 @@ async def join_group(app: Ariadne, event: BotJoinGroupEvent):
         ),
     )
 
-    if event.group.id not in whitelist_cfg.groups:
+    if event.group.id not in perm_cfg.group_whitelist:
         await app.sendGroupMessage(
             event.group,
             MessageChain.create(f'该群未在白名单中，将不会启用本 Bot 的绝大部分功能，如有需要请联系 {basic_cfg.admin.masterId} 申请白名单'),
@@ -269,9 +262,8 @@ async def kick_group(event: BotLeaveEventKick):
     """
     被踢出群
     """
-
-    whitelist_cfg.groups.remove(event.group.id)
-    whitelist_cfg.save()
+    perm_cfg.group_whitelist.remove(event.group.id)
+    perm_cfg.save()
 
     await send_to_admin(
         MessageChain.create(f'收到被踢出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
@@ -283,9 +275,8 @@ async def leave_group(event: BotLeaveEventActive):
     """
     主动退群
     """
-
-    whitelist_cfg.groups.remove(event.group.id)
-    whitelist_cfg.save()
+    perm_cfg.group_whitelist.remove(event.group.id)
+    perm_cfg.save()
 
     await send_to_admin(
         MessageChain.create(f'收到主动退出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
@@ -297,7 +288,6 @@ async def permission_change(event: BotGroupPermissionChangeEvent):
     """
     群内权限变动
     """
-
     await send_to_admin(
         MessageChain.create(f'收到权限变动事件\n群号：{event.group.id}\n群名：{event.group.name}\n权限变更为：{event.current}'),
     )
@@ -307,43 +297,21 @@ async def permission_change(event: BotGroupPermissionChangeEvent):
     ListenerSchema(
         listening_events=[FriendMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[.!！]添加群白名单')], {'group': RegexMatch(r'\d+')}))],
-        decorators=[FriendPermission.require(FriendPermission.BOT_ADMIN)],
     )
 )
 async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexMatch):
     """
     添加群白名单
     """
-
-    whitelist_cfg.groups.append(int(group.result.asDisplay()))
-    whitelist_cfg.save()
+    if friend.id not in basic_cfg.admin.admins:
+        return
+    perm_cfg.group_whitelist.append(int(group.result.asDisplay()))
+    perm_cfg.save()
 
     await app.sendFriendMessage(
         friend,
         MessageChain.create(
             Plain(f'已添加群 {group.result.asDisplay()} 至白名单'),
-        ),
-    )
-
-
-@channel.use(
-    ListenerSchema(
-        listening_events=[FriendMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[.!！]添加群黑名单')], {'group': RegexMatch(r'\d+')}))],
-    )
-)
-async def add_group_blacklist(app: Ariadne, friend: Friend, group: RegexMatch):
-    """
-    添加群黑名单
-    """
-
-    blacklist_cfg.groups.append(int(group.result.asDisplay()))
-    blacklist_cfg.save()
-
-    await app.sendFriendMessage(
-        friend,
-        MessageChain.create(
-            Plain(f'已添加群 {group.result.asDisplay()} 至黑名单'),
         ),
     )
 
@@ -358,9 +326,10 @@ async def add_qq_blacklist(app: Ariadne, friend: Friend, qq: RegexMatch):
     """
     添加用户黑名单
     """
-
-    blacklist_cfg.users.append(int(qq.result.asDisplay()))
-    blacklist_cfg.save()
+    if friend.id not in basic_cfg.admin.admins:
+        return
+    perm_cfg.user_blacklist.append(int(qq.result.asDisplay()))
+    perm_cfg.save()
 
     await app.sendFriendMessage(
         friend,

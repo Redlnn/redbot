@@ -15,22 +15,16 @@ from graia.scheduler.saya import GraiaSchedulerBehaviour
 from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.styles import Style
 
-from util.config import BasicConfig, ModulesConfig
+from util.config import basic_cfg, modules_cfg
 from util.logger_rewrite import rewrite_ariadne_logger, rewrite_logging_logger
-from util.path import config_path, modules_path, root_path
+from util.path import modules_path, root_path
 from util.send_action import Safe
 
 ignore = ('__init__.py', '__pycache__')
 
-if not Path(config_path, 'redbot.json').exists():
-    BasicConfig()
-    raise ValueError('在? 爷的配置文件哪去了? 给你放了一份，改好了再叫爷!')
-
-basic_cfg = BasicConfig()
-modules_cfg = ModulesConfig()
 
 if basic_cfg.miraiApiHttp.account == 123456789:
-    raise ValueError('在?¿ 宁配置文件没改，改好了再叫爷!!!')
+    raise ValueError('在?¿ 填一下配置文化？')
 
 if __name__ == '__main__':
     app = Ariadne(

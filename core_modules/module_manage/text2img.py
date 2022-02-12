@@ -14,10 +14,8 @@ from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
 from PIL import ImageDraw, ImageFont
 
-from util.config import BasicConfig
+from util.config import basic_cfg
 from util.path import root_path
-
-basic_cfg = BasicConfig()
 
 _font_name: str = 'sarasa-mono-sc-semibold.ttf'
 _font_path = Path(root_path, 'fonts', _font_name)  # 字体文件的路径

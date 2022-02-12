@@ -22,7 +22,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
-from util.config import ModulesConfig, RConfig
+from util.config import RConfig, modules_cfg
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
@@ -31,7 +31,6 @@ from .ping_client import ping
 from .utils import is_domain, is_ip
 
 channel = Channel.current()
-modules_cfg = ModulesConfig()
 module_name = dirname(__file__)
 
 Module(

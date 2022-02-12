@@ -33,14 +33,13 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
-from util.config import ModulesConfig
+from util.config import modules_cfg
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
 from util.text2img import async_generate_img, hr
 
 channel = Channel.current()
-modules_cfg = ModulesConfig()
 module_name = basename(__file__)[:-3]
 
 Module(

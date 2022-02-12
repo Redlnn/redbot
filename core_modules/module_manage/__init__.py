@@ -23,7 +23,7 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
-from util.config import BasicConfig, ModulesConfig
+from util.config import basic_cfg, modules_cfg
 from util.control.interval import GroupInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module, Modules
@@ -34,8 +34,6 @@ saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 
-basic_cfg = BasicConfig()
-modules_cfg = ModulesConfig()
 module_name = dirname(__file__)
 
 # ensp = ' '  # 半角空格

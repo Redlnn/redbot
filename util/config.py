@@ -72,3 +72,7 @@ class ModulesConfig(RConfig):
     enabled: bool = True  # 是否允许加载模块
     globalDisabledModules: list[str] = []  # 全局禁用的模块列表
     disabledGroups: dict[str, list[int]] = {'BotManage': [123456789, 123456780]}  # 分群禁用模块的列表
+
+
+basic_cfg = BasicConfig()
+modules_cfg = ModulesConfig()
