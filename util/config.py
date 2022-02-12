@@ -60,7 +60,7 @@ class AdminConfig(BaseModel):
 class BasicConfig(RConfig):
     __filename__: str = 'redbot'
     botName: str = 'redbot'
-    logChat: bool = False
+    logChat: bool = True
     console: bool = False
     debug: bool = False
     miraiApiHttp: MAHConfig = MAHConfig(account=123456789, verifyKey='VerifyKey')
