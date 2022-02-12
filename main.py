@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import pkgutil
-from os.path import abspath, join
 from pathlib import Path
 
 from graia.ariadne.app import Ariadne
@@ -71,8 +70,8 @@ if __name__ == '__main__':
     rewrite_logging_logger('peewee')
 
     with saya.module_context():
-        core_modules_path = abspath(join(root_path, 'core_modules'))
-        for module in pkgutil.iter_modules([core_modules_path]):
+        core_modules_path = Path(root_path, 'core_modules')
+        for module in pkgutil.iter_modules([str(core_modules_path)]):
             if (
                 module.name in modules_cfg.globalDisabledModules
                 or module.name[:-3] in modules_cfg.globalDisabledModules
@@ -86,7 +85,7 @@ if __name__ == '__main__':
 
     if modules_cfg.enabled:
         with saya.module_context():
-            for module in pkgutil.iter_modules([modules_path]):
+            for module in pkgutil.iter_modules([str(modules_path)]):
                 if (
                     module.name in modules_cfg.globalDisabledModules
                     or module.name[:-3] in modules_cfg.globalDisabledModules

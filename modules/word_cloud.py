@@ -6,7 +6,7 @@
 """
 
 import datetime
-import os
+from os import listdir
 import random
 import time
 from io import BytesIO
@@ -93,7 +93,7 @@ config = WordCloudConfig()
         decorators=[GroupPermission.require()],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, wc_target: WildcardMatch, day_length: ArgumentMatch):
+async def command(app: Ariadne, group: Group, member: Member, wc_target: WildcardMatch, day_length: ArgumentMatch):
     if 'LogMsgHistory' in modules_cfg.disabledGroups:
         if group.id in modules_cfg.disabledGroups['LogMsgHistory']:
             return
@@ -281,9 +281,9 @@ def get_frequencies(msg_list: list[str]) -> dict:
 def gen_wordcloud(words: dict) -> bytes:
     if not Path(data_path, 'WordCloud', 'mask').exists():
         Path(data_path, 'WordCloud', 'mask').mkdir()
-    elif len(os.listdir(Path(data_path, 'WordCloud', 'mask'))) == 0:
+    elif len(listdir(Path(data_path, 'WordCloud', 'mask'))) == 0:
         raise ValueError('找不到可用的词云遮罩图，请在 data/WordCloud/mask 文件夹内放置图片文件')
-    bg_list = os.listdir(Path(data_path, 'WordCloud', 'mask'))
+    bg_list = listdir(Path(data_path, 'WordCloud', 'mask'))
     mask = numpy.array(Img.open(Path(data_path, 'WordCloud', 'mask', random.choice(bg_list))))
     font_path = str(Path(Path.cwd(), 'fonts', config.fontName))
     wordcloud = WordCloud(font_path=font_path, background_color='#f0f0f0', mask=mask, max_words=700, scale=2)

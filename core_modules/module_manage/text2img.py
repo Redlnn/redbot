@@ -8,23 +8,26 @@
 import os
 import time
 from io import BytesIO
+from pathlib import Path
 
 from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
 from PIL import ImageDraw, ImageFont
 
 from util.config import BasicConfig
+from util.path import root_path
 
 __all__ = ['async_generate_img', 'generate_img', 'hr']
 
 basic_cfg = BasicConfig()
 
 _font_name: str = 'sarasa-mono-sc-semibold.ttf'
-_font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径
-if not os.path.exists(_font_path):
+_font_path = Path(root_path, 'fonts', _font_name)  # 字体文件的路径
+if not _font_path.exists():
     raise ValueError(f'文本转图片所用的字体文件不存在，请检查配置文件，尝试访问的路径如下：↓\n{_font_path}')
 if len(_font_name) <= 4 or _font_name[-4:] not in ('.ttf', '.ttc', '.otf', '.otc'):
     raise ValueError('所配置的字体文件名不正确，请检查配置文件')
+_font_path = str(_font_path)
 
 _is_ttc_font = False
 _ttc_font_index = 1

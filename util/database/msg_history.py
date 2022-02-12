@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from pathlib import Path
 
 from peewee import CharField, IntegerField, Model, TextField, TimestampField, fn
 from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
@@ -64,7 +65,7 @@ else:
         def get_db_instance(cls):
             if not cls._instance:
                 cls._instance = cls(
-                    os.path.join(data_path, f'{database_cfg.database}_msg_history.db'),
+                    str(Path(data_path, f'{database_cfg.database}_msg_history.db')),
                     max_connections=10,
                 )
             return cls._instance

@@ -15,37 +15,17 @@ modules: 插件所在路径
 data: 数据文件所在路径
 """
 
-from os import makedirs, unlink
-from os.path import abspath, dirname, exists, isfile, join
+from pathlib import Path
 
 __all__ = ['root_path', 'config_path', 'logs_path', 'modules_path', 'data_path']
 
-root_path = abspath(dirname(dirname(__file__)))
-config_path = abspath(join(root_path, "config"))
-logs_path = abspath(join(root_path, "logs"))
-modules_path = abspath(join(root_path, "modules"))
-data_path = abspath(join(root_path, "data"))
+root_path: Path = Path(__file__).parent.parent.resolve()
+config_path: Path = Path(root_path, 'config')
+logs_path: Path = Path(root_path, 'logs')
+modules_path: Path = Path(root_path, 'modules')
+data_path: Path = Path(root_path, 'data')
 
-if not exists(config_path):
-    makedirs(config_path)
-elif isfile(config_path):
-    unlink(config_path)
-    makedirs(config_path)
-
-if not exists(logs_path):
-    makedirs(logs_path)
-elif isfile(logs_path):
-    unlink(logs_path)
-    makedirs(logs_path)
-
-if not exists(modules_path):
-    makedirs(modules_path)
-elif isfile(modules_path):
-    unlink(modules_path)
-    makedirs(modules_path)
-
-if not exists(data_path):
-    makedirs(data_path)
-elif isfile(data_path):
-    unlink(data_path)
-    makedirs(data_path)
+config_path.mkdir(parents=True, exist_ok=True)
+logs_path.mkdir(parents=True, exist_ok=True)
+modules_path.mkdir(parents=True, exist_ok=True)
+data_path.mkdir(parents=True, exist_ok=True)
