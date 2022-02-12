@@ -25,17 +25,17 @@ from graia.ariadne.message.parser.twilight import (
 from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
-from pydantic import AnyHttpUrl, BaseModel
+from pydantic import AnyHttpUrl
 
-from util.config import get_basic_config, get_config, get_modules_config
+from util.config import BasicConfig, ModulesConfig, RConfig
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
 
 channel = Channel.current()
-modules_cfg = get_modules_config()
+modules_cfg = ModulesConfig()
 module_name = basename(__file__)[:-3]
-basic_cfg = get_basic_config()
+basic_cfg = BasicConfig()
 
 Module(
     name='涩图（不可以色色o）',
@@ -46,11 +46,12 @@ Module(
 ).register()
 
 
-class Setu(BaseModel):
+class Setu(RConfig):
+    __filename__: str = 'setu'
     apiUrl: AnyHttpUrl = 'http://localhost:8080'
 
 
-setu_config = get_config('setu.json', Setu())
+setu_config = Setu()
 
 
 @channel.use(

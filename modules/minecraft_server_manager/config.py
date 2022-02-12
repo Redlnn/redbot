@@ -3,7 +3,7 @@
 
 from pydantic import BaseModel
 
-from util.config import get_config, save_config
+from util.config import RConfig
 
 
 class RconConfig(BaseModel):
@@ -21,15 +21,16 @@ class DatabaseConfig(BaseModel):
     passwd: str = 'password'
 
 
-class McServerMangerConfig(BaseModel):
+class McServerMangerConfig(RConfig):
+    __filename__: str = 'mc_server_manager'
     serverGroup: int = 123456789  # 服务器群群号
     activeGroups: list[int] = [123456789]
     rcon: RconConfig = RconConfig()
     database: DatabaseConfig = DatabaseConfig()
 
 
-config = get_config('mc_server_manager.json', McServerMangerConfig())
+config = McServerMangerConfig()
 
 if config.serverGroup not in config.activeGroups:
     config.activeGroups.append(config.serverGroup)
-    save_config('mc_server_manager.json', config)
+    config.save()

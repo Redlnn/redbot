@@ -23,7 +23,7 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
-from util.config import get_basic_config, get_modules_config, save_modules_config
+from util.config import BasicConfig, ModulesConfig
 from util.control.interval import GroupInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module, Modules
@@ -34,8 +34,8 @@ saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 
-basic_cfg = get_basic_config()
-modules_cfg = get_modules_config()
+basic_cfg = BasicConfig()
+modules_cfg = ModulesConfig()
 module_name = dirname(__file__)
 
 # ensp = ' '  # 半角空格
@@ -127,7 +127,7 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexMatch):
     elif group.id in disabled_groups:
         disabled_groups.remove(group.id)
         modules_cfg.disabledGroups[target_module.file_name] = disabled_groups
-        save_modules_config()
+        modules_cfg.save()
         await app.sendMessage(group, MessageChain.create(Plain('模块已启用')))
     else:
         await app.sendMessage(group, MessageChain.create(Plain('无变化，模块已处于开启状态')))
@@ -158,7 +158,7 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexMatch):
     elif group.id not in disabled_groups:
         disabled_groups.append(group.id)
         modules_cfg.disabledGroups[target_module.file_name] = disabled_groups
-        save_modules_config()
+        modules_cfg.save()
         await app.sendMessage(group, MessageChain.create(Plain('模块已禁用')))
     else:
         await app.sendMessage(group, MessageChain.create(Plain('无变化，模块已处于禁用状态')))

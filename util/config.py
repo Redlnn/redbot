@@ -1,15 +1,48 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from os import mkdir, remove, unlink
-from os.path import exists, isdir, isfile, join
-from typing import TypeVar
+from pathlib import Path
 
+import orjson
 from pydantic import AnyHttpUrl, BaseModel
 
 from .path import config_path, data_path
 
-T_BaseModel = TypeVar("T_BaseModel", bound=BaseModel)
+
+class RConfig(BaseModel):
+    __filename__: str  # 无需指定后缀
+    __in_data_folder__: bool = False
+
+    def __init__(self, **data) -> None:
+        if self.__in_data_folder__:
+            path = Path(data_path, f'{self.__filename__}.json')
+        else:
+            path = Path(config_path, f'{self.__filename__}.json')
+        if not path.exists():
+            super().__init__(**data)
+            with open(path, 'w') as f:
+                f.write(self.json(indent=2, ensure_ascii=False))
+        else:
+            with open(path, 'rb') as fb:
+                data = orjson.loads(fb.read())
+            super().__init__(**data)
+
+    def save(self) -> None:
+        if self.__in_data_folder__:
+            path = Path(data_path, f'{self.__filename__}.json')
+        else:
+            path = Path(config_path, f'{self.__filename__}.json')
+        with open(path, 'w') as f:
+            f.write(self.json(indent=2, ensure_ascii=False))
+
+    def reload(self) -> None:
+        if self.__in_data_folder__:
+            path = Path(data_path, f'{self.__filename__}.json')
+        else:
+            path = Path(config_path, f'{self.__filename__}.json')
+        with open(path, 'rb') as fb:
+            data = orjson.loads(fb.read())
+        super().__init__(**data)
 
 
 class MAHConfig(BaseModel):
@@ -24,7 +57,8 @@ class AdminConfig(BaseModel):
     admins: list[int] = [731347477]
 
 
-class BasicConfig(BaseModel):
+class BasicConfig(RConfig):
+    __filename__: str = 'redbot'
     botName: str = 'redbot'
     logChat: bool = False
     console: bool = False
@@ -33,69 +67,8 @@ class BasicConfig(BaseModel):
     admin: AdminConfig = AdminConfig()
 
 
-class ModulesConfig(BaseModel):
+class ModulesConfig(RConfig):
+    __filename__: str = 'modules'
     enabled: bool = True  # 是否允许加载模块
     globalDisabledModules: list[str] = []  # 全局禁用的模块列表
     disabledGroups: dict[str, list[int]] = {'BotManage': [123456789, 123456780]}  # 分群禁用模块的列表
-
-
-module_cfg: ModulesConfig
-
-
-def save_config(filename: str, config_model: BaseModel, folder: str = None, in_data_folder: bool = False):
-    target_path = join(data_path) if in_data_folder else join(config_path)
-    if folder is not None:
-        file_path = join(target_path, folder, filename)
-    else:
-        file_path = join(target_path, filename)
-    with open(file_path, 'w', encoding='utf8') as fp:
-        fp.write(config_model.json(indent=2, ensure_ascii=False))
-
-
-def get_config(
-    filename: str, config_model: T_BaseModel, folder: str = None, in_data_folder: bool = False
-) -> T_BaseModel:
-    target_path = join(data_path) if in_data_folder else join(config_path)
-    if folder is not None:
-        folder_path = join(target_path, folder)
-        if not exists(folder_path):
-            mkdir(folder_path)
-        elif isfile(folder_path):
-            unlink(folder_path)
-            mkdir(folder_path)
-        file_path = join(folder_path, filename)
-    else:
-        file_path = join(target_path, filename)
-    if not exists(file_path):
-        save_config(filename, config_model, folder, in_data_folder)
-        return config_model
-    elif isdir(file_path):
-        remove(file_path)
-        save_config(filename, config_model, folder, in_data_folder)
-        return config_model
-    else:
-        return config_model.parse_file(file_path)
-
-
-def get_basic_config():
-    if not exists(join(config_path, 'redbot.json')):
-        save_config('redbot.json', BasicConfig())
-        raise ValueError('在? 爷的配置文件哪去了? 给你放了一份，改好了再叫爷!')
-    else:
-        basic_cfg = get_config('redbot.json', BasicConfig())
-        if basic_cfg.admin.masterId not in basic_cfg.admin.admins:
-            basic_cfg.admin.admins.append(basic_cfg.admin.masterId)
-            save_config('redbot.json', basic_cfg)
-        if basic_cfg.miraiApiHttp.account == 123456789:
-            raise ValueError('在?¿ 宁配置文件没改，改好了再叫爷!!!')
-        return basic_cfg
-
-
-def get_modules_config():
-    global module_cfg
-    module_cfg = get_config('modules.json', ModulesConfig())
-    return module_cfg
-
-
-def save_modules_config():
-    save_config('modules.json', module_cfg)

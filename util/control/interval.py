@@ -19,12 +19,12 @@ from graia.ariadne.model import Friend, Group, Member
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 
-from ..config import get_basic_config
+from ..config import BasicConfig
 from .permission import Permission
 
 __all__ = ['GroupInterval', 'MemberInterval', 'FriendInterval', 'TempInterval', 'ManualInterval']
 
-basic_cfg = get_basic_config()
+basic_cfg = BasicConfig()
 
 
 class GroupInterval:

@@ -12,14 +12,14 @@ from io import BytesIO
 from graia.ariadne.util.async_exec import cpu_bound
 from PIL import Image as Img
 from PIL import ImageDraw, ImageFont
-from pydantic import BaseModel
 
-from .config import get_basic_config, get_config
+from .config import BasicConfig, RConfig
 
 __all__ = ['async_generate_img', 'generate_img', 'hr']
 
 
-class Text2ImgConfig(BaseModel):
+class Text2ImgConfig(RConfig):
+    __filename__: str = 'text2img'
     # 字体文件的文件名（带后缀名），支持ttf/otf/ttc/otc
     # 字体文件请放在根目录的 fonts 文件夹内
     FontName: str = 'OPPOSans-B.ttf'
@@ -42,8 +42,8 @@ class Text2ImgConfig(BaseModel):
     BorderOutlineWidth: int = 5  # 边框描边（内描边）厚度
 
 
-config = get_config('text2img.json', Text2ImgConfig())
-basic_cfg = get_basic_config()
+config = Text2ImgConfig()
+basic_cfg = BasicConfig()
 
 _font_name: str = config.FontName
 _font_path: str = os.path.join(os.getcwd(), 'fonts', _font_name)  # 字体文件的路径

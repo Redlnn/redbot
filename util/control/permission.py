@@ -13,9 +13,8 @@ from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Friend, Group, Member, MemberPerm
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
-from pydantic import BaseModel
 
-from ..config import get_basic_config, get_config
+from ..config import BasicConfig, RConfig
 
 __all__ = [
     'BlacklistConfig',
@@ -28,18 +27,20 @@ __all__ = [
 ]
 
 
-class BlacklistConfig(BaseModel):
+class BlacklistConfig(RConfig):
+    __filename__: str = 'blacklist'
     groups: list[int] = []
     users: list[int] = []
 
 
-class WhitelistConfig(BaseModel):
+class WhitelistConfig(RConfig):
+    __filename__: str = 'whitelist'
     groups: list[int] = []
 
 
-basic_cfg = get_basic_config()
-blacklist_cfg = get_config('blacklist.json', BlacklistConfig())
-whitelist_cfg = get_config('whitelist.json', WhitelistConfig())
+basic_cfg = BasicConfig()
+blacklist_cfg = BlacklistConfig()
+whitelist_cfg = WhitelistConfig()
 
 
 class Permission:

@@ -11,12 +11,12 @@ from graia.broadcast.builtin.event import ExceptionThrowed
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 
-from util.config import get_basic_config
+from util.config import BasicConfig
 from util.text2img import async_generate_img
 
 channel = Channel.current()
 
-basic_cfg = get_basic_config()
+basic_cfg = BasicConfig()
 
 
 @channel.use(ListenerSchema(listening_events=[ExceptionThrowed]))

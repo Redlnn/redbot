@@ -19,13 +19,13 @@ from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import get_modules_config
+from util.config import ModulesConfig
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
 
 channel = Channel.current()
-modules_cfg = get_modules_config()
+modules_cfg = ModulesConfig()
 module_name = basename(__file__)[:-3]
 
 Module(

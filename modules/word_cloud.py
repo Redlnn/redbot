@@ -35,10 +35,9 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from jieba import load_userdict
 from matplotlib import pyplot
 from PIL import Image as Img
-from pydantic import BaseModel
 from wordcloud import ImageColorGenerator, WordCloud
 
-from util.config import get_config, get_modules_config
+from util.config import ModulesConfig, RConfig
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.database.msg_history import get_group_msg, get_member_msg
@@ -46,7 +45,7 @@ from util.module_register import Module
 from util.path import data_path
 
 channel = Channel.current()
-modules_cfg = get_modules_config()
+modules_cfg = ModulesConfig()
 module_name = basename(__file__)[:-3]
 
 Module(
@@ -67,13 +66,14 @@ Module(
 ).register()
 
 
-class WordCloudConfig(BaseModel):
+class WordCloudConfig(RConfig):
+    __filename__: str = 'wordcloud'
     blacklistWord: list[str] = ['[APP消息]', '[XML消息]', '[JSON消息]', '视频短片']
     fontName: str = 'OPPOSans-B.ttf'
 
 
 Generating_list: list[int | str] = []
-config = get_config('wordcloud.json', WordCloudConfig())
+config = WordCloudConfig()
 
 
 @channel.use(

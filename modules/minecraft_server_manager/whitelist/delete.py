@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Literal
 from asyncio.exceptions import TimeoutError
+from typing import Literal
 from uuid import UUID
 
 from graia.ariadne.message.chain import MessageChain

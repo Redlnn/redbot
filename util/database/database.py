@@ -8,7 +8,7 @@ from playhouse.pool import PooledMySQLDatabase, PooledSqliteDatabase
 from playhouse.shortcuts import ReconnectMixin
 from pydantic import BaseModel as PyDanticBaseModel
 
-from util.config import get_config
+from util.config import RConfig
 
 __all__ = ['BaseModel', 'database_cfg']
 
@@ -21,12 +21,13 @@ class MySQLConfig(PyDanticBaseModel):
     passwd: str = 'password'
 
 
-class DatabaseConfig(PyDanticBaseModel):
+class DatabaseConfig(RConfig):
+    __filename__: str = 'database'
     database: str = 'redbot'
     mysql: MySQLConfig = MySQLConfig()
 
 
-database_cfg = get_config('database.json', DatabaseConfig())
+database_cfg = DatabaseConfig()
 
 if database_cfg.mysql.enabled:
     # https://www.cnblogs.com/gcxblogs/p/14969019.html

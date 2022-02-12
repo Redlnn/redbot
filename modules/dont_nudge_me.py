@@ -14,13 +14,13 @@ from graia.ariadne.message.element import Image, Plain
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import get_basic_config
+from util.config import BasicConfig
 from util.control.interval import ManualInterval
 from util.module_register import Module
 from util.path import data_path
 
 channel = Channel.current()
-basic_cfg = get_basic_config()
+basic_cfg = BasicConfig()
 module_name = basename(__file__)[:-3]
 
 Module(

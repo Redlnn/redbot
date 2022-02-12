@@ -703,7 +703,9 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
                     flags.append(False)
                 else:
                     if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                        await app.sendMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        await app.sendMessage(
+                            group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source
+                        )
                         flags.append(False)
             else:
                 await app.sendMessage(
@@ -733,7 +735,9 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
                     flags.append(False)
                 else:
                     if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                        await app.sendMessage(group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        await app.sendMessage(
+                            group, MessageChain.create(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source
+                        )
                         flags.append(False)
             else:
                 await app.sendMessage(
@@ -854,7 +858,9 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
                     flags.append(False)
                 else:
                     if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                        await app.sendMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        await app.sendMessage(
+                            group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source
+                        )
                         flags.append(False)
             else:
                 await app.sendMessage(
@@ -884,7 +890,9 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
                     flags.append(False)
                 else:
                     if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                        await app.sendMessage(group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        await app.sendMessage(
+                            group, MessageChain.create(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source
+                        )
                         flags.append(False)
             else:
                 await app.sendMessage(

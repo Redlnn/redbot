@@ -27,7 +27,7 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
-from util.config import get_basic_config, save_config
+from util.config import BasicConfig
 from util.control.permission import FriendPermission, blacklist_cfg, whitelist_cfg
 from util.module_register import Module
 
@@ -35,7 +35,7 @@ saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 module_name = basename(__file__)[:-3]
-basic_cfg = get_basic_config()
+basic_cfg = BasicConfig()
 
 Module(
     name='Bot管理',
@@ -212,7 +212,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
             await event.accept()
             if event.groupId:
                 whitelist_cfg.groups.append(event.groupId)
-                save_config('whitelist.json', whitelist_cfg)
+                whitelist_cfg.save()
             await send_to_admin(
                 MessageChain.create(
                     Plain(
@@ -271,7 +271,7 @@ async def kick_group(event: BotLeaveEventKick):
     """
 
     whitelist_cfg.groups.remove(event.group.id)
-    save_config('whitelist.json', whitelist_cfg)
+    whitelist_cfg.save()
 
     await send_to_admin(
         MessageChain.create(f'收到被踢出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
@@ -285,7 +285,7 @@ async def leave_group(event: BotLeaveEventActive):
     """
 
     whitelist_cfg.groups.remove(event.group.id)
-    save_config('whitelist.json', whitelist_cfg)
+    whitelist_cfg.save()
 
     await send_to_admin(
         MessageChain.create(f'收到主动退出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
@@ -316,7 +316,7 @@ async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexMatch):
     """
 
     whitelist_cfg.groups.append(int(group.result.asDisplay()))
-    save_config('whitelist.json', whitelist_cfg)
+    whitelist_cfg.save()
 
     await app.sendFriendMessage(
         friend,
@@ -338,7 +338,7 @@ async def add_group_blacklist(app: Ariadne, friend: Friend, group: RegexMatch):
     """
 
     blacklist_cfg.groups.append(int(group.result.asDisplay()))
-    save_config('blacklist.json', blacklist_cfg)
+    blacklist_cfg.save()
 
     await app.sendFriendMessage(
         friend,
@@ -360,7 +360,7 @@ async def add_qq_blacklist(app: Ariadne, friend: Friend, qq: RegexMatch):
     """
 
     blacklist_cfg.users.append(int(qq.result.asDisplay()))
-    save_config('blacklist.json', blacklist_cfg)
+    blacklist_cfg.save()
 
     await app.sendFriendMessage(
         friend,
