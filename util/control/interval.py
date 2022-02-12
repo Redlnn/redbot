@@ -22,8 +22,6 @@ from graia.broadcast.builtin.decorators import Depend
 from ..config import BasicConfig
 from .permission import Permission
 
-__all__ = ['GroupInterval', 'MemberInterval', 'FriendInterval', 'TempInterval', 'ManualInterval']
-
 basic_cfg = BasicConfig()
 
 

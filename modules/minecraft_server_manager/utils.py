@@ -9,8 +9,6 @@ from aiohttp import ClientResponse
 from graia.ariadne.adapter import Adapter
 from graia.ariadne.app import Ariadne
 
-__all__ = ['get_time', 'is_mc_id', 'is_uuid', 'get_mc_id', 'get_uuid']
-
 
 async def get_time() -> str:
     """

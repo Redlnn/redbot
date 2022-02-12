@@ -15,12 +15,6 @@ from ..rcon import execute_command
 from ..utils import get_mc_id, get_uuid
 from .query import query_uuid_by_qq, query_whitelist_by_uuid
 
-__all__ = [
-    'del_whitelist_by_id',
-    'del_whitelist_by_uuid',
-    'del_whitelist_by_qq',
-]
-
 
 async def del_whitelist_from_server(mc_uuid: str | UUID) -> Literal[True] | MessageChain:
     try:

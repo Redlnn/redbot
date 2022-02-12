@@ -17,8 +17,6 @@ from util.path import root_path
 
 from .config import BasicConfig, RConfig
 
-__all__ = ['async_generate_img', 'generate_img', 'hr']
-
 
 class Text2ImgConfig(RConfig):
     __filename__: str = 'text2img'

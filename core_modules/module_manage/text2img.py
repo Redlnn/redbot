@@ -17,8 +17,6 @@ from PIL import ImageDraw, ImageFont
 from util.config import BasicConfig
 from util.path import root_path
 
-__all__ = ['async_generate_img', 'generate_img', 'hr']
-
 basic_cfg = BasicConfig()
 
 _font_name: str = 'sarasa-mono-sc-semibold.ttf'

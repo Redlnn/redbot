@@ -8,8 +8,6 @@ from pathlib import Path
 from loguru import logger
 from prompt_toolkit.patch_stdout import StdoutProxy
 
-__all__ = ['rewrite_logging_logger', 'rewrite_ariadne_logger']
-
 
 # https://loguru.readthedocs.io/en/stable/overview.html?highlight=InterceptHandler#entirely-compatible-with-standard-logging
 class InterceptHandler(logging.Handler):

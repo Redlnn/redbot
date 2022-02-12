@@ -16,16 +16,6 @@ from graia.broadcast.builtin.decorators import Depend
 
 from ..config import BasicConfig, RConfig
 
-__all__ = [
-    'BlacklistConfig',
-    'blacklist_cfg',
-    'whitelist_cfg',
-    'Permission',
-    'GroupPermission',
-    'TempPermission',
-    'FriendPermission',
-]
-
 
 class BlacklistConfig(RConfig):
     __filename__: str = 'blacklist'

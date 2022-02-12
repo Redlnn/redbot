@@ -11,8 +11,6 @@ from graia.ariadne.util.async_exec import io_bound
 
 from .aiodns_resolver import dns_resolver_srv
 
-__all__ = ['ping']
-
 
 class PingClient:
     """

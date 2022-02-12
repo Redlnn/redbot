@@ -5,8 +5,6 @@ import aiodns
 from aiodns.error import DNSError
 from graia.saya import Saya
 
-__all__ = ['dns_resolver', 'dns_resolver_srv']
-
 resolver = aiodns.DNSResolver(loop=Saya.current().broadcast.loop, nameservers=['119.29.29.29'])
 
 

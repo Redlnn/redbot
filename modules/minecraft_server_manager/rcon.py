@@ -7,8 +7,6 @@ from loguru import logger
 
 from .config import config
 
-__all__ = ['execute_command']
-
 
 async def execute_command(command: str) -> str:
     """

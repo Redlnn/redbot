@@ -10,8 +10,6 @@ from pydantic import BaseModel as PyDanticBaseModel
 
 from util.config import RConfig
 
-__all__ = ['BaseModel', 'database_cfg']
-
 
 class MySQLConfig(PyDanticBaseModel):
     enabled: bool = False
