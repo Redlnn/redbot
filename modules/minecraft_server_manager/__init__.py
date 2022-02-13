@@ -27,6 +27,7 @@ from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
+from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.text2img import generate_img
 
@@ -180,9 +181,7 @@ async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wl\ add\ '), WildcardMatch()]))],
         decorators=[
-            GroupPermission.require(
-                MemberPerm.Administrator,
-            ),
+            GroupPermission.require(MemberPerm.Administrator),
         ],
     )
 )

@@ -16,7 +16,7 @@ from graia.broadcast.interrupt.waiter import Waiter
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import modules_cfg
+from util.control import DisableModule
 from util.control.interval import GroupInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
@@ -41,14 +41,10 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](文本转图片|消息转图片)')]))],
-        decorators=[GroupPermission.require(), GroupInterval.require(15)],
+        decorators=[GroupPermission.require(), GroupInterval.require(15), DisableModule.require(module_name)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, source: Source):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
-
     @Waiter.create_using_function([GroupMessage])
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain):
         if waiter_group.id == group.id and waiter_member.id == member.id:

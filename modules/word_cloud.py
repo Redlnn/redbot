@@ -37,7 +37,8 @@ from matplotlib import pyplot
 from PIL import Image as Img
 from wordcloud import ImageColorGenerator, WordCloud
 
-from util.config import RConfig, modules_cfg
+from util.config import RConfig
+from util.control import DisableModule
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.database.msg_history import get_group_msg, get_member_msg
@@ -89,16 +90,10 @@ config = WordCloudConfig()
                 )
             )
         ],
-        decorators=[GroupPermission.require()],
+        decorators=[GroupPermission.require(), DisableModule.require(module_name), DisableModule.require('msg_loger')],
     )
 )
 async def command(app: Ariadne, group: Group, member: Member, wc_target: WildcardMatch, day_length: ArgumentMatch):
-    if 'LogMsgHistory' in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups['LogMsgHistory']:
-            return
-    elif module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     global Generating_list
     day = int(day_length.result.asDisplay())
     match_result: MessageChain = wc_target.result  # noqa: E275
@@ -153,7 +148,7 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: Wildcar
                 )
             )
         ],
-        decorators=[GroupPermission.require()],
+        decorators=[GroupPermission.require(), DisableModule.require(module_name), DisableModule.require('msg_loger')],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, target: UnionMatch, target_time: UnionMatch):

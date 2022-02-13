@@ -31,7 +31,7 @@ from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
 from loguru import logger
 
-from util.config import modules_cfg
+from util.control import DisableModule
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
@@ -105,13 +105,10 @@ lucky_things = {
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](jrrp|抽签)')]))],
-        decorators=[GroupPermission.require(), MemberInterval.require(10)],
+        decorators=[GroupPermission.require(), MemberInterval.require(10), DisableModule.require(module_name)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     is_new, renpin, qianwen = await read_data(str(member.id))
     img_bytes = await async_generate_img([qianwen, f'{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:

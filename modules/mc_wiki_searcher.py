@@ -19,8 +19,7 @@ from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import modules_cfg
-from util.control.interval import MemberInterval
+from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.module_register import Module
 
@@ -39,13 +38,10 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wiki')], {'keyword': RegexMatch(r'\S+')}))],
-        decorators=[GroupPermission.require(), MemberInterval.require(3)],
+        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
 async def main(app: Ariadne, group: Group, keyword: RegexMatch):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     keyword: str = keyword.result.asDisplay()
     search_parm: str = quote(keyword, encoding='utf-8')
     await app.sendMessage(

@@ -13,7 +13,7 @@ from graia.broadcast.interrupt import InterruptControl
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import modules_cfg
+from util.control import DisableModule
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
@@ -40,12 +40,12 @@ func = {
 }
 
 
-@channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[GroupPermission.require()]))
+@channel.use(
+    ListenerSchema(
+        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(module_name)]
+    )
+)
 async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
-
     if not message.has(Plain):
         return
     elif message.asDisplay()[0] not in ('!', '！', '.'):

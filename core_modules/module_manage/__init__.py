@@ -24,7 +24,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
 from util.config import basic_cfg, modules_cfg
-from util.control.interval import GroupInterval
+from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.module_register import Module, Modules
 
@@ -61,13 +61,10 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](菜单|menu)')]))],
-        decorators=[GroupPermission.require()],
+        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
 async def menu(app: Ariadne, group: Group):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     msg_send = f'-= {basic_cfg.botName} 功能菜单 for {group.id} =-\n' f'-= {group.name} =-\n{hr}\nID    模块状态    模块名\n'
     i = 0
     for module in Modules:
@@ -103,13 +100,10 @@ async def menu(app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]启用模块')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(module_name)],
     )
 )
 async def enable_module(app: Ariadne, group: Group, module_id: RegexMatch):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
@@ -135,13 +129,10 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexMatch):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]禁用模块')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[GroupInterval.require(5), GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(module_name)],
     )
 )
 async def disable_module(app: Ariadne, group: Group, module_id: RegexMatch):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
@@ -166,13 +157,10 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexMatch):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]用法')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[GroupInterval.require(5)],
+        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
 async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
@@ -206,14 +194,10 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexMatch):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]重载模块')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
+        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(module_name)],
     )
 )
 async def reload_module(app: Ariadne, group: Group, member: Member, module_id: RegexMatch):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
-
     @Waiter.create_using_function([GroupMessage])
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain):
         if waiter_group.id == group.id and waiter_member.id == member.id:
@@ -262,14 +246,10 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]加载模块')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
+        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(dirname(__file__))],
     )
 )
 async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexMatch):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
-
     @Waiter.create_using_function([GroupMessage])
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain):
         if waiter_group.id == group.id and waiter_member.id == member.id:
@@ -315,13 +295,10 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]卸载模块')], {'module_id': RegexMatch(r'\d+')}))],
-        decorators=[GroupInterval.require(5), GroupPermission.require(GroupPermission.BOT_ADMIN)],
+        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(module_name)],
     )
 )
 async def unload_module(app: Ariadne, group: Group, module_id: RegexMatch):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     target_id = int(module_id.result.asDisplay()) - 1
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))

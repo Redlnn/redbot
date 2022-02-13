@@ -33,7 +33,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
-from util.config import modules_cfg
+from util.control import DisableModule
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
@@ -84,11 +84,12 @@ class VideoInfo:
     favorites: int  # 收藏量
 
 
-@channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[GroupPermission.require()]))
+@channel.use(
+    ListenerSchema(
+        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(module_name)]
+    )
+)
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     p = re.compile(f'({avid_re})|({bvid_re})')
     video_id = None
     if message.has(App):

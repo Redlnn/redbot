@@ -13,7 +13,7 @@ from graia.broadcast.interrupt import InterruptControl
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import modules_cfg
+from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.module_register import Module
 
@@ -35,11 +35,8 @@ Module(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[啊阿]对+')]))],
-        decorators=[GroupPermission.require()],
+        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     await app.sendMessage(group, message + MessageChain.create(Plain('对')))

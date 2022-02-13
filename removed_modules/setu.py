@@ -27,7 +27,8 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from pydantic import AnyHttpUrl
 
-from util.config import RConfig, basic_cfg, modules_cfg
+from util.config import RConfig, basic_cfg
+from util.control import DisableModule
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
@@ -68,14 +69,10 @@ setu_config = Setu()
                 ),
             )
         ],
-        decorators=[GroupPermission.require(), MemberInterval.require(30)],
+        decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(module_name)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, san: ArgumentMatch, num: ArgumentMatch):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
-
     if int(san.result.asDisplay()) >= 4 and not (
         member.permission in (MemberPerm.Administrator, MemberPerm.Owner) or member.id in basic_cfg.admin.admins
     ):

@@ -13,7 +13,7 @@ from graia.ariadne.model import Group, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import modules_cfg
+from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.module_register import Module
 
@@ -32,14 +32,13 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        decorators=[GroupPermission.require(MemberPerm.Administrator, send_alert=False)],
+        decorators=[
+            GroupPermission.require(MemberPerm.Administrator, send_alert=False),
+            DisableModule.require(module_name),
+        ],
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
-
     if re.match(r'^[!！.]读取消息$', message.asDisplay()):
         try:
             quote_id = message.include(Quote).getFirst(Quote).id

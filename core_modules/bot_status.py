@@ -18,7 +18,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from util import get_graia_version
-from util.config import modules_cfg
+from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.module_register import Module
 from util.text2img import async_generate_img, hr
@@ -47,11 +47,12 @@ else:
 total_memory = '%.1f' % (psutil.virtual_memory().total / 1073741824)
 
 
-@channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[GroupPermission.require()]))
+@channel.use(
+    ListenerSchema(
+        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(module_name)]
+    )
+)
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     if not re.match(r'^[!！.](status|version)$', message.asDisplay()):
         return
     pid = os.getpid()

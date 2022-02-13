@@ -20,7 +20,7 @@ from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import modules_cfg
+from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.database.msg_history import (
     get_group_talk_count,
@@ -49,11 +49,12 @@ Module(
 ).register()
 
 
-@channel.use(ListenerSchema(listening_events=[GroupMessage], decorators=[GroupPermission.require()]))
+@channel.use(
+    ListenerSchema(
+        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(module_name)]
+    )
+)
 async def main(group: Group, member: Member, message: MessageChain):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     if message.has(App):
         await log_msg(
             group.id,
@@ -104,7 +105,7 @@ async def main(group: Group, member: Member, message: MessageChain):
                 )
             )
         ],
-        decorators=[GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(module_name)],
     )
 )
 async def get_msg_count(
@@ -115,9 +116,6 @@ async def get_msg_count(
     arg_target: ArgumentMatch,
     arg_day: ArgumentMatch,
 ):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     if not arg_day.result.asDisplay().isdigit():
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
         return
@@ -203,13 +201,10 @@ async def get_msg_count(
                 )
             )
         ],
-        decorators=[GroupPermission.require(MemberPerm.Administrator)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(module_name)],
     )
 )
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexMatch, at: ElementMatch):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     if qq.matched and not at.matched:
         target = int(qq.result.asDisplay())
     elif at.matched and not qq.matched:

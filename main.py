@@ -66,26 +66,14 @@ if __name__ == '__main__':
     with saya.module_context():
         core_modules_path = Path(root_path, 'core_modules')
         for module in pkgutil.iter_modules([str(core_modules_path)]):
-            if (
-                module.name in modules_cfg.globalDisabledModules
-                or module.name[:-3] in modules_cfg.globalDisabledModules
-            ):
-                continue
-            elif module.name in ignore or module.name[0] in ('!', '#', '.'):
-                continue
-            elif module.name == 'console' and not basic_cfg.console:
+            if module.name in ignore or module.name[0] in ('#', '.', '_'):
                 continue
             saya.require(f"core_modules.{module.name}")
 
     if modules_cfg.enabled:
         with saya.module_context():
             for module in pkgutil.iter_modules([str(modules_path)]):
-                if (
-                    module.name in modules_cfg.globalDisabledModules
-                    or module.name[:-3] in modules_cfg.globalDisabledModules
-                ):
-                    continue
-                elif module.name in ignore or module.name[0] in ('!', '#', '.', '_'):
+                if module.name in ignore or module.name[0] in ('#', '.', '_'):
                     continue
                 saya.require(f"modules.{module.name}")
 

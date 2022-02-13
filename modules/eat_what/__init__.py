@@ -15,8 +15,7 @@ from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.config import modules_cfg
-from util.control.interval import MemberInterval
+from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.module_register import Module
 
@@ -42,13 +41,10 @@ async def get_food():
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]吃啥')]))],
-        decorators=[GroupPermission.require(), MemberInterval.require(2)],
+        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
 async def main(app: Ariadne, group: Group, source: Source):
-    if module_name in modules_cfg.disabledGroups:
-        if group.id in modules_cfg.disabledGroups[module_name]:
-            return
     food = await get_food()
     chain = MessageChain.create(Plain(f'吃{food}'))
     await app.sendMessage(group, chain, quote=source)

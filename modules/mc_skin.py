@@ -25,6 +25,7 @@ from graia.ariadne.model import Group
 from graia.saya.builtins.broadcast import ListenerSchema
 from graia.saya.channel import Channel
 
+from util.control import DisableModule
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.module_register import Module
@@ -63,7 +64,7 @@ RENDER_ADDR = {
                 ),
             )
         ],
-        decorators=[GroupPermission.require(), MemberInterval.require(30)],
+        decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(module_name)],
     )
 )
 async def get_skin(app: Ariadne, group: Group, name: RegexMatch, option: ArgumentMatch):
