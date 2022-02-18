@@ -58,11 +58,19 @@ async def send_to_admin(message: MessageChain):
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
 async def launched(app: Ariadne):
     groupList = await app.getGroupList()
+    quit_groups = 0
+    # for group in groupList:
+    #     if group.id not in perm_cfg.group_whitelist:
+    #         await app.quitGroup(group)
+    #         quit_groups += 1
+    msg = f'{basic_cfg.botName} 成功启动，当前共加入了 {len(groupList) - quit_groups} 个群'
+    # if quit_groups > 0:
+    #     msg += f'，本次已自动退出 {quit_groups} 个群'
     try:
         await app.sendFriendMessage(
             basic_cfg.admin.masterId,
             MessageChain.create(
-                Plain(f'{basic_cfg.botName} 成功启动，当前共加入了 {len(groupList)} 个群'),
+                Plain(msg),
             ),
         )
     except UnknownTarget:
