@@ -56,7 +56,7 @@ if __name__ == '__main__':
             ),
             replace_logger=False,
         )
-        saya.install_behaviours(app.create(ConsoleBehaviour))
+        saya.install_behaviours(ConsoleBehaviour(console))
     else:
         console = None
 
