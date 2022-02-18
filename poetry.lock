@@ -827,7 +827,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "peewee"
-version = "3.14.8"
+version = "3.14.9"
 description = "a little orm"
 category = "main"
 optional = false
@@ -1422,7 +1422,7 @@ fastapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "090222e701a418445391edb069a441da2360f679cbf3e51826b2b63a3bddf5a6"
+content-hash = "a86aabaa199a64e5c26ed18d8d7ccf59b33d9335965cdf2e5584b7e7f0152a80"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -2113,7 +2113,7 @@ pathspec = [
     {file = "pathspec-0.9.0.tar.gz", hash = "sha256:e564499435a2673d586f6b2130bb5b95f04a3ba06f81b8f895b651a3c76aabb1"},
 ]
 peewee = [
-    {file = "peewee-3.14.8.tar.gz", hash = "sha256:01bd7f734defb08d7a3346a0c0ca7011bc8d0d685934ec0e001b3371d522ec53"},
+    {file = "peewee-3.14.9.tar.gz", hash = "sha256:69c1b88dc89b184231cc1ce6df241075aca5cec43e89749cc4a63108f9ceea47"},
 ]
 pillow = [
     {file = "Pillow-9.0.1-1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:a5d24e1d674dd9d72c66ad3ea9131322819ff86250b30dc5821cbafcfa0b96b4"},
