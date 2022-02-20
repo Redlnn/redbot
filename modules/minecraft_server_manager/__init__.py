@@ -20,14 +20,13 @@ from graia.ariadne.message.parser.twilight import (
     Twilight,
     WildcardMatch,
 )
-from graia.ariadne.model import Group, Member, MemberPerm
+from graia.ariadne.model import Group, Member, MemberInfo, MemberPerm
 from graia.broadcast.interrupt import InterruptControl
 from graia.broadcast.interrupt.waiter import Waiter
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
-from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.text2img import generate_img
 
@@ -467,8 +466,15 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
         await app.sendMessage(group, MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
         return
     if mc_id.lower() not in member.name.lower():
-        await app.sendMessage(group, MessageChain.create(Plain('请确保你的群名片包含你要申请白名单的ID')), quote=source)
-        return
+        try:
+            await app.modifyMemberInfo(member, MemberInfo(name=mc_id))
+        except Exception as e:
+            await app.sendMessage(
+                group, MessageChain.create(Plain(f'请保证你的群名片包含你要申请白名单的ID\n（发生内部错误，请联系管理员：{e}）')), quote=source
+            )
+            return
+        else:
+            await app.sendMessage(group, MessageChain.create(Plain('由于你的群名片不包含你要申请白名单的ID，已自动为你修改')), quote=source)
 
     target = member.id
     await app.sendMessage(group, await add_whitelist_to_qq(target, mc_id, False), quote=source)
