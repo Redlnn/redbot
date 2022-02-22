@@ -421,7 +421,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
         quote=source,
     )
     try:
-        answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+        answer: MessageChain = await inc.wait(waiter, timeout=10)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')), quote=source)
         return

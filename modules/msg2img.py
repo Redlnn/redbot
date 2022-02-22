@@ -52,7 +52,7 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
 
     await app.sendMessage(group, MessageChain.create(Plain('请发送要转换的内容')), quote=source)
     try:
-        answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+        answer: MessageChain = await inc.wait(waiter, timeout=10)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')), quote=source)
         return

@@ -135,7 +135,7 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
                 )
 
     try:
-        result, admin = await asyncio.wait_for(inc.wait(waiter), timeout=600)
+        result, admin = await inc.wait(waiter, timeout=600)
     except asyncio.exceptions.TimeoutError:
         await event.accept()
         await send_to_admin(MessageChain.create(Plain(f'由于超时未审核，已自动同意 {event.nickname}({event.supplicant}) 的好友请求')))
@@ -199,7 +199,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
                 )
 
     try:
-        result, admin = await asyncio.wait_for(inc.wait(waiter), timeout=600)
+        result, admin = await inc.wait(waiter, timeout=600)
     except asyncio.exceptions.TimeoutError:
         await event.reject('由于 Bot 管理员长时间未审核，已自动拒绝')
         await send_to_admin(

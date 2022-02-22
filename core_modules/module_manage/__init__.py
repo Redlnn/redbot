@@ -217,7 +217,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
         ),
     )
     try:
-        answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+        answer: MessageChain = await inc.wait(waiter, timeout=10)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
         return
@@ -266,7 +266,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
         group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
     )
     try:
-        answer: MessageChain = await asyncio.wait_for(inc.wait(waiter), timeout=10)
+        answer: MessageChain = await inc.wait(waiter, timeout=10)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
         return

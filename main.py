@@ -24,7 +24,7 @@ ignore = ('__init__.py', '__pycache__')
 
 
 if basic_cfg.miraiApiHttp.account == 123456789:
-    raise ValueError('在?¿ 填一下配置文化？')
+    raise ValueError('在?¿ 填一下配置文件？')
 
 if __name__ == '__main__':
     app = Ariadne(
