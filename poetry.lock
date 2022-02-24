@@ -359,7 +359,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "fastapi"
-version = "0.74.0"
+version = "0.74.1"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 category = "main"
 optional = true
@@ -1422,7 +1422,7 @@ fastapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "15be0d9d5bec96bfa0afd54c4925b2daf670af111dec966f3238a3a80a268e17"
+content-hash = "d9edd63eb28532a8a4b88c0e5867af391e081d8234e46545b974baa271918fb5"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -1625,14 +1625,17 @@ brotli = [
 ]
 caio = [
     {file = "caio-0.9.5-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:cd1c20aab04c18f0534b3f0b59103a94dede3c7d7b43c9cc525df3980b4c7c54"},
+    {file = "caio-0.9.5-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:dd316270757d77f384c97e336588267e7942c1f1492a3a2e07b9a80dca027538"},
     {file = "caio-0.9.5-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:013aa374158c5074b3c65a0da6b9c6b20a987d85fb317dd077b045e84e2478e1"},
     {file = "caio-0.9.5-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:d767faf537a9ea774e8408ba15a0f1dc734f06857c2d28bdf4258a63b5885f42"},
     {file = "caio-0.9.5-cp36-cp36m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:97d9a10522a8a25798229fc1113cfaba3832b1cd0c1a3648b009b9740ef5e054"},
     {file = "caio-0.9.5-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:4fe9eff5cf7a2d6f3f418aeeccd11ce9a38329e07527b6f52da085edb44bc2fd"},
     {file = "caio-0.9.5-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:b8b6be369139edd678817dc0a313392d710f66fb521c275dce0a9067089b346b"},
     {file = "caio-0.9.5-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:3ffc6259239e03962f9e14829e02795ca9d196eedf32fe61688ba6ed33da46c8"},
+    {file = "caio-0.9.5-cp38-cp38-macosx_11_0_universal2.whl", hash = "sha256:7a19dfdec6736affb645da233a6007c2590678490d2a1e0f1fb82a696c0a1ddf"},
     {file = "caio-0.9.5-cp38-cp38-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:15f70d27e1009d279e4f9ff86290aad00b0511ce82a1879c40745244f0a9ec92"},
     {file = "caio-0.9.5-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:0427a58c1814a091bfbb84318d344fdb9a68f3d49adc74e5fdc7bc9478e1e4fe"},
+    {file = "caio-0.9.5-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:7f48fa58e5f699b428f1fd85e394ecec05be4048fcaf1fdf1981b748cd1e03a6"},
     {file = "caio-0.9.5-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:01061288391020f28e1ab8b0437420f7fe1e0ecc29b4107f7a8dcf7789f33b22"},
     {file = "caio-0.9.5-py3-none-any.whl", hash = "sha256:3c74d84dff2bec5f93685cf2f32eb22e4cc5663434a9be5f4a759247229b69b3"},
     {file = "caio-0.9.5.tar.gz", hash = "sha256:167d9342a807bae441b2e88f9ecb62da2f236b319939a8679f68f510a0194c40"},
@@ -1748,8 +1751,8 @@ docopt = [
     {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
 ]
 fastapi = [
-    {file = "fastapi-0.74.0-py3-none-any.whl", hash = "sha256:e21d7d0d587c8c2014e8ff61be2626f999cfb8c3cb42f034df9f8589bcb893e1"},
-    {file = "fastapi-0.74.0.tar.gz", hash = "sha256:5363a2cd983aa700e5a6c25d63d1b84aee0d4c94358247b4a1a947e39f654ffe"},
+    {file = "fastapi-0.74.1-py3-none-any.whl", hash = "sha256:b8ec8400623ef0b2ff558ebe06753b349f8e3a5dd38afea650800f2644ddba34"},
+    {file = "fastapi-0.74.1.tar.gz", hash = "sha256:b58a2c46df14f62ebe6f24a9439927539ba1959b9be55ba0e2f516a683e5b9d4"},
 ]
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},
