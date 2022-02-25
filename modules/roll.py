@@ -14,7 +14,7 @@ from random import randint
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Plain, Source
+from graia.ariadne.message.element import Dice, Plain, Source
 from graia.ariadne.message.parser.twilight import (
     MatchResult,
     RegexMatch,
@@ -54,3 +54,14 @@ async def roll(app: Ariadne, group: Group, source: Source, target: MatchResult):
     else:
         chain = MessageChain.create(Plain(str(randint(0, 100))))
     await app.sendMessage(group, chain, quote=source)
+
+
+@channel.use(
+    ListenerSchema(
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.](dice|骰子|色子)')])],
+        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
+    )
+)
+async def dice(app: Ariadne, group: Group):
+    await app.sendMessage(group, MessageChain.create(Dice(randint(1, 6))))
