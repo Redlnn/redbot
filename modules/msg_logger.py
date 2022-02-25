@@ -10,10 +10,13 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import App, At, Json, Plain, Source, Xml
 from graia.ariadne.message.parser.twilight import (
+    ArgResult,
     ArgumentMatch,
     ElementMatch,
+    MatchResult,
     RegexMatch,
-    Sparkle,
+    RegexResult,
+    SpacePolicy,
     Twilight,
 )
 from graia.ariadne.model import Group, Member, MemberPerm
@@ -95,14 +98,12 @@ async def main(group: Group, member: Member, message: MessageChain):
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                Sparkle(
-                    [RegexMatch(r'[!！.]msgcount')],
-                    {
-                        'arg_type': ArgumentMatch("--type", optional=False),
-                        'arg_target': ArgumentMatch("--target", optional=True),
-                        'arg_day': ArgumentMatch("--day", optional=True, default='7'),
-                    },
-                )
+                [
+                    RegexMatch(r'[!！.]msgcount').space(SpacePolicy.FORCE),
+                    'arg_type' @ ArgumentMatch("--type", optional=False),
+                    'arg_target' @ ArgumentMatch("--target", optional=True),
+                    'arg_day' @ ArgumentMatch("--day", optional=True, default='7'),
+                ],
             )
         ],
         decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(module_name)],
@@ -112,9 +113,9 @@ async def get_msg_count(
     app: Ariadne,
     group: Group,
     member: Member,
-    arg_type: ArgumentMatch,
-    arg_target: ArgumentMatch,
-    arg_day: ArgumentMatch,
+    arg_type: ArgResult,
+    arg_target: ArgResult,
+    arg_day: ArgResult,
 ):
     if not arg_day.result.asDisplay().isdigit():
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
@@ -192,19 +193,17 @@ async def get_msg_count(
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                Sparkle(
-                    [RegexMatch(r'[!！.]getlast')],
-                    {
-                        'qq': RegexMatch(r'\d+', optional=True),
-                        'at': ElementMatch(At, optional=True),
-                    },
-                )
+                [
+                    RegexMatch(r'[!！.]getlast').space(SpacePolicy.FORCE),
+                    'qq' @ RegexMatch(r'\d+', optional=True),
+                    'at' @ ElementMatch(At, optional=True),
+                ],
             )
         ],
         decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(module_name)],
     )
 )
-async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexMatch, at: ElementMatch):
+async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexResult, at: MatchResult):
     if qq.matched and not at.matched:
         target = int(qq.result.asDisplay())
     elif at.matched and not qq.matched:

@@ -10,15 +10,18 @@ mc皮肤查询
 from os.path import basename
 
 import orjson
+from graia.ariadne import get_running
 from graia.ariadne.adapter import Adapter
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image
 from graia.ariadne.message.parser.twilight import (
+    ArgResult,
     ArgumentMatch,
     RegexMatch,
-    Sparkle,
+    RegexResult,
+    SpacePolicy,
     Twilight,
 )
 from graia.ariadne.model import Group
@@ -55,20 +58,22 @@ RENDER_ADDR = {
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                Sparkle(
-                    [RegexMatch(r'[.!！]skin')],
-                    {
-                        'name': RegexMatch(r'^[0-9a-zA-Z_]+$'),
-                        'option': ArgumentMatch('--type', '-T', default='head', regex=r'(original|body|head|avatar)'),
-                    },
-                ),
+                [
+                    RegexMatch(r'[.!！]skin').space(SpacePolicy.FORCE),
+                    'name' @ RegexMatch(r'^[0-9a-zA-Z_]+$'),
+                    ArgumentMatch(
+                        '--type', '-T', default='head', type=str, choices=['original', 'body', 'head', 'avatar']
+                    ).param(
+                        'option'
+                    ),  # 为了black格式化后好看所以用了param
+                ],
             )
         ],
         decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(module_name)],
     )
 )
-async def get_skin(app: Ariadne, group: Group, name: RegexMatch, option: ArgumentMatch):
-    session = Ariadne.get_running(Adapter).session
+async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult):
+    session = get_running(Adapter).session
     try:
         uuid_resp = await session.get(UUID_ADDRESS_STRING.format(name=name.result.asDisplay()))
         uuid = orjson.loads(await uuid_resp.text())["id"]

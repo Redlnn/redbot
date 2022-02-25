@@ -16,7 +16,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
-from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import RegexMatch, RegexResult, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -56,18 +56,16 @@ ping_cfg = McServerPingConfig()
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                Sparkle(
-                    [RegexMatch(r'[!！.]ping')],
-                    {
-                        'ping_target': RegexMatch(r'\S+', optional=True),
-                    },
-                )
+                [
+                    RegexMatch(r'[!！.]ping'),
+                    'ping_target' @ RegexMatch(r'\S+', optional=True),
+                ],
             )
         ],
         decorators=[GroupPermission.require(), MemberInterval.require(10), DisableModule.require(module_name)],
     )
 )
-async def main(app: Ariadne, group: Group, ping_target: RegexMatch):
+async def main(app: Ariadne, group: Group, ping_target: RegexResult):
     if ping_target.matched:
         server_address = ping_target.result.asDisplay().strip()
     else:

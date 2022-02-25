@@ -11,7 +11,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain, Source
 from graia.ariadne.message.parser.twilight import (
     ElementMatch,
-    Sparkle,
+    MatchResult,
+    SpacePolicy,
     Twilight,
     WildcardMatch,
 )
@@ -38,11 +39,11 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle({'at': ElementMatch(At), 'any': WildcardMatch()}))],
+        inline_dispatchers=[Twilight('at' @ ElementMatch(At).space(SpacePolicy.FORCE), 'any' @ WildcardMatch())],
         decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
-async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: ElementMatch):
+async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: MatchResult):
     if at.result.target != basic_cfg.miraiApiHttp.account:
         return
     msg = message.include(Plain).asDisplay().strip()

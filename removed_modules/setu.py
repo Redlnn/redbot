@@ -9,16 +9,18 @@ import asyncio
 from datetime import datetime
 from os.path import basename
 
+from graia.ariadne import get_running
 from graia.ariadne.adapter import Adapter
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Forward, ForwardNode, Image, Plain
 from graia.ariadne.message.parser.twilight import (
+    ArgResult,
     ArgumentMatch,
     FullMatch,
+    MatchResult,
     RegexMatch,
-    Sparkle,
     Twilight,
     WildcardMatch,
 )
@@ -58,27 +60,33 @@ setu_config = Setu()
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                Sparkle(
-                    [RegexMatch(r'[.!！]')],
-                    {
-                        'tag': WildcardMatch(optional=True),
-                        'header': FullMatch('涩图'),
-                        'san': ArgumentMatch('--san', '-S', default='2', regex=r'2|4|6', help='最高涩气值，可为2|4|6'),
-                        'num': ArgumentMatch('--num', '-N', default='1', regex=r'[1-5]', help='涩图数量'),
-                    },
-                ),
+                [
+                    RegexMatch(r'[.!！]'),
+                    'tag' @ WildcardMatch(optional=True),
+                    'header' @ FullMatch('涩图'),
+                    ArgumentMatch(
+                        '--san', '-S', default='2', type=str, choices=['2', '4', '6']  # 最高涩气值，可为2|4|6'
+                    ).param(
+                        'san'
+                    ),  # 为了black格式化后好看所以用了param
+                    ArgumentMatch(
+                        '--num', '-N', default='1', type=str, choices=['1', '2', '3', '4', '5']  # 涩图数量
+                    ).param(
+                        'num'
+                    ),  # 为了black格式化后好看所以用了param
+                ],
             )
         ],
         decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(module_name)],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, tag: WildcardMatch, san: ArgumentMatch, num: ArgumentMatch):
+async def main(app: Ariadne, group: Group, member: Member, tag: MatchResult, san: ArgResult, num: ArgResult):
     if int(san.result.asDisplay()) >= 4 and not (
         member.permission in (MemberPerm.Administrator, MemberPerm.Owner) or member.id in basic_cfg.admin.admins
     ):
         await app.sendMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
         return
-    session = Ariadne.get_running(Adapter).session
+    session = get_running(Adapter).session
     if tag.matched:
         target_tag = tag.result.getFirst(Plain).text
         async with session.get(

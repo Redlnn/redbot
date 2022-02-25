@@ -23,7 +23,7 @@ from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
-from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Group, Member
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -104,7 +104,7 @@ lucky_things = {
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](jrrp|抽签)')]))],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.](jrrp|抽签)')])],
         decorators=[GroupPermission.require(), MemberInterval.require(10), DisableModule.require(module_name)],
     )
 )

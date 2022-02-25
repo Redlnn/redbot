@@ -10,7 +10,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
-from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import RegexMatch, SpacePolicy, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -40,7 +40,7 @@ async def get_food():
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]吃啥')]))],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]吃啥').space(SpacePolicy.NOSPACE)])],
         decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )

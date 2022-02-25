@@ -34,6 +34,7 @@ class Safe(SendMessageAction):
 
     @staticmethod
     async def _handle(item: Exc_T, ignore: bool):
+        from graia.ariadne import get_running
         from graia.ariadne.app import Ariadne
         from graia.ariadne.message.chain import MessageChain
         from graia.ariadne.message.element import (
@@ -46,7 +47,7 @@ class Safe(SendMessageAction):
         )
 
         chain: MessageChain = item.send_data["message"]
-        ariadne = Ariadne.get_running(Ariadne)
+        ariadne = get_running(Ariadne)
 
         def convert(msg_chain: MessageChain, type_) -> None:
             for ind, elem in enumerate(msg_chain.__root__[:]):

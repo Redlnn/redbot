@@ -7,12 +7,12 @@ import time
 from os.path import basename
 
 import psutil
-import regex as re
 from git.repo.base import Repo
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image
+from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -49,12 +49,12 @@ total_memory = '%.1f' % (psutil.virtual_memory().total / 1073741824)
 
 @channel.use(
     ListenerSchema(
-        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(module_name)]
+        listening_events=[GroupMessage],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.](status|version)')])],
+        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
-async def main(app: Ariadne, group: Group, message: MessageChain):
-    if not re.match(r'^[!！.](status|version)$', message.asDisplay()):
-        return
+async def main(app: Ariadne, group: Group):
     pid = os.getpid()
     p = psutil.Process(pid)
     started_time = time.localtime(p.create_time())

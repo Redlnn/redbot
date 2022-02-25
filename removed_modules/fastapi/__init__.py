@@ -9,6 +9,7 @@ import asyncio
 from asyncio import Task
 
 from fastapi import FastAPI, WebSocket
+from graia.ariadne import get_running
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched, ApplicationShutdowned
 from graia.ariadne.event.message import GroupMessage
@@ -33,7 +34,7 @@ rewrite_logging_logger('uvicorn.asgi')
 task: Task
 server: Server
 channel = Channel.current()
-bcc = Ariadne.get_running(Broadcast)
+bcc = get_running(Broadcast)
 fastapi_app = FastAPI()
 manager = ConnectionManager()
 

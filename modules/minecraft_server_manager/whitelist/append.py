@@ -5,6 +5,7 @@ import time
 from asyncio.exceptions import TimeoutError
 from uuid import UUID
 
+from graia.ariadne import get_running
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
@@ -45,7 +46,7 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
 
     player = await query_uuid_by_qq(qq)
     if player is None:
-        app = Ariadne.get_running(Ariadne)
+        app = get_running(Ariadne)
         member: Member = await app.getMember(config.serverGroup, qq)
         PlayersTable.create(
             group=config.serverGroup,

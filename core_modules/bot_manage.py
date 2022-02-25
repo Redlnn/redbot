@@ -5,6 +5,7 @@ import asyncio
 from os.path import basename
 from random import uniform
 
+from graia.ariadne import get_running
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched, ApplicationShutdowned
 from graia.ariadne.event.message import FriendMessage
@@ -19,7 +20,12 @@ from graia.ariadne.event.mirai import (
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
-from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import (
+    RegexMatch,
+    RegexResult,
+    SpacePolicy,
+    Twilight,
+)
 from graia.ariadne.model import Friend
 from graia.broadcast.interrupt import InterruptControl
 from graia.broadcast.interrupt.waiter import Waiter
@@ -46,7 +52,7 @@ Module(
 
 
 async def send_to_admin(message: MessageChain):
-    app = Ariadne.get_running(Ariadne)
+    app = get_running(Ariadne)
     for admin in basic_cfg.admin.admins:
         try:
             await app.sendFriendMessage(admin, message)
@@ -304,10 +310,12 @@ async def permission_change(event: BotGroupPermissionChangeEvent):
 @channel.use(
     ListenerSchema(
         listening_events=[FriendMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[.!！]添加群白名单')], {'group': RegexMatch(r'\d+')}))],
+        inline_dispatchers=[
+            Twilight([RegexMatch(r'[.!！]添加群白名单').space(SpacePolicy.FORCE), 'group' @ RegexMatch(r'\d+')])
+        ],
     )
 )
-async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexMatch):
+async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexResult):
     """
     添加群白名单
     """
@@ -327,10 +335,12 @@ async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexMatch):
 @channel.use(
     ListenerSchema(
         listening_events=[FriendMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[.!！]添加用户黑名单')], {'qq': RegexMatch(r'\d+')}))],
+        inline_dispatchers=[
+            Twilight([RegexMatch(r'[.!！]添加用户黑名单').space(SpacePolicy.FORCE)], 'qq' @ RegexMatch(r'\d+'))
+        ],
     )
 )
-async def add_qq_blacklist(app: Ariadne, friend: Friend, qq: RegexMatch):
+async def add_qq_blacklist(app: Ariadne, friend: Friend, qq: RegexResult):
     """
     添加用户黑名单
     """

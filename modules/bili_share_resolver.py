@@ -23,6 +23,7 @@ from xml.dom.minidom import parseString
 
 import orjson as json
 import regex as re
+from graia.ariadne import get_running
 from graia.ariadne.adapter import Adapter
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -190,7 +191,7 @@ async def lite_app_extract(app: App) -> bool | str:
 
 async def b23_url_extract(url: str) -> bool | str:
     url = re.search('b23.tv/[0-9a-zA-Z]*', url).group(0)
-    session = Ariadne.get_running(Adapter).session
+    session = get_running(Adapter).session
     async with session.get(f'https://{url}', allow_redirects=False) as resp:
         target = resp.headers['Location']
     if 'www.bilibili.com/video/' in target:
@@ -200,7 +201,7 @@ async def b23_url_extract(url: str) -> bool | str:
 
 
 async def get_video_info(video_id: str) -> dict:
-    session = Ariadne.get_running(Adapter).session
+    session = get_running(Adapter).session
     if video_id[:2].lower() == 'av':
         async with session.get(f'http://api.bilibili.com/x/web-interface/view?aid={video_id[2:]}') as resp:
             return await resp.json()
@@ -266,7 +267,7 @@ async def gen_img(data: VideoInfo) -> bytes:
         f'{hr}\n{data.desc}'
     )
 
-    session = Ariadne.get_running(Adapter).session
+    session = get_running(Adapter).session
     async with session.get(data.cover_url) as resp:
         img_contents: list[str | bytes] = [await resp.content.read(), info_text]
     return await async_generate_img(img_contents)

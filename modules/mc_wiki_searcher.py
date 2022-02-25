@@ -14,7 +14,12 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
-from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import (
+    RegexMatch,
+    RegexResult,
+    SpacePolicy,
+    Twilight,
+)
 from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
@@ -37,18 +42,20 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]wiki')], {'keyword': RegexMatch(r'\S+')}))],
+        inline_dispatchers=[
+            Twilight([RegexMatch(r'[!！.]wiki').space(SpacePolicy.FORCE)], 'keyword' @ RegexMatch(r'\S+'))
+        ],
         decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
-async def main(app: Ariadne, group: Group, keyword: RegexMatch):
-    keyword: str = keyword.result.asDisplay()
-    search_parm: str = quote(keyword, encoding='utf-8')
+async def main(app: Ariadne, group: Group, keyword: RegexResult):
+    key_word: str = keyword.result.asDisplay()
+    search_parm: str = quote(key_word, encoding='utf-8')
     await app.sendMessage(
         group,
         MessageChain.create(
             Plain(
-                f'在 Minecraft Wiki 中搜索【{keyword}】\n'
+                f'在 Minecraft Wiki 中搜索【{key_word}】\n'
                 f'Bilibili 镜像: https://searchwiki.biligame.com/mc/index.php?search={search_parm}\n'
                 f'Fandom: https://minecraft.fandom.com/zh/index.php?search={search_parm}'
             )

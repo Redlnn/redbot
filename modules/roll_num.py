@@ -16,8 +16,8 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.message.parser.twilight import (
+    MatchResult,
     RegexMatch,
-    Sparkle,
     Twilight,
     WildcardMatch,
 )
@@ -37,18 +37,18 @@ Module(
     file_name=module_name,
     author=['Red_lnn'],
     description='获得一个随机数',
-    usage='[!！.]roll {要roll的事件}',
+    usage='[!！.]roll {要roll的事件}\n[!！.](dice|骰子|色子)',
 ).register()
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.]roll')], {'target': WildcardMatch()}))],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]roll'), 'target' @ WildcardMatch()])],
         decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
-async def main(app: Ariadne, group: Group, source: Source, target: WildcardMatch):
+async def roll(app: Ariadne, group: Group, source: Source, target: MatchResult):
     if target.matched:
         chain = MessageChain.create(Plain(f'{target.result.asDisplay().strip()}的概率为：{randint(0, 100)}'))
     else:

@@ -21,9 +21,11 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import (
+    ArgResult,
     ArgumentMatch,
+    MatchResult,
     RegexMatch,
-    Sparkle,
+    SpacePolicy,
     Twilight,
     UnionMatch,
     WildcardMatch,
@@ -81,21 +83,23 @@ config = WordCloudConfig()
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                Sparkle(
-                    [RegexMatch(r'[!！.]wordcloud')],
-                    {
-                        'wc_target': WildcardMatch(),
-                        'day_length': ArgumentMatch('--day', '-D', regex=r'\d+', default='7'),
-                    },
-                )
+                [
+                    RegexMatch(r'[!！.]wordcloud').space(SpacePolicy.FORCE),
+                    'wc_target' @ WildcardMatch(),
+                    'day_length' @ ArgumentMatch('--day', '-D', default='7'),
+                ],
             )
         ],
         decorators=[GroupPermission.require(), DisableModule.require(module_name), DisableModule.require('msg_loger')],
     )
 )
-async def command(app: Ariadne, group: Group, member: Member, wc_target: WildcardMatch, day_length: ArgumentMatch):
+async def command(app: Ariadne, group: Group, member: Member, wc_target: MatchResult, day_length: ArgResult):
     global Generating_list
-    day = int(day_length.result.asDisplay())
+    try:
+        day = int(day_length.result.asDisplay())
+    except:
+        await app.sendMessage(group, MessageChain.create(Plain(f'请输入正确的天数！')), quote=True)
+        return
     match_result: MessageChain = wc_target.result  # noqa: E275
 
     if len(Generating_list) > 2:
@@ -140,18 +144,16 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: Wildcar
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                Sparkle(
-                    {
-                        'target': UnionMatch('我的', '群'),
-                        'target_time': UnionMatch('本周总结', '月度总结', '年度总结'),
-                    },
-                )
+                [
+                    'target' @ UnionMatch('我的', '群').space(SpacePolicy.NOSPACE),
+                    'target_time' @ UnionMatch('本周总结', '月度总结', '年度总结'),
+                ],
             )
         ],
         decorators=[GroupPermission.require(), DisableModule.require(module_name), DisableModule.require('msg_loger')],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, target: UnionMatch, target_time: UnionMatch):
+async def main(app: Ariadne, group: Group, member: Member, target: MatchResult, target_time: MatchResult):
     today = time.localtime(time.time())
     match target.result.asDisplay():
         case '我的':
@@ -241,6 +243,7 @@ async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Im
     if len(msg_list) < 50:
         await app.sendMessage(group, MessageChain.create(Plain('本群发言较少，无法生成词云')))
         Generating_list.remove(group.id)
+        return
     await app.sendMessage(group, MessageChain.create(Plain(f'本群最近{day}天共 {len(msg_list)} 条记录，正在生成词云，请稍后...')))
     words = await get_frequencies(msg_list)
     image_bytes = await gen_wordcloud(words)

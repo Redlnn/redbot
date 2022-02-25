@@ -4,12 +4,13 @@
 import asyncio
 from os.path import basename
 
+from graia.ariadne import get_running
 from graia.ariadne.adapter import Adapter
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, AtAll, Image, Plain, Source
-from graia.ariadne.message.parser.twilight import RegexMatch, Sparkle, Twilight
+from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Group, Member
 from graia.broadcast.interrupt import InterruptControl
 from graia.broadcast.interrupt.waiter import Waiter
@@ -40,7 +41,7 @@ Module(
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(Sparkle([RegexMatch(r'[!！.](文本转图片|消息转图片)')]))],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.](文本转图片|消息转图片)')])],
         decorators=[GroupPermission.require(), GroupInterval.require(15), DisableModule.require(module_name)],
     )
 )
@@ -62,7 +63,7 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
         return
 
     img_list: list[str | bytes] = []
-    session = Ariadne.get_running(Adapter).session
+    session = get_running(Adapter).session
     for ind, elem in enumerate(answer[:]):
         if type(elem) in (At, AtAll):
             answer.__root__[ind] = Plain(elem.asDisplay())

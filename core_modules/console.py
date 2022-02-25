@@ -4,12 +4,7 @@
 from graia.ariadne.app import Ariadne
 from graia.ariadne.console import Console
 from graia.ariadne.console.saya import ConsoleSchema
-from graia.ariadne.message.parser.twilight import (
-    FullMatch,
-    ParamMatch,
-    Sparkle,
-    Twilight,
-)
+from graia.ariadne.message.parser.twilight import FullMatch, MatchResult, Twilight
 from graia.ariadne.model import MemberPerm
 from graia.saya import Channel
 from loguru import logger
@@ -20,7 +15,7 @@ from util.config import basic_cfg
 if basic_cfg.console:
     channel = Channel.current()
 
-    @channel.use(ConsoleSchema([Twilight(Sparkle([FullMatch('stop')]))]))
+    @channel.use(ConsoleSchema([Twilight([FullMatch('stop')])]))
     async def stop(app: Ariadne, console: Console):
         res: str = await console.prompt(
             l_prompt=[('class:warn', ' Are you sure to stop? '), ('', ' (y/n) ')],
@@ -30,13 +25,15 @@ if basic_cfg.console:
             await app.stop()
             console.stop()
 
-    @channel.use(ConsoleSchema([Twilight.from_command('send {0} {1} {2}')]))
-    async def group_chat(app: Ariadne, spark: Sparkle):
-        target_type, target_id, message = spark[ParamMatch]
-        if target_type.result.asDisplay() == 'group':
-            await app.sendGroupMessage(int(target_id.result.asDisplay()), message.result)
-        elif target_type.result.asDisplay() == 'friend':
-            await app.sendFriendMessage(int(target_id.result.asDisplay()), message.result)
+    @channel.use(ConsoleSchema([Twilight.from_command('send {type} {id} {content}')]))
+    async def group_chat(app: Ariadne, type: MatchResult, id: MatchResult, content: MatchResult):
+        match type.result.asDisplay():
+            case 'group':
+                await app.sendGroupMessage(int(id.result.asDisplay()), content.result)
+            case 'friend':
+                await app.sendFriendMessage(int(id.result.asDisplay()), content.result)
+            case _:
+                logger.warning('参数错误')
 
     def get_perm_name(perm: MemberPerm):
         match perm:
@@ -47,10 +44,9 @@ if basic_cfg.console:
             case MemberPerm.Owner:
                 return '群主'
 
-    @channel.use(ConsoleSchema([Twilight.from_command('list {0}')]))
-    async def list(app: Ariadne, spark: Sparkle):
-        (target,) = spark[ParamMatch]
-        match target.result.asDisplay():
+    @channel.use(ConsoleSchema([Twilight.from_command('list {type}')]))
+    async def list(app: Ariadne, type: MatchResult):
+        match type.result.asDisplay():
             case 'group':
                 for group in await app.getGroupList():
                     logger.opt(raw=True).info(f'{group.name}({group.id}) - {get_perm_name(group.accountPerm)}\n')
