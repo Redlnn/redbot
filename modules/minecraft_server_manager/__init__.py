@@ -178,7 +178,7 @@ async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]wl\ add').space(SpacePolicy.FORCE), WildcardMatch()])],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]wl add').space(SpacePolicy.FORCE), WildcardMatch()])],
         decorators=[
             GroupPermission.require(MemberPerm.Administrator),
         ],
@@ -216,7 +216,7 @@ async def add_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]wl\ del').space(SpacePolicy.FORCE), WildcardMatch()])],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]wl del').space(SpacePolicy.FORCE), WildcardMatch()])],
         decorators=[
             GroupPermission.require(
                 MemberPerm.Administrator,
@@ -282,7 +282,7 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]wl\ info').space(SpacePolicy.FORCE), WildcardMatch()])],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]wl info').space(SpacePolicy.FORCE), WildcardMatch()])],
         decorators=[GroupPermission.require()],
     )
 )
@@ -380,7 +380,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]wl\ clear')])],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]wl clear')])],
         decorators=[
             GroupPermission.require(MemberPerm.Administrator),
         ],
@@ -447,7 +447,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]myid\ ').space(SpacePolicy.FORCE), WildcardMatch()])],
+        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]myid').space(SpacePolicy.FORCE), WildcardMatch()])],
         decorators=[GroupPermission.require()],
     )
 )
