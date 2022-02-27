@@ -123,5 +123,13 @@ def ding(qq: int | str) -> bytes:
             frames.append(canvas)
 
     img_io = BytesIO()
-    frames[0].save(img_io, format='GIF', save_all=True, duration=1, append_Imgs=frames[1:], optimize=True, loop=False)
+    frames[0].save(
+        img_io,
+        format='GIF',
+        save_all=True,
+        duration=[66] * 120 + [1000],
+        append_images=frames[1:],
+        optimize=True,
+        loop=0,
+    )
     return img_io.getvalue()
