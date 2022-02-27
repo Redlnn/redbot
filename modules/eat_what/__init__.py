@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import random
-from os.path import dirname
+from os.path import dirname, split
 from pathlib import Path
 
 from aiofile import async_open
@@ -20,7 +20,7 @@ from util.control.permission import GroupPermission
 from util.module_register import Module
 
 channel = Channel.current()
-module_name = dirname(__file__)
+module_name = split(dirname(__file__))[-1]
 
 Module(
     name='吃啥',

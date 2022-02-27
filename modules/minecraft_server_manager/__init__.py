@@ -54,7 +54,7 @@ inc = InterruptControl(saya.broadcast)
 # from utils.module_register import Module
 # Module(
 #         name='我的世界服务器管理',
-#         file_name=os.path.dirname(__file__),
+#         file_name=split(dirname(__file__))[-1],
 #         author=['Red_lnn'],
 #         description='提供白名单管理、在线列表查询、服务器命令执行功能',
 #         usage=(

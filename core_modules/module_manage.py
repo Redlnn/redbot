@@ -8,7 +8,7 @@ Bot 管理
 
 import asyncio
 import os
-from os.path import dirname
+from os.path import dirname, split
 from pathlib import Path
 
 from graia.ariadne.app import Ariadne
@@ -33,7 +33,7 @@ saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
 
-module_name = dirname(__file__)
+module_name = split(dirname(__file__))[-1]
 
 # ensp = ' '  # 半角空格
 # emsp = ' '  # 全角空格

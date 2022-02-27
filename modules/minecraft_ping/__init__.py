@@ -10,7 +10,7 @@ Ping mc服务器
 """
 
 import socket
-from os.path import dirname
+from os.path import dirname, split
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -32,7 +32,7 @@ from .ping_client import ping
 from .utils import is_domain, is_ip
 
 channel = Channel.current()
-module_name = dirname(__file__)
+module_name = split(dirname(__file__))[-1]
 
 Module(
     name='Ping 我的世界服务器',
