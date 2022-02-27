@@ -6,7 +6,7 @@ from fastapi.websockets import WebSocket
 from websockets.exceptions import ConnectionClosedOK
 
 
-class ConnectionManager:
+class WsConnectionManager:
     def __init__(self):
         self.active_connections: list[WebSocket] = []
 

@@ -23,8 +23,8 @@ from uvicorn.config import Config
 from websockets.exceptions import ConnectionClosedOK
 
 from fastapi_core.event import NewWebsocketClient
-from fastapi_core.manager import ConnectionManager
-from fastapi_core.server import ModifiedServer as Server
+from fastapi_core.manager import WsConnectionManager
+from fastapi_core.server import NoSignalServer as Server
 from util.logger_rewrite import rewrite_logging_logger
 
 rewrite_logging_logger('uvicorn.error')
@@ -36,13 +36,13 @@ server: Server
 channel = Channel.current()
 bcc = get_running(Broadcast)
 fastapi_app = FastAPI()
-manager = ConnectionManager()
+manager = WsConnectionManager()
 
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
 async def on_launch():
     global task, server
-    server = Server(Config(fastapi_app, host='localhost', port=18000, log_config=None, reload=False))
+    server = Server(Config(fastapi_app, host='localhost', port=8000, log_config=None, reload=False))
     task = asyncio.create_task(server.serve())
 
 
@@ -51,14 +51,14 @@ async def on_shutdown():
     global task, server
     server.should_exit = True
     times = 0
-    while not server.shutdown_status:
+    while not task.done():
         if times > 10:
             server.force_exit = True
         elif times > 20:
+            task.cancel()
             break
         await asyncio.sleep(0.1)
         times += 1
-    task.cancel()
 
 
 @channel.use(ListenerSchema(listening_events=[NewWebsocketClient]))
