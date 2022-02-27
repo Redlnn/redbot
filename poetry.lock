@@ -114,7 +114,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "arclet-alconna"
-version = "0.6.3"
+version = "0.6.5"
 description = "A Fast Command Analyser based on Dict"
 category = "main"
 optional = false
@@ -1421,7 +1421,7 @@ fastapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "ea214da70ac7c977c759c0604a2d8e786d4c211fd17b2a56d515846f1d175b47"
+content-hash = "38060ef705bc80eb03752d19213cfb0023a6cdbd0f5eac24e610fd9bb478f8f8"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -1519,7 +1519,7 @@ anyio = [
     {file = "anyio-3.5.0.tar.gz", hash = "sha256:a0aeffe2fb1fdf374a8e4b471444f0f3ac4fb9f5a5b542b48824475e0042a5a6"},
 ]
 arclet-alconna = [
-    {file = "arclet-alconna-0.6.3.tar.gz", hash = "sha256:95d508c4410683f02b97fecd3f3f504d6a63e6be56aa7f74ce18d74cf76936ff"},
+    {file = "arclet-alconna-0.6.5.tar.gz", hash = "sha256:33b6ba6c91afa28747a13f862b9111c7f72a5da0bfbfb0bd8b5059848f63663f"},
 ]
 asgiref = [
     {file = "asgiref-3.5.0-py3-none-any.whl", hash = "sha256:88d59c13d634dcffe0510be048210188edd79aeccb6a6c9028cdad6f31d730a9"},
