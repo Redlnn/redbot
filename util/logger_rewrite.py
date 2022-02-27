@@ -8,6 +8,8 @@ from pathlib import Path
 from loguru import logger
 from prompt_toolkit.patch_stdout import StdoutProxy
 
+from util.path import logs_path
+
 
 # https://loguru.readthedocs.io/en/stable/overview.html?highlight=InterceptHandler#entirely-compatible-with-standard-logging
 class InterceptHandler(logging.Handler):
@@ -24,7 +26,7 @@ class InterceptHandler(logging.Handler):
             frame = frame.f_back
             depth += 1
 
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+        logger.opt(depth=depth, exception=record.exc_info).log(level, self.format(record))  # 此处与原链接不同
 
 
 def rewrite_logging_logger(logger_name: str):
@@ -64,7 +66,7 @@ def rewrite_ariadne_logger(debug: bool = False, graia_console: bool = False):
             sys.stderr, level=log_level, format=log_format, colorize=True, backtrace=True, diagnose=True, enqueue=False
         )
     logger.add(
-        Path(Path.cwd(), 'logs', 'latest.log'),
+        Path(logs_path, 'latest.log'),
         rotation='00:00',
         retention="30 days",
         compression='zip',
