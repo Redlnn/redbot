@@ -24,8 +24,11 @@ class RConfig(BaseModel):
                 f.write(self.json(indent=2, ensure_ascii=False))
         else:
             with open(path, 'rb') as fb:
-                data = orjson.loads(fb.read())
-            super().__init__(**data)
+                file_data = orjson.loads(fb.read())
+            if data:
+                for key, item in data.items():
+                    file_data[key] = item
+            super().__init__(**file_data)
 
     def save(self) -> None:
         if self.__in_data_folder__:
