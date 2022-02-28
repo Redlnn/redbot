@@ -75,9 +75,9 @@ RENDER_ADDR = {
 async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult):
     session = get_running(Adapter).session
     try:
-        uuid_resp = await session.get(UUID_ADDRESS_STRING.format(name=name.result.asDisplay()))
-        uuid = orjson.loads(await uuid_resp.text())["id"]
+        async with session.get(UUID_ADDRESS_STRING.format(name=name.result.asDisplay())) as resp:
+            uuid = orjson.loads(await resp.text())["id"]
         url = RENDER_ADDR[option.result.asDisplay()].format(uuid=uuid)
         await app.sendMessage(group, MessageChain.create(Image(url=url)))
     except Exception as e:
-        await app.sendMessage(group, MessageChain.create(f"无法获取皮肤: {e!r}"))
+        await app.sendMessage(group, MessageChain.create(f"无法获取皮肤: {e}"))
