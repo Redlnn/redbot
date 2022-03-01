@@ -49,8 +49,9 @@ Module(
     )
 )
 async def roll(app: Ariadne, group: Group, source: Source, target: MatchResult):
-    if target.matched:
-        chain = MessageChain.create(Plain(f'{target.result.asDisplay().strip()}的概率为：{randint(0, 100)}'))
+    t = target.result.asDisplay().strip()
+    if len(t) != 0:
+        chain = MessageChain.create(Plain(f'{t}的概率为：{randint(0, 100)}'))
     else:
         chain = MessageChain.create(Plain(str(randint(0, 100))))
     await app.sendMessage(group, chain, quote=source)
