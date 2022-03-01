@@ -12,9 +12,10 @@ redbot  根目录
 ├── core_modules  核心插件目录
 │   ├── module_manage/  Bot 菜单及模块管理
 │   ├── bot_manage.py  Bot 管理
-│   ├── bot_status.py  Bot版本与系统运行情况查询
-│   ├── condole.py  Bot控制台相关功能
-│   └── error_handler.py  捕捉Bot运行异常发送给机器人主人
+│   ├── bot_status.py  Bot 版本与系统运行情况查询
+│   ├── condole.py  Bot 控制台相关功能
+│   ├── error_handler.py  捕捉 Bot 运行异常发送给机器人主人
+│   └── recall.py  撤回 Bot 自己最近发的消息
 ├── modules  插件目录
 │   ├── avatar_gif_generator/  用你的头像生成点啥
 │   ├── eat_what/  吃啥？
