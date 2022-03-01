@@ -8,15 +8,15 @@ import regex as re
 from aiohttp import ClientResponse
 from graia.ariadne import get_running
 from graia.ariadne.adapter import Adapter
-from graia.ariadne.app import Ariadne
 
 
-async def get_time() -> str:
+def format_time(timestamp: int) -> str:
     """
+    格式化时间戳
+
     :return: 当前时间，格式1970-01-01 12:00:00
     """
-    time_now = int(time.time())
-    time_local = time.localtime(time_now)
+    time_local = time.localtime(timestamp)
     dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
     return dt
 

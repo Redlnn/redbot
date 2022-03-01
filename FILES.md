@@ -39,8 +39,10 @@ redbot  根目录
     │   ├── interval.py  群、私聊、临时会话调用频率限制
     │   └── permission.py  群、私聊、临时会话权限及黑名单限制
     ├── database  数据库相关
-    │   ├── database.py  初始化数据库及配置文件
-    │   └── msg_history.py  聊天历史数据库（记录 & 查询）
+    │   ├── __init__.py  初始化数据库及配置文件
+    │   ├── env.py  alembic 相关配置文件
+    │   ├── log_msg.py  聊天历史数据库（记录 & 查询）
+    │   └── models.py  公用数据库模型
     ├── config.py  配置文件加载器
     ├── logger_rewrite.py  日志重写
     ├── module_register.py  模块信息注册

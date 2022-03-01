@@ -12,10 +12,9 @@ aiodns = "^3.0.0"
 aiofile = "^3.7.4"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
-fastapi = {version = "^0.74.1", optional = true}
 gitpython = "^3.1.27"
-graia-ariadne = {extras = ["full"], version = "^0.6.0.post1", allow-prereleases=true}
-# graia-ariadne = "^0.6.0.post1"
+graia-ariadne = {extras = ["full"], version = "^0.6.1", allow-prereleases=true}
+# graia-ariadne = "^0.6.1"
 # arclet-alconna = "^0.6.3"
 # graia-scheduler = "^0.0.6"
 # graia-saya = "^0.0.15"
@@ -25,23 +24,20 @@ loguru = "^0.6.0"
 lxml = "^4.8.0"
 numpy = "^1.22.2"
 orjson = "^3.6.7"
-peewee = "^3.14.9"
 pillow = "^9.0.1"
 psutil = "^5.9.0"
 pydantic = "^1.9.0"
-pymysql = "^1.0.2"
 pyyaml = "^6.0"
 regex = "^2022.1.18"
-uvicorn = {extras = ["standard"], version = "^0.17.5", optional = true}
+sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.31"}
+sqlmodel = "^0.0.6"
 wordcloud = "^1.8.1"
+alembic = "^1.7.6"
 
 [tool.poetry.dev-dependencies]
 black = ">=21.1.0"
 flake8 = ">=4.0.1"
 isort = {extras = ["requirements_deprecated_finder"], version = ">=5.10.1"}
-
-[tool.poetry.extras]
-fastapi = ["fastapi", "uvicorn"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -35,6 +35,7 @@
 - Bot 版本与系统运行情况查询
 - Bot 控制台命令
 - 撤回 Bot 自己最近发的消息
+- 基本完善的基于 Sqlalchemy 框架的数据库读写
 - 自带 [FastAPI](https://fastapi.tiangolo.com/zh/) 支持，可通过模块启动 FastAPI 服务
   > 注意：`Ariadne` 的 `console` 与 `uvicorn` 可能存在兼容性问题
   >

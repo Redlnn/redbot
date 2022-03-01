@@ -3,6 +3,8 @@ config/
 logs/
 test/
 test.py
+alembic_data/
+alembic.ini
 
 # Private modules
 *modules/fastapi/

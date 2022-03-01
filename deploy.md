@@ -76,6 +76,14 @@ poetry install
 poetry run python main.py
 ```
 
+### 注意
+
+首次启动之后会生成配置文件并退出，请在 bot 退出后填写配置文件
+
+- 其中，数据库链接使用 uri 形式，填写格式如下
+  - SQLite: `sqlite+aiosqlite:///data/database.db`，一般情况下只需更改 `database.db` 的 `database`，参考 👉 [sqlalchemy的文档](https://docs.sqlalchemy.org/en/14/dialects/sqlite.html?highlight=aiosqlite#aiosqlite)
+  - MySQL / MariaDB: `mysql+asyncmy://{user}:{password}@{hostname}:{port}/{dbname}?charset=utf8mb4`，此为示例，具体参数请参考[sqlalchemy的文档](https://docs.sqlalchemy.org/en/14/dialects/mysql.html?highlight=aiomysql#asyncmy)
+
 ## 让 redbot 保持在后台运行
 
 ### Windows / macOS
@@ -110,7 +118,7 @@ sudo apt install screen
 
 2. 将 screen 放到后台
 
-  > 在 screen 内先按下 `ctrl + a` 组合键，再按下 `d` 键
+   > 在 screen 内先按下 `ctrl + a` 组合键，再按下 `d` 键
 
 3. 将后台的 screen 调出来
 

@@ -43,7 +43,7 @@ from util.config import RConfig
 from util.control import DisableModule
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
-from util.database.msg_history import get_group_msg, get_member_msg
+from util.database.log_msg import get_group_msg, get_member_msg
 from util.module_register import Module
 from util.path import data_path
 
@@ -211,7 +211,7 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
         return
     Generating_list.append(target)
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - (day - 1) * 86400
-    msg_list = await get_member_msg(group.id, target, target_timestamp)
+    msg_list = await get_member_msg(str(group.id), str(target), target_timestamp)
     if len(msg_list) < 50:
         Generating_list.remove(target)
         await app.sendMessage(group, MessageChain.create(At(target) if not me else Plain('你'), Plain('的发言较少，无法生成词云')))
@@ -239,7 +239,7 @@ async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Im
         return
     Generating_list.append(group.id)
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - (day - 1) * 86400
-    msg_list = await get_group_msg(group.id, target_timestamp)
+    msg_list = await get_group_msg(str(group.id), target_timestamp)
     if len(msg_list) < 50:
         await app.sendMessage(group, MessageChain.create(Plain('本群发言较少，无法生成词云')))
         Generating_list.remove(group.id)

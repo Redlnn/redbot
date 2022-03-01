@@ -11,9 +11,12 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Member
 from loguru import logger
+from sqlalchemy import update
+
+from util.database import Database
 
 from ..config import config
-from ..database import PlayersTable
+from ..model import PlayerInfo
 from ..rcon import execute_command
 from ..utils import get_uuid
 from .query import query_uuid_by_qq, query_whitelist_by_uuid
@@ -48,31 +51,31 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
     if player is None:
         app = get_running(Ariadne)
         member: Member = await app.getMember(config.serverGroup, qq)
-        PlayersTable.create(
-            group=config.serverGroup,
-            qq=qq,
-            joinTimestamp=member.joinTimestamp,
-        )
+        await Database.add(PlayerInfo(qq=member.id, join_time=member.joinTimestamp))
     elif player.blocked:
-        return MessageChain.create(Plain(f'你的账号已被封禁，封禁原因：{player.blockReason}'))
+        return MessageChain.create(Plain(f'你的账号已被封禁，封禁原因：{player.block_reason}'))
     elif player.uuid1 is None and player.uuid2 is None:
-        PlayersTable.update({PlayersTable.uuid1: UUID(mc_uuid), PlayersTable.uuid1AddedTime: int(time.time())}).where(
-            (PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)
-        ).execute()
+        await Database.exec(
+            update(PlayerInfo).where(PlayerInfo.qq == qq).values(uuid1=UUID(mc_uuid), uuid1_add_time=int(time.time()))
+        )
     elif player.uuid1 is not None and player.uuid2 is None:
         if admin:
-            PlayersTable.update(
-                {PlayersTable.uuid2: UUID(mc_uuid), PlayersTable.uuid2AddedTime: int(time.time())}
-            ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
+            await Database.exec(
+                update(PlayerInfo)
+                .where(PlayerInfo.qq == qq)
+                .values(uuid2=UUID(mc_uuid), uuid2_add_time=int(time.time()))
+            )
         else:
             return MessageChain.create(
                 Plain('你已有一个白名单，如要申请第二个白名单请联系管理员'),
             )
     elif player.uuid2 is not None and player.uuid1 is None:
         if admin:
-            PlayersTable.update(
-                {PlayersTable.uuid1: UUID(mc_uuid), PlayersTable.uuid1AddedTime: int(time.time())}
-            ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
+            await Database.exec(
+                update(PlayerInfo)
+                .where(PlayerInfo.qq == qq)
+                .values(uuid1=UUID(mc_uuid), uuid1_add_time=int(time.time()))
+            )
         else:
             return MessageChain.create(
                 Plain('你已有一个白名单，如要申请第二个白名单请联系管理员'),

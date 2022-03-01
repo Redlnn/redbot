@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import pkgutil
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.styles import Style
 
 from util.config import basic_cfg, modules_cfg
+from util.database import Database
 from util.logger_rewrite import rewrite_ariadne_logger, rewrite_logging_logger
 from util.path import modules_path, root_path
 from util.send_action import Safe
@@ -61,7 +63,6 @@ if __name__ == '__main__':
         console = None
 
     rewrite_ariadne_logger(basic_cfg.debug, True if console else False)  # 对logger进行调整，必须放在这里
-    rewrite_logging_logger('peewee')
 
     with saya.module_context():
         core_modules_path = Path(root_path, 'core_modules')
@@ -76,5 +77,15 @@ if __name__ == '__main__':
                 if module.name in ignore or module.name[0] in ('#', '.', '_'):
                     continue
                 saya.require(f"modules.{module.name}")
+
+    app.loop.run_until_complete(Database.init())
+    # if not Path(f"{root_path}", "alembic_data").exists():
+    #     from shutil import copyfile
+
+    #     os.system("poetry run alembic init alembic_data")
+    #     copyfile(Path(root_path, 'util', 'database', 'env.py'), Path(root_path, 'alembic_data', 'env.py'))
+    #     del copyfile
+    # os.system("poetry run alembic revision --autogenerate -m 'update'")
+    # os.system("poetry run alembic upgrade head")
 
     app.launch_blocking()

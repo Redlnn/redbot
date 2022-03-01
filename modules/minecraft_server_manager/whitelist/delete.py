@@ -8,9 +8,12 @@ from uuid import UUID
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from loguru import logger
+from sqlalchemy import update
+
+from util.database import Database
 
 from ..config import config
-from ..database import PlayersTable
+from ..model import PlayerInfo
 from ..rcon import execute_command
 from ..utils import get_mc_id, get_uuid
 from .query import query_uuid_by_qq, query_whitelist_by_uuid
@@ -44,14 +47,11 @@ async def del_whitelist_by_qq(qq: int) -> MessageChain:
     if player is None:
         return MessageChain.create(At(qq), Plain(f' 好像一个白名单都没有呢~'))
 
-    PlayersTable.update(
-        {
-            PlayersTable.uuid1: None,
-            PlayersTable.uuid1AddedTime: None,
-            PlayersTable.uuid2: None,
-            PlayersTable.uuid2AddedTime: None,
-        }
-    ).where((PlayersTable.group == config.serverGroup) & (PlayersTable.qq == qq)).execute()
+    await Database.exec(
+        update(PlayerInfo)
+        .where(PlayerInfo.qq == qq)
+        .values(uuid1=None, uuid1_add_time=None, uuid2=None, uuid2_add_time=None)
+    )
     flag1 = flag2 = False
     if player.uuid1:
         flag1 = await del_whitelist_from_server(player.uuid1)
@@ -92,18 +92,18 @@ async def del_whitelist_by_uuid(mc_uuid: str) -> MessageChain:
     if player is None:
         return MessageChain.create(Plain('没有使用这个 uuid 的玩家'))
     if str(player.uuid1).replace('-', '') == mc_uuid.replace('-', ''):
-        PlayersTable.update({PlayersTable.uuid1: None, PlayersTable.uuid1AddedTime: None}).where(
-            (PlayersTable.group == config.serverGroup) & (PlayersTable.qq == player.qq)
-        ).execute()
+        await Database.exec(
+            update(PlayerInfo).where(PlayerInfo.qq == player.qq).values(uuid1=None, uuid1_add_time=None)
+        )
         del_result = await del_whitelist_from_server(mc_uuid)
         if del_result is True:
             return MessageChain.create(Plain('已从服务器删除 '), At(player.qq), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
         else:
             return del_result
     elif str(player.uuid2).replace('-', '') == mc_uuid.replace('-', ''):
-        PlayersTable.update({PlayersTable.uuid2: None, PlayersTable.uuid2AddedTime: None}).where(
-            (PlayersTable.group == config.serverGroup) & (PlayersTable.qq == player.qq)
-        ).execute()
+        await Database.exec(
+            update(PlayerInfo).where(PlayerInfo.qq == player.qq).values(uuid2=None, uuid2_add_time=None)
+        )
         del_result = await del_whitelist_from_server(mc_uuid)
         if del_result is True:
             return MessageChain.create(Plain('已从服务器删除 '), At(player.qq), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
