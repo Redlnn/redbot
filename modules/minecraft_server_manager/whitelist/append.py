@@ -38,12 +38,12 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
     player = await query_whitelist_by_uuid(mc_uuid)
     if player is None:
         pass
-    elif player.qq == qq:
+    elif int(player.qq) == qq:
         return MessageChain.create(Plain('这个id本来就是你哒'))
     else:
         return MessageChain.create(
             Plain('你想要这个吗？\n这个是 '),
-            At(player.qq),
+            At(int(player.qq)),
             Plain(f' 哒~'),
         )
 
@@ -51,19 +51,21 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
     if player is None:
         app = get_running(Ariadne)
         member: Member = await app.getMember(config.serverGroup, qq)
-        await Database.add(PlayerInfo(qq=member.id, join_time=member.joinTimestamp))
+        await Database.add(PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp))
     elif player.blocked:
         return MessageChain.create(Plain(f'你的账号已被封禁，封禁原因：{player.block_reason}'))
     elif player.uuid1 is None and player.uuid2 is None:
         await Database.exec(
-            update(PlayerInfo).where(PlayerInfo.qq == qq).values(uuid1=UUID(mc_uuid), uuid1_add_time=int(time.time()))
+            update(PlayerInfo)
+            .where(PlayerInfo.qq == str(qq))
+            .values(uuid1=UUID(mc_uuid).hex, uuid1_add_time=int(time.time()))
         )
     elif player.uuid1 is not None and player.uuid2 is None:
         if admin:
             await Database.exec(
                 update(PlayerInfo)
-                .where(PlayerInfo.qq == qq)
-                .values(uuid2=UUID(mc_uuid), uuid2_add_time=int(time.time()))
+                .where(PlayerInfo.qq == str(qq))
+                .values(uuid2=UUID(mc_uuid).hex, uuid2_add_time=int(time.time()))
             )
         else:
             return MessageChain.create(
@@ -73,8 +75,8 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
         if admin:
             await Database.exec(
                 update(PlayerInfo)
-                .where(PlayerInfo.qq == qq)
-                .values(uuid1=UUID(mc_uuid), uuid1_add_time=int(time.time()))
+                .where(PlayerInfo.qq == str(qq))
+                .values(uuid1=UUID(mc_uuid).hex, uuid1_add_time=int(time.time()))
             )
         else:
             return MessageChain.create(

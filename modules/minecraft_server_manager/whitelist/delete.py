@@ -12,7 +12,6 @@ from sqlalchemy import update
 
 from util.database import Database
 
-from ..config import config
 from ..model import PlayerInfo
 from ..rcon import execute_command
 from ..utils import get_mc_id, get_uuid
@@ -49,7 +48,7 @@ async def del_whitelist_by_qq(qq: int) -> MessageChain:
 
     await Database.exec(
         update(PlayerInfo)
-        .where(PlayerInfo.qq == qq)
+        .where(PlayerInfo.qq == str(qq))
         .values(uuid1=None, uuid1_add_time=None, uuid2=None, uuid2_add_time=None)
     )
     flag1 = flag2 = False
@@ -97,7 +96,7 @@ async def del_whitelist_by_uuid(mc_uuid: str) -> MessageChain:
         )
         del_result = await del_whitelist_from_server(mc_uuid)
         if del_result is True:
-            return MessageChain.create(Plain('已从服务器删除 '), At(player.qq), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
+            return MessageChain.create(Plain('已从服务器删除 '), At(int(player.qq)), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
         else:
             return del_result
     elif str(player.uuid2).replace('-', '') == mc_uuid.replace('-', ''):
@@ -106,7 +105,7 @@ async def del_whitelist_by_uuid(mc_uuid: str) -> MessageChain:
         )
         del_result = await del_whitelist_from_server(mc_uuid)
         if del_result is True:
-            return MessageChain.create(Plain('已从服务器删除 '), At(player.qq), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
+            return MessageChain.create(Plain('已从服务器删除 '), At(int(player.qq)), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
         else:
             return del_result
     else:

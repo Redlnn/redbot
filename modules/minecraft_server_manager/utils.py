@@ -37,7 +37,7 @@ async def is_uuid(mc_uuid: str) -> bool:
     """
     try:
         UUID(mc_uuid)
-    except ValueError:
+    except:
         return False
     else:
         return True

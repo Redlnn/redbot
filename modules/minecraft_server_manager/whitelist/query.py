@@ -17,7 +17,9 @@ from ..utils import format_time, get_mc_id, get_uuid
 async def query_whitelist_by_uuid(mc_uuid: str) -> PlayerInfo | None:
     query_target = UUID(mc_uuid)
     result = await Database.select_first(
-        select(PlayerInfo).where(or_(col(PlayerInfo.uuid1) == query_target), col(PlayerInfo.uuid2) == query_target)
+        select(PlayerInfo).where(
+            or_(col(PlayerInfo.uuid1) == query_target.hex), col(PlayerInfo.uuid2) == query_target.hex
+        )
     )
     return None if result is None else result[0]
 
@@ -34,23 +36,23 @@ async def query_whitelist_by_id(mc_id: str) -> tuple[dict[str, int | str], Playe
 async def query_uuid_by_qq(
     qq: int,
 ) -> PlayerInfo | None:
-    result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == qq))
+    result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(qq)))
     return None if result is None else result[0]
 
 
 async def query_qq_by_uuid(mc_uuid: str) -> PlayerInfo | None:
     target = UUID(mc_uuid)
     result = await Database.select_first(
-        select(PlayerInfo).where(or_(col(PlayerInfo.uuid1) == target, col(PlayerInfo.uuid2) == target))
+        select(PlayerInfo).where(or_(col(PlayerInfo.uuid1) == target.hex, col(PlayerInfo.uuid2) == target.hex))
     )
     return None if result is None else result[0]
 
 
 async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
     if player.blocked:
-        return MessageChain.create(At(player.qq), Plain(f' 已被封禁，封禁原因：{player.block_reason}'))
+        return MessageChain.create(At(int(player.qq)), Plain(f' 已被封禁，封禁原因：{player.block_reason}'))
     if player.uuid1 is None and player.uuid2 is None:
-        return MessageChain.create(At(player.qq), Plain(f' 一个白名单都没有呢'))
+        return MessageChain.create(At(int(player.qq)), Plain(f' 一个白名单都没有呢'))
     info_text = f'({player.qq}) 的白名单信息如下：\n | 入群时间: {player.join_time}\n'
     if player.leave_time:
         info_text += f' | 退群时间: {player.leave_time}\n'
@@ -98,4 +100,4 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
                 info_text += f' | ID 2: {mc_id2}\n'
         info_text += f' | ID 2添加时间：{format_time(player.uuid2_add_time)}'
 
-    return MessageChain.create(At(player.qq), Plain(info_text))
+    return MessageChain.create(At(int(player.qq)), Plain(info_text))

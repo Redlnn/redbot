@@ -3,6 +3,7 @@
 
 import asyncio
 import time
+from os.path import dirname, split
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
@@ -28,6 +29,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 from sqlalchemy import select, update
 
+from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.database import Database
 from util.text2img import generate_img
@@ -52,11 +54,12 @@ from .whitelist.query import (
 saya = Saya.current()
 channel = Channel.current()
 inc = InterruptControl(saya.broadcast)
+module_name = split(dirname(__file__))[-1]
 
 # from utils.module_register import Module
 # Module(
 #         name='我的世界服务器管理',
-#         file_name=split(dirname(__file__))[-1],
+#         file_name=module_name,
 #         author=['Red_lnn'],
 #         description='提供白名单管理、在线列表查询、服务器命令执行功能',
 #         usage=(
@@ -103,11 +106,7 @@ is_init = False
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[ApplicationLaunched],
-    )
-)
+@channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[DisableModule.require(module_name)]))
 async def init(app: Ariadne):
     global is_init
     group_list = await app.getGroupList()
@@ -123,7 +122,7 @@ async def init(app: Ariadne):
         member_list = await app.getMemberList(config.serverGroup)
         data = []
         for member in member_list:
-            data.append(PlayerInfo(qq=member.id, join_time=member.joinTimestamp))
+            data.append(PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp))
         if await Database.add_many(*data):
             logger.info('mc服务器管理数据库初始化完成')
         else:
@@ -557,9 +556,9 @@ async def member_join(group: Group, member: Member):
         return
     elif group.id != config.serverGroup:
         return
-    result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == member.id))
+    result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(member.id)))
     if result is None:
-        await Database.add(PlayerInfo(qq=member.id, join_time=member.joinTimestamp))
+        await Database.add(PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp))
     else:
         result[0].join_time = member.joinTimestamp
         result[0].leave_time = None
@@ -579,9 +578,9 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
         return
     elif group.id != config.serverGroup:
         return
-    result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == member.id))
+    result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(member.id)))
     if result is None:
-        await Database.add(PlayerInfo(qq=member.id, join_time=member.joinTimestamp, leave_time=int(time.time())))
+        await Database.add(PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp, leave_time=int(time.time())))
     else:
         result[0].leave_time = int(time.time())
         await Database.update_exist(result[0])
@@ -635,15 +634,16 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
         return
     elif msg[1].onlyContains(At):
         target = msg[1].getFirst(At).target
-        await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == target).values(blocked=False, block_reason=None))
+        await Database.exec(
+            update(PlayerInfo).where(PlayerInfo.qq == str(target)).values(blocked=False, block_reason=None)
+        )
     elif msg[1].onlyContains(Plain):
         target = msg[1].asDisplay()
         if not target.isdigit():
             await app.sendMessage(group, MessageChain.create(Plain('请输入QQ号')), quote=source)
             return
-        await Database.exec(
-            update(PlayerInfo).where(PlayerInfo.qq == int(target)).values(blocked=False, block_reason=None)
-        )
+        await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == target).values(blocked=False, block_reason=None))
+        target = int(target)
     else:
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
         return
@@ -745,13 +745,13 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, so
         return
     elif msg[1].onlyContains(At):
         target = msg[1].getFirst(At).target
-        await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == target).values(leave_time=None))
+        await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == str(target)).values(leave_time=None))
     elif msg[1].onlyContains(Plain):
         target = msg[1].asDisplay()
         if not target.isdigit():
             await app.sendMessage(group, MessageChain.create(Plain('请输入QQ号')), quote=source)
             return
-        await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == int(target)).values(leave_time=None))
+        await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == target).values(leave_time=None))
     else:
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
         return
@@ -783,7 +783,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
         block_reason = msg[2].include(Plain).merge().asDisplay() if len(msg) == 3 else None
         target = msg[1].getFirst(At).target
         await Database.exec(
-            update(PlayerInfo).where(PlayerInfo.qq == target).values(blocked=True, block_reason=block_reason)
+            update(PlayerInfo).where(PlayerInfo.qq == str(target)).values(blocked=True, block_reason=block_reason)
         )
     elif msg[1].onlyContains(Plain):
         block_reason = msg[2].include(Plain).merge().asDisplay() if len(msg) == 3 else None
@@ -792,8 +792,9 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
             await app.sendMessage(group, MessageChain.create(Plain('请输入QQ号')))
             return
         await Database.exec(
-            update(PlayerInfo).where(PlayerInfo.qq == int(target)).values(blocked=True, block_reason=block_reason)
+            update(PlayerInfo).where(PlayerInfo.qq == target).values(blocked=True, block_reason=block_reason)
         )
+        target = int(target)
     else:
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
         return
