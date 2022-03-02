@@ -21,6 +21,7 @@ redbot  根目录
 │   ├── eat_what/  吃啥？
 │   ├── minecraft_ping/  我的世界服务器 Ping
 │   ├── minecraft_server_manager/  我的世界服务器管理
+│   ├── signin/  签到
 │   ├── a_dui_dui_dui.py  啊对对对
 │   ├── bili_share_resolver.py  BiliBili 视频分享解析
 │   ├── dont_nudge_me.py  别戳我
