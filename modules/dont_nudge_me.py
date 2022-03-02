@@ -15,6 +15,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.config import basic_cfg
+from util.control import DisableModule
 from util.control.interval import ManualInterval
 from util.module_register import Module
 from util.path import data_path
@@ -60,7 +61,7 @@ async def get_message(event: NudgeEvent):
         )
 
 
-@channel.use(ListenerSchema(listening_events=[NudgeEvent]))
+@channel.use(ListenerSchema(listening_events=[NudgeEvent], decorators=[DisableModule.require(module_name)]))
 async def main(app: Ariadne, event: NudgeEvent):
     if event.target != basic_cfg.miraiApiHttp.account:
         return
