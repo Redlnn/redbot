@@ -18,16 +18,3 @@ class PlayerInfo(SQLModel, table=True):
     uuid2_add_time: Optional[int] = Field(default=None, nullable=True)
     blocked: bool = Field(default=False)
     block_reason: Optional[str] = Field(default=None, nullable=True)
-
-
-# class Player(BaseModel):
-#     group: int
-#     qq: int
-#     joinTime: datetime
-#     leaveTime: datetime | None = None
-#     uuid1: UUID | None = None
-#     uuid1AddedTime: datetime | None = None
-#     uuid2: UUID | None = None
-#     uuid2AddedTime: datetime | None = None
-#     blocked: bool = False
-#     blockReason: str | None = None

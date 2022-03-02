@@ -1,27 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import time
 from datetime import datetime
 from os.path import basename
-import time
+
 from graia.ariadne.app import Ariadne
-from graia.ariadne.model import Group, Member
 from graia.ariadne.event.message import ActiveGroupMessage, GroupMessage
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import Source, Quote, Plain, At
+from graia.ariadne.message.element import Plain, Quote, Source
+from graia.ariadne.model import Group, Member
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from graia.scheduler.saya import SchedulerSchema
+from graia.scheduler.timers import crontabify
+
+from util.config import basic_cfg
 from util.control import DisableModule
 from util.module_register import Module
-from graia.scheduler.timers import crontabify
-from util.config import basic_cfg
 
 channel = Channel.current()
 module_name = basename(__file__)[:-3]
 
 Module(
-    name='撤回消息',
+    name='撤回自己的消息',
     file_name=module_name,
     author=['Red_lnn'],
     description='撤回bot自己发的消息',
@@ -82,15 +84,16 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
 )
 async def listener(event: ActiveGroupMessage):
     source = event.messageChain.getFirst(Source)
-    lastest_msg.append({
-        'time': datetime.timestamp(source.time),
-        'id': source.id,
-    })
+    lastest_msg.append(
+        {
+            'time': datetime.timestamp(source.time),
+            'id': source.id,
+        }
+    )
 
 
 @channel.use(SchedulerSchema(crontabify('0 0/2 * * *'), decorators=[DisableModule.require(module_name)]))
 async def clear_outdated():
-    global lastest_msg
     time_now = time.time()
     for item in lastest_msg.copy():
         if (time_now - item['time']) > 120:
