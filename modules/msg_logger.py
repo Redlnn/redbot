@@ -59,7 +59,7 @@ Module(
 )
 async def main(group: Group, member: Member, message: MessageChain, source: Source):
     for ind, elem in enumerate(message[:]):
-        if type(elem) is not Plain:
+        if not isinstance(elem, Plain):
             message.__root__[ind] = Plain(elem.asDisplay())
     await log_msg(
         str(group.id),

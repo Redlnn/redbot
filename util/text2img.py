@@ -97,7 +97,7 @@ def async_generate_img(*args, **kwargs):
 
 
 def generate_img(
-    text_and_img: list[str | bytes] | list[str] | list[bytes] = [],
+    text_and_img: list[str | bytes] | list[str] | list[bytes] | None = None,
     config: Text2ImgConfig = Text2ImgConfig(),
 ) -> bytes:
     """
@@ -110,7 +110,7 @@ def generate_img(
     :return: 图片文件的路径
     """
 
-    if not text_and_img:
+    if text_and_img is None:
         raise ValueError('ArgumentError: 参数内容为空')
     elif not isinstance(text_and_img, list):
         raise ValueError('ArgumentError: 参数类型错误')

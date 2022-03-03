@@ -51,7 +51,7 @@ Module(
 async def signin(app: Ariadne, group: Group, member: Member, source: Source):
     font_path = Path(root_path, 'fonts', 'OPPOSans-B.ttf')
     result = await Database.select_first(select(UserInfo).where(UserInfo.qq == member.id))
-    if result is None:
+    if result is None or result[0] is None:
         user: UserInfo = UserInfo(qq=str(member.id))
     else:
         user: UserInfo = result[0]
@@ -156,6 +156,6 @@ async def clear(app: Ariadne, group: Group, target: MatchResult):
 
 async def clear_signin(qq: str):
     result = await Database.select_first(select(UserInfo).where(UserInfo.qq == qq))
-    if result is None:
+    if result is None or result[0] is None:
         return True
     return await Database.delete_exist(result[0])

@@ -37,9 +37,9 @@ async def get_member_last_message(group: str, qq: str) -> tuple[str | None, int 
     result = await Database.select_first(
         select(func.max(MsgLog.timestamp)).where(and_(col(MsgLog.group_id) == group, col(MsgLog.member_id) == qq))
     )
-    max_timestamp = result[0]
-    if result is None:
+    if result is None or result[0] is None:
         return None, None
+    max_timestamp = result[0]
     result = await Database.select_first(
         select(MsgLog).where(
             and_(col(MsgLog.group_id) == group, col(MsgLog.member_id) == qq, col(MsgLog.timestamp) == max_timestamp)
@@ -51,9 +51,9 @@ async def get_member_last_message(group: str, qq: str) -> tuple[str | None, int 
 
 async def get_group_last_message(group: str) -> tuple[str | None, str | None, int | None]:
     result = await Database.select_first(select(func.max(MsgLog.timestamp)).where(col(MsgLog.group_id) == group))
-    max_timestamp = result[0]
-    if result is None:
+    if result is None or result[0] is None:
         return None, None, None
+    max_timestamp = result[0]
     result = await Database.select_first(
         select(MsgLog).where(and_(col(MsgLog.group_id) == group, col(MsgLog.timestamp) == max_timestamp))
     )
