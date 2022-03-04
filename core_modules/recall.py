@@ -92,7 +92,7 @@ async def listener(event: ActiveGroupMessage):
     )
 
 
-@channel.use(SchedulerSchema(crontabify('0 0/2 * * *'), decorators=[DisableModule.require(module_name)]))
+@channel.use(SchedulerSchema(crontabify('0 0/2 * * *')))
 async def clear_outdated():
     time_now = time.time()
     for item in lastest_msg.copy():
