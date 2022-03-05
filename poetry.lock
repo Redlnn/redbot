@@ -150,7 +150,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "arclet-alconna"
-version = "0.6.5"
+version = "0.7.1"
 description = "A Fast Command Analyser based on Dict"
 category = "main"
 optional = false
@@ -520,7 +520,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.6.2"
+version = "0.6.3"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -528,10 +528,10 @@ python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 aiohttp = ">=3.7.4,<4.0.0"
-arclet-alconna = {version = ">=0.6,<0.7", optional = true, markers = "extra == \"alconna\" or extra == \"full\""}
+arclet-alconna = {version = ">=0.7,<0.8", optional = true, markers = "extra == \"alconna\" or extra == \"full\""}
 fastapi = {version = ">=0.74.1,<0.75.0", optional = true, markers = "extra == \"server\" or extra == \"full\""}
 graia-broadcast = "0.16.1"
-graia-saya = {version = ">=0.0.14,<0.0.15", optional = true, markers = "extra == \"graia\" or extra == \"full\""}
+graia-saya = {version = ">=0.0,<0.1", optional = true, markers = "extra == \"graia\" or extra == \"full\""}
 graia-scheduler = {version = ">=0.0.6,<0.0.7", optional = true, markers = "extra == \"graia\" or extra == \"full\""}
 loguru = ">=0.6,<0.7"
 prompt-toolkit = ">=3.0.24,<4.0.0"
@@ -541,10 +541,10 @@ uvicorn = {version = ">=0.17.5,<0.18.0", extras = ["standard"], optional = true,
 yarl = ">=1.7,<2.0"
 
 [package.extras]
-alconna = ["arclet-alconna (>=0.6,<0.7)"]
-full = ["arclet-alconna (>=0.6,<0.7)", "fastapi (>=0.74.1,<0.75.0)", "graia-saya (>=0.0.14,<0.0.15)", "graia-scheduler (>=0.0.6,<0.0.7)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
+alconna = ["arclet-alconna (>=0.7,<0.8)"]
+full = ["arclet-alconna (>=0.7,<0.8)", "fastapi (>=0.74.1,<0.75.0)", "graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
 server = ["fastapi (>=0.74.1,<0.75.0)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
-graia = ["graia-saya (>=0.0.14,<0.0.15)", "graia-scheduler (>=0.0.6,<0.0.7)"]
+graia = ["graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)"]
 
 [package.source]
 type = "legacy"
@@ -566,7 +566,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-saya"
-version = "0.0.14"
+version = "0.0.15"
 description = ""
 category = "main"
 optional = false
@@ -1582,7 +1582,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "faf695baed94dc671822158e16c038fbab987e3fce2515bb2e22ba10dc964bd7"
+content-hash = "2d72e6e2dbcbff8f879a2c17b9b0ac6fd14f891961802b613f18d606b5234421"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -1688,7 +1688,7 @@ anyio = [
     {file = "anyio-3.5.0.tar.gz", hash = "sha256:a0aeffe2fb1fdf374a8e4b471444f0f3ac4fb9f5a5b542b48824475e0042a5a6"},
 ]
 arclet-alconna = [
-    {file = "arclet-alconna-0.6.5.tar.gz", hash = "sha256:33b6ba6c91afa28747a13f862b9111c7f72a5da0bfbfb0bd8b5059848f63663f"},
+    {file = "arclet-alconna-0.7.1.tar.gz", hash = "sha256:115222f8e841767fa342da2e395d4ced894d082622c09f91d84a92506c285cdb"},
 ]
 asgiref = [
     {file = "asgiref-3.5.0-py3-none-any.whl", hash = "sha256:88d59c13d634dcffe0510be048210188edd79aeccb6a6c9028cdad6f31d730a9"},
@@ -2015,16 +2015,16 @@ gitpython = [
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.6.2.tar.gz", hash = "sha256:f8646f6209cd9388536442894417080ff22ea4fef5406bbe050b7f8c2ae3cf1b"},
-    {file = "graia_ariadne-0.6.2-py3-none-any.whl", hash = "sha256:034246dca5a4626c68a2197c802b32c912a7a1c2688456d5e428a6e5806b5af3"},
+    {file = "graia-ariadne-0.6.3.tar.gz", hash = "sha256:92104329d79a28b9f313991f3e7d6b97eb6d7245a652d0b567ebe8b858a9af3f"},
+    {file = "graia_ariadne-0.6.3-py3-none-any.whl", hash = "sha256:483ea7b77ac18cbe18efc680bceefdf7dfb81fc9a75d65051974919c1b7d578b"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.16.1.tar.gz", hash = "sha256:40d532672b35d26ae0779e13f50593d5c505d8765c8545ed5bb5648bd3f7c6c2"},
     {file = "graia_broadcast-0.16.1-py3-none-any.whl", hash = "sha256:89f519b95f3701229674e0f78e31b5497ff30d017e8b949e153c7247adcfe0e3"},
 ]
 graia-saya = [
-    {file = "graia-saya-0.0.14.tar.gz", hash = "sha256:ffeb3e7cf39442c219481e0713e868a15c42e522f32b35685915dd3b7bab7f08"},
-    {file = "graia_saya-0.0.14-py3-none-any.whl", hash = "sha256:060399df3c6984c9d1a3b84551058f78123f072dbfabe0901fc25ba4fc4da060"},
+    {file = "graia-saya-0.0.15.tar.gz", hash = "sha256:5042d43c38ce8ed6e313bbadd94cfe21551f4bc1045d4d3aa0013d169febe5a5"},
+    {file = "graia_saya-0.0.15-py3-none-any.whl", hash = "sha256:b1932309d76efb148f55ea2b7b72fea8adf377dafc8fe5ad306876b44ebad4c8"},
 ]
 graia-scheduler = [
     {file = "graia-scheduler-0.0.6.tar.gz", hash = "sha256:aa4a40a7841709638cc98fe7a093ae0582858ba1326d67961de73e91bc5617b5"},
