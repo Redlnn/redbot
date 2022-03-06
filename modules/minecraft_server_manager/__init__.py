@@ -605,7 +605,7 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
         await Database.add(PlayerInfo(qq=target.id, join_time=target.joinTimestamp, leave_time=int(time.time())))
     else:
         result[0].leave_time = int(time.time())
-        result[0] = True
+        result[0].blocked = True
         result[0].block_reason = 'Kick'
         await Database.update_exist(result[0])
         await app.sendMessage(group, await del_whitelist_by_qq(target.id))
