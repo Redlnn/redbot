@@ -13,23 +13,19 @@ aiofile = "^3.7.4"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
 gitpython = "^3.1.27"
-graia-ariadne = {extras = ["full"], version = "^0.6.3", allow-prereleases=true}
-# graia-ariadne = "^0.6.3"
-# arclet-alconna = "^0.6.3"
-# graia-scheduler = "^0.0.6"
-# graia-saya = "^0.0.15"
+graia-ariadne = {extras = ["full"], version = "^0.6.6", allow-prereleases=true}
 httpx = "^0.22.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
 lxml = "^4.8.0"
-numpy = "^1.22.2"
+numpy = "^1.22.3"
 orjson = "^3.6.7"
 pillow = "^9.0.1"
 psutil = "^5.9.0"
 pydantic = "^1.9.0"
 pyyaml = "^6.0"
 regex = "^2022.3.2"
-sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.31"}
+sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.32"}
 sqlmodel = "^0.0.6"
 wordcloud = "^1.8.1"
 alembic = "^1.7.6"

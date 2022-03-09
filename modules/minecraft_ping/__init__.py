@@ -6,7 +6,7 @@ Ping mc服务器
 
 获取指定mc服务器的信息
 
-> 命令：/ping [mc服务器地址
+> 命令：/ping [mc服务器地址]
 """
 
 import socket
@@ -119,17 +119,16 @@ async def main(app: Ariadne, group: Group, ping_target: RegexResult):
         await app.sendMessage(group, MessageChain.create(Plain('无法解析目标地址')))
         return
 
-    motd_list = ping_result['motd'].split('\n')
-    motd = f' | {motd_list[0].strip()}'
-    if len(motd_list) == 2:
-        motd += f'\n | {motd_list[1].strip()}'
-    msg_send = (
-        f'咕？咕咕？咕咕咕！！\n'
-        f'服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
-        f'MOTD:\n{motd}\n'
-        f'延迟: {ping_result["delay"]}ms\n'
-        f'在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}'
-    )
+    if ping_result['motd'] is not None and ping_result['motd'] != '':
+        motd_list: list[str] = ping_result['motd'].split('\n')
+        motd = f' | {motd_list[0].strip()}'
+        if len(motd_list) == 2:
+            motd += f'\n | {motd_list[1].strip()}'
+    else:
+        motd = None
+    msg_send = f'咕？咕咕？咕咕咕！！\n服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
+    msg_send += f'MOTD:\n{motd}\n' if motd is not None else ''
+    msg_send += f'延迟: {ping_result["delay"]}ms\n在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}'
     if ping_result['online_player'] != '0' and ping_result['player_list']:
         players_list = ''
         for _ in ping_result['player_list']:
