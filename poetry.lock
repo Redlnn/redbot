@@ -520,7 +520,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.6.6"
+version = "0.6.7"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -528,11 +528,11 @@ python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 aiohttp = ">=3.7.4,<4.0.0"
-arclet-alconna = {version = ">=0.7,<0.8", optional = true, markers = "extra == \"alconna\" or extra == \"full\""}
+arclet-alconna = {version = ">=0.7,<0.8", optional = true, markers = "extra == \"alconna\" or extra == \"standard\" or extra == \"full\""}
 fastapi = {version = ">=0.74.1,<0.75.0", optional = true, markers = "extra == \"server\" or extra == \"full\""}
 graia-broadcast = "0.16.1"
-graia-saya = {version = ">=0.0,<0.1", optional = true, markers = "extra == \"graia\" or extra == \"full\""}
-graia-scheduler = {version = ">=0.0.6,<0.0.7", optional = true, markers = "extra == \"graia\" or extra == \"full\""}
+graia-saya = {version = ">=0.0,<0.1", optional = true, markers = "extra == \"graia\" or extra == \"standard\" or extra == \"full\""}
+graia-scheduler = {version = ">=0.0.6,<0.0.7", optional = true, markers = "extra == \"graia\" or extra == \"standard\" or extra == \"full\""}
 loguru = ">=0.6,<0.7"
 prompt-toolkit = ">=3.0.24,<4.0.0"
 pydantic = ">=1.8.2,<2.0.0"
@@ -542,6 +542,7 @@ yarl = ">=1.7,<2.0"
 
 [package.extras]
 alconna = ["arclet-alconna (>=0.7,<0.8)"]
+standard = ["arclet-alconna (>=0.7,<0.8)", "graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)"]
 full = ["arclet-alconna (>=0.7,<0.8)", "fastapi (>=0.74.1,<0.75.0)", "graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
 server = ["fastapi (>=0.74.1,<0.75.0)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
 graia = ["graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)"]
@@ -1582,7 +1583,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "626b3b8b0a474017844e6c7ea3b39665ad07c3a0a5eddff71d3ae244879cef7c"
+content-hash = "cd7bf9619e72930ae88f1d11ade93e0478d4dea81bd4019f99e347f599254958"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -2015,8 +2016,8 @@ gitpython = [
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.6.6.tar.gz", hash = "sha256:b03f46c5919ea2b7d67db346b92a97bb1e1dfa7da1c2de816f517ea73ee65957"},
-    {file = "graia_ariadne-0.6.6-py3-none-any.whl", hash = "sha256:97776c14c0dd337cbdb07a4f9a1f8cc135b309692a3a01d7c5412b3a3c67780c"},
+    {file = "graia-ariadne-0.6.7.tar.gz", hash = "sha256:f54b8944f0d0dac250a2a39f9d601ccf40298cf282292e3ec7e27a9d440e1d49"},
+    {file = "graia_ariadne-0.6.7-py3-none-any.whl", hash = "sha256:72264ee1e5736c3161835a9180c3499cdd42357d9e26077e21370cc3bdc8ddb7"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.16.1.tar.gz", hash = "sha256:40d532672b35d26ae0779e13f50593d5c505d8765c8545ed5bb5648bd3f7c6c2"},
@@ -2406,6 +2407,7 @@ numpy = [
     {file = "numpy-1.22.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:8251ed96f38b47b4295b1ae51631de7ffa8260b5b087808ef09a39a9d66c97ab"},
     {file = "numpy-1.22.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:48a3aecd3b997bf452a2dedb11f4e79bc5bfd21a1d4cc760e703c31d57c84b3e"},
     {file = "numpy-1.22.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a3bae1a2ed00e90b3ba5f7bd0a7c7999b55d609e0c54ceb2b076a25e345fa9f4"},
+    {file = "numpy-1.22.3-cp310-cp310-win32.whl", hash = "sha256:f950f8845b480cffe522913d35567e29dd381b0dc7e4ce6a4a9f9156417d2430"},
     {file = "numpy-1.22.3-cp310-cp310-win_amd64.whl", hash = "sha256:08d9b008d0156c70dc392bb3ab3abb6e7a711383c3247b410b39962263576cd4"},
     {file = "numpy-1.22.3-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:201b4d0552831f7250a08d3b38de0d989d6f6e4658b709a02a73c524ccc6ffce"},
     {file = "numpy-1.22.3-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:f8c1f39caad2c896bc0018f699882b345b2a63708008be29b1f355ebf6f933fe"},
