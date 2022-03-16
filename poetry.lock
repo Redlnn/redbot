@@ -520,7 +520,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.6.6"
+version = "0.6.10"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -528,11 +528,11 @@ python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 aiohttp = ">=3.7.4,<4.0.0"
-arclet-alconna = {version = ">=0.7,<0.8", optional = true, markers = "extra == \"alconna\" or extra == \"full\""}
+arclet-alconna = {version = ">=0.7,<0.8", optional = true, markers = "extra == \"alconna\" or extra == \"standard\" or extra == \"full\""}
 fastapi = {version = ">=0.74.1,<0.75.0", optional = true, markers = "extra == \"server\" or extra == \"full\""}
 graia-broadcast = "0.16.1"
-graia-saya = {version = ">=0.0,<0.1", optional = true, markers = "extra == \"graia\" or extra == \"full\""}
-graia-scheduler = {version = ">=0.0.6,<0.0.7", optional = true, markers = "extra == \"graia\" or extra == \"full\""}
+graia-saya = {version = ">=0.0,<0.1", optional = true, markers = "extra == \"graia\" or extra == \"standard\" or extra == \"full\""}
+graia-scheduler = {version = ">=0.0.6,<0.0.7", optional = true, markers = "extra == \"graia\" or extra == \"standard\" or extra == \"full\""}
 loguru = ">=0.6,<0.7"
 prompt-toolkit = ">=3.0.24,<4.0.0"
 pydantic = ">=1.8.2,<2.0.0"
@@ -542,6 +542,7 @@ yarl = ">=1.7,<2.0"
 
 [package.extras]
 alconna = ["arclet-alconna (>=0.7,<0.8)"]
+standard = ["arclet-alconna (>=0.7,<0.8)", "graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)"]
 full = ["arclet-alconna (>=0.7,<0.8)", "fastapi (>=0.74.1,<0.75.0)", "graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
 server = ["fastapi (>=0.74.1,<0.75.0)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
 graia = ["graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)"]
@@ -1582,7 +1583,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "2212d71354141c8ec087488a54a26926afcdae40ba223ac81038249939f6fa71"
+content-hash = "f064145de539fee45040a548f65ded874f408e89c0554340884d4cd0f79ab80c"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -2015,8 +2016,8 @@ gitpython = [
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.6.6.tar.gz", hash = "sha256:b03f46c5919ea2b7d67db346b92a97bb1e1dfa7da1c2de816f517ea73ee65957"},
-    {file = "graia_ariadne-0.6.6-py3-none-any.whl", hash = "sha256:97776c14c0dd337cbdb07a4f9a1f8cc135b309692a3a01d7c5412b3a3c67780c"},
+    {file = "graia-ariadne-0.6.10.tar.gz", hash = "sha256:7f8689595c5c4deb550a0159b21f9e5bafbc86e6b0cc6946015de522d608a681"},
+    {file = "graia_ariadne-0.6.10-py3-none-any.whl", hash = "sha256:d0cabb219e21680f5a5cbb63bf0cf3a9841e059f1d55d80f8177cf3008858468"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.16.1.tar.gz", hash = "sha256:40d532672b35d26ae0779e13f50593d5c505d8765c8545ed5bb5648bd3f7c6c2"},
