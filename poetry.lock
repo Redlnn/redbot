@@ -162,6 +162,24 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tuna-tsinghua"
 
 [[package]]
+name = "arclet-alconna-graia"
+version = "0.0.4"
+description = "Support Alconna to GraiaProject"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+arclet-alconna = "*"
+graia-ariadne = "*"
+graia-broadcast = "*"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tuna-tsinghua"
+
+[[package]]
 name = "asgiref"
 version = "3.5.0"
 description = "ASGI specs, helper code, and adapters"
@@ -520,7 +538,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.6.10"
+version = "0.6.14"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -528,22 +546,22 @@ python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 aiohttp = ">=3.7.4,<4.0.0"
-arclet-alconna = {version = ">=0.7,<0.8", optional = true, markers = "extra == \"alconna\" or extra == \"standard\" or extra == \"full\""}
+arclet-alconna-graia = {version = ">=0.0.4,<0.0.5", optional = true, markers = "extra == \"alconna\" or extra == \"standard\" or extra == \"full\""}
 fastapi = {version = ">=0.74.1,<0.75.0", optional = true, markers = "extra == \"server\" or extra == \"full\""}
-graia-broadcast = "0.16.1"
+graia-broadcast = ">=0.16.1,<0.17.0"
 graia-saya = {version = ">=0.0,<0.1", optional = true, markers = "extra == \"graia\" or extra == \"standard\" or extra == \"full\""}
 graia-scheduler = {version = ">=0.0.6,<0.0.7", optional = true, markers = "extra == \"graia\" or extra == \"standard\" or extra == \"full\""}
 loguru = ">=0.6,<0.7"
-prompt-toolkit = ">=3.0.24,<4.0.0"
+prompt-toolkit = {version = ">=3.0.24,<4.0.0", optional = true, markers = "extra == \"standard\" or extra == \"full\""}
 pydantic = ">=1.8.2,<2.0.0"
 typing-extensions = ">=4.0.0,<5.0.0"
 uvicorn = {version = ">=0.17.5,<0.18.0", extras = ["standard"], optional = true, markers = "extra == \"server\" or extra == \"full\""}
 yarl = ">=1.7,<2.0"
 
 [package.extras]
-alconna = ["arclet-alconna (>=0.7,<0.8)"]
-standard = ["arclet-alconna (>=0.7,<0.8)", "graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)"]
-full = ["arclet-alconna (>=0.7,<0.8)", "fastapi (>=0.74.1,<0.75.0)", "graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
+alconna = ["arclet-alconna-graia (>=0.0.4,<0.0.5)"]
+standard = ["arclet-alconna-graia (>=0.0.4,<0.0.5)", "graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)", "prompt-toolkit (>=3.0.24,<4.0.0)"]
+full = ["arclet-alconna-graia (>=0.0.4,<0.0.5)", "fastapi (>=0.74.1,<0.75.0)", "graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)", "prompt-toolkit (>=3.0.24,<4.0.0)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
 server = ["fastapi (>=0.74.1,<0.75.0)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
 graia = ["graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0.6,<0.0.7)"]
 
@@ -1583,7 +1601,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "5623132ea4264fc56bca97b2596048a4c5b454f6a8e4bfe2574e62e89f42f8a0"
+content-hash = "137a88dfcbbdf22e749e52a23c7fb6037143b6097acea78f3b5cdc866067c3a5"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -1690,6 +1708,9 @@ anyio = [
 ]
 arclet-alconna = [
     {file = "arclet-alconna-0.7.4.2.tar.gz", hash = "sha256:4f615a25189df3c1b99197f4d125a3ac70565f182878875b54d2bf9a1ac0b519"},
+]
+arclet-alconna-graia = [
+    {file = "arclet_alconna_graia-0.0.4-py3-none-any.whl", hash = "sha256:8b985b7ec112d7f4cede011b4e27b7e6e321fbed569f433f3b401b74c0b80a3a"},
 ]
 asgiref = [
     {file = "asgiref-3.5.0-py3-none-any.whl", hash = "sha256:88d59c13d634dcffe0510be048210188edd79aeccb6a6c9028cdad6f31d730a9"},
@@ -2016,8 +2037,8 @@ gitpython = [
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.6.10.tar.gz", hash = "sha256:7f8689595c5c4deb550a0159b21f9e5bafbc86e6b0cc6946015de522d608a681"},
-    {file = "graia_ariadne-0.6.10-py3-none-any.whl", hash = "sha256:d0cabb219e21680f5a5cbb63bf0cf3a9841e059f1d55d80f8177cf3008858468"},
+    {file = "graia-ariadne-0.6.14.tar.gz", hash = "sha256:12a48c8ff4380572520e2465b1f80c1e5364f5a1d384dcde7854f47d6b9d3f54"},
+    {file = "graia_ariadne-0.6.14-py3-none-any.whl", hash = "sha256:c94201111bcd861023142d0639a0912e59827e0c97b1d1e8647f7f9f923666a5"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.16.1.tar.gz", hash = "sha256:40d532672b35d26ae0779e13f50593d5c505d8765c8545ed5bb5648bd3f7c6c2"},
