@@ -4,7 +4,7 @@
 from graia.ariadne.app import Ariadne
 from graia.ariadne.console import Console
 from graia.ariadne.console.saya import ConsoleSchema
-from graia.ariadne.message.parser.twilight import FullMatch, MatchResult, Twilight
+from graia.ariadne.message.parser.twilight import FullMatch, RegexResult, Twilight
 from graia.ariadne.model import MemberPerm
 from graia.saya import Channel
 from loguru import logger
@@ -26,7 +26,7 @@ if basic_cfg.console:
             console.stop()
 
     @channel.use(ConsoleSchema([Twilight.from_command('send {type} {id} {content}')]))
-    async def group_chat(app: Ariadne, type: MatchResult, id: MatchResult, content: MatchResult):
+    async def group_chat(app: Ariadne, type: RegexResult, id: RegexResult, content: RegexResult):
         match type.result.asDisplay():
             case 'group':
                 await app.sendGroupMessage(int(id.result.asDisplay()), content.result)
@@ -45,7 +45,7 @@ if basic_cfg.console:
                 return '群主'
 
     @channel.use(ConsoleSchema([Twilight.from_command('list {type}')]))
-    async def list(app: Ariadne, type: MatchResult):
+    async def list(app: Ariadne, type: RegexResult):
         match type.result.asDisplay():
             case 'group':
                 for group in await app.getGroupList():

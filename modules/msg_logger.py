@@ -13,7 +13,7 @@ from graia.ariadne.message.parser.twilight import (
     ArgResult,
     ArgumentMatch,
     ElementMatch,
-    MatchResult,
+    ElementResult,
     RegexMatch,
     RegexResult,
     SpacePolicy,
@@ -58,6 +58,7 @@ Module(
     )
 )
 async def main(group: Group, member: Member, message: MessageChain, source: Source):
+    message = message.copy()
     for ind, elem in enumerate(message[:]):
         if not isinstance(elem, Plain):
             message.__root__[ind] = Plain(elem.asDisplay())
@@ -181,7 +182,7 @@ async def get_msg_count(
         decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(module_name)],
     )
 )
-async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexResult, at: MatchResult):
+async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexResult, at: ElementResult):
     if qq.matched and not at.matched:
         target = int(qq.result.asDisplay())
     elif at.matched and not qq.matched:

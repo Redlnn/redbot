@@ -23,8 +23,8 @@ from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import (
     ArgResult,
     ArgumentMatch,
-    MatchResult,
     RegexMatch,
+    RegexResult,
     SpacePolicy,
     Twilight,
     UnionMatch,
@@ -93,7 +93,7 @@ config = WordCloudConfig()
         decorators=[GroupPermission.require(), DisableModule.require(module_name), DisableModule.require('msg_loger')],
     )
 )
-async def command(app: Ariadne, group: Group, member: Member, wc_target: MatchResult, day_length: ArgResult):
+async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult):
     global Generating_list
     try:
         day = int(day_length.result.asDisplay())
@@ -153,7 +153,7 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: MatchRe
         decorators=[GroupPermission.require(), DisableModule.require(module_name), DisableModule.require('msg_loger')],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, target: MatchResult, target_time: MatchResult):
+async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, target_time: RegexResult):
     today = time.localtime(time.time())
     match target.result.asDisplay():
         case '我的':

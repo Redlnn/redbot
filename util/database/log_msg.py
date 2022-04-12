@@ -97,7 +97,7 @@ async def get_member_msg(group: str, qq: str, timestamp: int = 0) -> list[str]:
         )
     )
     record: list[MsgLog] = [i[0] for i in result]
-    if record[0] is None:
+    if len(record) == 0 or record[0] is None:
         return []
     return [i.msg_chain for i in record]
 
@@ -107,7 +107,7 @@ async def get_group_msg(group: str, timestamp: int = 0) -> list[str]:
         select(MsgLog).where(and_(col(MsgLog.group_id) == group, col(MsgLog.timestamp) >= timestamp))
     )
     record: list[MsgLog] = [i[0] for i in result]
-    if record[0] is None:
+    if len(record) == 0 or record[0] is None:
         return []
     return [i.msg_chain for i in record]
 
@@ -119,7 +119,7 @@ async def del_member_msg(group: str, qq: str, timestamp: int) -> bool:
         )
     )
     record: list[MsgLog] = [i[0] for i in result]
-    if record[0] is None:
+    if len(record) == 0 or record[0] is None:
         return True
     return await Database.delete_many_exist(*record)
 
@@ -129,6 +129,6 @@ async def del_group_msg(group: str, timestamp: int):
         select(MsgLog).where(and_(col(MsgLog.group_id) == group, col(MsgLog.timestamp) >= timestamp))
     )
     record: list[MsgLog] = [i[0] for i in result]
-    if record[0] is None:
+    if len(record) == 0 or record[0] is None:
         return True
     return await Database.delete_many_exist(*record)

@@ -29,10 +29,12 @@ class Database:
     async def init(cls, debug: bool = False) -> None:
         if basic_cfg.databaseUrl.startswith('sqlite'):
             cls.lock = Semaphore(1)
-        cls.engine = create_async_engine(basic_cfg.databaseUrl, echo=debug, future=True)
+        cls.engine = create_async_engine(
+            basic_cfg.databaseUrl, echo=debug, future=True, pool_pre_ping=True, pool_recycle=180
+        )
         async with cls.engine.begin() as conn:
             await conn.run_sync(SQLModel.metadata.create_all)
-        cls.Session = sessionmaker(cls.engine, class_=AsyncSession, expire_on_commit=False)
+        cls.Session = sessionmaker(cls.engine, class_=AsyncSession, expire_on_commit=False, future=True)
 
     @classmethod
     async def exec(cls, sql: Executable) -> Optional[Result]:

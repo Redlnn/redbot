@@ -19,8 +19,8 @@ from graia.ariadne.message.parser.twilight import (
     ArgResult,
     ArgumentMatch,
     FullMatch,
-    MatchResult,
     RegexMatch,
+    RegexResult,
     Twilight,
     WildcardMatch,
 )
@@ -80,7 +80,7 @@ setu_config = Setu()
         decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(module_name)],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, tag: MatchResult, san: ArgResult, num: ArgResult):
+async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san: ArgResult, num: ArgResult):
     if int(san.result.asDisplay()) >= 4 and not (
         member.permission in (MemberPerm.Administrator, MemberPerm.Owner) or member.id in basic_cfg.admin.admins
     ):

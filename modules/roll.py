@@ -16,8 +16,8 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Dice, Plain, Source
 from graia.ariadne.message.parser.twilight import (
-    MatchResult,
     RegexMatch,
+    RegexResult,
     Twilight,
     WildcardMatch,
 )
@@ -48,7 +48,7 @@ Module(
         decorators=[GroupPermission.require(), DisableModule.require(module_name)],
     )
 )
-async def roll(app: Ariadne, group: Group, source: Source, target: MatchResult):
+async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
     t = target.result.asDisplay().strip()
     if len(t) != 0:
         chain = MessageChain.create(Plain(f'{t}的概率为：{randint(0, 100)}'))

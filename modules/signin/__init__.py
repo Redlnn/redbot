@@ -11,7 +11,7 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain, Source
 from graia.ariadne.message.parser.twilight import (
-    MatchResult,
+    RegexResult,
     RegexMatch,
     SpacePolicy,
     Twilight,
@@ -142,7 +142,7 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
         decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(module_name)],
     )
 )
-async def clear(app: Ariadne, group: Group, target: MatchResult):
+async def clear(app: Ariadne, group: Group, target: RegexResult):
     msg: MessageChain = target.result
     if msg.onlyContains(At):
         result = await clear_signin(str(msg.getFirst(At).target))
