@@ -54,13 +54,14 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
         await Database.add(PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp))
     elif player.blocked:
         return MessageChain.create(Plain(f'你的账号已被封禁，封禁原因：{player.block_reason}'))
-    elif player.uuid1 is None and player.uuid2 is None:
+
+    if player.uuid1 is None and player.uuid2 is None:  # type: ignore
         await Database.exec(
             update(PlayerInfo)
             .where(PlayerInfo.qq == str(qq))
             .values(uuid1=UUID(mc_uuid).hex, uuid1_add_time=int(time.time()))
         )
-    elif player.uuid1 is not None and player.uuid2 is None:
+    elif player.uuid1 is not None and player.uuid2 is None:  # type: ignore
         if admin:
             await Database.exec(
                 update(PlayerInfo)
@@ -71,7 +72,7 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
             return MessageChain.create(
                 Plain('你已有一个白名单，如要申请第二个白名单请联系管理员'),
             )
-    elif player.uuid2 is not None and player.uuid1 is None:
+    elif player.uuid2 is not None and player.uuid1 is None:  # type: ignore
         if admin:
             await Database.exec(
                 update(PlayerInfo)

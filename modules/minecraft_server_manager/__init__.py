@@ -259,7 +259,7 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
                             MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')),
                             quote=source,
                         )
-                        return
+                    return
                 elif func == 'uuid' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
                     if await is_uuid(target):
@@ -466,9 +466,12 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
             return
         else:
             await app.sendMessage(group, MessageChain.create(Plain('由于你的群名片不包含你要申请白名单的ID，已自动为你修改')), quote=source)
-
     target = member.id
-    await app.sendMessage(group, await add_whitelist_to_qq(target, mc_id, False), quote=source)
+    await app.sendMessage(
+        group,
+        await add_whitelist_to_qq(target, mc_id, True if member.permission >= MemberPerm.Administrator else False),
+        quote=source,
+    )
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -602,7 +605,7 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == target.id))
     if result is None:
-        await Database.add(PlayerInfo(qq=target.id, join_time=target.joinTimestamp, leave_time=int(time.time())))
+        await Database.add(PlayerInfo(qq=str(target.id), join_time=target.joinTimestamp, leave_time=int(time.time())))
     else:
         result[0].leave_time = int(time.time())
         result[0].blocked = True

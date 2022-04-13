@@ -11,8 +11,8 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain, Source
 from graia.ariadne.message.parser.twilight import (
-    RegexResult,
     RegexMatch,
+    RegexResult,
     SpacePolicy,
     Twilight,
     WildcardMatch,

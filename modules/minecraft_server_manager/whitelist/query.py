@@ -21,7 +21,7 @@ async def query_whitelist_by_uuid(mc_uuid: str) -> PlayerInfo | None:
             or_(col(PlayerInfo.uuid1) == query_target.hex), col(PlayerInfo.uuid2) == query_target.hex
         )
     )
-    if result is None or result[0]:
+    if result is None or len(result) == 0:
         return None
     else:
         return result[0]
@@ -40,7 +40,7 @@ async def query_uuid_by_qq(
     qq: int,
 ) -> PlayerInfo | None:
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(qq)))
-    if result is None or result[0]:
+    if result is None or len(result) == 0:
         return None
     else:
         return result[0]
@@ -51,7 +51,7 @@ async def query_qq_by_uuid(mc_uuid: str) -> PlayerInfo | None:
     result = await Database.select_first(
         select(PlayerInfo).where(or_(col(PlayerInfo.uuid1) == target.hex, col(PlayerInfo.uuid2) == target.hex))
     )
-    if result is None or result[0]:
+    if result is None or len(result) == 0:
         return None
     else:
         return result[0]
