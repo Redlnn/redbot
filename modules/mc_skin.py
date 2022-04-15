@@ -60,7 +60,7 @@ RENDER_ADDR = {
             Twilight(
                 [
                     RegexMatch(r'[.!！]skin').space(SpacePolicy.FORCE),
-                    'name' @ RegexMatch(r'^[0-9a-zA-Z_]+$'),
+                    'name' @ RegexMatch(r'[0-9a-zA-Z_]+'),
                     ArgumentMatch(
                         '--type', '-T', default='head', type=str, choices=['original', 'body', 'head', 'avatar']
                     ).param(
