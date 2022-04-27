@@ -166,14 +166,14 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
     """
     被邀请入群
     """
-    if event.groupId in perm_cfg.group_whitelist:
+    if event.sourceGroup in perm_cfg.group_whitelist:
         await event.accept()
         await send_to_admin(
             MessageChain.create(
                 Plain(
                     '收到邀请入群事件\n'
                     f'邀请者：{event.nickname}({event.supplicant})\n'
-                    f'群号：{event.groupId}\n'
+                    f'群号：{event.sourceGroup}\n'
                     f'群名：{event.groupName}\n'
                     '\n该群位于白名单中，已同意加入'
                 ),
@@ -186,7 +186,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
             Plain(
                 '收到邀请入群事件\n'
                 f'邀请者：{event.nickname}({event.supplicant})\n'
-                f'群号：{event.groupId}\n'
+                f'群号：{event.sourceGroup}\n'
                 f'群名：{event.groupName}\n'
                 '\n是否同意申请？请在10分钟内发送“同意”或“拒绝”，否则自动拒绝'
             ),
@@ -214,20 +214,20 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
         await send_to_admin(
             MessageChain.create(
                 Plain(
-                    f'由于长时间未审核，已自动拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.groupId}) 请求'
+                    f'由于长时间未审核，已自动拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.sourceGroup}) 请求'
                 )
             ),
         )
     else:
         if result:
             await event.accept()
-            if event.groupId:
-                perm_cfg.group_whitelist.append(event.groupId)
+            if event.sourceGroup:
+                perm_cfg.group_whitelist.append(event.sourceGroup)
                 perm_cfg.save()
             await send_to_admin(
                 MessageChain.create(
                     Plain(
-                        f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.groupId}) 请求'
+                        f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.sourceGroup}) 请求'
                     )
                 ),
             )
@@ -236,7 +236,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
             await send_to_admin(
                 MessageChain.create(
                     Plain(
-                        f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.groupId}) 请求'
+                        f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.sourceGroup}) 请求'
                     )
                 ),
             )
