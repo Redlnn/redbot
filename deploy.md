@@ -4,7 +4,7 @@
 
 虽然 `redbot` 所依赖的 [`Ariadne`](https://github.com/GraiaProject/Ariadne) 框架目前要求的 Python 版本为 3.8 ~ 3.10
 
-但 `redbot` 使用了 Python 3.10 的新特性因此仅能使用 Python 3.10.x 运行
+但 `redbot` 使用了 Python 3.10 的新特性因此仅能使用 Python >=3.10 运行
 
 ### 2. 配置 Mirai
 
