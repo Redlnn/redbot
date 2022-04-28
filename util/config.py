@@ -4,7 +4,9 @@
 from pathlib import Path
 
 import orjson
-from pydantic import AnyHttpUrl, BaseModel
+from pydantic import AnyHttpUrl
+
+from util.better_pydantic import BaseModel
 
 from .path import config_path, data_path
 

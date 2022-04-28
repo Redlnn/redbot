@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from pydantic import BaseModel
-
+from util.better_pydantic import BaseModel
 from util.config import RConfig
 
 
