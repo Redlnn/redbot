@@ -17,8 +17,7 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, RegexResult, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
-from graia.broadcast.interrupt import InterruptControl
-from graia.broadcast.interrupt.waiter import Waiter
+from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
@@ -31,7 +30,6 @@ from util.text2img import Text2ImgConfig, async_generate_img, hr
 
 saya = Saya.current()
 channel = Channel.current()
-inc = InterruptControl(saya.broadcast)
 
 module_name = split(dirname(__file__))[-1]
 
@@ -197,7 +195,14 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
     )
 )
 async def reload_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
-    @Waiter.create_using_function([GroupMessage])
+    # 重载即卸载重新加载，在加载含有 `saya = Saya.current()` 的模块时 100% 报错
+    await app.sendMessage(
+        group,
+        MessageChain.create(
+            At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')
+        ),
+    )
+
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain):
         if waiter_group.id == group.id and waiter_member.id == member.id:
             saying = waiter_message.asDisplay()
@@ -208,15 +213,8 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
             else:
                 await app.sendMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
 
-    # 重载即卸载重新加载，在加载含有 `saya = Saya.current()` 的模块时 100% 报错
-    await app.sendMessage(
-        group,
-        MessageChain.create(
-            At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')
-        ),
-    )
     try:
-        answer: MessageChain = await inc.wait(waiter, timeout=10)
+        answer: MessageChain = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
         return
@@ -249,7 +247,11 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
     )
 )
 async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
-    @Waiter.create_using_function([GroupMessage])
+    # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
+    await app.sendMessage(
+        group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
+    )
+
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain):
         if waiter_group.id == group.id and waiter_member.id == member.id:
             saying = waiter_message.asDisplay()
@@ -260,12 +262,8 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
             else:
                 await app.sendMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
 
-    # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
-    await app.sendMessage(
-        group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
-    )
     try:
-        answer: MessageChain = await inc.wait(waiter, timeout=10)
+        answer: MessageChain = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=600)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
         return

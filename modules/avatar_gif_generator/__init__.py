@@ -9,8 +9,7 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.model import Group, Member
-from graia.broadcast.interrupt import InterruptControl
-from graia.saya import Channel, Saya
+from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.control import DisableModule
@@ -20,9 +19,7 @@ from util.module_register import Module
 
 from .ding import ding
 
-saya = Saya.current()
 channel = Channel.current()
-inc = InterruptControl(saya.broadcast)
 
 module_name = split(dirname(__file__))[-1]
 

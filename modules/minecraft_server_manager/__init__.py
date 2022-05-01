@@ -22,8 +22,7 @@ from graia.ariadne.message.parser.twilight import (
     WildcardMatch,
 )
 from graia.ariadne.model import Group, Member, MemberInfo, MemberPerm
-from graia.broadcast.interrupt import InterruptControl
-from graia.broadcast.interrupt.waiter import Waiter
+from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.saya import Channel, Saya
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
@@ -53,7 +52,6 @@ from .whitelist.query import (
 
 saya = Saya.current()
 channel = Channel.current()
-inc = InterruptControl(saya.broadcast)
 module_name = split(dirname(__file__))[-1]
 
 # from utils.module_register import Module
@@ -391,7 +389,18 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
         return
 
-    @Waiter.create_using_function([GroupMessage])
+    await app.sendMessage(
+        group,
+        MessageChain.create(
+            At(member.id),
+            Plain(
+                ' 你正在清空本 bot 的服务器白名单数据库，本次操作不可逆，且不影响服务器的白名单，请问是否确认要清空本 bot 的服务器白名单数据库？'
+                '\n确认请在10s内发送 .confirm ，取消请发送 .cancel'
+            ),
+        ),
+        quote=source,
+    )
+
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain, waiter_source: Source):
         if waiter_group.id == group.id and waiter_member.id == member.id:
             saying = waiter_message.asDisplay()
@@ -404,19 +413,8 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
                     group, MessageChain.create(At(member.id), Plain('请发送 .confirm 或 .cancel')), quote=waiter_source
                 )
 
-    await app.sendMessage(
-        group,
-        MessageChain.create(
-            At(member.id),
-            Plain(
-                ' 你正在清空本 bot 的服务器白名单数据库，本次操作不可逆，且不影响服务器的白名单，请问是否确认要清空本 bot 的服务器白名单数据库？'
-                '\n确认请在10s内发送 .confirm ，取消请发送 .cancel'
-            ),
-        ),
-        quote=source,
-    )
     try:
-        answer: MessageChain = await inc.wait(waiter, timeout=10)
+        answer: MessageChain = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')), quote=source)
         return

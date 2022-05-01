@@ -27,9 +27,8 @@ from graia.ariadne.message.parser.twilight import (
     Twilight,
 )
 from graia.ariadne.model import Friend
-from graia.broadcast.interrupt import InterruptControl
-from graia.broadcast.interrupt.waiter import Waiter
-from graia.saya import Channel, Saya
+from graia.ariadne.util.interrupt import FunctionWaiter
+from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
@@ -38,9 +37,7 @@ from util.control import DisableModule
 from util.control.permission import perm_cfg
 from util.module_register import Module
 
-saya = Saya.current()
 channel = Channel.current()
-inc = InterruptControl(saya.broadcast)
 module_name = basename(__file__)[:-3]
 
 Module(
@@ -127,7 +124,6 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
         )
     )
 
-    @Waiter.create_using_function([FriendMessage])
     async def waiter(waiter_friend: Friend, waiter_message: MessageChain):
         if waiter_friend.id in basic_cfg.admin.admins:
             saying = waiter_message.asDisplay()
@@ -142,7 +138,7 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
                 )
 
     try:
-        result, admin = await inc.wait(waiter, timeout=600)
+        result, admin = await FunctionWaiter(waiter, [FriendMessage]).wait(timeout=600)
     except asyncio.exceptions.TimeoutError:
         await event.accept()
         await send_to_admin(MessageChain.create(Plain(f'由于超时未审核，已自动同意 {event.nickname}({event.supplicant}) 的好友请求')))
@@ -193,7 +189,6 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
         ),
     )
 
-    @Waiter.create_using_function([FriendMessage])
     async def waiter(waiter_friend: Friend, waiter_message: MessageChain):
         if waiter_friend.id in basic_cfg.admin.admins:
             saying = waiter_message.asDisplay()
@@ -208,7 +203,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
                 )
 
     try:
-        result, admin = await inc.wait(waiter, timeout=600)
+        result, admin = await FunctionWaiter(waiter, [FriendMessage]).wait(timeout=600)
     except asyncio.exceptions.TimeoutError:
         await event.reject('由于 Bot 管理员长时间未审核，已自动拒绝')
         await send_to_admin(
