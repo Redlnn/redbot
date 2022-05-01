@@ -10,8 +10,6 @@ mc皮肤查询
 from os.path import basename
 
 import orjson
-from graia.ariadne import get_running
-from graia.ariadne.adapter import Adapter
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -31,6 +29,7 @@ from graia.saya.channel import Channel
 from util.control import DisableModule
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
+from util.get_aiohtto_session import get_session
 from util.module_register import Module
 
 channel = Channel.current()
@@ -73,7 +72,7 @@ RENDER_ADDR = {
     )
 )
 async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult):
-    session = get_running(Adapter).session
+    session = get_session()
     try:
         async with session.get(UUID_ADDRESS_STRING.format(name=name.result.asDisplay())) as resp:
             uuid = orjson.loads(await resp.text())["id"]

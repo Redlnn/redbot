@@ -9,8 +9,8 @@
  - 新版B站app分享的两种小程序
  - 旧版B站app分享的xml消息
  - B站概念版分享的json消息
- - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/av2
- - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/BV1xx411c7mD
+ - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/{av/bv号} （m.bilibili.com 也可以
+ - 文字消息里含有B站视频地址，如 https://b23.tv/3V31Ap
  - 文字消息里含有B站视频地址，如 https://b23.tv/3V31Ap
  - BV1xx411c7mD
  - av2
@@ -19,16 +19,13 @@
 import time
 from dataclasses import dataclass
 from os.path import basename
-from xml.dom.minidom import parseString
+from typing import Literal
 
-import orjson as json
 import regex as re
-from graia.ariadne import get_running
-from graia.ariadne.adapter import Adapter
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.message.element import App, Image, Plain, Xml
+from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Group, Member
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
@@ -37,6 +34,7 @@ from loguru import logger
 from util.control import DisableModule
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
+from util.get_aiohtto_session import get_session
 from util.module_register import Module
 from util.text2img import async_generate_img, hr
 
@@ -53,8 +51,7 @@ Module(
         ' - 新版B站app分享的两种小程序\n'
         ' - 旧版B站app分享的xml消息\n'
         ' - B站概念版分享的json消息\n'
-        ' - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/av2\n'
-        ' - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/BV1xx411c7mD\n'
+        ' - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/{av/bv号} （m.bilibili.com 也可以）\n'
         ' - 文字消息里含有B站视频地址，如 https://b23.tv/3V31Ap\n'
         ' - 文字消息里含有BV号，如 BV1xx411c7mD\n'
         ' - 文字消息里含有av号，如 av2'
@@ -93,44 +90,30 @@ class VideoInfo:
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
     p = re.compile(f'({avid_re})|({bvid_re})')
     video_id = None
-    if message.has(App):
-        bli_url = await lite_app_extract(message.get(App)[0])
-        if not bli_url:
+    msg_str = message.asPersistentString()
+    if 'b23.tv/' in msg_str:
+        msg_str = await b23_url_extract(msg_str)
+        if not msg_str:
             return
-        video_id = p.search(bli_url)
-    elif message.has(Xml):
-        bli_url = await xml_extract(message.get(Xml)[0])
-        if not bli_url:
-            return
-        video_id = p.search(bli_url)
-    elif message.has(Plain):
-        msg = message.asDisplay().strip()
-        if 'b23.tv/' in msg:
-            bli_url = await b23_url_extract(msg)
-            if not bli_url:
-                return
-            video_id = p.search(bli_url)
-        elif 'www.bilibili.com/video/' in msg:
-            video_id = p.search(msg)
-        elif msg[:2].lower() in ('av', 'bv'):
-            video_id = p.match(msg)
-        else:
-            return
+    elif 'bilibili.com/video/' not in msg_str:
+        return
+    video_id = p.search(msg_str)
     if not video_id:
         return
+    if video_id is None:
+        return
+    video_id = video_id.group()
 
     rate_limit, remaining_time = ManualInterval.require(f'{group.id}_{member.id}_bilibiliVideoInfo', 5, 2)
     if not rate_limit:
         await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
 
-    video_info = await get_video_info(video_id.group(0))
+    video_info = await get_video_info(video_id)
     if video_info['code'] == -404:
         return await app.sendMessage(group, MessageChain.create(Plain('视频不存在')))
     elif video_info['code'] != 0:
-        error_text = (
-            f'在请求 {video_id.group(0)} 的视频信息时，B站服务器返回错误：👇\n错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
-        )
+        error_text = f'解析B站视频 {video_id} 时出错👇\n错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
         logger.error(error_text)
         return await app.sendMessage(group, MessageChain.create(Plain(error_text)))
     else:
@@ -153,55 +136,21 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
         )
 
 
-async def xml_extract(xml: Xml) -> bool | str:
-    xml_tree = parseString(xml.xml)
-    xml_collection = xml_tree.documentElement
-    if not xml_collection.hasAttribute('url'):
+async def b23_url_extract(b23_url: str) -> Literal[False] | str:
+    url = re.search(r'b23.tv(/|\\)[0-9a-zA-Z]+', b23_url)
+    if url is None:
         return False
-    xml_url = xml_collection.getAttribute('url')
-    if 'www.bilibili.com/video/' in xml_url:
-        return xml_url
-    elif 'b23.tv/' in xml_url:
-        return await b23_url_extract(xml_url)
-    return False
-
-
-async def lite_app_extract(app: App) -> bool | str:
-    app_dict = json.loads(app.content)
-    try:
-        app_id = app_dict['meta']['detail_1']['appid']
-    except KeyError:
-        try:
-            app_id = app_dict['meta']['news']['appid']
-        except:  # noqa
-            return False
-    except:  # noqa
-        return False
-
-    b23_url = ''
-    if app_id == '1109937557':
-        b23_url = app_dict['meta']['detail_1']['qqdocurl']
-    elif app_id in ('1105517988', '100951776'):
-        b23_url = app_dict['meta']['news']['jumpUrl']
-
-    if b23_url and (b23_url.startswith('https://b23.tv') or b23_url.startswith('http://b23.tv')):
-        return await b23_url_extract(b23_url)
-    return False
-
-
-async def b23_url_extract(url: str) -> bool | str:
-    url = re.search('b23.tv/[0-9a-zA-Z]*', url).group(0)
-    session = get_running(Adapter).session
-    async with session.get(f'https://{url}', allow_redirects=False) as resp:
-        target = resp.headers['Location']
+    session = get_session()
+    async with session.get(f'https://{url.group()}', allow_redirects=True) as resp:
+        target = str(resp.url)
     if 'www.bilibili.com/video/' in target:
         return target
     else:
         return False
 
 
-async def get_video_info(video_id: str) -> dict:
-    session = get_running(Adapter).session
+async def get_video_info(video_id: str) -> dict:  # type: ignore
+    session = get_session()
     if video_id[:2].lower() == 'av':
         async with session.get(f'http://api.bilibili.com/x/web-interface/view?aid={video_id[2:]}') as resp:
             return await resp.json()
@@ -267,7 +216,7 @@ async def gen_img(data: VideoInfo) -> bytes:
         f'{hr}\n{data.desc}'
     )
 
-    session = get_running(Adapter).session
+    session = get_session()
     async with session.get(data.cover_url) as resp:
         img_contents: list[str | bytes] = [await resp.content.read(), info_text]
     return await async_generate_img(img_contents)

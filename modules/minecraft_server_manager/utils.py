@@ -6,8 +6,8 @@ from uuid import UUID
 
 import regex as re
 from aiohttp import ClientResponse
-from graia.ariadne import get_running
-from graia.ariadne.adapter import Adapter
+
+from util.get_aiohtto_session import get_session
 
 
 def format_time(timestamp: int) -> str:
@@ -37,7 +37,7 @@ async def is_uuid(mc_uuid: str) -> bool:
     """
     try:
         UUID(mc_uuid)
-    except:
+    except ValueError:
         return False
     else:
         return True
@@ -49,7 +49,7 @@ async def get_uuid(mc_id: str) -> tuple[str | ClientResponse, str]:
 
     :param mc_id: 正版用户名（id）
     """
-    session = get_running(Adapter).session
+    session = get_session()
     async with session.get(f'https://api.mojang.com/users/profiles/minecraft/{mc_id}') as resp:
         if resp.status == 200:
             resp_json = await resp.json()
@@ -65,7 +65,7 @@ async def get_mc_id(mc_uuid: str | UUID) -> str | ClientResponse:
 
     :param mc_uuid: 输入一个uuid
     """
-    session = get_running(Adapter).session
+    session = get_session()
     async with session.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{mc_uuid}') as resp:
         if resp.status == 200:
             resp_json = await resp.json()

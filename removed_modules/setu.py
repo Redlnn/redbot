@@ -9,8 +9,6 @@ import asyncio
 from datetime import datetime
 from os.path import basename
 
-from graia.ariadne import get_running
-from graia.ariadne.adapter import Adapter
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -33,6 +31,7 @@ from util.config import RConfig, basic_cfg
 from util.control import DisableModule
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
+from util.get_aiohtto_session import get_session
 from util.module_register import Module
 
 channel = Channel.current()
@@ -49,7 +48,7 @@ Module(
 
 class Setu(RConfig):
     __filename__: str = 'setu'
-    apiUrl: AnyHttpUrl = 'http://localhost:8080'
+    apiUrl: AnyHttpUrl = 'http://localhost:8080'  # type: ignore
 
 
 setu_config = Setu()
@@ -86,16 +85,16 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
     ):
         await app.sendMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
         return
-    session = get_running(Adapter).session
+    session = get_session()
     if tag.matched:
-        target_tag = tag.result.getFirst(Plain).text
+        target_tag = tag.result.getFirst(Plain).text  # type: ignore
         async with session.get(
             f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
         ) as resp:
             if resp.status in (200, 404):
                 res: dict = await resp.json()
             else:
-                res = {'code': 500}
+                res: dict = {'code': 500}
     else:
         async with session.get(
             f'{setu_config.apiUrl}/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
@@ -104,9 +103,9 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
                 res: dict = await resp.json()
             else:
                 res = {'code': 500}
-    if res.get('code', False) == 404 and tag.matched:
+    if res.get('code') == 404 and tag.matched:
         await app.sendMessage(group, MessageChain.create(Plain('未找到相应tag的色图')))
-    elif res.get('code', False) == 200:
+    elif res.get('code') == 200:
         forward_nodes = [
             ForwardNode(
                 senderId=member.id,
@@ -115,7 +114,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
                 messageChain=MessageChain.create('我有涩图要给大伙康康，请米娜桑坐稳扶好哦嘿嘿嘿~'),
             ),
         ]
-        for img in res['data']['imgs']:
+        for img in res['data']['imgs']:  # type: ignore
             forward_nodes.extend(
                 [
                     ForwardNode(

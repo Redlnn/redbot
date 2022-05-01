@@ -12,8 +12,7 @@ from os.path import basename
 from urllib.parse import quote
 
 import aiohttp
-from graia.ariadne import get_running
-from graia.ariadne.adapter import Adapter
+
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -31,6 +30,7 @@ from lxml import etree
 
 from util.control import DisableModule
 from util.control.permission import GroupPermission
+from util.get_aiohtto_session import get_session
 from util.module_register import Module
 
 channel = Channel.current()
@@ -63,7 +63,7 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
     bili_url = 'https://wiki.biligame.com/mc/' + search_parm
     fandom_url = 'https://minecraft.fandom.com/zh/wiki/' + search_parm + '?variant=zh-cn'
 
-    session = get_running(Adapter).session
+    session = get_session()
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(bili_url) as resp:
@@ -83,7 +83,7 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
                 )
             )
         case 200:
-            tree = etree.HTML(text)  # 虽然这里缺少参数，但可以运行，文档示例也如此
+            tree = etree.HTML(text)  # type: ignore # 虽然这里缺少参数，但可以运行，文档示例也如此
             title = tree.xpath('/html/head/title')[0].text
             introduction_list: list = tree.xpath(
                 '//div[contains(@id,"toc")]/preceding::p[1]/descendant-or-self::*/text()'
