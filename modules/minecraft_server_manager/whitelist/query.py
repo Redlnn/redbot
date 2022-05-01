@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from asyncio.exceptions import TimeoutError
 from uuid import UUID
 
 from graia.ariadne.message.chain import MessageChain
@@ -68,45 +69,45 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
     if player.uuid1 is not None and player.uuid2 is None:
         try:
             mc_id = await get_mc_id(player.uuid1)
-        except:  # noqa
+        except TimeoutError:
             info_text += f' | UUID: {player.uuid1}\n'
         else:
             if not isinstance(mc_id, str):
                 info_text += f' | UUID: {player.uuid1}\n'
             else:
                 info_text += f' | ID: {mc_id}\n'
-        info_text += f' | 添加时间：{format_time(player.uuid1_add_time)}\n'
+        info_text += f' | 添加时间：{format_time(player.uuid1_add_time)}\n'  # type: ignore
     elif player.uuid2 is not None and player.uuid1 is None:
         try:
             mc_id = await get_mc_id(player.uuid2)
-        except:  # noqa
+        except TimeoutError:
             info_text += f' | UUID: {player.uuid2}\n'
         else:
             if not isinstance(mc_id, str):
                 info_text += f' | UUID: {player.uuid2}\n'
             else:
                 info_text += f' | ID: {mc_id}\n'
-        info_text += f' | 添加时间：{format_time(player.uuid2_add_time)}'
+        info_text += f' | 添加时间：{format_time(player.uuid2_add_time)}'  # type: ignore
     elif player.uuid1 is not None and player.uuid2 is not None:
         try:
             mc_id1 = await get_mc_id(player.uuid1)
-        except:  # noqa
+        except TimeoutError:
             info_text += f' | UUID 1: {player.uuid1}\n'
         else:
             if not isinstance(mc_id1, str):
                 info_text += f' | UUID 1: {player.uuid1}\n'
             else:
                 info_text += f' | ID 1: {mc_id1}\n'
-        info_text += f' | ID 1添加时间：{format_time(player.uuid1_add_time)}\n'
+        info_text += f' | ID 1添加时间：{format_time(player.uuid1_add_time)}\n'  # type: ignore
         try:
             mc_id2 = await get_mc_id(player.uuid2)
-        except:  # noqa
+        except TimeoutError:
             info_text += f' | UUID 2: {player.uuid2}\n'
         else:
             if not isinstance(mc_id2, str):
                 info_text += f' | UUID 2: {player.uuid2}\n'
             else:
                 info_text += f' | ID 2: {mc_id2}\n'
-        info_text += f' | ID 2添加时间：{format_time(player.uuid2_add_time)}'
+        info_text += f' | ID 2添加时间：{format_time(player.uuid2_add_time)}'  # type: ignore
 
     return MessageChain.create(At(int(player.qq)), Plain(info_text))

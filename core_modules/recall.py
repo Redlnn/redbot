@@ -7,7 +7,12 @@ from os.path import basename
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import ActiveGroupMessage, GroupMessage
-from graia.ariadne.exception import UnknownError, UnknownTarget
+from graia.ariadne.exception import (
+    InvalidArgument,
+    RemoteException,
+    UnknownError,
+    UnknownTarget,
+)
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Quote, Source
 from graia.ariadne.model import Group, Member
@@ -68,7 +73,7 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
                         return
                     try:
                         await app.recallMessage(item['id'])
-                    except:
+                    except (UnknownTarget, InvalidArgument, RemoteException, UnknownError):
                         pass
                     try:
                         lastest_msg.remove(item)

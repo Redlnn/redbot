@@ -97,7 +97,7 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexRe
     global Generating_list
     try:
         day = int(day_length.result.asDisplay())
-    except:
+    except ValueError:
         await app.sendMessage(group, MessageChain.create(Plain(f'请输入正确的天数！')), quote=True)
         return
     match_result: MessageChain = wc_target.result  # noqa: E275
