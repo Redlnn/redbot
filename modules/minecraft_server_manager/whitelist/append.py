@@ -25,7 +25,7 @@ from .query import query_uuid_by_qq, query_whitelist_by_uuid
 async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
-    except Exception as e:
+    except TimeoutError as e:
         logger.error(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误')
         logger.exception(e)
         return MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误:  👇\n{e}'))
@@ -97,7 +97,7 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
         res: str = await execute_command(f'whitelist add {real_mc_id}')
     except TimeoutError:
         return MessageChain.create(Plain('添加白名单时已写入数据库，但连接服务器超时，请联系管理解决'))
-    except Exception as e:
+    except ValueError as e:
         logger.exception(e)
         return MessageChain.create(Plain(f'添加白名单时已写入数据库但无法连接到服务器，请联系管理解决: 👇\n{e}'))
 

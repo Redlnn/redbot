@@ -11,6 +11,7 @@ from os.path import basename
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
+from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Forward, ForwardNode, Image, Plain
 from graia.ariadne.message.parser.twilight import (
@@ -154,7 +155,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
         await asyncio.sleep(40)
         try:
             await app.recallMessage(msg_id)
-        except Exception:  # noqa
+        except UnknownTarget:  # noqa
             pass
     else:
         await app.sendMessage(group, MessageChain.create(Plain('慢一点慢一点，别冲辣！')))

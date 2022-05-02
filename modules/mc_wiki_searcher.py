@@ -7,12 +7,11 @@
 用法：在群内发送【!wiki {关键词}】即可
 """
 
-import asyncio
+from asyncio.exceptions import TimeoutError
 from os.path import basename
 from urllib.parse import quote
 
 import aiohttp
-
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -69,7 +68,7 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
             async with session.get(bili_url) as resp:
                 status_code = resp.status
                 text = await resp.text()
-    except asyncio.exceptions.TimeoutError:
+    except TimeoutError:
         status_code = -1
 
     match status_code:

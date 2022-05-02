@@ -13,6 +13,7 @@ from graia.ariadne.event.mirai import (
     MemberLeaveEventKick,
     MemberLeaveEventQuit,
 )
+from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain, Source
 from graia.ariadne.message.parser.twilight import (
@@ -457,7 +458,7 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
     if mc_id.lower() not in member.name.lower():
         try:
             await app.modifyMemberInfo(member, MemberInfo(name=mc_id))
-        except Exception as e:
+        except UnknownTarget:
             await app.sendMessage(
                 group, MessageChain.create(Plain(f'请保证你的群名片包含你要申请白名单的ID\n（发生内部错误，请联系管理员：{e}）')), quote=source
             )
@@ -491,7 +492,7 @@ async def get_player_list(app: Ariadne, group: Group):
         await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
         logger.error('rcon连接服务器超时')
         return
-    except Exception as e:
+    except ValueError as e:
         await app.sendMessage(group, MessageChain.create(Plain(f'在服务器执行命令时出错：{e}')))
         logger.error('在服务器执行命令时出错')
         logger.exception(e)
@@ -532,7 +533,7 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain, so
         await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
         logger.error('rcon连接服务器超时')
         return
-    except Exception as e:
+    except ValueError as e:
         await app.sendMessage(group, MessageChain.create(Plain(f'在服务器执行命令时出错：{e}')), quote=source)
         logger.error(f'在服务器执行命令 {split_msg[1]} 时出错')
         logger.exception(e)
@@ -656,7 +657,7 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
     if player.uuid1 is not None:
         try:
             mc_id = await get_mc_id(player.uuid1)
-        except Exception as e:
+        except asyncio.exceptions.TimeoutError as e:
             await app.sendMessage(
                 group, MessageChain.create(Plain(f'无法查询【{player.uuid1}】对应的正版id: 👇\n{e}')), quote=source
             )
@@ -671,7 +672,7 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
                     await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
                     logger.error('rcon连接服务器超时')
                     flags.append(False)
-                except Exception as e:
+                except ValueError as e:
                     logger.exception(e)
                     flags.append(False)
                 else:
@@ -688,7 +689,7 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
     if player.uuid2:
         try:
             mc_id = await get_mc_id(player.uuid2)
-        except Exception as e:
+        except asyncio.exceptions.TimeoutError as e:
             await app.sendMessage(
                 group, MessageChain.create(Plain(f'无法查询【{player.uuid2}】对应的正版id: 👇\n{e}')), quote=source
             )
@@ -703,7 +704,7 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
                     await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
                     logger.error('rcon连接服务器超时')
                     flags.append(False)
-                except Exception as e:
+                except ValueError as e:
                     logger.exception(e)
                     flags.append(False)
                 else:
@@ -807,7 +808,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
     if player.uuid1:
         try:
             mc_id = await get_mc_id(player.uuid1)
-        except Exception as e:
+        except asyncio.exceptions.TimeoutError as e:
             await app.sendMessage(
                 group, MessageChain.create(Plain(f'无法查询【{player.uuid1}】对应的正版id: 👇\n{e}')), quote=source
             )
@@ -822,7 +823,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
                     await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
                     logger.error('rcon连接服务器超时')
                     flags.append(False)
-                except Exception as e:
+                except ValueError as e:
                     logger.exception(e)
                     flags.append(False)
                 else:
@@ -839,7 +840,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
     if player.uuid2:
         try:
             mc_id = await get_mc_id(player.uuid2)
-        except Exception as e:
+        except asyncio.exceptions.TimeoutError as e:
             await app.sendMessage(
                 group, MessageChain.create(Plain(f'无法查询【{player.uuid2}】对应的正版id: 👇\n{e}')), quote=source
             )
@@ -854,7 +855,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
                     await app.sendMessage(group, MessageChain.create(Plain('连接服务器超时')))
                     logger.error('rcon连接服务器超时')
                     flags.append(False)
-                except Exception as e:
+                except ValueError as e:
                     logger.exception(e)
                     flags.append(False)
                 else:

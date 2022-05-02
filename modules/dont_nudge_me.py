@@ -9,6 +9,7 @@ from random import choice, randrange, uniform
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.mirai import NudgeEvent
+from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
 from graia.saya import Channel
@@ -71,9 +72,9 @@ async def main(app: Ariadne, event: NudgeEvent):
     try:
         await app.sendNudge(event.supplicant, event.group_id)  # 当戳一戳来自好友时 event.group_id 为 None，因此这里不判断也可以
         await asyncio.sleep(uniform(0.2, 0.6))
-        if event.context_type == "friend":
+        if event.context_type == "friend" and event.friend_id:
             await app.sendFriendMessage(event.friend_id, (await get_message(event)))
-        elif event.context_type == "group":
+        elif event.context_type == "group" and event.group_id:
             await app.sendGroupMessage(event.group_id, (await get_message(event)))
-    except Exception:  # noqa
+    except UnknownTarget:
         pass

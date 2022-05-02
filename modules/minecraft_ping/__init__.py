@@ -110,10 +110,6 @@ async def main(app: Ariadne, group: Group, ping_target: RegexResult):
         await app.sendMessage(group, MessageChain.create(Plain('连接超时')))
         logger.warning(f'连接超时，目标地址：{server_address}')
         return
-    except Exception as e:  # noqa
-        await app.sendMessage(group, MessageChain.create(Plain(f'发生错误：{e}')))
-        logger.exception(e)
-        return
 
     if not ping_result:
         await app.sendMessage(group, MessageChain.create(Plain('无法解析目标地址')))

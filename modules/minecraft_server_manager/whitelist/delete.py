@@ -21,7 +21,7 @@ from .query import query_uuid_by_qq, query_whitelist_by_uuid
 async def del_whitelist_from_server(mc_uuid: str | UUID) -> Literal[True] | MessageChain:
     try:
         mc_id = await get_mc_id(mc_uuid)
-    except Exception as e:
+    except TimeoutError as e:
         logger.error(f'无法查询【{mc_uuid}】对应的正版id')
         logger.exception(e)
         return MessageChain.create(Plain(f'无法查询【{mc_uuid}】对应的正版id: 👇\n{e}'))
@@ -32,7 +32,7 @@ async def del_whitelist_from_server(mc_uuid: str | UUID) -> Literal[True] | Mess
             result = await execute_command(f'whitelist remove {mc_id}')
         except TimeoutError:
             return MessageChain.create(Plain(f'连接服务器超时'))
-        except Exception as e:
+        except ValueError as e:
             logger.exception(e)
             return MessageChain.create(Plain(f'无法连接至服务器：{e}'))
         if result.startswith('Removed '):
@@ -74,7 +74,7 @@ async def del_whitelist_by_qq(qq: int) -> MessageChain:
 async def del_whitelist_by_id(mc_id: str) -> MessageChain:
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
-    except Exception as e:
+    except TimeoutError as e:
         logger.error(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误')
         logger.exception(e)
         return MessageChain.create(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误:  👇\n{e}'))

@@ -7,6 +7,7 @@ mc皮肤查询
 移植自 https://github.com/BlueGlassBlock/Xenon/blob/master/module/mc_skin.py
 """
 
+from asyncio.exceptions import TimeoutError
 from os.path import basename
 
 import orjson
@@ -78,5 +79,5 @@ async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgRes
             uuid = orjson.loads(await resp.text())["id"]
         url = RENDER_ADDR[option.result.asDisplay()].format(uuid=uuid)
         await app.sendMessage(group, MessageChain.create(Image(url=url)))
-    except Exception as e:
+    except TimeoutError as e:
         await app.sendMessage(group, MessageChain.create(f"无法获取皮肤: {e}"))
