@@ -203,7 +203,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
         ),
     )
 
-    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain):
+    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> bool | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
             saying = waiter_message.asDisplay()
             if saying == '.force':
@@ -214,7 +214,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
                 await app.sendMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
 
     try:
-        answer: MessageChain = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
+        answer = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
         return
@@ -252,7 +252,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
         group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
     )
 
-    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain):
+    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> bool | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
             saying = waiter_message.asDisplay()
             if saying == '.force':
@@ -263,7 +263,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
                 await app.sendMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
 
     try:
-        answer: MessageChain = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=600)
+        answer = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=600)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
         return

@@ -124,7 +124,7 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
         )
     )
 
-    async def waiter(waiter_friend: Friend, waiter_message: MessageChain):
+    async def waiter(waiter_friend: Friend, waiter_message: MessageChain) -> tuple[bool, int] | None:
         if waiter_friend.id in basic_cfg.admin.admins:
             saying = waiter_message.asDisplay()
             if saying == '同意':
@@ -189,7 +189,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
         ),
     )
 
-    async def waiter(waiter_friend: Friend, waiter_message: MessageChain):
+    async def waiter(waiter_friend: Friend, waiter_message: MessageChain) -> tuple[bool, int] | None:
         if waiter_friend.id in basic_cfg.admin.admins:
             saying = waiter_message.asDisplay()
             if saying == '同意':

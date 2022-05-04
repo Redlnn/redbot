@@ -402,7 +402,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
         quote=source,
     )
 
-    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain, waiter_source: Source):
+    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain, waiter_source: Source) -> bool | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
             saying = waiter_message.asDisplay()
             if saying == '.confirm':
@@ -415,7 +415,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
                 )
 
     try:
-        answer: MessageChain = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
+        answer = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')), quote=source)
         return

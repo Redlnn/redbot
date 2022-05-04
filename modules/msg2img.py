@@ -44,7 +44,7 @@ Module(
 async def main(app: Ariadne, group: Group, member: Member, source: Source):
     await app.sendMessage(group, MessageChain.create(Plain('请发送要转换的内容')), quote=source)
 
-    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain):
+    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> MessageChain | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
             return waiter_message.include(Plain, At, Image)
 
