@@ -95,12 +95,8 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
         msg_str = await b23_url_extract(msg_str)
         if not msg_str:
             return
-    elif 'bilibili.com/video/' not in msg_str:
-        return
     video_id = p.search(msg_str)
-    if not video_id:
-        return
-    if video_id is None:
+    if not video_id or video_id is None:
         return
     video_id = video_id.group()
 
