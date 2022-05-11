@@ -7,26 +7,29 @@
 </div>
 
 <p align="center">
-<img src="https://img.shields.io/badge/works-for%20me-yellow" alt="works for me" />
-<img src="https://img.shields.io/badge/works-on%20my%20machine-green" alt="works on my machine" />
-<a href="https://github.com/Redlnn/redbot/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Redlnn/redbot" alt="Licence" /></a>
-<a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black" /></a>
-<a href="https://pycqa.github.io/isort/"><img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336" alt="Imports: isort" /></a>
+  <img src="https://img.shields.io/badge/works-for%20me-yellow" alt="works for me" />
+  <img src="https://img.shields.io/badge/works-on%20my%20machine-green" alt="works on my machine" />
+  <a href="https://github.com/Redlnn/redbot/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/Redlnn/redbot" alt="Licence" />
+  </a>
+  <a href="https://github.com/psf/black">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black" />
+  </a>
+  <a href="https://pycqa.github.io/isort/">
+    <img src="https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336" alt="Imports: isort" />
+  </a>
 </p>
 
 <p align="center">
-<img src="https://count.getloli.com/get/@Redlnn-redbot?theme=rule34" alt="访问次数" />
+  <img src="https://count.getloli.com/get/@Redlnn-redbot?theme=rule34" alt="访问次数" />
 </p>
 
-<div align="center">
+<p align="center">⇒ <a href="./FILES.md"><b>文件目录结构</b></a> ⇐</p>
 
-**本 Bot 的设计只考虑本人需求，因此配置文件格式及部分模块可能会大改，推荐 [`A60(djkcyl)`](https://github.com/djkcyl/) 的 [`ABot`](https://github.com/djkcyl/ABot-Graia/) 和 [`SAGIRI-kawaii`](https://github.com/SAGIRI-kawaii/) 的 [`sagiri-bot`](https://github.com/SAGIRI-kawaii/sagiri-bot)**
+## 注意事项
 
-**本仓库偶尔会 Force Push，不建议 Fork**
-
-⇒ **[文件目录结构](./FILES.md)** ⇐
-
-</div>
+1. **本仓库经常 Force Push，不建议 Fork 和 Clone**
+2. 本 Bot 的设计只考虑本人需求随时可能大改，推荐使用 [`ABot`](https://github.com/djkcyl/ABot-Graia/) 和 [`sagiri-bot`](https://github.com/SAGIRI-kawaii/sagiri-bot)
 
 ## 功能列表
 
@@ -36,17 +39,8 @@
 - Bot 控制台命令
 - 撤回 Bot 自己最近发的消息
 - 基本完善的基于 Sqlalchemy 框架的数据库读写
-- 自带 [FastAPI](https://fastapi.tiangolo.com/zh/) 支持，可通过模块启动 FastAPI 服务
-  > 注意：`Ariadne` 的 `console` 与 `uvicorn` 可能存在兼容性问题
-  >
-  > 为防止渣代码被喷，具体功能不做实现，仅提供启动 FastAPI 的示例，如需 web 管理之类的功能请自行实现  
-  > 启动 FastAPI 的示例位于 `removed_modules/fastapi/`，如有需要请自行修改  
-  > 因该示例默认并未启用，因此 `uvicorn` 与 `fastapi` 包为可选安装，如有需要请使用以下命令自行安装
-  >
-  > ```bash
-  > poetry install -E fastapi
-  > ```
-  >
+- 不使用 Ariadne 反向 WS 适配器的 FastAPI + Uvicorn 服务器
+  - API 后端（正在写ing...）
 - 触发限制：全局黑名单控制、成员权限控制、频率限制
 - 用你的头像生成点啥
 - 吃啥？
@@ -99,4 +93,4 @@
 
 - [`ABot`](https://github.com/djkcyl/ABot-Graia/): 一个使用 [Graia-Ariadne](https://github.com/GraiaProject/Ariadne) 搭建的 QQ 功能性~~究极缝合怪~~机器人
 - [`Xenon`](https://github.com/McZoo/Xenon): 一个优雅，用户友好的，基于 [mirai](https://github.com/mamoe/mirai) 与 [Graia Project](https://github.com/GraiaProject/) 的 QQ 机器人应用
-- [`SereinFish Bot`](https://github.com/coide-SaltedFish/SereinFish)：一个基于 [YuQ](https://github.com/YuQWorks) 的 QQ 机器人
+- [`SereinFish Bot`](https://github.com/coide-SaltedFish/SereinFish)
