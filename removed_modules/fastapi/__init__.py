@@ -5,12 +5,10 @@
 本模块为示例，仅供参考
 """
 
-import asyncio
-from asyncio import Task
+from contextvars import ContextVar
 
-from fastapi import FastAPI, WebSocket
+from fastapi import WebSocket
 from graia.ariadne import get_running
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched, ApplicationShutdowned
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -19,46 +17,69 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 from starlette.websockets import WebSocketDisconnect
-from uvicorn.config import Config
 from websockets.exceptions import ConnectionClosedOK
 
-from fastapi_core.event import NewWebsocketClient
-from fastapi_core.manager import WsConnectionManager
-from fastapi_core.server import NoSignalServer as Server
-from util.logger_rewrite import rewrite_logging_logger
+from util.fastapi_core import FastApiCore
+from util.fastapi_core.event import NewWebsocketClient
+from util.fastapi_core.manager import WsConnectionManager
 
-rewrite_logging_logger('uvicorn.error')
-rewrite_logging_logger('uvicorn.access')
-rewrite_logging_logger('uvicorn.asgi')
-
-task: Task
-server: Server
 channel = Channel.current()
-bcc = get_running(Broadcast)
-fastapi_app = FastAPI()
 manager = WsConnectionManager()
+fastapicore = FastApiCore(listen_host='0.0.0.0')
+broadcast: ContextVar[Broadcast] = ContextVar('bcc')
+
+
+async def root():
+    return {'message': 'Hello World'}
+
+
+async def websocket(client: WebSocket):
+    await manager.connect(client)
+    bcc = broadcast.get(None)
+    if bcc is None:
+        return
+    bcc.postEvent(NewWebsocketClient(client))
+    while True:
+        try:
+            data = await client.receive_text()
+            logger.info(f'websockets recived: {data}')
+        except (WebSocketDisconnect, ConnectionClosedOK):
+            manager.disconnect(client)
+        except RuntimeError:
+            break
+
+
+from .api.overview import (
+    get_function_called,
+    get_info_card,
+    get_message_sent_freq,
+    get_siginin_count,
+    get_sys_info,
+)
+from .oauth2 import login_for_access_token
+from .oauth2.model import Token
+from .response_model import GeneralResponse
+
+fastapicore.asgi.add_api_route('/', endpoint=root, methods=['GET'])  # type: ignore
+fastapicore.asgi.add_api_route('/login', endpoint=login_for_access_token, response_model=Token, methods=['POST'])  # type: ignore
+fastapicore.asgi.add_api_route('/api/overview/get_info_card', endpoint=get_info_card, response_model=GeneralResponse, methods=['GET'])  # type: ignore
+fastapicore.asgi.add_api_route('/api/overview/get_sys_info', endpoint=get_sys_info, response_model=GeneralResponse, methods=['GET'])  # type: ignore
+fastapicore.asgi.add_api_route('/api/overview/get_function_called', endpoint=get_function_called, response_model=GeneralResponse, methods=['GET'])  # type: ignore
+fastapicore.asgi.add_api_route('/api/overview/get_message_sent_freq', endpoint=get_message_sent_freq, response_model=GeneralResponse, methods=['GET'])  # type: ignore
+fastapicore.asgi.add_api_route('/api/overview/get_siginin_count', endpoint=get_siginin_count, response_model=GeneralResponse, methods=['GET'])  # type: ignore
+
+fastapicore.asgi.add_api_websocket_route('/ws', endpoint=websocket)  # type: ignore
 
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
 async def on_launch():
-    global task, server
-    server = Server(Config(fastapi_app, host='localhost', port=8000, log_config=None, reload=False))
-    task = asyncio.create_task(server.serve())
+    broadcast.set(get_running(Broadcast))
+    await fastapicore.start()
 
 
 @channel.use(ListenerSchema(listening_events=[ApplicationShutdowned]))
 async def on_shutdown():
-    global task, server
-    server.should_exit = True
-    times = 0
-    while not task.done():
-        if times > 10:
-            server.force_exit = True
-        elif times > 20:
-            task.cancel()
-            break
-        await asyncio.sleep(0.1)
-        times += 1
+    await fastapicore.stop()
 
 
 @channel.use(ListenerSchema(listening_events=[NewWebsocketClient]))
@@ -69,22 +90,3 @@ async def new_websocket_client(client: WebSocket):
 @channel.use(ListenerSchema(listening_events=[GroupMessage]))
 async def on_msg(message: MessageChain):
     await manager.broadcast(message.asDisplay())
-
-
-@fastapi_app.get('/')
-async def root():
-    return {'message': 'Hello World'}
-
-
-@fastapi_app.websocket('/ws')
-async def websocket(client: WebSocket):
-    await manager.connect(client)
-    bcc.postEvent(NewWebsocketClient(client))
-    while True:
-        try:
-            data = await client.receive_text()
-            logger.info(f'websockets recived: {data}')
-        except (WebSocketDisconnect, ConnectionClosedOK):
-            manager.disconnect(client)
-        except RuntimeError:
-            break
