@@ -53,7 +53,7 @@ Module(
     )
 )
 async def main(app: Ariadne, group: Group, keyword: RegexResult):
-    key_word: str = keyword.result.asDisplay().strip()
+    key_word: str = keyword.result.asDisplay().strip()  # type: ignore
     search_parm: str = quote(key_word, encoding='utf-8')
 
     bili_search_url = 'https://searchwiki.biligame.com/mc/index.php?search=' + search_parm

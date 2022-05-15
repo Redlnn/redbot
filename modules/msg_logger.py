@@ -96,32 +96,32 @@ async def get_msg_count(
     arg_target: ArgResult[MessageChain],
     arg_day: ArgResult[MessageChain],
 ):
-    if not arg_day.result.asDisplay().isdigit():
+    if not arg_day.result.asDisplay().isdigit():  # type: ignore
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
         return
     today_timestamp = int(time.mktime(datetime.date.today().timetuple()))
-    target_timestamp = today_timestamp - (86400 * (int(arg_day.result.asDisplay()) - 1))
+    target_timestamp = today_timestamp - (86400 * (int(arg_day.result.asDisplay()) - 1))  # type: ignore
     target: int | None = None
-    if arg_type.result.asDisplay() == 'member':
+    if arg_type.result.asDisplay() == 'member':  # type: ignore
         if arg_target.matched:
-            if arg_target.result.onlyContains(At):
-                target = arg_target.result.getFirst(At).target
+            if arg_target.result.onlyContains(At):  # type: ignore
+                target = arg_target.result.getFirst(At).target  # type: ignore
             else:
-                if arg_target.result.asDisplay().isdigit():
-                    target = int(arg_target.result.asDisplay())
+                if arg_target.result.asDisplay().isdigit():  # type: ignore
+                    target = int(arg_target.result.asDisplay())  # type: ignore
         else:
             target = member.id
-    elif arg_type.result.asDisplay() == 'group':
+    elif arg_type.result.asDisplay() == 'group':  # type: ignore
         if arg_target.matched:
-            if arg_target.result.asDisplay().isdigit():
-                target = int(arg_target.result.asDisplay())
+            if arg_target.result.asDisplay().isdigit():  # type: ignore
+                target = int(arg_target.result.asDisplay())  # type: ignore
         else:
             target = group.id
     else:
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，目标类型不存在')))
         return
 
-    if arg_type.result.asDisplay() == 'member':
+    if arg_type.result.asDisplay() == 'member':  # type: ignore
         if not target:
             await app.sendMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
             return
@@ -139,7 +139,7 @@ async def get_msg_count(
             group,
             MessageChain.create(
                 At(target),
-                Plain(f' 最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
+                Plain(f' 最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),  # type: ignore
             ),
         )
     else:
@@ -154,14 +154,14 @@ async def get_msg_count(
             await app.sendMessage(
                 group,
                 MessageChain.create(
-                    Plain(f'本群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
+                    Plain(f'本群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),  # type: ignore
                 ),
             )
         else:
             await app.sendMessage(
                 group,
                 MessageChain.create(
-                    Plain(f'该群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),
+                    Plain(f'该群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),  # type: ignore
                 ),
             )
 
@@ -184,7 +184,7 @@ async def get_msg_count(
 )
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexResult, at: ElementResult):
     if qq.matched and not at.matched:
-        target = int(qq.result.asDisplay())
+        target = int(qq.result.asDisplay())  # type: ignore
     elif at.matched and not qq.matched:
         target = message.getFirst(At).target
     else:

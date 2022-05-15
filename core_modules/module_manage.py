@@ -101,7 +101,7 @@ async def menu(app: Ariadne, group: Group):
     )
 )
 async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = int(module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1  # type: ignore
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
@@ -130,7 +130,7 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
     )
 )
 async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = int(module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1  # type: ignore
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
@@ -158,7 +158,7 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
     )
 )
 async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = int(module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1  # type: ignore
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
         return
@@ -222,7 +222,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
         await app.sendMessage(group, MessageChain.create(Plain('已取消操作')))
         return
 
-    target_id = int(module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1  # type: ignore
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
@@ -270,7 +270,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     if not answer:
         await app.sendMessage(group, MessageChain.create(Plain('已取消操作')))
         return
-    match_result = module_id.result.asDisplay()
+    match_result = module_id.result.asDisplay()  # type: ignore
     target_filename = match_result if match_result[-3:] != '.py' else match_result[:-3]
     modules_dir_list = os.listdir(Path(Path.cwd(), 'modules'))
     if target_filename + '.py' in modules_dir_list or target_filename in modules_dir_list:
@@ -296,7 +296,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     )
 )
 async def unload_module(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = int(module_id.result.asDisplay()) - 1
+    target_id = int(module_id.result.asDisplay()) - 1  # type: ignore
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]

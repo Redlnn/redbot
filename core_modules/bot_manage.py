@@ -322,13 +322,13 @@ async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexResult):
     """
     if friend.id not in basic_cfg.admin.admins:
         return
-    perm_cfg.group_whitelist.append(int(group.result.asDisplay()))
+    perm_cfg.group_whitelist.append(int(group.result.asDisplay()))  # type: ignore
     perm_cfg.save()
 
     await app.sendFriendMessage(
         friend,
         MessageChain.create(
-            Plain(f'已添加群 {group.result.asDisplay()} 至白名单'),
+            Plain(f'已添加群 {group.result.asDisplay()} 至白名单'),  # type: ignore
         ),
     )
 
@@ -348,12 +348,12 @@ async def add_qq_blacklist(app: Ariadne, friend: Friend, qq: RegexResult):
     """
     if friend.id not in basic_cfg.admin.admins:
         return
-    perm_cfg.user_blacklist.append(int(qq.result.asDisplay()))
+    perm_cfg.user_blacklist.append(int(qq.result.asDisplay()))  # type: ignore
     perm_cfg.save()
 
     await app.sendFriendMessage(
         friend,
         MessageChain.create(
-            Plain(f'已添加用户 {qq.result.asDisplay()} 至黑名单'),
+            Plain(f'已添加用户 {qq.result.asDisplay()} 至黑名单'),  # type: ignore
         ),
     )

@@ -143,7 +143,7 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
     )
 )
 async def clear(app: Ariadne, group: Group, target: RegexResult):
-    msg: MessageChain = target.result
+    msg: MessageChain = target.result  # type: ignore
     if msg.onlyContains(At):
         result = await clear_signin(str(msg.getFirst(At).target))
     elif msg.onlyContains(Plain) and msg.asDisplay().strip().isdigit():

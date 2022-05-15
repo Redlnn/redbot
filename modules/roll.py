@@ -49,7 +49,7 @@ Module(
     )
 )
 async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
-    t = target.result.asDisplay().strip()
+    t = target.result.asDisplay().strip()  # type: ignore
     if len(t) != 0:
         chain = MessageChain.create(Plain(f'{t}的概率为：{randint(0, 100)}'))
     else:

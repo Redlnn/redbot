@@ -75,9 +75,9 @@ RENDER_ADDR = {
 async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult[MessageChain]):
     session = get_session()
     try:
-        async with session.get(UUID_ADDRESS_STRING.format(name=name.result.asDisplay())) as resp:
+        async with session.get(UUID_ADDRESS_STRING.format(name=name.result.asDisplay())) as resp:  # type: ignore
             uuid = orjson.loads(await resp.text())["id"]
-        url = RENDER_ADDR[option.result.asDisplay()].format(uuid=uuid)
+        url = RENDER_ADDR[option.result.asDisplay()].format(uuid=uuid)  # type: ignore
         await app.sendMessage(group, MessageChain.create(Image(url=url)))
     except TimeoutError as e:
         await app.sendMessage(group, MessageChain.create(f"无法获取皮肤: {e}"))
