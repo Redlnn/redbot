@@ -27,11 +27,11 @@ if basic_cfg.console:
 
     @channel.use(ConsoleSchema([Twilight.from_command('send {type} {id} {content}')]))
     async def group_chat(app: Ariadne, type: RegexResult, id: RegexResult, content: RegexResult):
-        match type.result.asDisplay():
+        match type.result.asDisplay():  # type: ignore
             case 'group':
-                await app.sendGroupMessage(int(id.result.asDisplay()), content.result)
+                await app.sendGroupMessage(int(id.result.asDisplay()), content.result)  # type: ignore
             case 'friend':
-                await app.sendFriendMessage(int(id.result.asDisplay()), content.result)
+                await app.sendFriendMessage(int(id.result.asDisplay()), content.result)  # type: ignore
             case _:
                 logger.warning('参数错误')
 
@@ -46,7 +46,7 @@ if basic_cfg.console:
 
     @channel.use(ConsoleSchema([Twilight.from_command('list {type}')]))
     async def list(app: Ariadne, type: RegexResult):
-        match type.result.asDisplay():
+        match type.result.asDisplay():  # type: ignore
             case 'group':
                 for group in await app.getGroupList():
                     logger.opt(raw=True).info(f'{group.name}({group.id}) - {get_perm_name(group.accountPerm)}\n')

@@ -44,7 +44,7 @@ Module(
     )
 )
 async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: ElementResult):
-    if at.result.target != basic_cfg.miraiApiHttp.account:
+    if at.result.target != basic_cfg.miraiApiHttp.account:  # type: ignore
         return
     msg = message.include(Plain).asDisplay().strip()
     re1_match = re.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)

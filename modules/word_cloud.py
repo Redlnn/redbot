@@ -98,11 +98,11 @@ async def command(
 ):
     global Generating_list
     try:
-        day = int(day_length.result.asDisplay())
+        day = int(day_length.result.asDisplay())  # type: ignore
     except ValueError:
         await app.sendMessage(group, MessageChain.create(Plain(f'请输入正确的天数！')), quote=True)
         return
-    match_result: MessageChain = wc_target.result  # noqa: E275
+    match_result: MessageChain = wc_target.result  # type: ignore # noqa: E275
 
     if len(Generating_list) > 2:
         await app.sendMessage(group, MessageChain.create(Plain('词云生成队列已满，请稍后再试')))
@@ -157,9 +157,9 @@ async def command(
 )
 async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, target_time: RegexResult):
     today = time.localtime(time.time())
-    match target.result.asDisplay():
+    match target.result.asDisplay():  # type: ignore
         case '我的':
-            match target_time.result.asDisplay():
+            match target_time.result.asDisplay():  # type: ignore
                 case '本周总结':
                     result = await gen_wordcloud_member(app, group, member.id, today.tm_wday + 1, True)
                     if result is None:
@@ -179,7 +179,7 @@ async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, 
                     else:
                         await app.sendMessage(group, MessageChain.create(Plain(f'你今年的聊天词云 👇\n'), result))
         case '群':
-            match target_time.result.asDisplay():
+            match target_time.result.asDisplay():  # type: ignore
                 case '本周总结':
                     result = await gen_wordcloud_group(app, group, today.tm_wday + 1)
                     if result is None:

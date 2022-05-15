@@ -67,7 +67,7 @@ ping_cfg = McServerPingConfig()
 )
 async def main(app: Ariadne, group: Group, ping_target: RegexResult):
     if ping_target.matched:
-        server_address = ping_target.result.asDisplay().strip()
+        server_address = ping_target.result.asDisplay().strip()  # type: ignore
     else:
         if group.id not in ping_cfg.servers:
             await app.sendMessage(group, MessageChain.create(Plain('该群组没有设置默认服务器地址')))

@@ -80,6 +80,7 @@ async def main(
     san: ArgResult[MessageChain],
     num: ArgResult[MessageChain],
 ):
+    if int(san.result.asDisplay()) >= 4 and not (  # type: ignore
         member.permission in (MemberPerm.Administrator, MemberPerm.Owner) or member.id in basic_cfg.admin.admins
     ):
         await app.sendMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
@@ -88,7 +89,7 @@ async def main(
     if tag.matched:
         target_tag = tag.result.getFirst(Plain).text  # type: ignore
         async with session.get(
-            f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
+            f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
         ) as resp:
             if resp.status in (200, 404):
                 res: dict = await resp.json()
@@ -96,7 +97,7 @@ async def main(
                 res: dict = {'code': 500}
     else:
         async with session.get(
-            f'{setu_config.apiUrl}/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'
+            f'{setu_config.apiUrl}/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
         ) as resp:
             if resp.status == 200:
                 res: dict = await resp.json()
