@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-本模块为示例，仅供参考
-"""
-
 from contextvars import ContextVar
 
 from fastapi import WebSocket
@@ -22,6 +18,7 @@ from websockets.exceptions import ConnectionClosedOK
 from util.fastapi_core import FastApiCore
 from util.fastapi_core.event import NewWebsocketClient
 from util.fastapi_core.manager import WsConnectionManager
+from util.fastapi_core.router import Router
 
 channel = Channel.current()
 manager = WsConnectionManager()
@@ -49,26 +46,26 @@ async def websocket(client: WebSocket):
             break
 
 
-from .api.overview import (
-    get_function_called,
-    get_info_card,
-    get_message_sent_freq,
-    get_siginin_count,
-    get_sys_info,
-)
 from .oauth2 import login_for_access_token
 from .oauth2.model import Token
-from .response_model import GeneralResponse
 
 fastapicore.asgi.add_api_route('/', endpoint=root, methods=['GET'])  # type: ignore
 fastapicore.asgi.add_api_route('/login', endpoint=login_for_access_token, response_model=Token, methods=['POST'])  # type: ignore
-fastapicore.asgi.add_api_route('/api/overview/get_info_card', endpoint=get_info_card, response_model=GeneralResponse, methods=['GET'])  # type: ignore
-fastapicore.asgi.add_api_route('/api/overview/get_sys_info', endpoint=get_sys_info, response_model=GeneralResponse, methods=['GET'])  # type: ignore
-fastapicore.asgi.add_api_route('/api/overview/get_function_called', endpoint=get_function_called, response_model=GeneralResponse, methods=['GET'])  # type: ignore
-fastapicore.asgi.add_api_route('/api/overview/get_message_sent_freq', endpoint=get_message_sent_freq, response_model=GeneralResponse, methods=['GET'])  # type: ignore
-fastapicore.asgi.add_api_route('/api/overview/get_siginin_count', endpoint=get_siginin_count, response_model=GeneralResponse, methods=['GET'])  # type: ignore
 
-fastapicore.asgi.add_api_websocket_route('/ws', endpoint=websocket)  # type: ignore
+fastapicore.asgi.add_api_websocket_route('/ws', endpoint=websocket)
+
+import importlib
+import os
+
+for i in os.listdir(os.path.join('api')):
+    if i.endswith('.py'):
+        importlib.import_module(f'api.{i[:-3]}')
+    else:
+        importlib.import_module(f'api.{i}')
+
+
+for i in Router.routes:
+    fastapicore.asgi.add_api_route(i.path, endpoint=i.endpoint, response_model=i.response_model, methods=i.methods)
 
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))

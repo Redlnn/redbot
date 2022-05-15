@@ -12,11 +12,14 @@ from graia.ariadne import get_running
 from graia.ariadne.app import Ariadne
 from graia.saya import Saya
 
-from ...response_model import GeneralResponse
+from util.fastapi_core.response_model import GeneralResponse
+from util.fastapi_core.router import Router
 
 saya = Saya.current()
 pid = os.getpid()
 uname = platform.uname()
+
+# ----------------------------------------
 
 
 def get_running_time():
@@ -31,9 +34,7 @@ def get_running_time():
     return {'duration': int(running_time), 'unit': '秒'}
 
 
-# ----------------------------------------
-
-
+@Router.get('/api/overview/get_info_card', response_model=GeneralResponse)
 async def get_info_card():
     ariadne = get_running(Ariadne)
     joined_group_count = await ariadne.getGroupList()
@@ -48,11 +49,15 @@ async def get_info_card():
     )
 
 
+# ----------------------------------------
+
+
 cpu_logical_count = psutil.cpu_count(logical=True)
 cpu_physical_count = psutil.cpu_count(logical=False)
 memory_total: int = psutil.virtual_memory().total  # Byte
 
 
+@Router.get('/api/overview/get_sys_info', response_model=GeneralResponse)
 async def get_sys_info():
     if platform.uname().system.lower() == "windows":
         disk_usage = psutil.disk_usage(__file__[:2]) if __file__[2] == ":" else psutil.disk_usage("C:")
@@ -72,6 +77,10 @@ async def get_sys_info():
     )
 
 
+# ----------------------------------------
+
+
+@Router.get('/api/overview/get_function_called', response_model=GeneralResponse)
 async def get_function_called():
     # 获取所有模块的调用次数
     # 返回调用次数最多的前5个模块
@@ -88,6 +97,10 @@ async def get_function_called():
     )
 
 
+# ----------------------------------------
+
+
+@Router.get('/api/overview/get_message_sent_freq', response_model=GeneralResponse)
 async def get_message_sent_freq():
     """获取消息发送频率
     即每三小时发送的消息数量
@@ -122,6 +135,9 @@ async def get_message_sent_freq():
     )
 
 
+# ----------------------------------------
+
+
 weekday_map = {
     1: '周一',
     2: '周二',
@@ -133,7 +149,8 @@ weekday_map = {
 }
 
 
-def get_siginin_count():
+@Router.get('/api/overview/get_siginin_count', response_model=GeneralResponse)
+async def get_siginin_count():
     today = datetime.datetime.now()
     weekday = today.isoweekday()
 
