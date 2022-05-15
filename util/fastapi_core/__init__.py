@@ -5,7 +5,6 @@ import asyncio
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from graia.broadcast import Broadcast
 from uvicorn.config import Config
 from uvicorn.server import Server
 

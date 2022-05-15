@@ -32,9 +32,9 @@ async def query_whitelist_by_id(mc_id: str) -> tuple[dict[str, int | str], Playe
     real_mc_id, mc_uuid = await get_uuid(mc_id)
     if not isinstance(real_mc_id, str):
         if real_mc_id.status != 200:
-            return {'status': 'error', 'code': real_mc_id.status, 'msg': await real_mc_id.text()}, None
+            return {'code': real_mc_id.status, 'msg': await real_mc_id.text()}, None
 
-    return {'status': 'success', 'code': 200, 'msg': ''}, await query_whitelist_by_uuid(mc_uuid)
+    return {'code': 200, 'msg': ''}, await query_whitelist_by_uuid(mc_uuid)
 
 
 async def query_uuid_by_qq(
