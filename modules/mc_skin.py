@@ -72,7 +72,7 @@ RENDER_ADDR = {
         decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(module_name)],
     )
 )
-async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult):
+async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult[MessageChain]):
     session = get_session()
     try:
         async with session.get(UUID_ADDRESS_STRING.format(name=name.result.asDisplay())) as resp:

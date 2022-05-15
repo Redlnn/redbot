@@ -110,10 +110,10 @@ def ding(qq: int | str) -> bytes:
     times = len(pos_and_sizes)
     for i in range(0, 121):  # 0-120
         if i < times:
-            n_avatar = avatar.resize(pos_and_sizes[i][1], Img.LANCZOS)
+            n_avatar = avatar.resize(pos_and_sizes[i][1], Img.LANCZOS)  # type: ignore
             bg = Img.open(Path(Path(__file__).parent, 'res', 'ding', f'{i + 1}.png'))
             canvas = Img.new('RGBA', bg.size, '#ffffff')
-            canvas.paste(n_avatar, pos_and_sizes[i][0])
+            canvas.paste(n_avatar, pos_and_sizes[i][0])  # type: ignore
             canvas.paste(bg, mask=bg.split()[3])
             frames.append(canvas)
         else:

@@ -21,7 +21,7 @@ async def get_member_talk_count(group: str, qq: str, timestamp: int = 0) -> int:
         .select_from(MsgLog)
         .where(and_(col(MsgLog.group_id) == group, col(MsgLog.member_id) == qq, col(MsgLog.timestamp) >= timestamp))
     )
-    return result[0]
+    return result[0]  # type: ignore
 
 
 async def get_group_talk_count(group: str, timestamp: int = 0) -> int:
@@ -30,7 +30,7 @@ async def get_group_talk_count(group: str, timestamp: int = 0) -> int:
         .select_from(MsgLog)
         .where(and_(col(MsgLog.group_id) == group, col(MsgLog.timestamp) >= timestamp))
     )
-    return result[0]
+    return result[0]  # type: ignore
 
 
 async def get_member_last_message(group: str, qq: str) -> tuple[str | None, int | None]:
@@ -45,7 +45,7 @@ async def get_member_last_message(group: str, qq: str) -> tuple[str | None, int 
             and_(col(MsgLog.group_id) == group, col(MsgLog.member_id) == qq, col(MsgLog.timestamp) == max_timestamp)
         )
     )
-    record: MsgLog = result[0]
+    record: MsgLog = result[0]  # type: ignore
     return record.msg_chain, record.msg_id
 
 
@@ -57,7 +57,7 @@ async def get_group_last_message(group: str) -> tuple[str | None, str | None, in
     result = await Database.select_first(
         select(MsgLog).where(and_(col(MsgLog.group_id) == group, col(MsgLog.timestamp) == max_timestamp))
     )
-    record: MsgLog = result[0]
+    record: MsgLog = result[0]  # type: ignore
     return record.member_id, record.msg_chain, record.timestamp
 
 
@@ -65,24 +65,24 @@ async def get_member_last_message_id(group: str, qq: str) -> int | None:
     result = await Database.select_first(
         select(func.max(MsgLog.msg_id)).where(and_(col(MsgLog.group_id) == group, col(MsgLog.member_id) == qq))
     )
-    return result[0]
+    return result[0]  # type: ignore
 
 
 async def get_group_last_message_id(group: str) -> int | None:
     result = await Database.select_first(select(func.max(MsgLog.msg_id)).where(col(MsgLog.group_id) == group))
-    return result[0]
+    return result[0]  # type: ignore
 
 
 async def get_member_last_time(group: str, qq: str) -> int | None:
     result = await Database.select_first(
         select(func.max(MsgLog.timestamp)).where(and_(col(MsgLog.group_id) == group, col(MsgLog.member_id) == qq))
     )
-    return result[0]
+    return result[0]  # type: ignore
 
 
 async def get_group_last_time(group: str) -> int | None:
     result = await Database.select_first(select(func.max(MsgLog.timestamp)).where(col(MsgLog.group_id) == group))
-    return result[0]
+    return result[0]  # type: ignore
 
 
 async def get_group_msg_by_id(group: str) -> str | None:

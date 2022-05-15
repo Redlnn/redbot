@@ -64,24 +64,22 @@ setu_config = Setu()
                     RegexMatch(r'[.!！]'),
                     'tag' @ WildcardMatch(optional=True),
                     'header' @ FullMatch('涩图'),
-                    ArgumentMatch(
-                        '--san', '-S', default='2', type=str, choices=['2', '4', '6']  # 最高涩气值，可为2|4|6'
-                    ).param(
-                        'san'
-                    ),  # 为了black格式化后好看所以用了param
-                    ArgumentMatch(
-                        '--num', '-N', default='1', type=str, choices=['1', '2', '3', '4', '5']  # 涩图数量
-                    ).param(
-                        'num'
-                    ),  # 为了black格式化后好看所以用了param
+                    'san' @ ArgumentMatch('--san', '-S', default='2', choices=['2', '4', '6']),  # 最高涩气值，可为2|4|6'
+                    'num' @ ArgumentMatch('--num', '-N', default='1', choices=['1', '2', '3', '4', '5']),  # 涩图数量
                 ],
             )
         ],
         decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(module_name)],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san: ArgResult, num: ArgResult):
-    if int(san.result.asDisplay()) >= 4 and not (
+async def main(
+    app: Ariadne,
+    group: Group,
+    member: Member,
+    tag: RegexResult,
+    san: ArgResult[MessageChain],
+    num: ArgResult[MessageChain],
+):
         member.permission in (MemberPerm.Administrator, MemberPerm.Owner) or member.id in basic_cfg.admin.admins
     ):
         await app.sendMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
@@ -154,8 +152,8 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
         msg_id = await app.sendMessage(group, message)
         await asyncio.sleep(40)
         try:
-            await app.recallMessage(msg_id)
-        except UnknownTarget:  # noqa
+            await app.recallMessage(msg_id)  # type: ignore
+        except UnknownTarget:
             pass
     else:
         await app.sendMessage(group, MessageChain.create(Plain('慢一点慢一点，别冲辣！')))

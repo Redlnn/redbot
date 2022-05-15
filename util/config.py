@@ -60,7 +60,7 @@ class RConfig(BaseModel):
 
 class MAHConfig(RConfig):
     account: int
-    host: AnyHttpUrl = 'http://localhost:8080'
+    host: AnyHttpUrl = 'http://localhost:8080'  # type: ignore
     verifyKey: str
 
 

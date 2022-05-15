@@ -93,7 +93,9 @@ config = WordCloudConfig()
         decorators=[GroupPermission.require(), DisableModule.require(module_name), DisableModule.require('msg_loger')],
     )
 )
-async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult):
+async def command(
+    app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult[MessageChain]
+):
     global Generating_list
     try:
         day = int(day_length.result.asDisplay())

@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-from sqlalchemy.types import *
+from sqlalchemy.types import VARCHAR
 from sqlmodel import Column, Field, SQLModel
 
 

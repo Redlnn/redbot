@@ -80,8 +80,8 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
                 [
                     RegexMatch(r'[!！.]msgcount').space(SpacePolicy.FORCE),
                     'arg_type' @ ArgumentMatch("--type", optional=False),
-                    'arg_target' @ ArgumentMatch("--target", optional=True),
-                    'arg_day' @ ArgumentMatch("--day", optional=True, default='7'),
+                    'arg_target' @ ArgumentMatch("--target"),
+                    'arg_day' @ ArgumentMatch("--day", default='7'),
                 ],
             )
         ],
@@ -92,9 +92,9 @@ async def get_msg_count(
     app: Ariadne,
     group: Group,
     member: Member,
-    arg_type: ArgResult,
-    arg_target: ArgResult,
-    arg_day: ArgResult,
+    arg_type: ArgResult[MessageChain],
+    arg_target: ArgResult[MessageChain],
+    arg_day: ArgResult[MessageChain],
 ):
     if not arg_day.result.asDisplay().isdigit():
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))

@@ -34,7 +34,7 @@ from util.control.permission import GroupPermission
 from util.database import Database
 from util.text2img import generate_img
 
-from .config import config
+from .config import config as module_config
 from .model import PlayerInfo
 from .rcon import execute_command
 from .utils import get_mc_id, is_mc_id, is_uuid
@@ -110,7 +110,7 @@ async def init(app: Ariadne):
     global is_init
     group_list = await app.getGroupList()
     groups = [group.id for group in group_list]
-    for group in config.activeGroups:
+    for group in module_config.activeGroups:
         if group not in groups:
             logger.error(f'要启用mc服务器管理的群组 {group} 不在机器人账号已加入的群组中，自动禁用')
             saya.uninstall_channel(channel)
@@ -118,7 +118,7 @@ async def init(app: Ariadne):
     result = await Database.select_all(select(PlayerInfo))
     if len(result) == 0:
         logger.info('初始化mc服务器管理数据库中...')
-        member_list = await app.getMemberList(config.serverGroup)
+        member_list = await app.getMemberList(module_config.serverGroup)
         data = []
         for member in member_list:
             data.append(PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp))
@@ -142,7 +142,7 @@ async def init(app: Ariadne):
 async def main_menu(app: Ariadne, group: Group):
     if not is_init:
         return
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     await app.sendMessage(group, MessageChain.create(Image(data_bytes=menu_img_bytes)))
 
@@ -160,7 +160,7 @@ async def main_menu(app: Ariadne, group: Group):
 async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
     if not is_init:
         return
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     if len(message.asDisplay()[1:]) == 2:
         await app.sendMessage(group, MessageChain.create(Image(data_bytes=wl_menu_img_bytes)))
@@ -181,7 +181,7 @@ async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
 async def add_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
     if not is_init:
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 4:
@@ -221,7 +221,7 @@ async def add_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
 async def del_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
     if not is_init:
         return
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
 
@@ -283,7 +283,7 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
 async def info_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
     if not is_init:
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
 
@@ -383,7 +383,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
 async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: Source, message: MessageChain):
     if not is_init:
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 2:
@@ -402,7 +402,9 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
         quote=source,
     )
 
-    async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain, waiter_source: Source) -> bool | None:
+    async def waiter(
+        waiter_group: Group, waiter_member: Member, waiter_message: MessageChain, waiter_source: Source
+    ) -> bool | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
             saying = waiter_message.asDisplay()
             if saying == '.confirm':
@@ -444,7 +446,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
 async def myid(app: Ariadne, group: Group, member: Member, source: Source, message: MessageChain):
     if not is_init:
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 2 or not msg[1].onlyContains(Plain):
@@ -458,7 +460,7 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
     if mc_id.lower() not in member.name.lower():
         try:
             await app.modifyMemberInfo(member, MemberInfo(name=mc_id))
-        except UnknownTarget:
+        except UnknownTarget as e:
             await app.sendMessage(
                 group, MessageChain.create(Plain(f'请保证你的群名片包含你要申请白名单的ID\n（发生内部错误，请联系管理员：{e}）')), quote=source
             )
@@ -484,7 +486,7 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
     )
 )
 async def get_player_list(app: Ariadne, group: Group):
-    if group.id not in config.activeGroups:
+    if group.id not in module_config.activeGroups:
         return
     try:
         exec_result: str = await execute_command('list')  # noqa
@@ -520,7 +522,7 @@ async def get_player_list(app: Ariadne, group: Group):
     )
 )
 async def run_command_list(app: Ariadne, group: Group, message: MessageChain, source: Source):
-    if group.id not in config.activeGroups:
+    if group.id not in module_config.activeGroups:
         return
     split_msg = message.asDisplay().split(' ', 1)
     if len(split_msg) != 2:
@@ -556,7 +558,7 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain, so
 async def member_join(group: Group, member: Member):
     if not is_init:
         return
-    elif group.id != config.serverGroup:
+    elif group.id != module_config.serverGroup:
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(member.id)))
     if result is None:
@@ -578,7 +580,7 @@ async def member_join(group: Group, member: Member):
 async def member_leave(app: Ariadne, group: Group, member: Member):
     if not is_init:
         return
-    elif group.id != config.serverGroup:
+    elif group.id != module_config.serverGroup:
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(member.id)))
     if result is None:
@@ -600,7 +602,7 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
 async def member_kick(app: Ariadne, group: Group, target: Member):
     if not is_init:
         return
-    elif group.id != config.serverGroup:
+    elif group.id != module_config.serverGroup:
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == target.id))
     if result is None:
@@ -628,7 +630,7 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
 async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Source):
     if not is_init:
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 2:
@@ -739,7 +741,7 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
 async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, source: Source):
     if not is_init:
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 2:
@@ -775,7 +777,7 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, so
 async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source):
     if not is_init:
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
-    elif group.id not in config.activeGroups:
+    elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if not 2 <= len(msg) <= 3:

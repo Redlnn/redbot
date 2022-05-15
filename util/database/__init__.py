@@ -34,7 +34,7 @@ class Database:
         )
         async with cls.engine.begin() as conn:
             await conn.run_sync(SQLModel.metadata.create_all)
-        cls.Session = sessionmaker(cls.engine, class_=AsyncSession, expire_on_commit=False, future=True)
+        cls.Session = sessionmaker(cls.engine, class_=AsyncSession, expire_on_commit=False, future=True)  # type: ignore
 
     @classmethod
     async def exec(cls, sql: Executable) -> Optional[Result]:

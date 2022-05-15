@@ -93,7 +93,7 @@ class PingClient:
 
         return byte
 
-    def _format_desc(self, data: dict) -> str:
+    def _format_desc(self, data: dict) -> str:  # type: ignore
         if 'extra' in data:
             tmp = ''
             for part in data['extra']:
@@ -122,20 +122,20 @@ class PingClient:
 
 
 async def ping(ip: str | None = None, url: str | None = None, port: int | None = None) -> dict:
-    if not ip and not url:
-        raise ValueError('Neither IP nor URL exists')
-    elif ip and url:
+    if ip is not None and url is not None:
         raise ValueError('Both IP and URL exist')
 
-    if ip:
+    if ip is not None:
         host = ip
-    elif url and port:
+    elif url is not None:
         host = url
-    else:  # url and not port
-        host, port = await dns_resolver_srv(url)
-        if not host:
-            host = url
-        port = port if port else 25565
+        if port is None:  # url and not port
+            host, port = await dns_resolver_srv(url)
+            if not host:
+                host = url
+            port = port if port else 25565
+    else:
+        raise ValueError('Neither IP nor URL exists')
 
     client = PingClient(host=host, port=port)
     stats: dict = await client.get_ping()

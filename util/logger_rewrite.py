@@ -22,8 +22,8 @@ class InterceptHandler(logging.Handler):
 
         # Find caller from where originated the logged message
         frame, depth = logging.currentframe(), 2
-        while frame.f_code.co_filename == logging.__file__:
-            frame = frame.f_back
+        while frame.f_code.co_filename == logging.__file__:  # type: ignore
+            frame = frame.f_back  # type: ignore
             depth += 1
 
         logger.opt(depth=depth, exception=record.exc_info).log(level, self.format(record))  # 此处与原链接不同
@@ -53,7 +53,7 @@ def rewrite_ariadne_logger(debug: bool = False, graia_console: bool = False):
         log_level = 'INFO'
     if graia_console:
         logger.add(
-            StdoutProxy(raw=True),
+            StdoutProxy(raw=True),  # type: ignore
             level=log_level,
             format=log_format,
             colorize=True,
