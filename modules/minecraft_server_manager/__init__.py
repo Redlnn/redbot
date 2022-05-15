@@ -3,6 +3,7 @@
 
 import asyncio
 import time
+from contextvars import ContextVar
 from os.path import dirname, split
 
 from graia.ariadne.app import Ariadne
@@ -99,7 +100,7 @@ wl_menu = (
 menu_img_bytes = generate_img([menu])
 wl_menu_img_bytes = generate_img([wl_menu])
 
-is_init = False
+is_init: ContextVar[bool] = ContextVar('is_init', default=False)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -107,7 +108,6 @@ is_init = False
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[DisableModule.require(module_name)]))
 async def init(app: Ariadne):
-    global is_init
     group_list = await app.getGroupList()
     groups = [group.id for group in group_list]
     for group in module_config.activeGroups:
@@ -126,7 +126,7 @@ async def init(app: Ariadne):
             logger.info('mc服务器管理数据库初始化完成')
         else:
             logger.error('mc服务器管理数据库初始化失败')
-    is_init = True
+    is_init.set(True)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ async def init(app: Ariadne):
     )
 )
 async def main_menu(app: Ariadne, group: Group):
-    if not is_init:
+    if not is_init.get():
         return
     elif group.id not in module_config.activeGroups:
         return
@@ -158,7 +158,7 @@ async def main_menu(app: Ariadne, group: Group):
     )
 )
 async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
-    if not is_init:
+    if not is_init.get():
         return
     elif group.id not in module_config.activeGroups:
         return
@@ -179,7 +179,7 @@ async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
     )
 )
 async def add_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
-    if not is_init:
+    if not is_init.get():
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
     elif group.id not in module_config.activeGroups:
         return
@@ -219,7 +219,7 @@ async def add_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
     )
 )
 async def del_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
-    if not is_init:
+    if not is_init.get():
         return
     elif group.id not in module_config.activeGroups:
         return
@@ -281,7 +281,7 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
     )
 )
 async def info_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
-    if not is_init:
+    if not is_init.get():
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
     elif group.id not in module_config.activeGroups:
         return
@@ -381,7 +381,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
     )
 )
 async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: Source, message: MessageChain):
-    if not is_init:
+    if not is_init.get():
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
     elif group.id not in module_config.activeGroups:
         return
@@ -444,7 +444,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
     )
 )
 async def myid(app: Ariadne, group: Group, member: Member, source: Source, message: MessageChain):
-    if not is_init:
+    if not is_init.get():
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
     elif group.id not in module_config.activeGroups:
         return
@@ -556,7 +556,7 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain, so
     )
 )
 async def member_join(group: Group, member: Member):
-    if not is_init:
+    if not is_init.get():
         return
     elif group.id != module_config.serverGroup:
         return
@@ -578,7 +578,7 @@ async def member_join(group: Group, member: Member):
     )
 )
 async def member_leave(app: Ariadne, group: Group, member: Member):
-    if not is_init:
+    if not is_init.get():
         return
     elif group.id != module_config.serverGroup:
         return
@@ -600,7 +600,7 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
     )
 )
 async def member_kick(app: Ariadne, group: Group, target: Member):
-    if not is_init:
+    if not is_init.get():
         return
     elif group.id != module_config.serverGroup:
         return
@@ -628,7 +628,7 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
     )
 )
 async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Source):
-    if not is_init:
+    if not is_init.get():
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
     elif group.id not in module_config.activeGroups:
         return
@@ -739,7 +739,7 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
     )
 )
 async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, source: Source):
-    if not is_init:
+    if not is_init.get():
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
     elif group.id not in module_config.activeGroups:
         return
@@ -775,7 +775,7 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, so
     )
 )
 async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source):
-    if not is_init:
+    if not is_init.get():
         await app.sendMessage(group, MessageChain.create(Plain('数据库初始化中，请稍后...')))
     elif group.id not in module_config.activeGroups:
         return

@@ -8,6 +8,7 @@
 import datetime
 import random
 import time
+from contextvars import ContextVar
 from io import BytesIO
 from os import listdir
 from os.path import basename
@@ -74,7 +75,7 @@ class WordCloudConfig(RConfig):
     fontName: str = 'OPPOSans-B.ttf'
 
 
-Generating_list: list[int | str] = []
+generating_list: ContextVar[list[int | str]] = ContextVar('generating_list', default=[])
 config = WordCloudConfig()
 
 
@@ -96,7 +97,6 @@ config = WordCloudConfig()
 async def command(
     app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult[MessageChain]
 ):
-    global Generating_list
     try:
         day = int(day_length.result.asDisplay())  # type: ignore
     except ValueError:
@@ -104,7 +104,8 @@ async def command(
         return
     match_result: MessageChain = wc_target.result  # type: ignore # noqa: E275
 
-    if len(Generating_list) > 2:
+    process_list = generating_list.get()
+    if len(process_list) > 2:
         await app.sendMessage(group, MessageChain.create(Plain('词云生成队列已满，请稍后再试')))
         return
 
@@ -201,8 +202,8 @@ async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, 
 
 
 async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int, me: bool) -> None | Image:
-    global Generating_list
-    if target in Generating_list:
+    process_list = generating_list.get()
+    if target in process_list:
         await app.sendMessage(
             group, MessageChain.create(At(target) if not me else Plain('你'), Plain('的词云已在生成中，请稍后...'))
         )
@@ -211,11 +212,11 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
     if not rate_limit:
         await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
-    Generating_list.append(target)
+    process_list.append(target)
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - (day - 1) * 86400
     msg_list = await get_member_msg(str(group.id), str(target), target_timestamp)
     if len(msg_list) < 50:
-        Generating_list.remove(target)
+        process_list.remove(target)
         await app.sendMessage(group, MessageChain.create(At(target) if not me else Plain('你'), Plain('的发言较少，无法生成词云')))
         return
     await app.sendMessage(
@@ -226,30 +227,32 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
     )
     words = await get_frequencies(msg_list)
     image_bytes = await gen_wordcloud(words)
-    Generating_list.remove(target)
+    process_list.remove(target)
+    generating_list.set(process_list)
     return Image(data_bytes=image_bytes)
 
 
 async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Image:
-    global Generating_list
-    if group.id in Generating_list:
+    process_list = generating_list.get()
+    if group.id in process_list:
         await app.sendMessage(group, MessageChain.create(Plain('本群词云已在生成中，请稍后...')))
         return
     rate_limit, remaining_time = ManualInterval.require('wordcloud_group', 300, 1)
     if not rate_limit:
         await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
-    Generating_list.append(group.id)
+    process_list.append(group.id)
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - (day - 1) * 86400
     msg_list = await get_group_msg(str(group.id), target_timestamp)
     if len(msg_list) < 50:
         await app.sendMessage(group, MessageChain.create(Plain('本群发言较少，无法生成词云')))
-        Generating_list.remove(group.id)
+        process_list.remove(group.id)
         return
     await app.sendMessage(group, MessageChain.create(Plain(f'本群最近{day}天共 {len(msg_list)} 条记录，正在生成词云，请稍后...')))
     words = await get_frequencies(msg_list)
     image_bytes = await gen_wordcloud(words)
-    Generating_list.remove(group.id)
+    process_list.remove(group.id)
+    generating_list.set(process_list)
     return Image(data_bytes=image_bytes)
 
 
