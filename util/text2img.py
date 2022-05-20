@@ -51,11 +51,11 @@ def _get_time(mode: int = 1) -> str:
     """
     time_now = int(time.time())
     time_local = time.localtime(time_now)
-    if mode == 2:
-        dt = time.strftime('%Y-%m-%d_%H-%M-%S', time_local)
-    else:
-        dt = time.strftime('%Y-%m-%d %H:%M:%S', time_local)
-    return dt
+    return (
+        time.strftime('%Y-%m-%d_%H-%M-%S', time_local)
+        if mode == 2
+        else time.strftime('%Y-%m-%d %H:%M:%S', time_local)
+    )
 
 
 def cut_text(
@@ -122,7 +122,10 @@ def generate_img(
         raise ValueError('所配置的字体文件名不正确，请检查配置文件')
     font_path = str(font_path)
 
-    is_ttc_font = True if config.FontName.endswith('.ttc') or config.FontName.endswith('.otc') else False
+    is_ttc_font = bool(
+        config.FontName.endswith('.ttc') or config.FontName.endswith('.otc')
+    )
+
 
     if is_ttc_font:
         font = ImageFont.truetype(font_path, size=config.FontSize, index=config.TTCIndex)  # 确定正文用的ttf字体

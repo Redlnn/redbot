@@ -63,12 +63,8 @@ async def main(app: Ariadne, group: Group):
     hour = int(running_time % 86400 / 3600)
     minute = int(running_time % 86400 % 3600 / 60)
     second = int(running_time % 86400 % 3600 % 60)
-    running_time = (
-        f'{str(day) + "d " if day else ""}'
-        f'{str(hour) + "h " if hour else ""}'
-        f'{str(minute) + "m " if minute else ""}'
-        f'{second}s'
-    )
+    running_time = f"{f'{day}d ' if day else ''}{f'{hour}h ' if hour else ''}{f'{minute}m ' if minute else ''}{second}s"
+
     msg_send = (
         '-= Red_lnn Bot 状态 =-\n\n'
         f'bot 版本：{commit[:7]}-dev\n'

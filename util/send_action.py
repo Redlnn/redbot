@@ -74,11 +74,11 @@ class Safe(SendMessageAction):
         ...
 
     @overload
-    async def exception(s, i):
+    async def exception(self, i):
         ...
 
-    async def exception(s: Union["Safe", Exc_T], i: Optional[Exc_T] = None):  # type: ignore # noqa
-        if not isinstance(s, Safe):
-            return await Safe._handle(s, True)
+    async def exception(self, i: Optional[Exc_T] = None):  # type: ignore # noqa
+        if not isinstance(self, Safe):
+            return await Safe._handle(self, True)
         if i:
-            return await Safe._handle(i, s.ignore)
+            return await Safe._handle(i, self.ignore)

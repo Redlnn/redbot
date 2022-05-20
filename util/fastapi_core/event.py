@@ -13,6 +13,8 @@ class NewWebsocketClient(Dispatchable):
     class Dispatcher(BaseDispatcher):
         @staticmethod
         async def catch(interface: DispatcherInterface["NewWebsocketClient"]):
-            if isinstance(interface.event, NewWebsocketClient):
-                if interface.annotation is WebSocket:
-                    return interface.event.websocket
+            if (
+                isinstance(interface.event, NewWebsocketClient)
+                and interface.annotation is WebSocket
+            ):
+                return interface.event.websocket

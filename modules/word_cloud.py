@@ -100,7 +100,10 @@ async def command(
     try:
         day = int(day_length.result.asDisplay())  # type: ignore
     except ValueError:
-        await app.sendMessage(group, MessageChain.create(Plain(f'请输入正确的天数！')), quote=True)
+        await app.sendMessage(
+            group, MessageChain.create(Plain('请输入正确的天数！')), quote=True
+        )
+
         return
     match_result: MessageChain = wc_target.result  # type: ignore # noqa: E275
 
@@ -205,8 +208,12 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
     process_list = generating_list.get()
     if target in process_list:
         await app.sendMessage(
-            group, MessageChain.create(At(target) if not me else Plain('你'), Plain('的词云已在生成中，请稍后...'))
+            group,
+            MessageChain.create(
+                Plain('你') if me else At(target), Plain('的词云已在生成中，请稍后...')
+            ),
         )
+
         return
     rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
     if not rate_limit:
@@ -217,14 +224,22 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
     msg_list = await get_member_msg(str(group.id), str(target), target_timestamp)
     if len(msg_list) < 50:
         process_list.remove(target)
-        await app.sendMessage(group, MessageChain.create(At(target) if not me else Plain('你'), Plain('的发言较少，无法生成词云')))
+        await app.sendMessage(
+            group,
+            MessageChain.create(
+                Plain('你') if me else At(target), Plain('的发言较少，无法生成词云')
+            ),
+        )
+
         return
     await app.sendMessage(
         group,
         MessageChain.create(
-            At(target) if not me else Plain('你'), Plain(f'最近{day}天共 {len(msg_list)} 条记录，正在生成词云，请稍后...')
+            Plain('你') if me else At(target),
+            Plain(f'最近{day}天共 {len(msg_list)} 条记录，正在生成词云，请稍后...'),
         ),
     )
+
     words = await get_frequencies(msg_list)
     image_bytes = await gen_wordcloud(words)
     process_list.remove(target)
@@ -257,10 +272,7 @@ async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Im
 
 
 def skip(persistent_string: str):
-    for word in config.blacklistWord:
-        if word in persistent_string:
-            return True
-    return False
+    return any(word in persistent_string for word in config.blacklistWord)
 
 
 @cpu_bound

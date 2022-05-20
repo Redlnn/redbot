@@ -139,10 +139,7 @@ async def b23_url_extract(b23_url: str) -> Literal[False] | str:
     session = get_session()
     async with session.get(f'https://{url.group()}', allow_redirects=True) as resp:
         target = str(resp.url)
-    if 'www.bilibili.com/video/' in target:
-        return target
-    else:
-        return False
+    return target if 'www.bilibili.com/video/' in target else False
 
 
 async def get_video_info(video_id: str) -> dict:  # type: ignore

@@ -89,20 +89,14 @@ async def main(
     if tag.matched:
         target_tag = tag.result.getFirst(Plain).text  # type: ignore
         async with session.get(
-            f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
-        ) as resp:
-            if resp.status in (200, 404):
-                res: dict = await resp.json()
-            else:
-                res: dict = {'code': 500}
+                    f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
+                ) as resp:
+            res: dict = await resp.json() if resp.status in (200, 404) else {'code': 500}
     else:
         async with session.get(
-            f'{setu_config.apiUrl}/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
-        ) as resp:
-            if resp.status == 200:
-                res: dict = await resp.json()
-            else:
-                res = {'code': 500}
+                    f'{setu_config.apiUrl}/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
+                ) as resp:
+            res = await resp.json() if resp.status == 200 else {'code': 500}
     if res.get('code') == 404 and tag.matched:
         await app.sendMessage(group, MessageChain.create(Plain('未找到相应tag的色图')))
     elif res.get('code') == 200:

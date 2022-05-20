@@ -17,8 +17,7 @@ def format_time(timestamp: int) -> str:
     :return: 当前时间，格式1970-01-01 12:00:00
     """
     time_local = time.localtime(timestamp)
-    dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
-    return dt
+    return time.strftime("%Y-%m-%d %H:%M:%S", time_local)
 
 
 async def is_mc_id(mc_id: str) -> bool:
@@ -28,7 +27,7 @@ async def is_mc_id(mc_id: str) -> bool:
     :param mc_id: 正版用户名（id）
     :return: `True`为是，`False`为否
     """
-    return True if 1 <= len(mc_id) <= 16 and re.match(r'^[0-9a-zA-Z_]+$', mc_id) else False
+    return bool(1 <= len(mc_id) <= 16 and re.match(r'^[0-9a-zA-Z_]+$', mc_id))
 
 
 async def is_uuid(mc_uuid: str) -> bool:
@@ -51,12 +50,10 @@ async def get_uuid(mc_id: str) -> tuple[str | ClientResponse, str]:
     """
     session = get_session()
     async with session.get(f'https://api.mojang.com/users/profiles/minecraft/{mc_id}') as resp:
-        if resp.status == 200:
-            resp_json = await resp.json()
-            return resp_json['name'], resp_json['id']
-        # elif resp.status == 204:
-        else:
+        if resp.status != 200:
             return resp, ''
+        resp_json = await resp.json()
+        return resp_json['name'], resp_json['id']
 
 
 async def get_mc_id(mc_uuid: str | UUID) -> str | ClientResponse:
@@ -67,10 +64,7 @@ async def get_mc_id(mc_uuid: str | UUID) -> str | ClientResponse:
     """
     session = get_session()
     async with session.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{mc_uuid}') as resp:
-        if resp.status == 200:
-            resp_json = await resp.json()
-            return resp_json['name']
-        # elif resp.status == 204:
-        # elif resp.status == 400:
-        else:
+        if resp.status != 200:
             return resp
+        resp_json = await resp.json()
+        return resp_json['name']

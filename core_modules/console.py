@@ -21,7 +21,7 @@ if basic_cfg.console:
             l_prompt=[('class:warn', ' Are you sure to stop? '), ('', ' (y/n) ')],
             style=Style([('warn', 'bg:#cccccc fg:#d00000')]),
         )
-        if res.lower() in ('y', 'yes'):
+        if res.lower() in {'y', 'yes'}:
             await app.stop()
             console.stop()
 

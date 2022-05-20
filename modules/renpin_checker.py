@@ -191,18 +191,14 @@ async def read_data(qq: str) -> tuple[bool, int, str]:
     try:
         async with async_open(data_file_path, 'r', encoding='utf-8') as afp:  # 以 追加+读 的方式打开文件
             f_data = await afp.read()
-            if len(f_data) > 0:
-                data: dict = json.loads(f_data)  # 读写
-            else:
-                data = {}
+            data = json.loads(f_data) if len(f_data) > 0 else {}
     except FileNotFoundError:
         data = {}
-    if qq in data:  # 若文件中有指定QQ的数据则读取并返回
+    if qq in data:
         return False, data[qq]['renpin'], data[qq]['qianwen']
-    else:  # 若文件中没有指定QQ的数据，则生成一个随机数并写入到文件中，然后返回生成的随机数
-        renpin = random.randint(0, 100)
-        qianwen = gen_qianwen(renpin)
-        data[qq] = {'renpin': renpin, 'qianwen': qianwen}
-        async with async_open(data_file_path, 'wb') as afp:
-            await afp.write(json.dumps(data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE))
-        return True, renpin, qianwen
+    renpin = random.randint(0, 100)
+    qianwen = gen_qianwen(renpin)
+    data[qq] = {'renpin': renpin, 'qianwen': qianwen}
+    async with async_open(data_file_path, 'wb') as afp:
+        await afp.write(json.dumps(data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE))
+    return True, renpin, qianwen

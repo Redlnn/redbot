@@ -52,14 +52,13 @@ async def get_message(event: NudgeEvent):
     tmp = randrange(0, len(os.listdir(Path(data_path, 'Nudge'))) + len(msg))
     if tmp < len(msg):
         return MessageChain.create(Plain(msg[tmp].replace('{}', event.msg_action[0])))
-    else:
-        if not Path(data_path, 'Nudge').exists():
-            Path(data_path, 'Nudge').mkdir()
-        elif len(os.listdir(Path(data_path, 'Nudge'))) == 0:
-            return MessageChain.create(Plain(choice(msg).replace('{}', event.msg_action[0])))
-        return MessageChain.create(
-            Image(path=Path(data_path, 'Nudge', os.listdir(Path(data_path, 'Nudge'))[tmp - len(msg)]))
-        )
+    if not Path(data_path, 'Nudge').exists():
+        Path(data_path, 'Nudge').mkdir()
+    elif len(os.listdir(Path(data_path, 'Nudge'))) == 0:
+        return MessageChain.create(Plain(choice(msg).replace('{}', event.msg_action[0])))
+    return MessageChain.create(
+        Image(path=Path(data_path, 'Nudge', os.listdir(Path(data_path, 'Nudge'))[tmp - len(msg)]))
+    )
 
 
 @channel.use(ListenerSchema(listening_events=[NudgeEvent], decorators=[DisableModule.require(module_name)]))

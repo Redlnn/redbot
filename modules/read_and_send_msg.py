@@ -52,6 +52,5 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         chain = message_event.messageChain
         await app.sendMessage(group, MessageChain.create(Plain(f'消息ID: {quote_id}\n消息内容：{chain.asPersistentString()}')))
     elif re.match(r'^[!！.]发送消息 .+', message.asDisplay()):
-        msg = re.sub(r'[!！.]发送消息 ', '', message.asDisplay(), count=1)
-        if msg:
+        if msg := re.sub(r'[!！.]发送消息 ', '', message.asDisplay(), count=1):
             await app.sendMessage(group, MessageChain.fromPersistentString(msg))

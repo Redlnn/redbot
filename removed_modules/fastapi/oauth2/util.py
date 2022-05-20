@@ -121,13 +121,12 @@ def create_access_token(
     if scopes is not None:
         to_encode["scopes"] = scopes
 
-    encoded_jwt: str = jwt.encode(
+    return jwt.encode(
         to_encode,
         SECRET_KEY,
         algorithm=ALGORITHM,
         headers={"typ": "JWT", "alg": ALGORITHM},
     )
-    return encoded_jwt
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInDB:

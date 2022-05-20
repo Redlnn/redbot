@@ -33,12 +33,14 @@ async def get_group_list():
 
     app = get_running(Ariadne)
     group_list = await app.getGroupList()
-    tmp = {}
-    for group in group_list:
-        tmp[group.id] = {
+    tmp = {
+        group.id: {
             'id': group.id,
             'name': group.name,
             'accountPerm': perm_map[group.accountPerm],
         }
+        for group in group_list
+    }
+
     group_list_cache.set(tmp)
     return GeneralResponse(data=tmp)

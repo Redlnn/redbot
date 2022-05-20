@@ -33,8 +33,7 @@ Module(
 async def get_food():
     async with async_open(Path(Path(__file__).parent, 'foods.txt')) as afp:
         foods = await afp.read()
-    food = random.choice(foods.strip().split('\n'))
-    return food
+    return random.choice(foods.strip().split('\n'))
 
 
 @channel.use(

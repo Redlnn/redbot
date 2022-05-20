@@ -42,10 +42,9 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
         return MessageChain.create(Plain('这个id本来就是你哒'))
     else:
         return MessageChain.create(
-            Plain('你想要这个吗？\n这个是 '),
-            At(int(player.qq)),
-            Plain(f' 哒~'),
+            Plain('你想要这个吗？\n这个是 '), At(int(player.qq)), Plain(' 哒~')
         )
+
 
     player = await query_uuid_by_qq(qq)
     if player is None:
@@ -73,7 +72,7 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
             return MessageChain.create(
                 Plain('你已有一个白名单，如要申请第二个白名单请联系管理员'),
             )
-    elif player.uuid2 is not None and player.uuid1 is None:
+    elif player.uuid1 is None:
         if admin:
             await Database.exec(
                 update(PlayerInfo)
@@ -84,15 +83,14 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
             return MessageChain.create(
                 Plain('你已有一个白名单，如要申请第二个白名单请联系管理员'),
             )
+    elif admin:
+        return MessageChain.create(
+            Plain('目标玩家已有两个白名单，如需添加白名单请删除至少一个'),
+        )
     else:
-        if admin:
-            return MessageChain.create(
-                Plain('目标玩家已有两个白名单，如需添加白名单请删除至少一个'),
-            )
-        else:
-            return MessageChain.create(
-                Plain('你已经有两个白名单了噢'),
-            )
+        return MessageChain.create(
+            Plain('你已经有两个白名单了噢'),
+        )
 
     try:
         res: str = await execute_command(f'whitelist add {real_mc_id}')

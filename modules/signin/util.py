@@ -224,10 +224,7 @@ def get_signin_img(
     if is_signin_consecutively:
         y += font_3.getsize(PLACEHOLDER)[1] + 20
         draw.text((avatar_xy + 30, y), f"连续签到 {consecutive_days} 天", font=font_3, fill=text_color)
-        y += font_3.getsize(PLACEHOLDER)[1] + 30
-    else:
-        y += font_3.getsize(PLACEHOLDER)[1] + 30
-
+    y += font_3.getsize(PLACEHOLDER)[1] + 30
     for reward in rewards:
         x_offset = avatar_xy + 30
         if reward.ico is not None:
