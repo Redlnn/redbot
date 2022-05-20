@@ -17,7 +17,7 @@ def format_time(timestamp: int) -> str:
     :return: 当前时间，格式1970-01-01 12:00:00
     """
     time_local = time.localtime(timestamp)
-    return time.strftime("%Y-%m-%d %H:%M:%S", time_local)
+    return time.strftime('%Y-%m-%d %H:%M:%S', time_local)
 
 
 async def is_mc_id(mc_id: str) -> bool:
