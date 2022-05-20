@@ -157,7 +157,7 @@ class MemberInterval:
                                 [
                                     At(member.id),
                                     Plain(
-                                        f" 你在本群暂时不可调用bot，正在冷却中...\n还有{f'{str(m)}分' if m else ''}{'%d' % s}秒结束"
+                                        f' 你在本群暂时不可调用bot，正在冷却中...\n还有{f"{m}分" if m else ""}{"%d" % s}秒结束'
                                     ),
                                 ]
                             ),
