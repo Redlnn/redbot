@@ -106,9 +106,8 @@ async def get_msg_count(
         if arg_target.matched:
             if arg_target.result.onlyContains(At):  # type: ignore
                 target = arg_target.result.getFirst(At).target  # type: ignore
-            else:
-                if arg_target.result.asDisplay().isdigit():  # type: ignore
-                    target = int(arg_target.result.asDisplay())  # type: ignore
+            elif arg_target.result.asDisplay().isdigit():  # type: ignore
+                target = int(arg_target.result.asDisplay())  # type: ignore
         else:
             target = member.id
     elif arg_type.result.asDisplay() == 'group':  # type: ignore
@@ -129,11 +128,9 @@ async def get_msg_count(
         if not count:
             await app.sendMessage(
                 group,
-                MessageChain.create(
-                    At(target),
-                    Plain(f' 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂'),
-                ),
+                MessageChain.create(At(target), Plain(' 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂')),
             )
+
             return
         await app.sendMessage(
             group,

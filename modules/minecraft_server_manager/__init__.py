@@ -119,9 +119,8 @@ async def init(app: Ariadne):
     if len(result) == 0:
         logger.info('初始化mc服务器管理数据库中...')
         member_list = await app.getMemberList(module_config.serverGroup)
-        data = []
-        for member in member_list:
-            data.append(PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp))
+        data = [PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp) for member in member_list]
+
         if await Database.add_many(*data):
             logger.info('mc服务器管理数据库初始化完成')
         else:
@@ -470,7 +469,7 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
     target = member.id
     await app.sendMessage(
         group,
-        await add_whitelist_to_qq(target, mc_id, True if member.permission >= MemberPerm.Administrator else False),
+        await add_whitelist_to_qq(target, mc_id, member.permission >= MemberPerm.Administrator),
         quote=source,
     )
 
@@ -744,21 +743,18 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, so
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
-    if len(msg) != 2:
+    if len(msg) != 2 or len(msg) == 2 and not msg[1].onlyContains(At) and not msg[1].onlyContains(Plain):
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
         return
-    elif msg[1].onlyContains(At):
+    elif len(msg) == 2 and msg[1].onlyContains(At):
         target = msg[1].getFirst(At).target
         await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == str(target)).values(leave_time=None))
-    elif msg[1].onlyContains(Plain):
+    else:
         target = msg[1].asDisplay()
         if not target.isdigit():
             await app.sendMessage(group, MessageChain.create(Plain('请输入QQ号')), quote=source)
             return
         await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == target).values(leave_time=None))
-    else:
-        await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
-        return
     await app.sendMessage(group, MessageChain.create(Plain('已清除该玩家的退群时间')), quote=source)
 
 

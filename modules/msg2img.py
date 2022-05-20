@@ -61,7 +61,7 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
     img_list: list[str | bytes] = []
     session = get_session()
     for ind, elem in enumerate(answer[:]):
-        if type(elem) in (At, AtAll):
+        if type(elem) in {At, AtAll}:
             answer.__root__[ind] = Plain(elem.asDisplay())
     for i in answer[:]:
         if isinstance(i, Image) and i.url:

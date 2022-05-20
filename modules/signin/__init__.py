@@ -58,7 +58,8 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
 
     # 判断时间戳是不是今天
     if time.localtime(user.last_signin_time).tm_yday == time.localtime().tm_yday:
-        await app.sendMessage(group, MessageChain.create(Plain(f'你今天已经签到过了哦~')), quote=source)
+        await app.sendMessage(group, MessageChain.create(Plain('你今天已经签到过了哦~')), quote=source)
+
         return
 
     user.total_signin_days += 1

@@ -41,6 +41,9 @@ Module(
 lastest_msg: list[dict] = []
 
 
+import contextlib
+
+
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
@@ -52,14 +55,10 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
         return
     if message.asDisplay() == '.撤回最近':
         for item in lastest_msg.copy():
-            try:
+            with contextlib.suppress(UnknownError, UnknownTarget):
                 await app.recallMessage(item['id'])
-            except (UnknownError, UnknownTarget):
-                pass
-            try:
+            with contextlib.suppress(ValueError):
                 lastest_msg.remove(item)
-            except ValueError:
-                pass
     elif message.has(Quote):
         if message.getFirst(Quote).senderId != basic_cfg.miraiApiHttp.account:
             return
@@ -69,16 +68,17 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
             for item in lastest_msg.copy():
                 if item['id'] == target_id:
                     if item['time'] - time.time() > 115:
-                        await app.sendMessage(group, MessageChain.create(Plain(f'该消息已超过撤回时间。')), quote=True)
+                        await app.sendMessage(
+                            group,
+                            MessageChain.create(Plain('该消息已超过撤回时间。')),
+                            quote=True,
+                        )
+
                         return
-                    try:
+                    with contextlib.suppress(UnknownTarget, InvalidArgument, RemoteException, UnknownError):
                         await app.recallMessage(item['id'])
-                    except (UnknownTarget, InvalidArgument, RemoteException, UnknownError):
-                        pass
-                    try:
+                    with contextlib.suppress(ValueError):
                         lastest_msg.remove(item)
-                    except ValueError:
-                        pass
                     break
 
 

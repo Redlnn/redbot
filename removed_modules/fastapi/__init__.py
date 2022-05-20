@@ -81,7 +81,7 @@ async def on_shutdown():
 
 @channel.use(ListenerSchema(listening_events=[NewWebsocketClient]))
 async def new_websocket_client(client: WebSocket):
-    await client.send_text(f'Hello Broadcast')
+    await client.send_text('Hello Broadcast')
 
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage]))

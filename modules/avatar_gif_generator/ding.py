@@ -108,20 +108,16 @@ def ding(qq: int | str) -> bytes:
 
     frames = []
     times = len(pos_and_sizes)
-    for i in range(0, 121):  # 0-120
+    for i in range(121):  # 0-120
+        canvas = Img.new('RGBA', bg.size, '#ffffff')
+        bg = Img.open(Path(Path(__file__).parent, 'res', 'ding', f'{i + 1}.png'))
         if i < times:
             n_avatar = avatar.resize(pos_and_sizes[i][1], Img.LANCZOS)  # type: ignore
-            bg = Img.open(Path(Path(__file__).parent, 'res', 'ding', f'{i + 1}.png'))
-            canvas = Img.new('RGBA', bg.size, '#ffffff')
             canvas.paste(n_avatar, pos_and_sizes[i][0])  # type: ignore
             canvas.paste(bg, mask=bg.split()[3])
-            frames.append(canvas)
         else:
-            bg = Img.open(Path(Path(__file__).parent, 'res', 'ding', f'{i + 1}.png'))
-            canvas = Img.new('RGBA', bg.size, '#ffffff')
             canvas.paste(bg)
-            frames.append(canvas)
-
+        frames.append(canvas)
     img_io = BytesIO()
     frames[0].save(
         img_io,

@@ -59,7 +59,7 @@ class Safe(SendMessageAction):
                     else:
                         msg_chain.__root__[ind] = Plain(elem.asDisplay())
 
-        for element_type in [AtAll, At, Poke, Forward, MultimediaElement]:
+        for element_type in {AtAll, At, Poke, Forward, MultimediaElement}:
             convert(chain, element_type)
             val = await ariadne.sendMessage(**item.send_data, action=Ignore)  # type: ignore # noqa
             if val is not None:
@@ -74,11 +74,11 @@ class Safe(SendMessageAction):
         ...
 
     @overload
-    async def exception(s, i):
+    async def exception(self, i):
         ...
 
-    async def exception(s: Union["Safe", Exc_T], i: Optional[Exc_T] = None):  # type: ignore # noqa
-        if not isinstance(s, Safe):
-            return await Safe._handle(s, True)
+    async def exception(self: Union["Safe", Exc_T], i: Optional[Exc_T] = None):  # type: ignore # noqa
+        if not isinstance(self, Safe):
+            return await Safe._handle(self, True)
         if i:
-            return await Safe._handle(i, s.ignore)
+            return await Safe._handle(i, self.ignore)

@@ -60,7 +60,7 @@ if basic_cfg.console:
 else:
     console = None
 
-rewrite_ariadne_logger(basic_cfg.debug, True if console else False)  # 对logger进行调整，必须放在这里
+rewrite_ariadne_logger(basic_cfg.debug, bool(console))
 
 with saya.module_context():
     core_modules_path = Path(root_path, 'core_modules')

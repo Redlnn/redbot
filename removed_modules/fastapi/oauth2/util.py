@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Mapping
 
 from fastapi import Depends, HTTPException, status
@@ -113,21 +113,20 @@ def create_access_token(
     """
     to_encode = data.copy()
     if expires_delta is not None:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode["exp"] = expire
 
     if scopes is not None:
         to_encode["scopes"] = scopes
 
-    encoded_jwt: str = jwt.encode(
+    return jwt.encode(
         to_encode,
         SECRET_KEY,
         algorithm=ALGORITHM,
         headers={"typ": "JWT", "alg": ALGORITHM},
     )
-    return encoded_jwt
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInDB:
@@ -145,8 +144,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInDB:
         username: str = payload.get("sub", None)
         if username is None:
             raise UnauthorizedException(detail="无效的用户")
-    except JWTError:
-        raise UnauthorizedException(detail="无效的 Token 或 Token 已过期")
+    except JWTError as e:
+        raise UnauthorizedException(detail="无效的 Token 或 Token 已过期") from e
     user = get_user(username=username)
     if user is None:
         raise UnauthorizedException(detail="无效的用户")

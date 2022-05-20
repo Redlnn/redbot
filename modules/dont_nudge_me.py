@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+import contextlib
 import os
 from pathlib import Path
 from posixpath import basename
@@ -52,14 +53,13 @@ async def get_message(event: NudgeEvent):
     tmp = randrange(0, len(os.listdir(Path(data_path, 'Nudge'))) + len(msg))
     if tmp < len(msg):
         return MessageChain.create(Plain(msg[tmp].replace('{}', event.msg_action[0])))
-    else:
-        if not Path(data_path, 'Nudge').exists():
-            Path(data_path, 'Nudge').mkdir()
-        elif len(os.listdir(Path(data_path, 'Nudge'))) == 0:
-            return MessageChain.create(Plain(choice(msg).replace('{}', event.msg_action[0])))
-        return MessageChain.create(
-            Image(path=Path(data_path, 'Nudge', os.listdir(Path(data_path, 'Nudge'))[tmp - len(msg)]))
-        )
+    if not Path(data_path, 'Nudge').exists():
+        Path(data_path, 'Nudge').mkdir()
+    elif len(os.listdir(Path(data_path, 'Nudge'))) == 0:
+        return MessageChain.create(Plain(choice(msg).replace('{}', event.msg_action[0])))
+    return MessageChain.create(
+        Image(path=Path(data_path, 'Nudge', os.listdir(Path(data_path, 'Nudge'))[tmp - len(msg)]))
+    )
 
 
 @channel.use(ListenerSchema(listening_events=[NudgeEvent], decorators=[DisableModule.require(module_name)]))
@@ -69,12 +69,10 @@ async def main(app: Ariadne, event: NudgeEvent):
     elif not ManualInterval.require(f'{event.supplicant}_{event.group_id if event.friend_id is not None else None}', 3):
         return
     await asyncio.sleep(uniform(0.2, 0.6))
-    try:
+    with contextlib.suppress(UnknownTarget):
         await app.sendNudge(event.supplicant, event.group_id)  # 当戳一戳来自好友时 event.group_id 为 None，因此这里不判断也可以
         await asyncio.sleep(uniform(0.2, 0.6))
         if event.context_type == "friend" and event.friend_id:
             await app.sendFriendMessage(event.friend_id, (await get_message(event)))
         elif event.context_type == "group" and event.group_id:
             await app.sendGroupMessage(event.group_id, (await get_message(event)))
-    except UnknownTarget:
-        pass

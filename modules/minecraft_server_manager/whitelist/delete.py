@@ -27,24 +27,24 @@ async def del_whitelist_from_server(mc_uuid: str | UUID) -> Literal[True] | Mess
         return MessageChain.create(Plain(f'无法查询【{mc_uuid}】对应的正版id: 👇\n{e}'))
     if not isinstance(mc_id, str):
         return MessageChain.create(Plain(f'向 mojang 查询【{mc_uuid}】的 uuid 时获得意外内容:  👇\n{await mc_id.text()}'))
-    else:
-        try:
-            result = await execute_command(f'whitelist remove {mc_id}')
-        except TimeoutError:
-            return MessageChain.create(Plain(f'连接服务器超时'))
-        except ValueError as e:
-            logger.exception(e)
-            return MessageChain.create(Plain(f'无法连接至服务器：{e}'))
-        if result.startswith('Removed '):
-            return True
-        else:
-            return MessageChain.create(Plain(f'从服务器删除id为【{mc_id}】的白名单时，服务器返回意料之外的内容：👇\n{result}'))
+    try:
+        result = await execute_command(f'whitelist remove {mc_id}')
+    except TimeoutError:
+        return MessageChain.create(Plain('连接服务器超时'))
+    except ValueError as e:
+        logger.exception(e)
+        return MessageChain.create(Plain(f'无法连接至服务器：{e}'))
+    return (
+        True
+        if result.startswith('Removed ')
+        else MessageChain.create(Plain(f'从服务器删除id为【{mc_id}】的白名单时，服务器返回意料之外的内容：👇\n{result}'))
+    )
 
 
 async def del_whitelist_by_qq(qq: int) -> MessageChain:
     player = await query_uuid_by_qq(qq)
     if player is None:
-        return MessageChain.create(At(qq), Plain(f' 好像一个白名单都没有呢~'))
+        return MessageChain.create(At(qq), Plain(' 好像一个白名单都没有呢~'))
 
     await Database.exec(
         update(PlayerInfo)
@@ -68,7 +68,7 @@ async def del_whitelist_by_qq(qq: int) -> MessageChain:
             + flag2
         )
     else:
-        return MessageChain.create(At(qq), Plain(f' 的白名单都删掉啦~'))
+        return MessageChain.create(At(qq), Plain(' 的白名单都删掉啦~'))
 
 
 async def del_whitelist_by_id(mc_id: str) -> MessageChain:

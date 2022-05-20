@@ -156,11 +156,11 @@ async def get_siginin_count():
 
     return GeneralResponse(
         data={
-            weekday_map[weekday - 7] if (weekday - 7) > 0 else weekday + 1: randint(0, 100),
-            weekday_map[weekday - 6] if (weekday - 6) > 0 else weekday + 2: randint(0, 100),
-            weekday_map[weekday - 5] if (weekday - 5) > 0 else weekday + 3: randint(0, 100),
-            weekday_map[weekday - 4] if (weekday - 4) > 0 else weekday + 4: randint(0, 100),
-            weekday_map[weekday - 3] if (weekday - 3) > 0 else weekday + 5: randint(0, 100),
+            weekday_map[weekday - 7] if weekday > 7 else weekday + 1: randint(0, 100),
+            weekday_map[weekday - 6] if weekday > 6 else weekday + 2: randint(0, 100),
+            weekday_map[weekday - 5] if weekday > 5 else weekday + 3: randint(0, 100),
+            weekday_map[weekday - 4] if weekday > 4 else weekday + 4: randint(0, 100),
+            weekday_map[weekday - 3] if weekday > 3 else weekday + 5: randint(0, 100),
             '昨天': randint(0, 100),
             '今天': randint(0, 100),
         }

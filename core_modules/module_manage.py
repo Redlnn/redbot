@@ -63,10 +63,8 @@ Module(
 )
 async def menu(app: Ariadne, group: Group):
     msg_send = f'-= {basic_cfg.botName} 功能菜单 for {group.id} =-\n' f'-= {group.name} =-\n{hr}\nID    模块状态    模块名\n'
-    i = 0
-    for module in Modules:
-        i += 1
-        global_disabled = True if module.file_name in modules_cfg.globalDisabledModules else False
+    for i, module in enumerate(Modules, start=1):
+        global_disabled = module.file_name in modules_cfg.globalDisabledModules
         disabled_groups = (
             modules_cfg.disabledGroups[module.file_name] if module.file_name in modules_cfg.disabledGroups else []
         )
@@ -105,7 +103,8 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
     if target_id >= len(Modules):
         await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
     target_module: Module = Modules[target_id]
-    global_disabled: bool = True if target_module.file_name in modules_cfg.globalDisabledModules else False
+    global_disabled: bool = target_module.file_name in modules_cfg.globalDisabledModules
+
     disabled_groups = (
         modules_cfg.disabledGroups[target_module.file_name]
         if target_module.file_name in modules_cfg.disabledGroups
@@ -174,9 +173,9 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
     authors = ''
     if target_module.author:
         for author in target_module.author:
-            authors += author + ', '
+            authors += f'{author}, '
         authors = authors.rstrip(', ')
-    msg_send = f'{target_module.name}{" By " + authors if authors else ""}\n\n'
+    msg_send = f'{target_module.name}{f" By {authors}" if authors else ""}\n\n'
     if target_module.description:
         msg_send += '>>>>>>>>>>>>>>>>>>>>> 模块描述 <<<<<<<<<<<<<<<<<<<<<\n' + target_module.description + '\n\n'
     if target_module.usage:

@@ -55,6 +55,9 @@ class Setu(RConfig):
 setu_config = Setu()
 
 
+import contextlib
+
+
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
@@ -81,7 +84,7 @@ async def main(
     num: ArgResult[MessageChain],
 ):
     if int(san.result.asDisplay()) >= 4 and not (  # type: ignore
-        member.permission in (MemberPerm.Administrator, MemberPerm.Owner) or member.id in basic_cfg.admin.admins
+        member.permission in {MemberPerm.Administrator, MemberPerm.Owner} or member.id in basic_cfg.admin.admins
     ):
         await app.sendMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
         return
@@ -91,18 +94,12 @@ async def main(
         async with session.get(
             f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
         ) as resp:
-            if resp.status in (200, 404):
-                res: dict = await resp.json()
-            else:
-                res: dict = {'code': 500}
+            res: dict = await resp.json() if resp.status in {200, 404} else {'code': 500}
     else:
         async with session.get(
             f'{setu_config.apiUrl}/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
         ) as resp:
-            if resp.status == 200:
-                res: dict = await resp.json()
-            else:
-                res = {'code': 500}
+            res = await resp.json() if resp.status == 200 else {'code': 500}
     if res.get('code') == 404 and tag.matched:
         await app.sendMessage(group, MessageChain.create(Plain('未找到相应tag的色图')))
     elif res.get('code') == 200:
@@ -152,9 +149,7 @@ async def main(
         message = MessageChain.create(Forward(nodeList=forward_nodes))
         msg_id = await app.sendMessage(group, message)
         await asyncio.sleep(40)
-        try:
+        with contextlib.suppress(UnknownTarget):
             await app.recallMessage(msg_id)  # type: ignore
-        except UnknownTarget:
-            pass
     else:
         await app.sendMessage(group, MessageChain.create(Plain('慢一点慢一点，别冲辣！')))

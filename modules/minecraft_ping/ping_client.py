@@ -95,10 +95,7 @@ class PingClient:
 
     def _format_desc(self, data: dict) -> str:  # type: ignore
         if 'extra' in data:
-            tmp = ''
-            for part in data['extra']:
-                tmp += part['text']
-            return tmp
+            return ''.join(part['text'] for part in data['extra'])
         elif 'text' in data:
             return re.sub(r'§[0-9a-gk-r]', '', data['text'])
 
@@ -133,18 +130,14 @@ async def ping(ip: str | None = None, url: str | None = None, port: int | None =
             host, port = await dns_resolver_srv(url)
             if not host:
                 host = url
-            port = port if port else 25565
+            port = port or 25565
     else:
         raise ValueError('Neither IP nor URL exists')
 
     client = PingClient(host=host, port=port)
     stats: dict = await client.get_ping()
 
-    if stats['players'].get('sample'):
-        player_list: list = stats['players'].get('sample')
-    else:
-        player_list = []
-
+    player_list = stats['players'].get('sample') or []
     return {
         'version': stats['version']['name'],
         'protocol': str(stats['version']['protocol']),

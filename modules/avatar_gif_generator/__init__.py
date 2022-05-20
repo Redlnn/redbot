@@ -45,7 +45,7 @@ func = {
 async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if not message.has(Plain):
         return
-    elif message.asDisplay()[0] not in ('!', '！', '.'):
+    elif message.asDisplay()[0] not in {'!', '！', '.'}:
         return
 
     split_message = message.asDisplay().strip().split(' ')
