@@ -81,7 +81,7 @@ class GroupInterval:
                             group,
                             MessageChain.create(
                                 Plain(
-                                    f"功能冷却中...\n还有{f'{str(m)}分' if m else ''}{'%d' % s}秒结束"
+                                    f'功能冷却中...\n还有{f"{str(m)}分" if m else ""}{"%d" % s}秒结束'
                                 )
                             ),
                         )
