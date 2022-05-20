@@ -91,7 +91,7 @@ async def main(
         async with session.get(
                     f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
                 ) as resp:
-            res: dict = await resp.json() if resp.status in (200, 404) else {'code': 500}
+            res: dict = await resp.json() if resp.status in {200, 404} else {'code': 500}
     else:
         async with session.get(
                     f'{setu_config.apiUrl}/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
