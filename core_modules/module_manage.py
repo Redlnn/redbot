@@ -177,7 +177,7 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
         for author in target_module.author:
             authors += f'{author}, '
         authors = authors.rstrip(', ')
-    msg_send = f"{target_module.name}{f' By {authors}' if authors else ''}\n\n"
+    msg_send = f'{target_module.name}{f" By {authors}" if authors else ""}\n\n'
     if target_module.description:
         msg_send += '>>>>>>>>>>>>>>>>>>>>> 模块描述 <<<<<<<<<<<<<<<<<<<<<\n' + target_module.description + '\n\n'
     if target_module.usage:
