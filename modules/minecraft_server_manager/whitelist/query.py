@@ -76,7 +76,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
         info_text += f' | 添加时间：{format_time(player.uuid2_add_time)}'  # type: ignore
     elif bool(player.uuid1 and player.uuid2):
         try:
-            mc_id1 = await get_mc_id(player.uuid1)
+            mc_id1 = await get_mc_id(player.uuid1)  # type: ignore
         except TimeoutError:
             info_text += f' | UUID 1: {player.uuid1}\n'
         else:
@@ -84,7 +84,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
 
         info_text += f' | ID 1添加时间：{format_time(player.uuid1_add_time)}\n'  # type: ignore
         try:
-            mc_id2 = await get_mc_id(player.uuid2)
+            mc_id2 = await get_mc_id(player.uuid2)  # type: ignore
         except TimeoutError:
             info_text += f' | UUID 2: {player.uuid2}\n'
         else:
