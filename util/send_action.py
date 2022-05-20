@@ -77,7 +77,7 @@ class Safe(SendMessageAction):
     async def exception(self, i):
         ...
 
-    async def exception(self, i: Optional[Exc_T] = None):  # type: ignore # noqa
+    async def exception(self: Union["Safe", Exc_T], i: Optional[Exc_T] = None):  # type: ignore # noqa
         if not isinstance(self, Safe):
             return await Safe._handle(self, True)
         if i:
