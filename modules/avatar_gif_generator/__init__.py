@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from os.path import dirname, split
 from pathlib import Path
 
 from graia.ariadne.app import Ariadne
@@ -15,22 +14,14 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from util.control import DisableModule
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
-from util.module_register import Module
 
 from .ding import ding
 
 channel = Channel.current()
 
-module_name = split(dirname(__file__))[-1]
-
-Module(
-    name='用你的头像生成点啥',
-    file_name=module_name,
-    author=['Red_lnn', 'SereinFish'],
-    description='用你的头像生成一些有趣的图片',
-    usage='[!！.]顶 At/QQ号 —— 让猫猫虫咖波顶着你的头像耍',
-    can_disable=False,
-).register()
+channel.meta['name'] = '用你的头像生成点啥'
+channel.meta['author'] = ['Red_lnn', 'SereinFish']
+channel.meta['description'] = '用你的头像生成一些有趣的图片\n用法：\n  [!！.]顶 At/QQ号 —— 让猫猫虫咖波顶着你的头像耍'
 
 func = {
     '顶': ding,
@@ -39,7 +30,7 @@ func = {
 
 @channel.use(
     ListenerSchema(
-        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(module_name)]
+        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(channel.module)]
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):

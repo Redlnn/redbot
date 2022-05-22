@@ -19,20 +19,15 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from util.config import basic_cfg
 from util.control import DisableModule
 from util.control.interval import ManualInterval
-from util.module_register import Module
 from util.path import data_path
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='别戳我',
-    file_name=module_name,
-    author=['Red_lnn'],
-    usage='戳一戳bot',
-).register()
+channel.meta['name'] = '别戳我'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '戳一戳bot'
 
-msg = [
+msg = (
     '别{}啦别{}啦，无论你再怎么{}，我也不会多说一句话的~',
     '你再{}！你再{}！你再{}试试！！',
     '那...那里...那里不能{}...绝对...绝对不能（小声）...',
@@ -46,7 +41,7 @@ msg = [
     '変態！バカ！うるさい！',
     '。',
     '哼哼╯^╰',
-]
+)
 
 
 async def get_message(event: NudgeEvent):
@@ -62,7 +57,7 @@ async def get_message(event: NudgeEvent):
     )
 
 
-@channel.use(ListenerSchema(listening_events=[NudgeEvent], decorators=[DisableModule.require(module_name)]))
+@channel.use(ListenerSchema(listening_events=[NudgeEvent], decorators=[DisableModule.require(channel.module)]))
 async def main(app: Ariadne, event: NudgeEvent):
     if event.target != basic_cfg.miraiApiHttp.account:
         return

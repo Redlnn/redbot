@@ -14,6 +14,7 @@ from util.config import basic_cfg
 
 if basic_cfg.console:
     channel = Channel.current()
+    channel.meta['can_disable'] = False
 
     @channel.use(ConsoleSchema([Twilight([FullMatch('stop')])]))
     async def stop(app: Ariadne, console: Console):

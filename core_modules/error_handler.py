@@ -16,6 +16,7 @@ from util.config import basic_cfg
 from util.text2img import Text2ImgConfig, async_generate_img
 
 channel = Channel.current()
+channel.meta['can_disable'] = False
 
 
 @channel.use(ListenerSchema(listening_events=[ExceptionThrowed]))

@@ -6,8 +6,8 @@
 """
 
 import asyncio
+import contextlib
 from datetime import datetime
-from os.path import basename
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -33,18 +33,12 @@ from util.control import DisableModule
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.get_aiohtto_session import get_session
-from util.module_register import Module
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='涩图（不可以色色o）',
-    file_name=module_name,
-    author=['Red_lnn', 'A60(djkcyl)'],
-    description='提供白名单管理、在线列表查询、服务器命令执行功能',
-    usage=' - [!！.]涩图 —— 获取随机涩图\n' ' - [!！.]{关键词}涩图 —— 获取指定关键词的涩图',
-).register()
+channel.meta['name'] = '涩图（不可以色色o）'
+channel.meta['author'] = ['Red_lnn', 'A60(djkcyl)']
+channel.meta['description'] = '提供白名单管理、在线列表查询、服务器命令执行功能\n用法：\n - [!！.]涩图 —— 获取随机涩图\n - [!！.]{关键词}涩图 —— 获取指定关键词的涩图'
 
 
 class Setu(RConfig):
@@ -53,9 +47,6 @@ class Setu(RConfig):
 
 
 setu_config = Setu()
-
-
-import contextlib
 
 
 @channel.use(
@@ -72,7 +63,7 @@ import contextlib
                 ],
             )
         ],
-        decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(channel.module)],
     )
 )
 async def main(
@@ -92,13 +83,11 @@ async def main(
     if tag.matched:
         target_tag = tag.result.getFirst(Plain).text  # type: ignore
         async with session.get(
-            f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
+            f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result}&num={num.result}'  # type: ignore
         ) as resp:
             res: dict = await resp.json() if resp.status in {200, 404} else {'code': 500}
     else:
-        async with session.get(
-            f'{setu_config.apiUrl}/?san={san.result.asDisplay()}&num={num.result.asDisplay()}'  # type: ignore
-        ) as resp:
+        async with session.get(f'{setu_config.apiUrl}/?san={san.result}&num={num.result}') as resp:  # type: ignore
             res = await resp.json() if resp.status == 200 else {'code': 500}
     if res.get('code') == 404 and tag.matched:
         await app.sendMessage(group, MessageChain.create(Plain('未找到相应tag的色图')))

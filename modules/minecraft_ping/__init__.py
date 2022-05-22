@@ -10,7 +10,6 @@ Ping mc服务器
 """
 
 import socket
-from os.path import dirname, split
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -26,21 +25,15 @@ from util.config import RConfig
 from util.control import DisableModule
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
-from util.module_register import Module
 
 from .ping_client import ping
 from .utils import is_domain, is_ip
 
 channel = Channel.current()
-module_name = split(dirname(__file__))[-1]
 
-Module(
-    name='Ping 我的世界服务器',
-    file_name=module_name,
-    author=['Red_lnn'],
-    description='获取指定mc服务器的信息',
-    usage='[!！.]ping {mc服务器地址}',
-).register()
+channel.meta['name'] = 'Ping 我的世界服务器'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '获取指定mc服务器的信息\n用法：\n[!！.]ping {mc服务器地址}'
 
 
 class McServerPingConfig(RConfig):
@@ -62,7 +55,7 @@ ping_cfg = McServerPingConfig()
                 ],
             )
         ],
-        decorators=[GroupPermission.require(), MemberInterval.require(10), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), MemberInterval.require(10), DisableModule.require(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, ping_target: RegexResult):
@@ -87,7 +80,7 @@ async def main(app: Ariadne, group: Group, ping_target: RegexResult):
         host, port = server_address.split(':', 1)
         if is_ip(host) or is_domain(host):
             if port.isdigit():
-                kwargs = {'url': host, 'port': port}
+                kwargs = {'url': host, 'port': int(port)}
             else:
                 await app.sendMessage(group, MessageChain.create(Plain('端口号格式不正确')))
                 return
@@ -109,6 +102,10 @@ async def main(app: Ariadne, group: Group, ping_target: RegexResult):
     except socket.timeout:
         await app.sendMessage(group, MessageChain.create(Plain('连接超时')))
         logger.warning(f'连接超时，目标地址：{server_address}')
+        return
+    except socket.gaierror as e:
+        await app.sendMessage(group, MessageChain.create(Plain('出错了，可能是无法解析目标地址\n' + str(e))))
+        logger.exception(e)
         return
 
     if not ping_result:

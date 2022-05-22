@@ -26,6 +26,5 @@ async def execute_command(command: str) -> str:
     except aiomcrcon.IncorrectPasswordError as e:
         logger.error(f'通过RCON连接【{config.rcon.host}:{config.rcon.port}】失败，密码错误')
         raise ValueError(f'通过RCON连接【{config.rcon.host}:{config.rcon.port}】失败，密码错误') from e
-
     else:
         return resp[0]

@@ -11,7 +11,6 @@ import time
 from contextvars import ContextVar
 from io import BytesIO
 from os import listdir
-from os.path import basename
 from pathlib import Path
 
 import jieba.analyse
@@ -45,28 +44,21 @@ from util.control import DisableModule
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.database.log_msg import get_group_msg, get_member_msg
-from util.module_register import Module
 from util.path import data_path
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='聊天历史词云生成',
-    file_name=module_name,
-    author=['Red_lnn', 'A60(djkcyl)'],
-    description='获取指定目标在最近n天内的聊天词云',
-    usage=(
-        '群/我的本周总结'
-        '群/我的月度总结'
-        '群/我的年度总结'
-        '[!！.]wordcloud group —— 获得本群最近n天内的聊天词云\n'
-        '[!！.]wordcloud At/本群成员QQ号 —— 获得ta在本群最近n天内的聊天词云\n'
-        '[!！.]wordcloud me —— 获得你在本群最近n天内的聊天词云\n'
-        '参数：\n'
-        '    --day, -D 最近n天的天数，默认为7天'
-    ),
-).register()
+channel.meta['name'] = '聊天历史词云生成'
+channel.meta['author'] = ['Red_lnn', 'A60(djkcyl)']
+channel.meta['description'] = '获取指定目标在最近n天内的聊天词云\n用法：\n'
+'  - 群/我的本周总结'
+'  - 群/我的月度总结'
+'  - 群/我的年度总结'
+'  - [!！.]wordcloud group —— 获得本群最近n天内的聊天词云\n'
+'  - [!！.]wordcloud At/本群成员QQ号 —— 获得ta在本群最近n天内的聊天词云\n'
+'  - [!！.]wordcloud me —— 获得你在本群最近n天内的聊天词云\n'
+'    参数：\n'
+'        --day, -D 最近n天的天数，默认为7天'
 
 
 class WordCloudConfig(RConfig):
@@ -91,17 +83,20 @@ config = WordCloudConfig()
                 ],
             )
         ],
-        decorators=[GroupPermission.require(), DisableModule.require(module_name), DisableModule.require('msg_loger')],
+        decorators=[
+            GroupPermission.require(),
+            DisableModule.require(channel.module),
+            DisableModule.require('core_modules.msg_loger'),
+        ],
     )
 )
 async def command(
     app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult[MessageChain]
 ):
     try:
-        day = int(day_length.result.asDisplay())  # type: ignore
+        day = int(day_length.result)  # type: ignore
     except ValueError:
         await app.sendMessage(group, MessageChain.create(Plain('请输入正确的天数！')), quote=True)
-
         return
     match_result: MessageChain = wc_target.result  # type: ignore # noqa: E275
 
@@ -154,7 +149,11 @@ async def command(
                 ],
             )
         ],
-        decorators=[GroupPermission.require(), DisableModule.require(module_name), DisableModule.require('msg_loger')],
+        decorators=[
+            GroupPermission.require(),
+            DisableModule.require(channel.module),
+            DisableModule.require('core_modules.msg_loger'),
+        ],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, target_time: RegexResult):
@@ -209,7 +208,6 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
             group,
             MessageChain.create(Plain('你') if me else At(target), Plain('的词云已在生成中，请稍后...')),
         )
-
         return
     rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
     if not rate_limit:
@@ -218,13 +216,13 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
     process_list.append(target)
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - (day - 1) * 86400
     msg_list = await get_member_msg(str(group.id), str(target), target_timestamp)
+
     if len(msg_list) < 50:
         process_list.remove(target)
         await app.sendMessage(
             group,
             MessageChain.create(Plain('你') if me else At(target), Plain('的发言较少，无法生成词云')),
         )
-
         return
     await app.sendMessage(
         group,

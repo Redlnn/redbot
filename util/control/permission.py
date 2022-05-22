@@ -96,7 +96,6 @@ class GroupPermission:
                         group,
                         MessageChain.create(At(member.id), Plain(f' {alert_text}')),
                     )
-
                 raise ExecutionStop()
 
         return Depend(wrapper)

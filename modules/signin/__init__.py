@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import time
-from os.path import basename, dirname, join
+from os.path import dirname, join
 from pathlib import Path
 from random import choices, randint
 
@@ -26,26 +26,38 @@ from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.database import Database
 from util.database.models import UserInfo
-from util.module_register import Module
 from util.path import root_path
 
 from .util import Reward, get_signin_img
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='签到',
-    file_name=module_name,
-    author=['Red_lnn'],
-).register()
+channel.meta['name'] = '签到'
+channel.meta['author'] = ['Red_lnn']
+
+# Lv1 <500
+# Lv2 <1500
+# Lv3 <3000
+# Lv4 <5000
+# Lv5 <7500
+# Lv6 <10500
+levels = {
+    0: 0,
+    1: 500,
+    2: 1500,
+    3: 3000,
+    4: 5000,
+    5: 7500,
+    6: 10500,
+    7: 10500,
+}
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]?签到').space(SpacePolicy.NOSPACE)])],
-        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
     )
 )
 async def signin(app: Ariadne, group: Group, member: Member, source: Source):
@@ -59,7 +71,6 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
     # 判断时间戳是不是今天
     if time.localtime(user.last_signin_time).tm_yday == time.localtime().tm_yday:
         await app.sendMessage(group, MessageChain.create(Plain('你今天已经签到过了哦~')), quote=source)
-
         return
 
     user.total_signin_days += 1
@@ -84,22 +95,6 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
         await app.sendMessage(group, MessageChain.create(Plain('签到数据保存失败，请联系 Bot 主人')))
         return
 
-    # Lv1 <500
-    # Lv2 <1500
-    # Lv3 <3000
-    # Lv4 <5000
-    # Lv5 <7500
-    # Lv6 <10500
-    levels = {
-        0: 0,
-        1: 500,
-        2: 1500,
-        3: 3000,
-        4: 5000,
-        5: 7500,
-        6: 10500,
-        7: 10500,
-    }
     if user.exp >= 10500:
         level = 6
     elif user.exp >= 7500:
@@ -140,7 +135,7 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
         inline_dispatchers=[
             Twilight([RegexMatch(r'[!！.]清除签到信息').space(SpacePolicy.FORCE), 'target' @ WildcardMatch()])
         ],
-        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(channel.module)],
     )
 )
 async def clear(app: Ariadne, group: Group, target: RegexResult):

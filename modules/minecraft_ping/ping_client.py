@@ -22,7 +22,7 @@ class PingClient:
     3. socket.gaierror 无效的主机名
     """
 
-    def __init__(self, host='localhost', port=25565, timeout=5):
+    def __init__(self, host: str = 'localhost', port: int = 25565, timeout: int = 5):
         self._host = host
         self._port = port
         self._timeout = timeout
@@ -134,7 +134,7 @@ async def ping(ip: str | None = None, url: str | None = None, port: int | None =
     else:
         raise ValueError('Neither IP nor URL exists')
 
-    client = PingClient(host=host, port=port)
+    client = PingClient(host=host, port=port or 25565)
     stats: dict = await client.get_ping()
 
     player_list = stats['players'].get('sample') or []

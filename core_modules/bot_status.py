@@ -4,7 +4,6 @@
 import os
 import platform
 import time
-from os.path import basename
 
 import psutil
 from git.repo.base import Repo
@@ -20,19 +19,14 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from util import get_graia_version
 from util.control import DisableModule
 from util.control.permission import GroupPermission
-from util.module_register import Module
 from util.text2img import async_generate_img, hr
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='Bot版本与系统运行情况查询',
-    file_name=module_name,
-    author=['Red_lnn'],
-    usage='[!！.](status|version)',
-    can_disable=False,
-).register()
+channel.meta['author'] = ['Red_lnn']
+channel.meta['name'] = 'Bot版本与系统运行情况查询'
+channel.meta['description'] = '[!！.](status|version)'
+channel.meta['can_disable'] = False
 
 repo = Repo(os.getcwd())
 official, community = get_graia_version()
@@ -52,7 +46,7 @@ pid = os.getpid()
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.](status|version)')])],
-        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group):

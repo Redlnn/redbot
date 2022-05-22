@@ -8,7 +8,6 @@
 """
 
 from asyncio.exceptions import TimeoutError
-from os.path import basename
 from urllib.parse import quote
 
 import aiohttp
@@ -30,17 +29,12 @@ from lxml import etree
 from util.control import DisableModule
 from util.control.permission import GroupPermission
 from util.get_aiohtto_session import get_session
-from util.module_register import Module
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='我的世界中文Wiki搜索',
-    file_name=module_name,
-    author=['Red_lnn'],
-    usage='[!！.]wiki <要搜索的关键词>',
-).register()
+channel.meta['name'] = '我的世界中文Wiki搜索'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '[!！.]wiki <要搜索的关键词>'
 
 
 @channel.use(
@@ -49,7 +43,7 @@ Module(
         inline_dispatchers=[
             Twilight([RegexMatch(r'[!！.]wiki').space(SpacePolicy.FORCE)], 'keyword' @ RegexMatch(r'\S+'))
         ],
-        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, keyword: RegexResult):

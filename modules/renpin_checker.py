@@ -12,7 +12,6 @@
 import datetime
 import os
 import random
-from os.path import basename
 from pathlib import Path
 
 import orjson as json
@@ -34,20 +33,14 @@ from loguru import logger
 from util.control import DisableModule
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
-from util.module_register import Module
 from util.path import data_path
 from util.text2img import async_generate_img, hr
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='人品测试',
-    file_name=module_name,
-    author=['Red_lnn'],
-    description='每个QQ号每天可抽一次签并获得人品值',
-    usage='[!！.]jrrp / [!！.]抽签',
-).register()
+channel.meta['name'] = '人品测试'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '每个QQ号每天可抽一次签并获得人品值\n用法：\n  [!！.]jrrp / [!！.]抽签'
 
 # https://wiki.biligame.com/ys/%E3%80%8C%E5%BE%A1%E7%A5%9E%E7%AD%BE%E3%80%8D
 qianwens = {
@@ -105,7 +98,7 @@ lucky_things = {
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.](jrrp|抽签)')])],
-        decorators=[GroupPermission.require(), MemberInterval.require(10), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), MemberInterval.require(10), DisableModule.require(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member):

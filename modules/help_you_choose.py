@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from os.path import basename
 from random import randint
 
 import regex as re
@@ -23,24 +22,19 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from util.config import basic_cfg
 from util.control import DisableModule
 from util.control.permission import GroupPermission
-from util.module_register import Module
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='帮你做选择',
-    file_name=module_name,
-    author=['Red_lnn'],
-    usage='@bot {主语}<介词>不<介词>{动作}\n如：@bot 我要不要去吃饭\n@bot 我有没有机会',
-).register()
+channel.meta['name'] = '帮你做选择'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '@bot {主语}<介词>不<介词>{动作}\n如：@bot 我要不要去吃饭\n@bot 我有没有机会'
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight('at' @ ElementMatch(At).space(SpacePolicy.FORCE), 'any' @ WildcardMatch())],
-        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: ElementResult):

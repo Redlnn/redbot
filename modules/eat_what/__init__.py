@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import random
-from os.path import dirname, split
 from pathlib import Path
 
 from aiofile import async_open
@@ -17,17 +16,12 @@ from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.control import DisableModule
 from util.control.permission import GroupPermission
-from util.module_register import Module
 
 channel = Channel.current()
-module_name = split(dirname(__file__))[-1]
 
-Module(
-    name='吃啥',
-    file_name=module_name,
-    author=['Red_lnn'],
-    usage='[!！.]吃啥',
-).register()
+channel.meta['name'] = '吃啥'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '[!！.]吃啥'
 
 
 async def get_food():
@@ -40,7 +34,7 @@ async def get_food():
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]吃啥').space(SpacePolicy.NOSPACE)])],
-        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, source: Source):

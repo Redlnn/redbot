@@ -8,7 +8,6 @@
 触发后会回复一个由0至100之间的任一随机整数
 """
 
-from os.path import basename
 from random import randint
 
 from graia.ariadne.app import Ariadne
@@ -27,25 +26,19 @@ from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.control import DisableModule
 from util.control.permission import GroupPermission
-from util.module_register import Module
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='随机数',
-    file_name=module_name,
-    author=['Red_lnn'],
-    description='获得一个随机数',
-    usage='[!！.]roll {要roll的事件}\n[!！.](dice|骰子|色子)',
-).register()
+channel.meta['name'] = '随机数'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '获得一个随机数\n用法：\n  [!！.]roll {要roll的事件}\n  [!！.](dice|骰子|色子)'
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]roll'), 'target' @ WildcardMatch()])],
-        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
     )
 )
 async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
@@ -61,7 +54,7 @@ async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.](dice|骰子|色子)')])],
-        decorators=[GroupPermission.require(), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
     )
 )
 async def dice(app: Ariadne, group: Group):

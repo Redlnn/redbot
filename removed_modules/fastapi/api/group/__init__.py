@@ -23,6 +23,7 @@ group_list_cache: ContextVar[dict[int, dict[str, int | str]]] = ContextVar('grou
 async def get_group_list():
     app = get_running(Ariadne)
     group_list = await app.getGroupList()
+
     tmp: dict[int, dict[str, int | str]] = {
         group.id: {
             'id': group.id,

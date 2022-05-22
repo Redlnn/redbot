@@ -8,7 +8,6 @@ mc皮肤查询
 """
 
 from asyncio.exceptions import TimeoutError
-from os.path import basename
 
 import orjson
 from graia.ariadne.app import Ariadne
@@ -31,17 +30,12 @@ from util.control import DisableModule
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.get_aiohtto_session import get_session
-from util.module_register import Module
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='mc正版皮肤获取',
-    file_name=module_name,
-    author=['BlueGlassBlock'],
-    usage='[.!！]skin <name> {option}\noption: original|body|head|avatar',
-).register()
+channel.meta['name'] = 'mc正版皮肤获取'
+channel.meta['author'] = ['BlueGlassBlock']
+channel.meta['description'] = '[.!！]skin <name> {option}\noption: original|body|head|avatar'
 
 UUID_ADDRESS_STRING = "https://api.mojang.com/users/profiles/minecraft/{name}"
 
@@ -69,7 +63,7 @@ RENDER_ADDR = {
                 ],
             )
         ],
-        decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(channel.module)],
     )
 )
 async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult[MessageChain]):
@@ -77,7 +71,7 @@ async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgRes
     try:
         async with session.get(UUID_ADDRESS_STRING.format(name=name.result.asDisplay())) as resp:  # type: ignore
             uuid = orjson.loads(await resp.text())["id"]
-        url = RENDER_ADDR[option.result.asDisplay()].format(uuid=uuid)  # type: ignore
+        url = RENDER_ADDR[option.result].format(uuid=uuid)  # type: ignore
         await app.sendMessage(group, MessageChain.create(Image(url=url)))
     except TimeoutError as e:
         await app.sendMessage(group, MessageChain.create(f"无法获取皮肤: {e}"))

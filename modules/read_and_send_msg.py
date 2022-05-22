@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from os.path import basename
-
 import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -15,18 +13,14 @@ from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.control import DisableModule
 from util.control.permission import GroupPermission
-from util.module_register import Module
 
 channel = Channel.current()
-module_name = basename(__file__)[:-3]
 
-Module(
-    name='读取/发送消息的可持久化字符串',
-    file_name=module_name,
-    author=['Red_lnn'],
-    description='获得一个随机数',
-    usage='仅限群管理员使用\n - 回复需要读取的消息并且回复内容只含有“[!！.]读取消息”获得消息的可持久化字符串\n - [!！.]发送消息 <可持久化字符串> —— 用于从可持久化字符串发送消息',
-).register()
+channel.meta['name'] = '读取/发送消息的可持久化字符串'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '仅限群管理员使用\n'
+' - 回复需要读取的消息并且回复内容只含有“[!！.]读取消息”获得消息的可持久化字符串\n'
+' - [!！.]发送消息 <可持久化字符串> —— 用于从可持久化字符串发送消息'
 
 
 @channel.use(
@@ -34,7 +28,7 @@ Module(
         listening_events=[GroupMessage],
         decorators=[
             GroupPermission.require(MemberPerm.Administrator, send_alert=False),
-            DisableModule.require(module_name),
+            DisableModule.require(channel.module),
         ],
     )
 )

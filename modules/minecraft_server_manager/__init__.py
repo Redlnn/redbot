@@ -4,7 +4,6 @@
 import asyncio
 import time
 from contextvars import ContextVar
-from os.path import dirname, split
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
@@ -54,24 +53,10 @@ from .whitelist.query import (
 
 saya = Saya.current()
 channel = Channel.current()
-module_name = split(dirname(__file__))[-1]
 
-# from utils.module_register import Module
-# Module(
-#         name='我的世界服务器管理',
-#         file_name=module_name,
-#         author=['Red_lnn'],
-#         description='提供白名单管理、在线列表查询、服务器命令执行功能',
-#         usage=(
-#             ' - [!！.]myid <mc正版id> —— 自助申请白名单\n'
-#             ' - [!！.]list —— 获取服务器在线列表\n'
-#             ' - [!！.]wl —— 白名单相关的菜单\n'
-#             ' - [!！.]run <command> —— 【管理】执行服务器命令\n'
-#             ' - [!！.]ban <QQ号或@QQ> [原因] —— 【管理】从服务器封禁一个QQ及其账号\n'
-#             ' - [!！.]pardon <QQ号或@QQ> —— 【管理】将一个QQ从黑名单中移出\n'
-#             ' - [!！.]clear_leave_time ——【管理】从数据库中清除一个QQ的退群时间'
-#         )
-# ).register()
+channel.meta['name'] = '我的世界服务器管理'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '提供白名单管理、在线列表查询、服务器命令执行功能\n用法：\n  [!！.]mc'
 
 menu = (
     '-----------服务器管理菜单-----------\n'
@@ -106,7 +91,7 @@ is_init: ContextVar[bool] = ContextVar('is_init', default=False)
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[DisableModule.require(module_name)]))
+@channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[DisableModule.require(channel.module)]))
 async def init(app: Ariadne):
     group_list = await app.getGroupList()
     groups = [group.id for group in group_list]
@@ -120,7 +105,6 @@ async def init(app: Ariadne):
         logger.info('初始化mc服务器管理数据库中...')
         member_list = await app.getMemberList(module_config.serverGroup)
         data = [PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp) for member in member_list]
-
         if await Database.add_many(*data):
             logger.info('mc服务器管理数据库初始化完成')
         else:
@@ -414,7 +398,7 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
                 )
 
     try:
-        answer = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
+        answer: bool = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
     except asyncio.exceptions.TimeoutError:
         await app.sendMessage(group, MessageChain.create(Plain('已超时取消')), quote=source)
         return

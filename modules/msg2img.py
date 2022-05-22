@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-from os.path import basename
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -18,27 +17,20 @@ from util.control import DisableModule
 from util.control.interval import GroupInterval
 from util.control.permission import GroupPermission
 from util.get_aiohtto_session import get_session
-from util.module_register import Module
 from util.text2img import async_generate_img
 
 channel = Channel.current()
 
-module_name = basename(__file__)[:-3]
-
-Module(
-    name='消息转图片',
-    file_name=module_name,
-    author=['Red_lnn'],
-    description='仿锤子便签样式的消息转图片，支持纯文本与图像',
-    usage='[!！.](文本转图片|消息转图片)',
-).register()
+channel.meta['name'] = '消息转图片'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['description'] = '仿锤子便签样式的消息转图片，支持纯文本与图像\n用法：\n  [!！.](文本转图片|消息转图片)'
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.](文本转图片|消息转图片)')])],
-        decorators=[GroupPermission.require(), GroupInterval.require(15), DisableModule.require(module_name)],
+        decorators=[GroupPermission.require(), GroupInterval.require(15), DisableModule.require(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, source: Source):
