@@ -85,9 +85,9 @@ async def get_msg_count(
     app: Ariadne,
     group: Group,
     member: Member,
-    arg_type: ArgResult[MessageChain],
-    arg_target: ArgResult[MessageChain],
-    arg_day: ArgResult[MessageChain],
+    arg_type: ArgResult,
+    arg_target: ArgResult,
+    arg_day: ArgResult,
 ):
     if not arg_day.result.isdigit():  # type: ignore
         await app.sendMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))

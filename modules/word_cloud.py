@@ -90,9 +90,7 @@ config = WordCloudConfig()
         ],
     )
 )
-async def command(
-    app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult[MessageChain]
-):
+async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult):
     try:
         day = int(day_length.result)  # type: ignore
     except ValueError:

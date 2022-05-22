@@ -71,8 +71,8 @@ async def main(
     group: Group,
     member: Member,
     tag: RegexResult,
-    san: ArgResult[MessageChain],
-    num: ArgResult[MessageChain],
+    san: ArgResult,
+    num: ArgResult,
 ):
     if int(san.result.asDisplay()) >= 4 and not (  # type: ignore
         member.permission in {MemberPerm.Administrator, MemberPerm.Owner} or member.id in basic_cfg.admin.admins
