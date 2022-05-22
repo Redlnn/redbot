@@ -245,8 +245,6 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
                         else:
                             await app.sendMessage(group, MessageChain.create(Plain('无效的 QQ 号')), quote=source)
                         return
-                    else:
-                        await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
                 elif func == 'id' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
                     if await is_mc_id(target):
@@ -264,7 +262,7 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
                         await app.sendMessage(group, await del_whitelist_by_uuid(target), quote=source)
                     else:
                         await app.sendMessage(group, MessageChain.create(Plain('目标不是有效的 UUID')), quote=source)
-                        return
+                    return
 
     await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
 
@@ -321,8 +319,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                             await app.sendMessage(group, await gen_query_info_text(player), quote=source)
                         else:
                             await app.sendMessage(group, MessageChain.create(Plain('无效的 QQ 号')), quote=source)
-                    else:
-                        await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
+                        return
                 elif func == 'id' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
                     if await is_mc_id(target):
@@ -348,6 +345,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                             MessageChain.create(Plain('目标 ID 不是有效的 Minecraft 正版ID')),
                             quote=source,
                         )
+                    return
                 elif func == 'uuid' and msg[3].onlyContains(Plain):
                     target = msg[3].asDisplay()
                     if await is_uuid(target):
@@ -362,7 +360,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                             await app.sendMessage(group, await gen_query_info_text(player), quote=source)
                     else:
                         await app.sendMessage(group, MessageChain.create(Plain('目标不是有效的 UUID')), quote=source)
-                return
+                    return
 
     await app.sendMessage(group, MessageChain.create(Plain('参数错误，无效的命令')), quote=source)
 
