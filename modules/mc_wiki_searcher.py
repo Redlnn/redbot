@@ -10,7 +10,6 @@
 from asyncio.exceptions import TimeoutError
 from urllib.parse import quote
 
-import aiohttp
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -58,10 +57,9 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
 
     session = get_session()
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(bili_url) as resp:
-                status_code = resp.status
-                text = await resp.text()
+        async with session.get(bili_url) as resp:
+            status_code = resp.status
+            text = await resp.text()
     except TimeoutError:
         status_code = -1
 

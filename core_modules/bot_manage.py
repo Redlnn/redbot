@@ -54,13 +54,13 @@ async def send_to_admin(message: MessageChain):
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[DisableModule.require(channel.module)]))
 async def launched(app: Ariadne):
-    groupList = await app.getGroupList()
+    group_list = await app.getGroupList()
     quit_groups = 0
     # for group in groupList:
     #     if group.id not in perm_cfg.group_whitelist:
     #         await app.quitGroup(group)
     #         quit_groups += 1
-    msg = f'{basic_cfg.botName} 成功启动，当前共加入了 {len(groupList) - quit_groups} 个群'
+    msg = f'{basic_cfg.botName} 成功启动，当前共加入了 {len(group_list) - quit_groups} 个群'
     # if quit_groups > 0:
     #     msg += f'，本次已自动退出 {quit_groups} 个群'
     try:
@@ -104,16 +104,16 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
         )
         return
 
-    sourceGroup: int | None = event.sourceGroup
+    source_group: int | None = event.sourceGroup
     groupname = '未知'
-    if sourceGroup:
-        group = await app.getGroup(sourceGroup)
+    if source_group:
+        group = await app.getGroup(source_group)
         groupname = group.name if group else '未知'
 
     await send_to_admin(
         MessageChain.create(
             Plain(f'收到添加好友事件\nQQ：{event.supplicant}\n昵称：{event.nickname}\n'),
-            Plain(f'来自群：{groupname}({sourceGroup})\n') if sourceGroup else Plain('\n来自好友搜索\n'),
+            Plain(f'来自群：{groupname}({source_group})\n') if source_group else Plain('\n来自好友搜索\n'),
             Plain(event.message) if event.message else Plain('无附加信息'),
             Plain('\n\n是否同意申请？请在10分钟内发送“同意”或“拒绝”，否则自动同意'),
         )
@@ -206,7 +206,8 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
         await send_to_admin(
             MessageChain.create(
                 Plain(
-                    f'由于长时间未审核，已自动拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.sourceGroup}) 请求'
+                    f'由于长时间未审核，已自动拒绝 {event.nickname}({event.supplicant}) '
+                    '邀请进入群 {event.groupName}({event.sourceGroup}) 请求'
                 )
             ),
         )
@@ -219,7 +220,8 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
             await send_to_admin(
                 MessageChain.create(
                     Plain(
-                        f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.sourceGroup}) 请求'
+                        f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) '
+                        '邀请进入群 {event.groupName}({event.sourceGroup}) 请求'
                     )
                 ),
             )
@@ -228,7 +230,8 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
             await send_to_admin(
                 MessageChain.create(
                     Plain(
-                        f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) 邀请进入群 {event.groupName}({event.sourceGroup}) 请求'
+                        f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) '
+                        '邀请进入群 {event.groupName}({event.sourceGroup}) 请求'
                     )
                 ),
             )

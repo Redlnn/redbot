@@ -81,11 +81,11 @@ async def menu(app: Ariadne, group: Group):
             status = '【本群启用】'
         else:
             status = '【全局启用】'
-        msg_send += f'{num}. {status}  {saya.channels[module]._name}\n'
+        msg_send += f'{num}. {status}  {saya.channels[module]._name if saya.channels[module]._name is not None else saya.channels[module].module}\n'
     msg_send += (
         f'{hr}\n'
         f'私は {basic_cfg.admin.masterName} の {basic_cfg.botName} です www\n'
-        '群管理员要想配置模块开关请发送【.启用/禁用模块 <id>】\n'
+        '群管理员要想配置模块开关请发送【.启用/禁用 <id>】\n'
         '要想查询某模块的用法和介绍请发送【.用法 <id>】\n'
         '若无法触发，请检查前缀符号是否正确如！与!\n'
         '或是命令中有无多余空格，除了特别说明，其他模块均不需要@bot\n'

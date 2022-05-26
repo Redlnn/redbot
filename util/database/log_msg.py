@@ -4,7 +4,7 @@
 from sqlalchemy import select
 
 # from sqlmodel import select
-from sqlmodel import and_, col, func, or_
+from sqlmodel import and_, col, func
 
 from . import Database
 from .models import MsgLog

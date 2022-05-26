@@ -27,7 +27,8 @@ class PingClient:
         self._port = port
         self._timeout = timeout
 
-    def _unpack_varint(self, sock):
+    @staticmethod
+    def _unpack_varint(sock):
         data = 0
         for i in range(5):
             ordinal = sock.recv(1)
@@ -42,7 +43,8 @@ class PingClient:
 
         return data
 
-    def _pack_varint(self, data):
+    @staticmethod
+    def _pack_varint(data):
         ordinal = b''
 
         while True:
@@ -93,7 +95,8 @@ class PingClient:
 
         return byte
 
-    def _format_desc(self, data: dict) -> str:  # type: ignore
+    @staticmethod
+    def _format_desc(data: dict) -> str:  # type: ignore
         if 'extra' in data:
             return ''.join(part['text'] for part in data['extra'])
         elif 'text' in data:

@@ -105,6 +105,7 @@ def generate_img(
     - 网络文件转 bytes 方法：requests.get('http://localhost/1.jpg'.content)
 
     :param text_and_img: 要放到图里的文本（str）/图片（bytes）
+    :param config: 配置
     :return: 图片文件的路径
     """
 

@@ -10,7 +10,6 @@
 """
 
 import datetime
-import os
 import random
 from pathlib import Path
 
@@ -120,12 +119,12 @@ async def scheduled_del_outdated_data() -> None:
     """
     定时删除过时的数据文件
     """
-    for _ in os.listdir(data_path):
+    for _ in data_path.iterdir():
         if (
-            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', _)
+            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', str(_))
             and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json'
         ):
-            os.remove(Path(data_path, _))
+            Path(data_path, _).unlink()
             logger.info(f'发现过期的数据文件 {_}，已删除')
 
 
@@ -134,12 +133,12 @@ async def del_outdated_data() -> None:
     """
     在bot启动时删除过时的数据文件
     """
-    for _ in os.listdir(data_path):
+    for _ in data_path.iterdir():
         if (
-            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', _)
+            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', str(_))
             and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json'
         ):
-            os.remove(Path(data_path, _))
+            Path(data_path, _).unlink()
             logger.info(f'发现过期的数据文件 {_}，已删除')
 
 

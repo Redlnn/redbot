@@ -3,7 +3,6 @@
 
 import time
 from io import BytesIO
-from os.path import dirname, join
 from pathlib import Path
 from typing import Optional, Union
 
@@ -137,7 +136,6 @@ def get_signin_img(
     Args:
         qq (int): QQ号
         name (str): 群名片
-        uuid (Union[UUID, str]): 用户唯一标识
         level (int): 好感等级
         exp (tuple[int, int]): 好感经验值，请使用 (当前经验值, 总所需经验值) 的格式传入
         total_days (int): 累计签到天数
@@ -176,7 +174,7 @@ def get_signin_img(
     # 魔法阵
     mahojin_size_offset = 55  # 魔法阵比头像大多少（半径）
     mahojin_size = avatar_size + 2 * mahojin_size_offset
-    mahojin = Image.open(join(dirname(__file__), "imgs", "mahojin.png"))
+    mahojin = Image.open(Path(__file__) / "imgs" / "mahojin.png")
     mahojin = mahojin.resize((mahojin_size, mahojin_size), Image.LANCZOS)
     canvas.paste(mahojin, (avatar_xy - mahojin_size_offset, avatar_xy - mahojin_size_offset), mask=mahojin.split()[3])
 

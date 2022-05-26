@@ -26,13 +26,13 @@ if basic_cfg.console:
             await app.stop()
             console.stop()
 
-    @channel.use(ConsoleSchema([Twilight.from_command('send {type} {id} {content}')]))
-    async def group_chat(app: Ariadne, type: RegexResult, id: RegexResult, content: RegexResult):
-        match type.result.asDisplay():  # type: ignore
+    @channel.use(ConsoleSchema([Twilight.from_command('send {target_type} {target_id} {content}')]))
+    async def group_chat(app: Ariadne, target_type: RegexResult, target_id: RegexResult, content: RegexResult):
+        match target_type.result.asDisplay():  # type: ignore
             case 'group':
-                await app.sendGroupMessage(int(id.result.asDisplay()), content.result)  # type: ignore
+                await app.sendGroupMessage(int(target_id.result.asDisplay()), content.result)  # type: ignore
             case 'friend':
-                await app.sendFriendMessage(int(id.result.asDisplay()), content.result)  # type: ignore
+                await app.sendFriendMessage(int(target_id.result.asDisplay()), content.result)  # type: ignore
             case _:
                 logger.warning('参数错误')
 
@@ -45,9 +45,9 @@ if basic_cfg.console:
             case MemberPerm.Owner:
                 return '群主'
 
-    @channel.use(ConsoleSchema([Twilight.from_command('list {type}')]))
-    async def list(app: Ariadne, type: RegexResult):
-        match type.result.asDisplay():  # type: ignore
+    @channel.use(ConsoleSchema([Twilight.from_command('list {target_type}')]))
+    async def list_target(app: Ariadne, target_type: RegexResult):
+        match target_type.result.asDisplay():  # type: ignore
             case 'group':
                 for group in await app.getGroupList():
                     logger.opt(raw=True).info(f'{group.name}({group.id}) - {get_perm_name(group.accountPerm)}\n')

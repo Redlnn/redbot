@@ -23,12 +23,14 @@ class Database:
 
     lock: Optional[Semaphore] = None
     engine: AsyncEngine
-    # Session: sessionmaker[AsyncSession]  # 不可取消注释，该类型注释仅给人看
+    Session: sessionmaker[AsyncSession]  # type: ignore
 
     @classmethod
     async def init(cls, debug: bool = False) -> None:
         if basic_cfg.databaseUrl.startswith('sqlite'):
             cls.lock = Semaphore(1)
+        if not basic_cfg.databaseUrl.startswith('sqlite') and not basic_cfg.databaseUrl.startswith('mysql+asyncmy'):
+            raise ValueError('不支持的数据库类型')
         cls.engine = create_async_engine(
             basic_cfg.databaseUrl, echo=debug, future=True, pool_pre_ping=True, pool_recycle=180
         )

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import importlib
+import os
 from contextvars import ContextVar
 
 from fastapi import WebSocket
@@ -19,6 +21,8 @@ from util.fastapi_core import FastApiCore
 from util.fastapi_core.event import NewWebsocketClient
 from util.fastapi_core.manager import WsConnectionManager
 from util.fastapi_core.router import Router
+
+from .oauth2 import Token, login_for_access_token
 
 channel = Channel.current()
 manager = WsConnectionManager()
@@ -46,16 +50,10 @@ async def websocket(client: WebSocket):
             break
 
 
-from .oauth2 import login_for_access_token
-from .oauth2.model import Token
-
 fastapicore.asgi.add_api_route('/', endpoint=root, methods=['GET'])  # type: ignore
 fastapicore.asgi.add_api_route('/login', endpoint=login_for_access_token, response_model=Token, methods=['POST'])  # type: ignore
 
 fastapicore.asgi.add_api_websocket_route('/ws', endpoint=websocket)
-
-import importlib
-import os
 
 for i in os.listdir(os.path.join('api')):
     if i.endswith('.py'):

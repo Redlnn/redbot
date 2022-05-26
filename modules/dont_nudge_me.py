@@ -5,7 +5,6 @@ import asyncio
 import contextlib
 import os
 from pathlib import Path
-from posixpath import basename
 from random import choice, randrange, uniform
 
 from graia.ariadne.app import Ariadne

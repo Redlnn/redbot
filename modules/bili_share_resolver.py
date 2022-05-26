@@ -81,7 +81,6 @@ class VideoInfo:
 )
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
     p = re.compile(f'({avid_re})|({bvid_re})')
-    video_id = None
     msg_str = message.asPersistentString()
     if 'b23.tv/' in msg_str:
         msg_str = await b23_url_extract(msg_str)

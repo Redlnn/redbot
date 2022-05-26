@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import time
-from os.path import dirname, join
 from pathlib import Path
 from random import choices, randint
 
@@ -120,8 +119,8 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
         is_signin_consecutively=is_signin_consecutively,
         rewards=[
             Reward(name='经验', num=added_exp),
-            Reward(num=added_coin, ico=join(dirname(__file__), 'imgs', '原石.png')),
-            Reward(num=added_gold, ico=join(dirname(__file__), 'imgs', '纠缠之缘.png')),
+            Reward(num=added_coin, ico=Path(__file__).parent / 'imgs' / '原石.png'),
+            Reward(num=added_gold, ico=Path(__file__).parent / 'imgs' / '纠缠之缘.png'),
         ],
         font_path=str(font_path),
     )

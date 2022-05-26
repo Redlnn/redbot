@@ -150,7 +150,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "arclet-alconna"
-version = "0.9.3.2"
+version = "0.9.3.3"
 description = "A Fast Command Analyser based on Dict"
 category = "main"
 optional = false
@@ -984,6 +984,19 @@ description = "NumPy is the fundamental package for array computing with Python.
 category = "main"
 optional = false
 python-versions = ">=3.8"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tuna-tsinghua"
+
+[[package]]
+name = "opencv-python"
+version = "4.5.5.64"
+description = "Wrapper package for OpenCV python bindings."
+category = "main"
+optional = false
+python-versions = ">=3.6"
 
 [package.source]
 type = "legacy"
@@ -1874,7 +1887,7 @@ anyio = [
     {file = "anyio-3.6.1.tar.gz", hash = "sha256:413adf95f93886e442aea925f3ee43baa5a765a64a0f52c6081894f9992fdd0b"},
 ]
 arclet-alconna = [
-    {file = "arclet_alconna-0.9.3.2-py3-none-any.whl", hash = "sha256:51a1826640507003e1db809a3ee3ef63382906cebc804ba3ec4d6379ba8bd88e"},
+    {file = "arclet_alconna-0.9.3.3-py3-none-any.whl", hash = "sha256:187b8cb086f7763b27bcbec0caa93510695bb73a00a5f1a85ca047b98a869dc4"},
 ]
 arclet-alconna-graia = [
     {file = "arclet_alconna_graia-0.0.12-py3-none-any.whl", hash = "sha256:2a54b8db36d8d60e99126b95dc9aee13490af6a6a194d40c78590494e017b312"},
@@ -2663,6 +2676,15 @@ numpy = [
     {file = "numpy-1.22.4-cp39-cp39-win_amd64.whl", hash = "sha256:f0725df166cf4785c0bc4cbfb320203182b1ecd30fee6e541c8752a92df6aa32"},
     {file = "numpy-1.22.4-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0791fbd1e43bf74b3502133207e378901272f3c156c4df4954cad833b1380207"},
     {file = "numpy-1.22.4.zip", hash = "sha256:425b390e4619f58d8526b3dcf656dde069133ae5c240229821f01b5f44ea07af"},
+]
+opencv-python = [
+    {file = "opencv-python-4.5.5.64.tar.gz", hash = "sha256:f65de0446a330c3b773cd04ba10345d8ce1b15dcac3f49770204e37602d0b3f7"},
+    {file = "opencv_python-4.5.5.64-cp36-abi3-macosx_10_15_x86_64.whl", hash = "sha256:a512a0c59b6fec0fac3844b2f47d6ecb1a9d18d235e6c5491ce8dbbe0663eae8"},
+    {file = "opencv_python-4.5.5.64-cp36-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ca6138b6903910e384067d001763d40f97656875487381aed32993b076f44375"},
+    {file = "opencv_python-4.5.5.64-cp36-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b293ced62f4360d9f11cf72ae7e9df95320ff7bf5b834d87546f844e838c0c35"},
+    {file = "opencv_python-4.5.5.64-cp36-abi3-win32.whl", hash = "sha256:6247e584813c00c3b9ed69a795da40d2c153dc923d0182e957e1c2f00a554ac2"},
+    {file = "opencv_python-4.5.5.64-cp36-abi3-win_amd64.whl", hash = "sha256:408d5332550287aa797fd06bef47b2dfed163c6787668cc82ef9123a9484b56a"},
+    {file = "opencv_python-4.5.5.64-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:7787bb017ae93d5f9bb1b817ac8e13e45dd193743cb648498fcab21d00cf20a3"},
 ]
 orjson = [
     {file = "orjson-3.6.8-cp310-cp310-macosx_10_7_x86_64.whl", hash = "sha256:3a287a650458de2211db03681b71c3e5cb2212b62f17a39df8ad99fc54855d0f"},

@@ -37,8 +37,6 @@ class UnauthorizedException(HTTPException):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=detail,
             headers={"WWW-Authenticate": "Bearer"},
-            *args,
-            **kwargs,
         )
 
 
@@ -88,7 +86,7 @@ def authenticate_user(username: str, plain_password: str) -> UserInDB:
         user(UserInDB): 用户信息
     """
     user = get_user(username)
-    if not user:
+    if user is None:
         raise UnauthorizedException(detail="无效的用户名或密码")
     if user.disabled:
         raise UnauthorizedException(detail="该用户已被禁用")

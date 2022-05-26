@@ -73,7 +73,7 @@ async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgRes
             uuid = orjson.loads(await resp.text())["id"]
         url = RENDER_ADDR[option.result].format(uuid=uuid)  # type: ignore
         await app.sendMessage(group, MessageChain.create(Image(url=url)))
-    except TimeoutError as e:
+    except TimeoutError:
         await app.sendMessage(group, MessageChain.create(f"连接API超时"))
     except Exception as e:
         await app.sendMessage(group, MessageChain.create(f"无法获取皮肤: {e}"))
