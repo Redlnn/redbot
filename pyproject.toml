@@ -16,7 +16,7 @@ alembic = "^1.7.7"
 fastapi = "^0.78.0"
 gitpython = "^3.1.27"
 graia-ariadne = {extras = ["full"], version = "^0.6.16", allow-prereleases=true}
-httpx = "^0.22.0"
+httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
 lxml = "^4.8.0"
