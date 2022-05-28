@@ -29,7 +29,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from pydantic import AnyHttpUrl
 
 from util.config import RConfig, basic_cfg
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.get_aiohtto_session import get_session
@@ -63,7 +63,7 @@ setu_config = Setu()
                 ],
             )
         ],
-        decorators=[GroupPermission.require(), MemberInterval.require(30), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module)],
     )
 )
 async def main(

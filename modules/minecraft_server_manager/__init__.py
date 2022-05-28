@@ -29,7 +29,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 from sqlalchemy import select, update
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 from util.database import Database
 from util.text2img import generate_img
@@ -56,7 +56,7 @@ channel = Channel.current()
 
 channel.meta['name'] = '我的世界服务器管理'
 channel.meta['author'] = ['Red_lnn']
-channel.meta['description'] = '提供白名单管理、在线列表查询、服务器命令执行功能\n用法：\n  [!！.]mc'
+channel.meta['description'] = '（自用，仅特殊群启用）提供白名单管理、在线列表查询、服务器命令执行功能\n用法：\n  [!！.]mc'
 
 menu = (
     '-----------服务器管理菜单-----------\n'
@@ -91,7 +91,7 @@ is_init: ContextVar[bool] = ContextVar('is_init', default=False)
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[DisableModule.require(channel.module)]))
+@channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[require_disable(channel.module)]))
 async def init(app: Ariadne):
     group_list = await app.getGroupList()
     groups = [group.id for group in group_list]

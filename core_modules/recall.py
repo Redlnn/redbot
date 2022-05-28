@@ -23,7 +23,7 @@ from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
 
 from util.config import basic_cfg
-from util.control import DisableModule
+from util.control import require_disable
 
 channel = Channel.current()
 
@@ -38,7 +38,7 @@ lastest_msg: ContextVar[list[dict]] = ContextVar('lastest_msg', default=[])
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        decorators=[DisableModule.require(channel.module)],
+        decorators=[require_disable(channel.module)],
     )
 )
 async def recall_message(app: Ariadne, group: Group, member: Member, message: MessageChain):
@@ -80,7 +80,7 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
 @channel.use(
     ListenerSchema(
         listening_events=[ActiveGroupMessage],
-        decorators=[DisableModule.require(channel.module)],
+        decorators=[require_disable(channel.module)],
     )
 )
 async def listener(event: ActiveGroupMessage):

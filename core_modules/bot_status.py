@@ -17,7 +17,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from util import get_graia_version
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 from util.text2img import async_generate_img, hr
 
@@ -46,7 +46,7 @@ pid = os.getpid()
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.](status|version)')])],
-        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group):

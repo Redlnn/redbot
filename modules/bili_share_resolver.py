@@ -30,7 +30,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.get_aiohtto_session import get_session
@@ -76,7 +76,7 @@ class VideoInfo:
 
 @channel.use(
     ListenerSchema(
-        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(channel.module)]
+        listening_events=[GroupMessage], decorators=[GroupPermission.require(), require_disable(channel.module)]
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):

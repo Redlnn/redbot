@@ -24,7 +24,7 @@ from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 
 channel = Channel.current()
@@ -38,7 +38,7 @@ channel.meta['description'] = '获得一个随机数\n用法：\n  [!！.]roll {
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]roll'), 'target' @ WildcardMatch()])],
-        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
@@ -54,7 +54,7 @@ async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.](dice|骰子|色子)')])],
-        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def dice(app: Ariadne, group: Group):

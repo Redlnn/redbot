@@ -22,7 +22,7 @@ from graia.ariadne.model import Group, Member, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 from util.database.log_msg import (
     get_group_talk_count,
@@ -47,7 +47,7 @@ channel.meta['can_disable'] = False
 
 @channel.use(
     ListenerSchema(
-        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(channel.module)]
+        listening_events=[GroupMessage], decorators=[GroupPermission.require(), require_disable(channel.module)]
     )
 )
 async def main(group: Group, member: Member, message: MessageChain, source: Source):
@@ -78,7 +78,7 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
                 ],
             )
         ],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def get_msg_count(
@@ -168,7 +168,7 @@ async def get_msg_count(
                 ],
             )
         ],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexResult, at: ElementResult):

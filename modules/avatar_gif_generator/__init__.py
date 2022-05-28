@@ -11,7 +11,7 @@ from graia.ariadne.model import Group, Member
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 
@@ -30,7 +30,7 @@ func = {
 
 @channel.use(
     ListenerSchema(
-        listening_events=[GroupMessage], decorators=[GroupPermission.require(), DisableModule.require(channel.module)]
+        listening_events=[GroupMessage], decorators=[GroupPermission.require(), require_disable(channel.module)]
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):

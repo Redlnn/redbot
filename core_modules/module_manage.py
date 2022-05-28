@@ -22,7 +22,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
 from util.config import basic_cfg, modules_cfg
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 from util.text2img import Text2ImgConfig, async_generate_img, hr
 
@@ -64,7 +64,7 @@ async def get_channel(module_id: str, app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.](菜单|menu)')])],
-        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def menu(app: Ariadne, group: Group):
@@ -76,11 +76,10 @@ async def menu(app: Ariadne, group: Group):
         if global_disabled:
             status = '【全局禁用】'
         elif group.id in disabled_groups:
-            status = '【本群禁用】'
-        elif len(disabled_groups) > 0:
-            status = '【本群启用】'
+            status = '  【禁用】  '
+        # if len(disabled_groups) > 0 只有本群启用 else 全局启用
         else:
-            status = '【全局启用】'
+            status = '            '
         msg_send += f'{num}. {status}  {saya.channels[module]._name if saya.channels[module]._name is not None else saya.channels[module].module}\n'
     msg_send += (
         f'{hr}\n'
@@ -88,8 +87,7 @@ async def menu(app: Ariadne, group: Group):
         '群管理员要想配置模块开关请发送【.启用/禁用 <id>】\n'
         '要想查询某模块的用法和介绍请发送【.用法 <id>】\n'
         '若无法触发，请检查前缀符号是否正确如！与!\n'
-        '或是命令中有无多余空格，除了特别说明，其他模块均不需要@bot\n'
-        '全局禁用的模块不能重新开启\n'
+        '或是命令中有无多余空格，除特别说明外均不需要 @bot'
     )
     img_bytes = await async_generate_img([msg_send], Text2ImgConfig(FontName='sarasa-mono-sc-semibold.ttf'))
     await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
@@ -99,7 +97,7 @@ async def menu(app: Ariadne, group: Group):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]启用')], 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
@@ -126,7 +124,7 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]禁用')], 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
@@ -153,7 +151,7 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]全局启用')], 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def global_enable_module(app: Ariadne, group: Group, module_id: RegexResult):
@@ -174,7 +172,7 @@ async def global_enable_module(app: Ariadne, group: Group, module_id: RegexResul
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]全局禁用')], 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def global_disable_module(app: Ariadne, group: Group, module_id: RegexResult):
@@ -197,7 +195,7 @@ async def global_disable_module(app: Ariadne, group: Group, module_id: RegexResu
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]用法')], 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
@@ -227,7 +225,7 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]重载模块')], 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
     )
 )
 async def reload_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
@@ -277,7 +275,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]加载')], 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
     )
 )
 async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
@@ -326,7 +324,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]卸载')], 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
     )
 )
 async def unload_module(app: Ariadne, group: Group, module_id: RegexResult):

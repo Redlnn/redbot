@@ -21,7 +21,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from sqlalchemy import select
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 from util.database import Database
 from util.database.models import UserInfo
@@ -56,7 +56,7 @@ levels = {
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]?签到').space(SpacePolicy.NOSPACE)])],
-        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def signin(app: Ariadne, group: Group, member: Member, source: Source):
@@ -134,7 +134,7 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
         inline_dispatchers=[
             Twilight([RegexMatch(r'[!！.]清除签到信息').space(SpacePolicy.FORCE), 'target' @ WildcardMatch()])
         ],
-        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
     )
 )
 async def clear(app: Ariadne, group: Group, target: RegexResult):

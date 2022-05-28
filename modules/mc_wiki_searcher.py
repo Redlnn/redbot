@@ -25,7 +25,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from lxml import etree
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 from util.get_aiohtto_session import get_session
 
@@ -42,7 +42,7 @@ channel.meta['description'] = '[!！.]wiki <要搜索的关键词>'
         inline_dispatchers=[
             Twilight([RegexMatch(r'[!！.]wiki').space(SpacePolicy.FORCE)], 'keyword' @ RegexMatch(r'\S+'))
         ],
-        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, keyword: RegexResult):

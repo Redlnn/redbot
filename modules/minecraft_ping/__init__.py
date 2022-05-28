@@ -22,7 +22,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
 from util.config import RConfig
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 
@@ -55,7 +55,7 @@ ping_cfg = McServerPingConfig()
                 ],
             )
         ],
-        decorators=[GroupPermission.require(), MemberInterval.require(10), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, ping_target: RegexResult):

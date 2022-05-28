@@ -20,7 +20,7 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.config import basic_cfg
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 
 channel = Channel.current()
@@ -34,7 +34,7 @@ channel.meta['description'] = '@bot {主语}<介词>不<介词>{动作}\n如：@
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight('at' @ ElementMatch(At).space(SpacePolicy.FORCE), 'any' @ WildcardMatch())],
-        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: ElementResult):

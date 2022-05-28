@@ -11,7 +11,7 @@ from graia.ariadne.model import Group, MemberPerm
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 
 channel = Channel.current()
@@ -28,7 +28,7 @@ channel.meta['description'] = '仅限群管理员使用\n'
         listening_events=[GroupMessage],
         decorators=[
             GroupPermission.require(MemberPerm.Administrator, send_alert=False),
-            DisableModule.require(channel.module),
+            require_disable(channel.module),
         ],
     )
 )

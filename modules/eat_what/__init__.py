@@ -14,7 +14,7 @@ from graia.ariadne.model import Group
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.permission import GroupPermission
 
 channel = Channel.current()
@@ -34,7 +34,7 @@ async def get_food():
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.]吃啥').space(SpacePolicy.NOSPACE)])],
-        decorators=[GroupPermission.require(), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, source: Source):

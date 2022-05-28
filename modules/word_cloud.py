@@ -40,7 +40,7 @@ from PIL import Image as Img
 from wordcloud import ImageColorGenerator, WordCloud
 
 from util.config import RConfig
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.database.log_msg import get_group_msg, get_member_msg
@@ -85,8 +85,8 @@ config = WordCloudConfig()
         ],
         decorators=[
             GroupPermission.require(),
-            DisableModule.require(channel.module),
-            DisableModule.require('core_modules.msg_loger'),
+            require_disable(channel.module),
+            require_disable('core_modules.msg_loger'),
         ],
     )
 )
@@ -149,8 +149,8 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexRe
         ],
         decorators=[
             GroupPermission.require(),
-            DisableModule.require(channel.module),
-            DisableModule.require('core_modules.msg_loger'),
+            require_disable(channel.module),
+            require_disable('core_modules.msg_loger'),
         ],
     )
 )

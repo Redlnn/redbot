@@ -13,7 +13,7 @@ from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.interval import GroupInterval
 from util.control.permission import GroupPermission
 from util.get_aiohtto_session import get_session
@@ -30,7 +30,7 @@ channel.meta['description'] = '仿锤子便签样式的消息转图片，支持�
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.](文本转图片|消息转图片)')])],
-        decorators=[GroupPermission.require(), GroupInterval.require(15), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), GroupInterval.require(15), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member, source: Source):

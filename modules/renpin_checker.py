@@ -29,7 +29,7 @@ from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
 from loguru import logger
 
-from util.control import DisableModule
+from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.path import data_path
@@ -97,7 +97,7 @@ lucky_things = {
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[Twilight([RegexMatch(r'[!！.](jrrp|抽签)')])],
-        decorators=[GroupPermission.require(), MemberInterval.require(10), DisableModule.require(channel.module)],
+        decorators=[GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, member: Member):
