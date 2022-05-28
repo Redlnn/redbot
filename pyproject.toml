@@ -31,6 +31,7 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 python-multipart = "^0.0.5"
 pyyaml = "^6.0"
 regex = "^2022.4.24"
+richuru = "^0.1.0"
 sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.36"}
 sqlmodel = "^0.0.6"
 uvicorn = {extras = ["standard"], version = "^0.17.6"}

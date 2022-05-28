@@ -23,9 +23,7 @@ from .permission import GroupPermission
 
 
 class GroupInterval:
-    """
-    用于管理群组调用bot的冷却的类，不应被实例化
-    """
+    """用于管理群组调用bot的冷却的类，不应被实例化"""
 
     last_exec: DefaultDict[int, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[int, float] = defaultdict(float)
@@ -91,9 +89,7 @@ class GroupInterval:
 
 
 class MemberInterval:
-    """
-    用于管理群成员调用bot的冷却的类，不应被实例化
-    """
+    """用于管理群成员调用bot的冷却的类，不应被实例化"""
 
     last_exec: DefaultDict[str, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
     last_alert: DefaultDict[str, float] = defaultdict(float)
@@ -165,9 +161,7 @@ class MemberInterval:
 
 
 class ManualInterval:
-    """
-    用于管理自定义的调用bot的冷却的类，不应被实例化
-    """
+    """用于管理自定义的调用bot的冷却的类，不应被实例化"""
 
     last_exec: DefaultDict[str, Tuple[int, float]] = defaultdict(lambda: (1, 0.0))
 

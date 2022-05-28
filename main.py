@@ -4,6 +4,7 @@
 import pkgutil
 from pathlib import Path
 
+import richuru
 from graia.ariadne.app import Ariadne
 from graia.ariadne.console import Console
 from graia.ariadne.console.saya import ConsoleBehaviour
@@ -20,6 +21,8 @@ from util.database import Database
 from util.logger_rewrite import rewrite_ariadne_logger
 from util.path import modules_path, root_path
 from util.send_action import Safe
+
+richuru.install()
 
 ignore = ('__init__.py', '__pycache__')
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from asyncio import Semaphore
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from loguru import logger
 from sqlalchemy.engine.result import Result, Row
@@ -20,10 +20,10 @@ from .models import *
 
 
 class Database:
-
     lock: Optional[Semaphore] = None
     engine: AsyncEngine
-    Session: sessionmaker[AsyncSession]  # type: ignore
+    if TYPE_CHECKING:
+        session: sessionmaker[AsyncSession]  # type: ignore
 
     @classmethod
     async def init(cls, debug: bool = False) -> None:
@@ -36,11 +36,11 @@ class Database:
         )
         async with cls.engine.begin() as conn:
             await conn.run_sync(SQLModel.metadata.create_all)
-        cls.Session = sessionmaker(cls.engine, class_=AsyncSession, expire_on_commit=False, future=True)  # type: ignore
+        cls.session = sessionmaker(cls.engine, class_=AsyncSession, expire_on_commit=False, future=True)  # type: ignore
 
     @classmethod
     async def exec(cls, sql: Executable) -> Optional[Result]:
-        async with cls.Session() as session:
+        async with cls.session() as session:
             # if cls.lock:
             #     await cls.lock.acquire()
             try:
@@ -57,7 +57,7 @@ class Database:
     @classmethod
     async def exec_read(cls, sql: Executable) -> Result:
         """Only for read operation"""
-        async with cls.Session() as session:
+        async with cls.session() as session:
             result = await session.execute(sql)
             return result
 
@@ -73,7 +73,7 @@ class Database:
 
     @classmethod
     async def add(cls, row: SQLModel) -> bool:
-        async with cls.Session() as session:
+        async with cls.session() as session:
             session.add(row)
             # if cls.lock:
             #     await cls.lock.acquire()
@@ -91,7 +91,7 @@ class Database:
 
     @classmethod
     async def add_many(cls, *rows: SQLModel) -> bool:
-        async with cls.Session() as session:
+        async with cls.session() as session:
             for row in rows:
                 session.add(row)
             # if cls.lock:
@@ -115,7 +115,7 @@ class Database:
 
     @classmethod
     async def delete_exist(cls, row: SQLModel) -> bool:
-        async with cls.Session() as session:
+        async with cls.session() as session:
             # if cls.lock:
             #     await cls.lock.acquire()
             try:
@@ -132,7 +132,7 @@ class Database:
 
     @classmethod
     async def delete_many_exist(cls, *rows: SQLModel) -> bool:
-        async with cls.Session() as session:
+        async with cls.session() as session:
             # if cls.lock:
             #     await cls.lock.acquire()
             try:
