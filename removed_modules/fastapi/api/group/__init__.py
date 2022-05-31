@@ -16,8 +16,6 @@ perm_map = {
     MemberPerm.Owner: '群主',
 }
 
-group_list_cache: ContextVar[dict[int, dict[str, int | str]]] = ContextVar('group_list_cache')
-
 
 @Router.get('/api/get_group_list', response_model=GeneralResponse)
 async def get_group_list():
@@ -33,5 +31,4 @@ async def get_group_list():
         for group in group_list
     }
 
-    group_list_cache.set(tmp)
     return GeneralResponse(data=tmp)

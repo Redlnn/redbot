@@ -53,8 +53,15 @@ channel.meta['can_disable'] = False
 async def main(group: Group, member: Member, message: MessageChain, source: Source):
     message = message.copy()
     for ind, elem in enumerate(message[:]):
-        if not isinstance(elem, Plain):
-            message.__root__[ind] = Plain(elem.asDisplay())
+        match elem.type:
+            case 'Plain' |'At'|'AtAll'| 'Face'| 'MarketFace'| 'Xml'| 'Json'| 'App'| 'Forward':
+                continue
+            case 'Poke'|'Dice'|'MusicShare' | 'File':
+                return
+            case 'Image'| 'FlashImage' | 'Voice':
+                message.__root__[ind] = Plain(elem.asNoBinaryPersistentString())  # type: ignore
+            case _:
+                message.__root__[ind] = Plain(elem.asDisplay())
     await log_msg(
         str(group.id),
         str(member.id),

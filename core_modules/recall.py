@@ -47,7 +47,7 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
     if message.asDisplay() == '.撤回最近':
         msg_list = lastest_msg.get()
         for item in msg_list:
-            with contextlib.suppress(UnknownError, UnknownTarget):
+            with contextlib.suppress(UnknownTarget, InvalidArgument, RemoteException, UnknownError):
                 await app.recallMessage(item['id'])
             with contextlib.suppress(ValueError):
                 msg_list.remove(item)
@@ -55,7 +55,6 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
     elif message.has(Quote):
         if message.getFirst(Quote).senderId != basic_cfg.miraiApiHttp.account:
             return
-        print(f'"{message.include(Plain).merge().asDisplay().strip()}"')
         if message.include(Plain).merge().asDisplay().strip() == '.撤回':
             target_id = message.getFirst(Quote).id
             msg_list = lastest_msg.get()

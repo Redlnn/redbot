@@ -63,7 +63,7 @@ channel.meta['description'] = '获取指定目标在最近n天内的聊天词云
 
 class WordCloudConfig(RConfig):
     __filename__: str = 'wordcloud'
-    blacklistWord: list[str] = ['[APP消息]', '[XML消息]', '[JSON消息]', '视频短片']
+    blacklistWord: list[str] = []
     fontName: str = 'OPPOSans-B.ttf'
 
 
@@ -271,8 +271,8 @@ def get_frequencies(msg_list: list[str]) -> dict:
     for persistent_string in msg_list:
         if skip(persistent_string):
             continue
-        text += re.sub(r'\[mirai:.+\]', '', persistent_string)
-        text += '\n'
+        tmp = re.sub(r'\[mirai:.+\]', '', persistent_string)
+        text += f'{tmp}\n' if tmp else ''
     if not Path(data_path, 'WordCloud', 'user_dict.txt').exists():
         f = open(Path(data_path, 'WordCloud', 'user_dict.txt'), 'a+')
         f.close()
@@ -294,8 +294,8 @@ def gen_wordcloud(words: dict) -> bytes:
     wordcloud.generate_from_frequencies(words)
     image_colors = ImageColorGenerator(mask, default_color=(255, 255, 255))
     wordcloud.recolor(color_func=image_colors)
-    pyplot.imshow(wordcloud.recolor(color_func=image_colors), interpolation='bilinear')
-    pyplot.axis('off')
+    # pyplot.imshow(wordcloud.recolor(color_func=image_colors), interpolation='bilinear')
+    # pyplot.axis('off')
     image = wordcloud.to_image()
     imageio = BytesIO()
     image.save(imageio, format='JPEG', quality=90, optimize=True, progressive=True, subsampling=2, qtables='web_high')
