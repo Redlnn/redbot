@@ -29,7 +29,7 @@ from graia.saya.channel import Channel
 from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import get_session
+from util.get_aiohtto_session import GetAiohttpSession
 
 channel = Channel.current()
 
@@ -69,7 +69,7 @@ RENDER_ADDR = {
 async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult):
     session = get_session()
     try:
-        async with session.get(UUID_ADDRESS_STRING.format(name=name.result.asDisplay())) as resp:  # type: ignore
+        session = GetAiohttpSession.get_session()
             uuid = orjson.loads(await resp.text())["id"]
         url = RENDER_ADDR[option.result].format(uuid=uuid)  # type: ignore
         await app.sendMessage(group, MessageChain.create(Image(url=url)))

@@ -16,7 +16,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from util.control import require_disable
 from util.control.interval import GroupInterval
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import get_session
+from util.get_aiohtto_session import GetAiohttpSession
 from util.text2img import async_generate_img
 
 channel = Channel.current()
@@ -51,7 +51,7 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
         return
 
     img_list: list[str | bytes] = []
-    session = get_session()
+    session = GetAiohttpSession.get_session()
     for ind, elem in enumerate(answer[:]):
         if type(elem) in {At, AtAll}:
             answer.__root__[ind] = Plain(elem.asDisplay())

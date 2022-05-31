@@ -33,7 +33,7 @@ from loguru import logger
 from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import get_session
+from util.get_aiohtto_session import GetAiohttpSession
 from util.text2img import async_generate_img, hr
 
 channel = Channel.current()
@@ -127,14 +127,14 @@ async def b23_url_extract(b23_url: str) -> Literal[False] | str:
     url = re.search(r'b23.tv(/|\\)[0-9a-zA-Z]+', b23_url)
     if url is None:
         return False
-    session = get_session()
+    session = GetAiohttpSession.get_session()
     async with session.get(f'https://{url.group()}', allow_redirects=True) as resp:
         target = str(resp.url)
     return target if 'www.bilibili.com/video/' in target else False
 
 
 async def get_video_info(video_id: str) -> dict:  # type: ignore
-    session = get_session()
+    session = GetAiohttpSession.get_session()
     if video_id[:2].lower() == 'av':
         async with session.get(f'http://api.bilibili.com/x/web-interface/view?aid={video_id[2:]}') as resp:
             return await resp.json()
@@ -200,7 +200,7 @@ async def gen_img(data: VideoInfo) -> bytes:
         f'{hr}\n{data.desc}'
     )
 
-    session = get_session()
+    session = GetAiohttpSession.get_session()
     async with session.get(data.cover_url) as resp:
         img_contents: list[str | bytes] = [await resp.content.read(), info_text]
     return await async_generate_img(img_contents)

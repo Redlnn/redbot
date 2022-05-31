@@ -27,7 +27,7 @@ from lxml import etree
 
 from util.control import require_disable
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import get_session
+from util.get_aiohtto_session import GetAiohttpSession
 
 channel = Channel.current()
 
@@ -55,7 +55,7 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
     bili_url = 'https://wiki.biligame.com/mc/' + search_parm
     fandom_url = 'https://minecraft.fandom.com/zh/wiki/' + search_parm + '?variant=zh-cn'
 
-    session = get_session()
+    session = GetAiohttpSession.get_session()
     try:
         async with session.get(bili_url) as resp:
             status_code = resp.status

@@ -32,7 +32,7 @@ from util.config import RConfig, basic_cfg
 from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import get_session
+from util.get_aiohtto_session import GetAiohttpSession
 
 channel = Channel.current()
 
@@ -79,7 +79,7 @@ async def main(
     ):
         await app.sendMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
         return
-    session = get_session()
+    session = GetAiohttpSession.get_session()
     if tag.matched:
         target_tag = tag.result.getFirst(Plain).text  # type: ignore
         async with session.get(
