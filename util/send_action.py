@@ -3,6 +3,9 @@
 
 from typing import Optional, TypeVar, Union, overload
 
+from graia.ariadne.app import Ariadne
+from graia.ariadne.message.chain import MessageChain
+from graia.ariadne.message.element import Plain
 from graia.ariadne.model import BotMessage
 from graia.ariadne.typing import SendMessageAction, SendMessageException
 from graia.ariadne.util.send import Ignore
@@ -34,24 +37,13 @@ class Safe(SendMessageAction):
 
     @staticmethod
     async def _handle(item: SendMessageException, ignore: bool):
-        from graia.ariadne.app import Ariadne
-        from graia.ariadne.message.chain import MessageChain
-        from graia.ariadne.message.element import (
-            At,
-            AtAll,
-            Forward,
-            MultimediaElement,
-            Plain,
-            Poke,
-        )
-
         chain: MessageChain = item.send_data["message"]
         ariadne = Ariadne.current()
 
-        def convert(msg_chain: MessageChain, type_) -> None:
+        def convert(msg_chain: MessageChain, type_: str) -> None:
             for ind, elem in enumerate(msg_chain.__root__[:]):
-                if isinstance(elem, type_):
-                    if isinstance(elem, At):
+                if elem.type == type_:
+                    if elem.type == 'at':
                         msg_chain.__root__[ind] = (
                             Plain(f'@{elem.display}({elem.target})')
                             if elem.display is not None
@@ -60,7 +52,7 @@ class Safe(SendMessageAction):
                     else:
                         msg_chain.__root__[ind] = Plain(elem.display)
 
-        for element_type in {AtAll, At, Poke, Forward, MultimediaElement}:
+        for element_type in {'AtAll', 'At', 'Poke', 'Forward', 'MultimediaElement'}:
             convert(chain, element_type)
             val = await ariadne.send_message(**item.send_data, action=Ignore)  # type: ignore # noqa
             if val is not None:
