@@ -37,7 +37,7 @@ def rewrite_logging_logger(logger_name: str):
     logging_logger.setLevel(logging.DEBUG)
 
 
-def rewrite_ariadne_logger(debug: bool = False, graia_console: bool = False):
+def rewrite_ariadne_logger(debug: bool = False):
     logger.remove()
     if debug:
         log_format = (
@@ -51,20 +51,9 @@ def rewrite_ariadne_logger(debug: bool = False, graia_console: bool = False):
             '<cyan>{name}</cyan> - <level>{message}</level>'
         )
         log_level = 'INFO'
-    if graia_console:
-        logger.add(
-            StdoutProxy(raw=True),  # type: ignore
-            level=log_level,
-            format=log_format,
-            colorize=True,
-            backtrace=True,
-            diagnose=True,
-            enqueue=False,
-        )
-    else:
-        logger.add(
-            sys.stderr, level=log_level, format=log_format, colorize=True, backtrace=True, diagnose=True, enqueue=False
-        )
+    logger.add(
+        sys.stderr, level=log_level, format=log_format, colorize=True, backtrace=True, diagnose=True, enqueue=False
+    )
     logger.add(
         Path(logs_path, 'latest.log'),
         rotation='00:00',

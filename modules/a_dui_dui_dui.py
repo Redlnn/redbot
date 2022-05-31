@@ -28,4 +28,6 @@ channel.meta['description'] = '啊对对对'
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    await app.sendMessage(group, message + MessageChain.create(Plain('对')))
+    message = message.copy()
+    message.__root__.append(Plain('对'))
+    await app.send_message(group, message)

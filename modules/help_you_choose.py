@@ -40,7 +40,7 @@ channel.meta['description'] = '@bot {主语}<介词>不<介词>{动作}\n如：@
 async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: ElementResult):
     if at.result.target != basic_cfg.miraiApiHttp.account:  # type: ignore
         return
-    msg = message.include(Plain).asDisplay().strip()
+    msg = message.include(Plain).display.strip()
     re1_match = re.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)
     re2_match = re.match(r'(.+)?(?P<v>有)(没|木)(?P=v)(.+)?', msg)
     if re1_match:
@@ -50,9 +50,9 @@ async def main(app: Ariadne, group: Group, source: Source, message: MessageChain
         action = re1_match[2].replace('我', '你') if re1_match[2] else ''
         roll = randint(0, 100)
         if roll % 2 == 0:
-            chain = MessageChain.create(Plain(subject + preposition + action))
+            chain = MessageChain(Plain(subject + preposition + action))
         else:
-            chain = MessageChain.create(Plain(subject + '不' + preposition + action))
+            chain = MessageChain(Plain(subject + '不' + preposition + action))
     elif re2_match:
         re2_match = re2_match.groups()
         subject = re2_match[0].replace('我', '你') if re2_match[0] else ''
@@ -60,9 +60,9 @@ async def main(app: Ariadne, group: Group, source: Source, message: MessageChain
         action = re2_match[3].replace('我', '你') if re2_match[2] else ''
         roll = randint(0, 100)
         if roll % 2 == 0:
-            chain = MessageChain.create(Plain(subject + preposition + action))
+            chain = MessageChain(Plain(subject + preposition + action))
         else:
-            chain = MessageChain.create(Plain(subject + re2_match[2] + preposition + action))
+            chain = MessageChain(Plain(subject + re2_match[2] + preposition + action))
     else:
         return
-    await app.sendMessage(group, chain, quote=source)
+    await app.send_message(group, chain, quote=source)

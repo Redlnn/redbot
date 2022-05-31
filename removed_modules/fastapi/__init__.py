@@ -6,7 +6,7 @@ import os
 from contextvars import ContextVar
 
 from fastapi import WebSocket
-from graia.ariadne import get_running
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched, ApplicationShutdowned
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -68,7 +68,7 @@ for i in Router.routes:
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
 async def on_launch():
-    broadcast.set(get_running(Broadcast))
+    broadcast.set(Ariadne.current().service.broadcast)
     await fastapicore.start()
 
 
@@ -84,4 +84,4 @@ async def new_websocket_client(client: WebSocket):
 
 @channel.use(ListenerSchema(listening_events=[GroupMessage]))
 async def on_msg(message: MessageChain):
-    await manager.broadcast(message.asDisplay())
+    await manager.broadcast(message.display)

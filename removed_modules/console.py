@@ -21,17 +21,19 @@ async def stop(app: Ariadne, console: Console):
         style=Style([('warn', 'bg:#cccccc fg:#d00000')]),
     )
     if res.lower() in {'y', 'yes'}:
-        await app.stop()
+        app.stop()
         console.stop()
 
 
 @channel.use(ConsoleSchema([Twilight.from_command('send {target_type} {target_id} {content}')]))
 async def group_chat(app: Ariadne, target_type: RegexResult, target_id: RegexResult, content: RegexResult):
-    match target_type.result.asDisplay():  # type: ignore
+    if target_type.result is None or target_id.result is None or content.result is None:
+        return
+    match target_type.result.display:
         case 'group':
-            await app.sendGroupMessage(int(target_id.result.asDisplay()), content.result)  # type: ignore
+            await app.send_group_message(int(target_id.result.display), content.result)
         case 'friend':
-            await app.sendFriendMessage(int(target_id.result.asDisplay()), content.result)  # type: ignore
+            await app.send_friend_message(int(target_id.result.display), content.result)
         case _:
             logger.warning('参数错误')
 
@@ -48,12 +50,14 @@ def get_perm_name(perm: MemberPerm):
 
 @channel.use(ConsoleSchema([Twilight.from_command('list {target_type}')]))
 async def list_target(app: Ariadne, target_type: RegexResult):
-    match target_type.result.asDisplay():  # type: ignore
+    if target_type.result is None:
+        return
+    match target_type.result.display:
         case 'group':
-            for group in await app.getGroupList():
+            for group in await app.get_groupList():
                 logger.opt(raw=True).info(f'{group.name}({group.id}) - {get_perm_name(group.accountPerm)}\n')
         case 'friend':
-            for friend in await app.getFriendList():
+            for friend in await app.get_friendList():
                 logger.opt(raw=True).info(
                     f'{friend.remark}({friend.id})'
                     + (f' - {friend.nickname}\n' if friend.nickname != friend.remark else '\n')

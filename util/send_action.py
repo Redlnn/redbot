@@ -34,7 +34,6 @@ class Safe(SendMessageAction):
 
     @staticmethod
     async def _handle(item: SendMessageException, ignore: bool):
-        from graia.ariadne import get_running
         from graia.ariadne.app import Ariadne
         from graia.ariadne.message.chain import MessageChain
         from graia.ariadne.message.element import (
@@ -47,21 +46,23 @@ class Safe(SendMessageAction):
         )
 
         chain: MessageChain = item.send_data["message"]
-        ariadne = get_running(Ariadne)
+        ariadne = Ariadne.current()
 
         def convert(msg_chain: MessageChain, type_) -> None:
             for ind, elem in enumerate(msg_chain.__root__[:]):
                 if isinstance(elem, type_):
                     if isinstance(elem, At):
                         msg_chain.__root__[ind] = (
-                            Plain(f'@{elem.display}({elem.target})') if elem.display else Plain(elem.asDisplay())
+                            Plain(f'@{elem.display}({elem.target})')
+                            if elem.display is not None
+                            else Plain(f'@{elem.target}')
                         )
                     else:
-                        msg_chain.__root__[ind] = Plain(elem.asDisplay())
+                        msg_chain.__root__[ind] = Plain(elem.display)
 
         for element_type in {AtAll, At, Poke, Forward, MultimediaElement}:
             convert(chain, element_type)
-            val = await ariadne.sendMessage(**item.send_data, action=Ignore)  # type: ignore # noqa
+            val = await ariadne.send_message(**item.send_data, action=Ignore)  # type: ignore # noqa
             if val is not None:
                 return val
 

@@ -621,8 +621,28 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tuna-tsinghua"
 
 [[package]]
+name = "graia-amnesia"
+version = "0.5.0"
+description = "a collection of shared components for graia"
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+
+[package.dependencies]
+loguru = ">=0.6.0,<1.0.0"
+yarl = ">=1.7.2,<2.0.0"
+
+[package.extras]
+orjson = ["orjson (>=3.6.7,<4.0.0)"]
+ujson = ["ujson (>=5.2.0,<6.0.0)"]
+
+[package.source]
+type = "file"
+url = "graia_amnesia-0.5.0-py3-none-any.whl"
+
+[[package]]
 name = "graia-ariadne"
-version = "0.6.16"
+version = "0.7.0a1"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -635,12 +655,10 @@ fastapi = {version = ">=0.74.1,<1.0.0", optional = true, markers = "extra == \"s
 graia-broadcast = ">=0.16.1,<0.17.0"
 graia-saya = {version = ">=0.0,<0.1", optional = true, markers = "extra == \"graia\" or extra == \"standard\" or extra == \"full\""}
 graia-scheduler = {version = ">=0.0,<0.1", optional = true, markers = "extra == \"graia\" or extra == \"standard\" or extra == \"full\""}
-loguru = ">=0.6,<0.7"
 prompt-toolkit = {version = ">=3.0.24,<4.0.0", optional = true, markers = "extra == \"standard\" or extra == \"full\""}
 pydantic = ">=1.8.2,<2.0.0"
 typing-extensions = ">=4.0,<5.0"
 uvicorn = {version = ">=0.17.5,<0.18.0", extras = ["standard"], optional = true, markers = "extra == \"server\" or extra == \"full\""}
-yarl = ">=1.7,<2.0"
 
 [package.extras]
 alconna = ["arclet-alconna-graia (>=0.0,<0.1)"]
@@ -650,9 +668,8 @@ server = ["fastapi (>=0.74.1,<1.0.0)", "uvicorn[standard] (>=0.17.5,<0.18.0)"]
 graia = ["graia-saya (>=0.0,<0.1)", "graia-scheduler (>=0.0,<0.1)"]
 
 [package.source]
-type = "legacy"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
-reference = "tuna-tsinghua"
+type = "file"
+url = "graia_ariadne-0.7.0a1-py3-none-any.whl"
 
 [[package]]
 name = "graia-broadcast"
@@ -857,6 +874,21 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tuna-tsinghua"
 
 [[package]]
+name = "launart"
+version = "0.1.0"
+description = "Launch manager for graia-amnesia"
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+
+[package.dependencies]
+loguru = ">=0.6.0,<1.0.0"
+
+[package.source]
+type = "file"
+url = "launart-0.1.0-py3-none-any.whl"
+
+[[package]]
 name = "loguru"
 version = "0.6.0"
 description = "Python logging made (stupidly) simple"
@@ -1012,14 +1044,6 @@ description = "Wrapper package for OpenCV python bindings."
 category = "main"
 optional = false
 python-versions = ">=3.6"
-
-[package.dependencies]
-numpy = [
-    {version = ">=1.21.2", markers = "python_version >= \"3.10\" or python_version >= \"3.6\" and platform_system == \"Darwin\" and platform_machine == \"arm64\""},
-    {version = ">=1.19.3", markers = "python_version >= \"3.6\" and platform_system == \"Linux\" and platform_machine == \"aarch64\" or python_version >= \"3.9\""},
-    {version = ">=1.14.5", markers = "python_version >= \"3.7\""},
-    {version = ">=1.17.3", markers = "python_version >= \"3.8\""},
-]
 
 [package.source]
 type = "legacy"
@@ -1854,7 +1878,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "f90fb6cfb5b60166215349781885c03573ed84efd1fe0e986630a1586e986ce0"
+content-hash = "b5df9449df09c89859cce7ac907d2a56a2ac79b953c5617a12bd2e89a6ed5b28"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -2334,9 +2358,11 @@ gitpython = [
     {file = "GitPython-3.1.27-py3-none-any.whl", hash = "sha256:5b68b000463593e05ff2b261acff0ff0972df8ab1b70d3cdbd41b546c8b8fc3d"},
     {file = "GitPython-3.1.27.tar.gz", hash = "sha256:1c885ce809e8ba2d88a29befeb385fcea06338d3640712b59ca623c220bb5704"},
 ]
+graia-amnesia = [
+    {file = "graia_amnesia-0.5.0-py3-none-any.whl", hash = "sha256:8cbe6e54fa39881f28d606edce4f141b6ab701a41c9df456c6b4a9c9c3add1ba"},
+]
 graia-ariadne = [
-    {file = "graia-ariadne-0.6.16.tar.gz", hash = "sha256:c5b54818b47cd1f828d2846905ebef004d293193d25ae0d160e0833023a98759"},
-    {file = "graia_ariadne-0.6.16-py3-none-any.whl", hash = "sha256:3fd1341e48340fa33309bf5dd5afa45ce26ad0e0514d98e71a8f54674f54a169"},
+    {file = "graia_ariadne-0.7.0a1-py3-none-any.whl", hash = "sha256:bca559beff2273aa49e1bbbb5f8d254b18b428d8a7ce25a03ffc28f6c4d491b6"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.16.1.tar.gz", hash = "sha256:40d532672b35d26ae0779e13f50593d5c505d8765c8545ed5bb5648bd3f7c6c2"},
@@ -2510,6 +2536,9 @@ kiwisolver = [
     {file = "kiwisolver-1.4.2-pp37-pypy37_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0e8afdf533b613122e4bbaf3c1e42c2a5e9e2d1dd3a0a017749a7658757cb377"},
     {file = "kiwisolver-1.4.2-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:42f6ef9b640deb6f7d438e0a371aedd8bef6ddfde30683491b2e6f568b4e884e"},
     {file = "kiwisolver-1.4.2.tar.gz", hash = "sha256:7f606d91b8a8816be476513a77fd30abe66227039bd6f8b406c348cb0247dcc9"},
+]
+launart = [
+    {file = "launart-0.1.0-py3-none-any.whl", hash = "sha256:06f5c87d621594f321ca9764d94805732a7390083a29a00b79ba5824e4dd2616"},
 ]
 loguru = [
     {file = "loguru-0.6.0-py3-none-any.whl", hash = "sha256:4e2414d534a2ab57573365b3e6d0234dfb1d84b68b7f3b948e6fb743860a77c3"},

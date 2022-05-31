@@ -3,7 +3,6 @@
 
 from contextvars import ContextVar
 
-from graia.ariadne import get_running
 from graia.ariadne.app import Ariadne
 from graia.ariadne.model import MemberPerm
 
@@ -19,8 +18,8 @@ perm_map = {
 
 @Router.get('/api/get_group_list', response_model=GeneralResponse)
 async def get_group_list():
-    app = get_running(Ariadne)
-    group_list = await app.getGroupList()
+    app = Ariadne.current()
+    group_list = await app.get_groupList()
 
     tmp: dict[int, dict[str, int | str]] = {
         group.id: {

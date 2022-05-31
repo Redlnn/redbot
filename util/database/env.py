@@ -92,5 +92,5 @@ else:
         loop = asyncio.get_running_loop()
         loop.create_task(run_migrations_online())
     except RuntimeError:
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         loop.run_until_complete(run_migrations_online())

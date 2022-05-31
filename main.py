@@ -1,28 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
 import pkgutil
 from pathlib import Path
 
-import richuru
 from graia.ariadne.app import Ariadne
-from graia.ariadne.console import Console
-from graia.ariadne.console.saya import ConsoleBehaviour
-from graia.ariadne.model import MiraiSession
+from graia.ariadne.connection.config import (
+    HttpClientConfig,
+    WebsocketClientConfig,
+    config,
+)
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
 from graia.scheduler import GraiaScheduler
 from graia.scheduler.saya import GraiaSchedulerBehaviour
-from prompt_toolkit.formatted_text import HTML
-from prompt_toolkit.styles import Style
 
+from util.ariadne_rewrite import CustomLogConfig
 from util.config import basic_cfg, modules_cfg
 from util.database import Database
 from util.logger_rewrite import rewrite_ariadne_logger
 from util.path import modules_path, root_path
 from util.send_action import Safe
-
-richuru.install()
 
 ignore = ('__init__.py', '__pycache__')
 
@@ -30,40 +29,27 @@ ignore = ('__init__.py', '__pycache__')
 if basic_cfg.miraiApiHttp.account == 123456789:
     raise ValueError('在?¿ 填一下配置文件？')
 
+loop = asyncio.new_event_loop()
+
+Ariadne.config(loop=loop, install_log=True)
 app = Ariadne(
-    MiraiSession(
-        host=basic_cfg.miraiApiHttp.host,  # 填入 httpapi 服务运行的地址
-        account=basic_cfg.miraiApiHttp.account,  # 你的机器人的 qq 号
-        verify_key=basic_cfg.miraiApiHttp.verifyKey,  # 填入 verifyKey
+    connection=config(
+        basic_cfg.miraiApiHttp.account,  # 你的机器人的 qq 号
+        basic_cfg.miraiApiHttp.verifyKey,  # 填入 verifyKey
+        HttpClientConfig(host=basic_cfg.miraiApiHttp.host),
+        WebsocketClientConfig(host=basic_cfg.miraiApiHttp.host),
     ),
-    chat_log_config=None if basic_cfg.logChat else False,
+    log_config=CustomLogConfig(log_level='DEBUG' if basic_cfg.debug else 'INFO'),
 )
-app.adapter.log = False  # type: ignore
-app.default_send_action = Safe  # type: ignore
+app.default_send_action = Safe
 app.create(GraiaScheduler)
 saya = app.create(Saya)
 saya.install_behaviours(
     app.create(BroadcastBehaviour),
     app.create(GraiaSchedulerBehaviour),
 )
-if basic_cfg.console:
-    console = Console(
-        broadcast=app.broadcast,
-        prompt=HTML('<split_1></split_1><redbot> redbot </redbot><split_2></split_2> '),
-        style=Style(
-            [
-                ('split_1', 'fg:#61afef'),
-                ('redbot', 'bg:#61afef fg:#ffffff'),
-                ('split_2', 'fg:#61afef'),
-            ]
-        ),
-        replace_logger=False,
-    )
-    saya.install_behaviours(ConsoleBehaviour(console))
-else:
-    console = None
 
-rewrite_ariadne_logger(basic_cfg.debug, bool(console))
+rewrite_ariadne_logger(basic_cfg.debug)
 
 with saya.module_context():
     core_modules_path = Path(root_path, 'core_modules')
@@ -79,7 +65,8 @@ if modules_cfg.enabled:
                 continue
             saya.require(f"modules.{module.name}")
 
-app.loop.run_until_complete(Database.init())
+loop.run_until_complete(Database.init())
+
 # if not Path(f"{root_path}", "alembic_data").exists():
 #     from shutil import copyfile
 

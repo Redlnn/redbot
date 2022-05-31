@@ -69,7 +69,7 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
 
     # 判断时间戳是不是今天
     if time.localtime(user.last_signin_time).tm_yday == time.localtime().tm_yday:
-        await app.sendMessage(group, MessageChain.create(Plain('你今天已经签到过了哦~')), quote=source)
+        await app.send_message(group, MessageChain(Plain('你今天已经签到过了哦~')), quote=source)
         return
 
     user.total_signin_days += 1
@@ -91,7 +91,7 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
     user.last_signin_time = int(time.time())
 
     if not await Database.update_exist(user):
-        await app.sendMessage(group, MessageChain.create(Plain('签到数据保存失败，请联系 Bot 主人')))
+        await app.send_message(group, MessageChain(Plain('签到数据保存失败，请联系 Bot 主人')))
         return
 
     if user.exp >= 10500:
@@ -125,7 +125,7 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
         font_path=str(font_path),
     )
 
-    await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
+    await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
 
 
 @channel.use(
@@ -139,14 +139,14 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
 )
 async def clear(app: Ariadne, group: Group, target: RegexResult):
     msg: MessageChain = target.result  # type: ignore
-    if msg.onlyContains(At):
-        result = await clear_signin(str(msg.getFirst(At).target))
-    elif msg.onlyContains(Plain) and msg.asDisplay().strip().isdigit():
-        result = await clear_signin(msg.asDisplay().strip())
+    if msg.only_contains(At):
+        result = await clear_signin(str(msg.get_first(At).target))
+    elif msg.only_contains(Plain) and msg.display.strip().isdigit():
+        result = await clear_signin(msg.display.strip())
     else:
-        await app.sendMessage(group, MessageChain.create(Plain('参数错误，请输入正确的QQ号或者@某人')))
+        await app.send_message(group, MessageChain(Plain('参数错误，请输入正确的QQ号或者@某人')))
         return
-    await app.sendMessage(group, MessageChain.create(Plain('Success!' if result else 'Failed!')))
+    await app.send_message(group, MessageChain(Plain('Success!' if result else 'Failed!')))
 
 
 async def clear_signin(qq: str):

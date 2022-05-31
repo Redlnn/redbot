@@ -74,14 +74,16 @@ async def main(
     san: ArgResult,
     num: ArgResult,
 ):
-    if int(san.result.asDisplay()) >= 4 and not (  # type: ignore
+    if san.result is None:
+        return
+    if int(san.result.display) >= 4 and not (
         member.permission in {MemberPerm.Administrator, MemberPerm.Owner} or member.id in basic_cfg.admin.admins
     ):
-        await app.sendMessage(group, MessageChain.create(Plain('你没有权限使用 san 参数')))
+        await app.send_message(group, MessageChain(Plain('你没有权限使用 san 参数')))
         return
     session = GetAiohttpSession.get_session()
     if tag.matched:
-        target_tag = tag.result.getFirst(Plain).text  # type: ignore
+        target_tag = tag.result.get_first(Plain).text  # type: ignore
         async with session.get(
             f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result}&num={num.result}'  # type: ignore
         ) as resp:
@@ -90,14 +92,14 @@ async def main(
         async with session.get(f'{setu_config.apiUrl}/?san={san.result}&num={num.result}') as resp:  # type: ignore
             res = await resp.json() if resp.status == 200 else {'code': 500}
     if res.get('code') == 404 and tag.matched:
-        await app.sendMessage(group, MessageChain.create(Plain('未找到相应tag的色图')))
+        await app.send_message(group, MessageChain(Plain('未找到相应tag的色图')))
     elif res.get('code') == 200:
         forward_nodes = [
             ForwardNode(
                 senderId=member.id,
                 time=datetime.now(),
                 senderName=member.name,
-                messageChain=MessageChain.create('我有涩图要给大伙康康，请米娜桑坐稳扶好哦嘿嘿嘿~'),
+                messageChain=MessageChain('我有涩图要给大伙康康，请米娜桑坐稳扶好哦嘿嘿嘿~'),
             ),
         ]
         for img in res['data']['imgs']:  # type: ignore
@@ -106,7 +108,7 @@ async def main(
                     ForwardNode(
                         target=member,
                         time=datetime.now(),
-                        message=MessageChain.create(
+                        message=MessageChain(
                             Plain(
                                 f'作品名称：{img["name"]}\n'
                                 f'pixiv id：{img["pic"]}\n'
@@ -120,25 +122,17 @@ async def main(
                     ForwardNode(
                         target=member,
                         time=datetime.now(),
-                        message=MessageChain.create(
-                            Image(url=img['url']),
-                        ),
+                        message=MessageChain(Image(url=img['url'])),
                     ),
                 ]
             )
         forward_nodes.append(
-            ForwardNode(
-                target=member,
-                time=datetime.now(),
-                messageChain=MessageChain.create(
-                    Plain('看够了吗？看够了就没了噢~'),
-                ),
-            ),
+            ForwardNode(target=member, time=datetime.now(), messageChain=MessageChain(Plain('看够了吗？看够了就没了噢~'))),
         )
-        message = MessageChain.create(Forward(nodeList=forward_nodes))
-        msg_id = await app.sendMessage(group, message)
+        message = MessageChain(Forward(nodeList=forward_nodes))
+        msg_id = await app.send_message(group, message)
         await asyncio.sleep(40)
         with contextlib.suppress(UnknownTarget):
-            await app.recallMessage(msg_id)  # type: ignore
+            await app.recall_message(msg_id)  # type: ignore
     else:
-        await app.sendMessage(group, MessageChain.create(Plain('慢一点慢一点，别冲辣！')))
+        await app.send_message(group, MessageChain(Plain('慢一点慢一点，别冲辣！')))

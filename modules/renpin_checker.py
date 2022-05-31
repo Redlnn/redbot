@@ -104,11 +104,11 @@ async def main(app: Ariadne, group: Group, member: Member):
     is_new, renpin, qianwen = await read_data(str(member.id))
     img_bytes = await async_generate_img([qianwen, f'{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
-        await app.sendMessage(group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
+        await app.send_message(group, MessageChain(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
     else:
-        await app.sendMessage(
+        await app.send_message(
             group,
-            MessageChain.create(
+            MessageChain(
                 At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'), Image(data_bytes=img_bytes)
             ),
         )
@@ -160,17 +160,17 @@ def chouqian(renpin: int) -> str:
 def gen_qianwen(renpin: int) -> str:
     match chouqian(renpin):
         case '大吉':
-            return '——大吉——\n' f'{random.choice(qianwens["大吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["吉"])}'
+            return f'——大吉——\n{random.choice(qianwens["大吉"])}\n\n今天的幸运物是：{random.choice(lucky_things["吉"])}'
         case '中吉':
-            return '——中吉——\n' f'{random.choice(qianwens["吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["吉"])}'
+            return f'——中吉——\n{random.choice(qianwens["吉"])}\n\n今天的幸运物是：{random.choice(lucky_things["吉"])}'
         case '吉':
-            return '——吉——\n' f'{random.choice(qianwens["吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["吉"])}'
+            return f'——吉——\n{random.choice(qianwens["吉"])}\n\n今天的幸运物是：{random.choice(lucky_things["吉"])}'
         case '末吉':
-            return '——末吉——\n' f'{random.choice(qianwens["末吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
+            return f'——末吉——\n{random.choice(qianwens["末吉"])}\n\n今天的幸运物是：{random.choice(lucky_things["凶"])}'
         case '凶':
-            return '——凶——\n' f'{random.choice(qianwens["凶"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
+            return f'——凶——\n{random.choice(qianwens["凶"])}\n\n今天的幸运物是：{random.choice(lucky_things["凶"])}'
         case '大凶':
-            return '——大凶——\n' f'{random.choice(qianwens["凶"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
+            return f'——大凶——\n{random.choice(qianwens["凶"])}\n\n今天的幸运物是：{random.choice(lucky_things["凶"])}'
         case _:
             return ''
 

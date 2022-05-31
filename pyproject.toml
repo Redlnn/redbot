@@ -15,7 +15,7 @@ aio-mc-rcon = "^3.1.1"
 alembic = "^1.7.7"
 fastapi = "^0.78.0"
 gitpython = "^3.1.27"
-graia-ariadne = {extras = ["full"], version = "^0.6.16", allow-prereleases=true}
+graia-ariadne = {path = "graia_ariadne-0.7.0a1-py3-none-any.whl", extras = ["full"]}
 httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
@@ -36,6 +36,8 @@ sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.36"}
 sqlmodel = "^0.0.6"
 uvicorn = {extras = ["standard"], version = "^0.17.6"}
 wordcloud = "^1.8.1"
+graia-amnesia = {path = "graia_amnesia-0.5.0-py3-none-any.whl"}
+launart = {path = "launart-0.1.0-py3-none-any.whl"}
 
 [tool.poetry.dev-dependencies]
 black = ">=22.3.0"

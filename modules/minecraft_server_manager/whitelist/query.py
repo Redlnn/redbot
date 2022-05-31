@@ -50,9 +50,9 @@ async def query_qq_by_uuid(mc_uuid: str) -> PlayerInfo | None:
 
 async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
     if player.blocked:
-        return MessageChain.create(At(int(player.qq)), Plain(f' 已被封禁，封禁原因：{player.block_reason}'))
+        return MessageChain(At(int(player.qq)), Plain(f' 已被封禁，封禁原因：{player.block_reason}'))
     if player.uuid1 is None and player.uuid2 is None:
-        return MessageChain.create(At(int(player.qq)), Plain(' 一个白名单都没有呢'))
+        return MessageChain(At(int(player.qq)), Plain(' 一个白名单都没有呢'))
     info_text = f'({player.qq}) 的白名单信息如下：\n | 入群时间: {player.join_time}\n'
     if player.leave_time:
         info_text += f' | 退群时间: {player.leave_time}\n'
@@ -92,4 +92,4 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
 
         info_text += f' | ID 2添加时间：{format_time(player.uuid2_add_time)}'  # type: ignore
 
-    return MessageChain.create(At(int(player.qq)), Plain(info_text))
+    return MessageChain(At(int(player.qq)), Plain(info_text))

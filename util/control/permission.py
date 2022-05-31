@@ -92,9 +92,9 @@ class GroupPermission:
                 raise ValueError('perm 参数类型错误')
             if (await cls.get(member)) < target:
                 if send_alert:
-                    await app.sendMessage(
+                    await app.send_message(
                         group,
-                        MessageChain.create(At(member.id), Plain(f' {alert_text}')),
+                        MessageChain(At(member.id), Plain(f' {alert_text}')),
                     )
                 raise ExecutionStop()
 

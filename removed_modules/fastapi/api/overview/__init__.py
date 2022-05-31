@@ -8,7 +8,6 @@ import time
 from random import randint
 
 import psutil
-from graia.ariadne import get_running
 from graia.ariadne.app import Ariadne
 from graia.saya import Saya
 
@@ -36,8 +35,8 @@ def get_running_time():
 
 @Router.get('/api/overview/get_info_card', response_model=GeneralResponse)
 async def get_info_card():
-    ariadne = get_running(Ariadne)
-    joined_group_count = await ariadne.getGroupList()
+    ariadne = Ariadne.current()
+    joined_group_count = await ariadne.get_groupList()
     return GeneralResponse(
         data={
             'today_msg_count': 114,

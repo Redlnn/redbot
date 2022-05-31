@@ -81,7 +81,7 @@ class VideoInfo:
 )
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
     p = re.compile(f'({avid_re})|({bvid_re})')
-    msg_str = message.asPersistentString()
+    msg_str = message.as_persistent_string()
     if 'b23.tv/' in msg_str:
         msg_str = await b23_url_extract(msg_str)
         if not msg_str:
@@ -93,32 +93,30 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
 
     rate_limit, remaining_time = ManualInterval.require(f'{group.id}_{member.id}_bilibiliVideoInfo', 5, 2)
     if not rate_limit:
-        await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
 
     video_info = await get_video_info(video_id)
     if video_info['code'] == -404:
-        return await app.sendMessage(group, MessageChain.create(Plain('视频不存在')))
+        return await app.send_message(group, MessageChain(Plain('视频不存在')))
     elif video_info['code'] != 0:
         error_text = f'解析B站视频 {video_id} 时出错👇\n错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
         logger.error(error_text)
-        return await app.sendMessage(group, MessageChain.create(Plain(error_text)))
+        return await app.send_message(group, MessageChain(Plain(error_text)))
     else:
         video_info = await info_json_dump(video_info['data'])
         img: bytes = await gen_img(video_info)
-        await app.sendMessage(
+        await app.send_message(
             group,
-            MessageChain.create(
-                [
-                    Image(data_bytes=img),
-                    Plain(
-                        f'{video_info.title}\n'
-                        '————————————————————\n'
-                        f'UP主：{video_info.up_name}\n'
-                        f'{math(video_info.views)}播放 {math(video_info.likes)}赞\n'
-                        f'链接：https://b23.tv/{video_info.bvid}'
-                    ),
-                ]
+            MessageChain(
+                Image(data_bytes=img),
+                Plain(
+                    f'{video_info.title}\n'
+                    '————————————————————\n'
+                    f'UP主：{video_info.up_name}\n'
+                    f'{math(video_info.views)}播放 {math(video_info.likes)}赞\n'
+                    f'链接：https://b23.tv/{video_info.bvid}'
+                ),
             ),
         )
 
