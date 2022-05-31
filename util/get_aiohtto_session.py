@@ -6,7 +6,7 @@ from aiohttp import ClientSession
 
 
 class GetAiohttpSession:
-    session: ClientSession
+    session: ClientSession | None = None
 
     @classmethod
     def get_session(cls) -> ClientSession:
