@@ -39,7 +39,7 @@ app = Ariadne(
         HttpClientConfig(host=basic_cfg.miraiApiHttp.host),
         WebsocketClientConfig(host=basic_cfg.miraiApiHttp.host),
     ),
-    log_config=CustomLogConfig(log_level='DEBUG' if basic_cfg.debug else 'INFO'),
+    log_config=CustomLogConfig(log_level='DEBUG' if basic_cfg.debug else 'INFO', log_chat=basic_cfg.logChat),
 )
 app.default_send_action = Safe
 app.create(GraiaScheduler)

@@ -11,10 +11,10 @@ if TYPE_CHECKING:
 
 
 class CustomLogConfig(LogConfig):
-    def __init__(self, log_level: str = "INFO", logChat: bool = True):
+    def __init__(self, log_level: str = "INFO", log_chat: bool = True):
         self.log_level: str = log_level
 
-        if not logChat:
+        if not log_chat:
             return
         from graia.ariadne.event.message import (
             ActiveMessage,
