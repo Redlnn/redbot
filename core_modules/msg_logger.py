@@ -54,11 +54,11 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
     message = message.copy()
     for ind, elem in enumerate(message[:]):
         match elem.type:
-            case 'Plain' |'At'|'AtAll'| 'Face'| 'MarketFace'| 'Xml'| 'Json'| 'App'| 'Forward':
+            case 'Plain' | 'At' | 'AtAll' | 'Face' | 'MarketFace' | 'Xml' | 'Json' | 'App' | 'Forward':
                 continue
-            case 'Poke'|'Dice'|'MusicShare' | 'File':
+            case 'Poke' | 'Dice' | 'MusicShare' | 'File':
                 return
-            case 'Image'| 'FlashImage' | 'Voice':
+            case 'Image' | 'FlashImage' | 'Voice':
                 message.__root__[ind] = Plain(elem.asNoBinaryPersistentString())  # type: ignore
             case _:
                 message.__root__[ind] = Plain(elem.asDisplay())
