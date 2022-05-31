@@ -5,9 +5,9 @@ import orjson
 from pydantic import BaseModel as PyDanticBaseModel
 
 
-def orjson_dumps(v, *, default, **dump_kwargs):
+def orjson_dumps(v, *, default, **dumps_kwargs):
     # orjson.dumps returns bytes, to match standard json.dumps we need to decode
-    return orjson.dumps(v, default=default, **dump_kwargs).decode()
+    return orjson.dumps(v, default=default, **dumps_kwargs).decode()
 
 
 class BaseModel(PyDanticBaseModel):
