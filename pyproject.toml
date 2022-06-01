@@ -12,17 +12,17 @@ aiodns = "^3.0.0"
 aiofile = "^3.7.4"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
-alembic = "^1.7.7"
+alembic = "^1.8.0"
 fastapi = "^0.78.0"
 gitpython = "^3.1.27"
 graia-ariadne = {path = "graia_ariadne-0.7.0a1-py3-none-any.whl", extras = ["full"]}
 httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
-lxml = "^4.8.0"
+lxml = "^4.9.0"
 numpy = "^1.22.4"
 opencv-python = "^4.5.5"
-orjson = "^3.6.8"
+orjson = "^3.6.9"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pillow = "^9.1.1"
 psutil = "^5.9.0"
@@ -32,7 +32,7 @@ python-multipart = "^0.0.5"
 pyyaml = "^6.0"
 regex = "^2022.4.24"
 richuru = "^0.1.0"
-sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.36"}
+sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.37"}
 sqlmodel = "^0.0.6"
 uvicorn = {extras = ["standard"], version = "^0.17.6"}
 wordcloud = "^1.8.1"
