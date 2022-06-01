@@ -100,17 +100,16 @@ lucky_things = {
         decorators=[GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module)],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member):
+async def main(group: Group, member: Member):
     is_new, renpin, qianwen = await read_data(str(member.id))
     img_bytes = await async_generate_img([qianwen, f'{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
-        await app.send_message(group, MessageChain(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
+        await group.send_message(MessageChain(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
     else:
-        await app.send_message(
-            group,
+        await group.send_message(
             MessageChain(
                 At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'), Image(data_bytes=img_bytes)
-            ),
+            )
         )
 
 

@@ -33,8 +33,8 @@ channel.meta['description'] = '仿锤子便签样式的消息转图片，支持�
         decorators=[GroupPermission.require(), GroupInterval.require(15), require_disable(channel.module)],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, source: Source):
-    await app.send_message(group, MessageChain(Plain('请发送要转换的内容')), quote=source)
+async def main(group: Group, member: Member, source: Source):
+    await group.send_message(MessageChain(Plain('请发送要转换的内容')), quote=source)
 
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> MessageChain | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
@@ -43,11 +43,11 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
     try:
         answer: MessageChain = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
     except asyncio.exceptions.TimeoutError:
-        await app.send_message(group, MessageChain(Plain('已超时取消')), quote=source)
+        await group.send_message(MessageChain(Plain('已超时取消')), quote=source)
         return
 
     if len(answer) == 0:
-        await app.send_message(group, MessageChain(Plain('你所发送的消息的类型错误')), quote=source)
+        await group.send_message(MessageChain(Plain('你所发送的消息的类型错误')), quote=source)
         return
 
     img_list: list[str | bytes] = []
@@ -64,4 +64,4 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
 
     if img_list:
         img_bytes = await async_generate_img(img_list)
-        await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
+        await group.send_message(MessageChain(Image(data_bytes=img_bytes)))

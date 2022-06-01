@@ -37,7 +37,7 @@ async def get_food():
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def main(app: Ariadne, group: Group, source: Source):
+async def main(group: Group, source: Source):
     food = await get_food()
     chain = MessageChain(Plain(f'吃{food}'))
-    await app.send_message(group, chain, quote=source)
+    await group.send_message(chain, quote=source)

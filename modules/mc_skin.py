@@ -66,7 +66,7 @@ RENDER_ADDR = {
         decorators=[GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module)],
     )
 )
-async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult):
+async def get_skin(group: Group, name: RegexResult, option: ArgResult):
     if name.result is None:
         return
     try:
@@ -74,8 +74,8 @@ async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgRes
         async with session.get(UUID_ADDRESS_STRING.format(name=name.result.display)) as resp:
             uuid = orjson.loads(await resp.text())["id"]
         url = RENDER_ADDR[option.result].format(uuid=uuid)  # type: ignore
-        await app.send_message(group, MessageChain(Image(url=url)))
+        await group.send_message(MessageChain(Image(url=url)))
     except TimeoutError:
-        await app.send_message(group, MessageChain("连接API超时"))
+        await group.send_message(MessageChain("连接API超时"))
     except Exception as e:
-        await app.send_message(group, MessageChain(f"无法获取皮肤: {e}"))
+        await group.send_message(MessageChain(f"无法获取皮肤: {e}"))

@@ -41,7 +41,7 @@ channel.meta['description'] = '获得一个随机数\n用法：\n  [!！.]roll {
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
+async def roll(group: Group, source: Source, target: RegexResult):
     if target.result is None:
         return
     t = target.result.display.strip()
@@ -49,7 +49,7 @@ async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
         chain = MessageChain(Plain(f'{t}的概率为：{randint(0, 100)}'))
     else:
         chain = MessageChain(Plain(str(randint(0, 100))))
-    await app.send_message(group, chain, quote=source)
+    await group.send_message(chain, quote=source)
 
 
 @channel.use(
@@ -59,5 +59,5 @@ async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def dice(app: Ariadne, group: Group):
-    await app.send_message(group, MessageChain(Dice(randint(1, 6))))
+async def dice(group: Group):
+    await group.send_message(MessageChain(Dice(randint(1, 6))))

@@ -41,10 +41,10 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         try:
             message_event = await app.get_message_from_id(quote_id)
         except UnknownTarget:
-            await app.send_message(group, MessageChain(Plain('找不到该消息，对象不存在')))
+            await group.send_message(MessageChain(Plain('找不到该消息，对象不存在')))
             return
         chain = message_event.messageChain
-        await app.send_message(group, MessageChain(Plain(f'消息ID: {quote_id}\n消息内容：{chain.as_persistent_string()}')))
+        await group.send_message(MessageChain(Plain(f'消息ID: {quote_id}\n消息内容：{chain.as_persistent_string()}')))
     elif re.match(r'^[!！.]发送消息 .+', message.display):
         if msg := re.sub(r'[!！.]发送消息 ', '', message.display, count=1):
-            await app.send_message(group, MessageChain.from_persistent_string(msg))
+            await group.send_message(MessageChain.from_persistent_string(msg))

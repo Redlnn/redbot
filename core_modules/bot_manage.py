@@ -70,10 +70,7 @@ async def send_to_admin(message: MessageChain):
 # @channel.use(ListenerSchema(listening_events=[ApplicationShutdowned], decorators=[require_disable(channel.module)]))
 # async def shutdowned(app: Ariadne):
 #     try:
-#         await app.send_friend_message(
-#             basic_cfg.admin.masterId,
-#             MessageChain(Plain(f'{basic_cfg.botName} 正在关闭')),
-#         )
+#         await app.send_friend_message(basic_cfg.admin.masterId, MessageChain(Plain(f'{basic_cfg.botName} 正在关闭')))
 #     except UnknownTarget:
 #         logger.warning('无法向 Bot 主人发送消息，请添加 Bot 为好友')
 

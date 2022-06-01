@@ -27,7 +27,7 @@ channel.meta['description'] = '啊对对对'
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def main(app: Ariadne, group: Group, message: MessageChain):
+async def main(group: Group, message: MessageChain):
     message = message.copy()
     message.__root__.append(Plain('对'))
-    await app.send_message(group, message)
+    await group.send_message(message)

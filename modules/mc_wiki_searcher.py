@@ -45,7 +45,7 @@ channel.meta['description'] = '[!！.]wiki <要搜索的关键词>'
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def main(app: Ariadne, group: Group, keyword: RegexResult):
+async def main(group: Group, keyword: RegexResult):
     if keyword.result is None:
         return
     key_word: str = keyword.result.display.strip()
@@ -93,4 +93,4 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
                 )
             )
 
-    await app.send_message(group, msg)
+    await group.send_message(msg)

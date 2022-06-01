@@ -123,12 +123,10 @@ async def init(app: Ariadne):
         decorators=[GroupPermission.require()],
     )
 )
-async def main_menu(app: Ariadne, group: Group):
-    if not is_init:
+async def main_menu(group: Group):
+    if not is_init or group.id not in module_config.activeGroups:
         return
-    elif group.id not in module_config.activeGroups:
-        return
-    await app.send_message(group, MessageChain(Image(data_bytes=menu_img_bytes)))
+    await group.send_message(MessageChain(Image(data_bytes=menu_img_bytes)))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -141,13 +139,11 @@ async def main_menu(app: Ariadne, group: Group):
         decorators=[GroupPermission.require()],
     )
 )
-async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
-    if not is_init:
-        return
-    elif group.id not in module_config.activeGroups:
+async def whitelist_menu(group: Group, message: MessageChain):
+    if not is_init or group.id not in module_config.activeGroups:
         return
     if len(message.display[1:]) == 2:
-        await app.send_message(group, MessageChain(Image(data_bytes=wl_menu_img_bytes)))
+        await group.send_message(MessageChain(Image(data_bytes=wl_menu_img_bytes)))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -162,15 +158,15 @@ async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
         ],
     )
 )
-async def add_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
+async def add_whitelist(group: Group, source: Source, message: MessageChain):
     if not is_init:
-        await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
+        await group.send_message(MessageChain(Plain('数据库初始化中，请稍后再试...')))
         return
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 4:
-        await app.send_message(group, MessageChain(Plain('无效的命令')), quote=source)
+        await group.send_message(MessageChain(Plain('无效的命令')), quote=source)
         return
 
     if msg[2].only_contains(Plain) and msg[2].display.isdigit():
@@ -178,15 +174,15 @@ async def add_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
     elif msg[2].only_contains(At):
         target = msg[2].get_first(At).target
     else:
-        await app.send_message(group, MessageChain(Plain('目标用户不是有效的 QQ 号或 at 对象')), quote=source)
+        await group.send_message(MessageChain(Plain('目标用户不是有效的 QQ 号或 at 对象')), quote=source)
         return
 
     mc_id = msg[3].display
     if not msg[3].only_contains(Plain) or not await is_mc_id(mc_id):
-        await app.send_message(group, MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
+        await group.send_message(MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
         return
 
-    await app.send_message(group, await add_whitelist_to_qq(target, mc_id, True), quote=source)
+    await group.send_message(await add_whitelist_to_qq(target, mc_id, True), quote=source)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -203,7 +199,7 @@ async def add_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
         ],
     )
 )
-async def del_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
+async def del_whitelist(group: Group, source: Source, message: MessageChain):
     if not is_init:
         return
     elif group.id not in module_config.activeGroups:
@@ -214,7 +210,7 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
         case 3:
             if msg[2].only_contains(At):
                 target = msg[2].get_first(At).target
-                await app.send_message(group, await del_whitelist_by_qq(target), quote=source)
+                await group.send_message(await del_whitelist_by_qq(target), quote=source)
                 return
         case 4:
             if msg[2].only_contains(Plain):
@@ -222,35 +218,31 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
                 if func == 'qq':
                     if msg[3].only_contains(At):
                         target = msg[3].get_first(At).target
-                        await app.send_message(group, await del_whitelist_by_qq(target), quote=source)
+                        await group.send_message(await del_whitelist_by_qq(target), quote=source)
                         return
                     elif msg[3].only_contains(Plain):
                         target = msg[3].display
                         if target.isdigit():
-                            await app.send_message(group, await del_whitelist_by_qq(int(target)), quote=source)
+                            await group.send_message(await del_whitelist_by_qq(int(target)), quote=source)
                         else:
-                            await app.send_message(group, MessageChain(Plain('无效的 QQ 号')), quote=source)
+                            await group.send_message(MessageChain(Plain('无效的 QQ 号')), quote=source)
                         return
                 elif func == 'id' and msg[3].only_contains(Plain):
                     target = msg[3].display
                     if await is_mc_id(target):
-                        await app.send_message(group, await del_whitelist_by_id(target), quote=source)
+                        await group.send_message(await del_whitelist_by_id(target), quote=source)
                     else:
-                        await app.send_message(
-                            group,
-                            MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')),
-                            quote=source,
-                        )
+                        await group.send_message(MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
                     return
                 elif func == 'uuid' and msg[3].only_contains(Plain):
                     target = msg[3].display
                     if await is_uuid(target):
-                        await app.send_message(group, await del_whitelist_by_uuid(target), quote=source)
+                        await group.send_message(await del_whitelist_by_uuid(target), quote=source)
                     else:
-                        await app.send_message(group, MessageChain(Plain('目标不是有效的 UUID')), quote=source)
+                        await group.send_message(MessageChain(Plain('目标不是有效的 UUID')), quote=source)
                     return
 
-    await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+    await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -263,9 +255,9 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
         decorators=[GroupPermission.require()],
     )
 )
-async def info_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
+async def info_whitelist(group: Group, source: Source, message: MessageChain):
     if not is_init:
-        await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
+        await group.send_message(MessageChain(Plain('数据库初始化中，请稍后再试...')))
         return
     elif group.id not in module_config.activeGroups:
         return
@@ -277,9 +269,9 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                 target = msg[2].get_first(At).target
                 player = await query_uuid_by_qq(target)
                 if player is None:
-                    await app.send_message(group, MessageChain(At(target), Plain(f' 好像一个白名单都没有呢~')), quote=source)
+                    await group.send_message(MessageChain(At(target), Plain(f' 好像一个白名单都没有呢~')), quote=source)
                     return
-                await app.send_message(group, await gen_query_info_text(player), quote=source)
+                await group.send_message(await gen_query_info_text(player), quote=source)
                 return
         case 4:
             if msg[2].only_contains(Plain):
@@ -289,23 +281,21 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                         target = msg[3].get_first(At).target
                         player = await query_uuid_by_qq(target)
                         if player is None:
-                            await app.send_message(
-                                group, MessageChain(At(target), Plain(f' 好像一个白名单都没有呢~')), quote=source
-                            )
+                            await group.send_message(MessageChain(At(target), Plain(f' 好像一个白名单都没有呢~')), quote=source)
                             return
-                        await app.send_message(group, await gen_query_info_text(player), quote=source)
+                        await group.send_message(await gen_query_info_text(player), quote=source)
                     elif msg[3].only_contains(Plain):
                         target = msg[3].display
                         if target.isdigit():
                             player = await query_uuid_by_qq(int(target))
                             if player is None:
-                                await app.send_message(
-                                    group, MessageChain(At(int(target)), Plain(f' 好像一个白名单都没有呢~')), quote=source
+                                await group.send_message(
+                                    MessageChain(At(int(target)), Plain(f' 好像一个白名单都没有呢~')), quote=source
                                 )
                                 return
-                            await app.send_message(group, await gen_query_info_text(player), quote=source)
+                            await group.send_message(await gen_query_info_text(player), quote=source)
                         else:
-                            await app.send_message(group, MessageChain(Plain('无效的 QQ 号')), quote=source)
+                            await group.send_message(MessageChain(Plain('无效的 QQ 号')), quote=source)
                         return
                 elif func == 'id' and msg[3].only_contains(Plain):
                     target = msg[3].display
@@ -313,41 +303,33 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                         status, player = await query_whitelist_by_id(target)
                         if status['code'] == 200:
                             if player is None:
-                                await app.send_message(group, MessageChain(Plain(f'没有使用该 ID 的白名单')), quote=source)
+                                await group.send_message(MessageChain(Plain(f'没有使用该 ID 的白名单')), quote=source)
                             else:
-                                await app.send_message(group, await gen_query_info_text(player), quote=source)
+                                await group.send_message(await gen_query_info_text(player), quote=source)
                         elif status['code'] == 204:
-                            await app.send_message(group, MessageChain(Plain(f'没有使用该 ID 的正版用户')), quote=source)
+                            await group.send_message(MessageChain(Plain(f'没有使用该 ID 的正版用户')), quote=source)
                         elif status['code'] == 400:
-                            await app.send_message(group, MessageChain(Plain(f'无效的正版用户名')), quote=source)
+                            await group.send_message(MessageChain(Plain(f'无效的正版用户名')), quote=source)
                         elif status['code'] == 500:
-                            await app.send_message(group, MessageChain(Plain(f'Mojang API超时')), quote=source)
+                            await group.send_message(MessageChain(Plain(f'Mojang API超时')), quote=source)
                         else:
-                            await app.send_message(group, MessageChain(Plain(f'在查询使用该 ID 的正版用户时出错')), quote=source)
+                            await group.send_message(MessageChain(Plain(f'在查询使用该 ID 的正版用户时出错')), quote=source)
                     else:
-                        await app.send_message(
-                            group,
-                            MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')),
-                            quote=source,
-                        )
+                        await group.send_message(MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
                     return
                 elif func == 'uuid' and msg[3].only_contains(Plain):
                     target = msg[3].display
                     if await is_uuid(target):
                         player = await query_whitelist_by_uuid(target)
                         if player is None:
-                            await app.send_message(
-                                group,
-                                MessageChain('没有使用该 UUID 的白名单'),
-                                quote=source,
-                            )
+                            await group.send_message(MessageChain('没有使用该 UUID 的白名单'), quote=source)
                         else:
-                            await app.send_message(group, await gen_query_info_text(player), quote=source)
+                            await group.send_message(await gen_query_info_text(player), quote=source)
                     else:
-                        await app.send_message(group, MessageChain(Plain('目标不是有效的 UUID')), quote=source)
+                        await group.send_message(MessageChain(Plain('目标不是有效的 UUID')), quote=source)
                     return
 
-    await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+    await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -362,19 +344,18 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
         ],
     )
 )
-async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: Source, message: MessageChain):
+async def clear_whitelist(group: Group, member: Member, source: Source, message: MessageChain):
     if not is_init:
-        await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
+        await group.send_message(MessageChain(Plain('数据库初始化中，请稍后再试...')))
         return
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 2:
-        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+        await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
 
-    await app.send_message(
-        group,
+    await group.send_message(
         MessageChain(
             At(member.id),
             Plain(
@@ -395,25 +376,25 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
             elif saying == '.cancel':
                 return False
             else:
-                await app.send_message(
-                    group, MessageChain(At(member.id), Plain('请发送 .confirm 或 .cancel')), quote=waiter_source
+                await group.send_message(
+                    MessageChain(At(member.id), Plain('请发送 .confirm 或 .cancel')), quote=waiter_source
                 )
 
     try:
         answer: bool = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
     except asyncio.exceptions.TimeoutError:
-        await app.send_message(group, MessageChain(Plain('已超时取消')), quote=source)
+        await group.send_message(MessageChain(Plain('已超时取消')), quote=source)
         return
     if not answer:
-        await app.send_message(group, MessageChain(Plain('已取消操作')), quote=source)
+        await group.send_message(MessageChain(Plain('已取消操作')), quote=source)
         return
 
     logger.warning(f'管理 {member.name}({member.id}) 正在清空白名单数据库')
     result = await Database.select_all(select(PlayerInfo))
     if await Database.delete_many_exist(*[i[0] for i in result]):
-        await app.send_message(group, MessageChain(Plain('已清空白名单数据库，服务器白名单请自行处理')), quote=source)
+        await group.send_message(MessageChain(Plain('已清空白名单数据库，服务器白名单请自行处理')), quote=source)
     else:
-        await app.send_message(group, MessageChain(Plain('清空白名单数据库失败')), quote=source)
+        await group.send_message(MessageChain(Plain('清空白名单数据库失败')), quote=source)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -428,34 +409,30 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
 )
 async def myid(app: Ariadne, group: Group, member: Member, source: Source, message: MessageChain):
     if not is_init:
-        await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
+        await group.send_message(MessageChain(Plain('数据库初始化中，请稍后再试...')))
         return
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 2 or not msg[1].only_contains(Plain):
-        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+        await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
 
     mc_id = msg[1].display
     if not await is_mc_id(mc_id):
-        await app.send_message(group, MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
+        await group.send_message(MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
         return
     if mc_id.lower() not in member.name.lower():
         try:
             await app.modify_member_info(member, MemberInfo(name=mc_id))
         except UnknownTarget as e:
-            await app.send_message(
-                group, MessageChain(Plain(f'请保证你的群名片包含你要申请白名单的ID\n（发生内部错误，请联系管理员：{e}）')), quote=source
-            )
+            await group.send_message(MessageChain(Plain(f'请保证你的群名片包含你要申请白名单的ID\n（发生内部错误，请联系管理员：{e}）')), quote=source)
             return
         else:
-            await app.send_message(group, MessageChain(Plain('由于你的群名片不包含你要申请白名单的ID，已自动为你修改')), quote=source)
+            await group.send_message(MessageChain(Plain('由于你的群名片不包含你要申请白名单的ID，已自动为你修改')), quote=source)
     target = member.id
-    await app.send_message(
-        group,
-        await add_whitelist_to_qq(target, mc_id, member.permission >= MemberPerm.Administrator),
-        quote=source,
+    await group.send_message(
+        await add_whitelist_to_qq(target, mc_id, member.permission >= MemberPerm.Administrator), quote=source
     )
 
 
@@ -469,28 +446,28 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
         decorators=[GroupPermission.require()],
     )
 )
-async def get_player_list(app: Ariadne, group: Group):
+async def get_player_list(group: Group):
     if group.id not in module_config.activeGroups:
         return
     try:
         exec_result: str = await execute_command('list')  # noqa
     except TimeoutError:
-        await app.send_message(group, MessageChain(Plain('连接服务器超时')))
+        await group.send_message(MessageChain(Plain('连接服务器超时')))
         logger.error('rcon连接服务器超时')
         return
     except ValueError as e:
-        await app.send_message(group, MessageChain(Plain(f'在服务器执行命令时出错：{e}')))
+        await group.send_message(MessageChain(Plain(f'在服务器执行命令时出错：{e}')))
         logger.error('在服务器执行命令时出错')
         logger.exception(e)
         return
 
     player_list: list = exec_result.split(':')
     if player_list[1] == '':
-        await app.send_message(group, MessageChain(Plain('服务器目前没有在线玩家')))
+        await group.send_message(MessageChain(Plain('服务器目前没有在线玩家')))
     else:
         playerlist = player_list[0].replace('There are', '服务器在线玩家数: ').replace(' of a max of ', '/')
         playerlist = playerlist.replace('players online', '\n在线列表: ')
-        await app.send_message(group, MessageChain(Plain(playerlist + player_list[1].strip())))
+        await group.send_message(MessageChain(Plain(playerlist + player_list[1].strip())))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -505,30 +482,30 @@ async def get_player_list(app: Ariadne, group: Group):
         ],
     )
 )
-async def run_command_list(app: Ariadne, group: Group, message: MessageChain, source: Source):
+async def run_command_list(group: Group, message: MessageChain, source: Source):
     if group.id not in module_config.activeGroups:
         return
     split_msg = message.display.split(' ', 1)
     if len(split_msg) != 2:
-        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+        await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
     try:
         exec_result: str = await execute_command(split_msg[1])
         logger.info(f'在服务器上执行命令：{split_msg[1]}')
     except TimeoutError:
-        await app.send_message(group, MessageChain(Plain('连接服务器超时')))
+        await group.send_message(MessageChain(Plain('连接服务器超时')))
         logger.error('rcon连接服务器超时')
         return
     except ValueError as e:
-        await app.send_message(group, MessageChain(Plain(f'在服务器执行命令时出错：{e}')), quote=source)
+        await group.send_message(MessageChain(Plain(f'在服务器执行命令时出错：{e}')), quote=source)
         logger.error(f'在服务器执行命令 {split_msg[1]} 时出错')
         logger.exception(e)
         return
 
     if not exec_result:
-        await app.send_message(group, MessageChain(Plain('服务器返回为空')), quote=source)
+        await group.send_message(MessageChain(Plain('服务器返回为空')), quote=source)
     else:
-        await app.send_message(group, MessageChain(Plain(f'服务器返回 👇\n{exec_result}')), quote=source)
+        await group.send_message(MessageChain(Plain(f'服务器返回 👇\n{exec_result}')), quote=source)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -540,9 +517,7 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain, so
     )
 )
 async def member_join(group: Group, member: Member):
-    if not is_init:
-        return
-    elif group.id != module_config.serverGroup:
+    if not is_init or group.id != module_config.serverGroup:
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(member.id)))
     if result is None:
@@ -561,10 +536,8 @@ async def member_join(group: Group, member: Member):
         listening_events=[MemberLeaveEventQuit],
     )
 )
-async def member_leave(app: Ariadne, group: Group, member: Member):
-    if not is_init:
-        return
-    elif group.id != module_config.serverGroup:
+async def member_leave(group: Group, member: Member):
+    if not is_init or group.id != module_config.serverGroup:
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(member.id)))
     if result is None:
@@ -572,7 +545,7 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
     else:
         result[0].leave_time = int(time.time())
         await Database.update_exist(result[0])
-        await app.send_message(group, await del_whitelist_by_qq(member.id))
+        await group.send_message(await del_whitelist_by_qq(member.id))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -583,10 +556,8 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
         listening_events=[MemberLeaveEventKick],
     )
 )
-async def member_kick(app: Ariadne, group: Group, target: Member):
-    if not is_init:
-        return
-    elif group.id != module_config.serverGroup:
+async def member_kick(group: Group, target: Member):
+    if not is_init or group.id != module_config.serverGroup:
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == target.id))
     if result is None:
@@ -596,7 +567,7 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
         result[0].blocked = True
         result[0].block_reason = 'Kick'
         await Database.update_exist(result[0])
-        await app.send_message(group, await del_whitelist_by_qq(target.id))
+        await group.send_message(await del_whitelist_by_qq(target.id))
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -611,15 +582,15 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
         ],
     )
 )
-async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Source):
+async def pardon(group: Group, message: MessageChain, source: Source):
     if not is_init:
-        await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
+        await group.send_message(MessageChain(Plain('数据库初始化中，请稍后再试...')))
         return
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 2:
-        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+        await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
     elif msg[1].only_contains(At):
         target = msg[1].get_first(At).target
@@ -629,23 +600,23 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
     elif msg[1].only_contains(Plain):
         target = msg[1].display
         if not target.isdigit():
-            await app.send_message(group, MessageChain(Plain('请输入QQ号')), quote=source)
+            await group.send_message(MessageChain(Plain('请输入QQ号')), quote=source)
             return
         await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == target).values(blocked=False, block_reason=None))
         target = int(target)
     else:
-        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+        await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
     player = await query_uuid_by_qq(target)
     if player is None:
-        await app.send_message(group, MessageChain(Plain('已解封该玩家')), quote=source)
+        await group.send_message(MessageChain(Plain('已解封该玩家')), quote=source)
         return
     flags = []
     if player.uuid1 is not None:
         try:
             mc_id = await get_mc_id(player.uuid1)
         except asyncio.exceptions.TimeoutError as e:
-            await app.send_message(group, MessageChain(Plain(f'无法查询【{player.uuid1}】对应的正版id: 👇\n{e}')), quote=source)
+            await group.send_message(MessageChain(Plain(f'无法查询【{player.uuid1}】对应的正版id: 👇\n{e}')), quote=source)
             logger.error(f'无法查询【{player.uuid1}】对应的正版id')
             logger.exception(e)
             flags.append(False)
@@ -654,7 +625,7 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
                 try:
                     res = await execute_command(f'pardon {mc_id}')
                 except TimeoutError:
-                    await app.send_message(group, MessageChain(Plain('连接服务器超时')))
+                    await group.send_message(MessageChain(Plain('连接服务器超时')))
                     logger.error('rcon连接服务器超时')
                     flags.append(False)
                 except ValueError as e:
@@ -662,18 +633,18 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
                     flags.append(False)
                 else:
                     if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                        await app.send_message(group, MessageChain(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        await group.send_message(MessageChain(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
                         flags.append(False)
             else:
-                await app.send_message(
-                    group, MessageChain(Plain(f'无法获取该玩家的 ID，因此无法在服务器解封该玩家\nUUID：{player.uuid1}')), quote=source
+                await group.send_message(
+                    MessageChain(Plain(f'无法获取该玩家的 ID，因此无法在服务器解封该玩家\nUUID：{player.uuid1}')), quote=source
                 )
                 flags.append(False)
     if player.uuid2:
         try:
             mc_id = await get_mc_id(player.uuid2)
         except asyncio.exceptions.TimeoutError as e:
-            await app.send_message(group, MessageChain(Plain(f'无法查询【{player.uuid2}】对应的正版id: 👇\n{e}')), quote=source)
+            await group.send_message(MessageChain(Plain(f'无法查询【{player.uuid2}】对应的正版id: 👇\n{e}')), quote=source)
             logger.error(f'无法查询【{player.uuid2}】对应的正版id')
             logger.exception(e)
             flags.append(False)
@@ -682,7 +653,7 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
                 try:
                     res = await execute_command(f'pardon {mc_id}')
                 except TimeoutError:
-                    await app.send_message(group, MessageChain(Plain('连接服务器超时')))
+                    await group.send_message(MessageChain(Plain('连接服务器超时')))
                     logger.error('rcon连接服务器超时')
                     flags.append(False)
                 except ValueError as e:
@@ -690,17 +661,17 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
                     flags.append(False)
                 else:
                     if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                        await app.send_message(group, MessageChain(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        await group.send_message(MessageChain(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
                         flags.append(False)
             else:
-                await app.send_message(
-                    group, MessageChain(Plain(f'无法获取该玩家的 ID，因此无法在服务器解封该玩家\nUUID：{player.uuid2}')), quote=source
+                await group.send_message(
+                    MessageChain(Plain(f'无法获取该玩家的 ID，因此无法在服务器解封该玩家\nUUID：{player.uuid2}')), quote=source
                 )
                 flags.append(False)
     if False not in flags:
-        await app.send_message(group, MessageChain(Plain('已解封该玩家')), quote=source)
+        await group.send_message(MessageChain(Plain('已解封该玩家')), quote=source)
     else:
-        await app.send_message(group, MessageChain(Plain('在服务器解封该玩家时出现错误')), quote=source)
+        await group.send_message(MessageChain(Plain('在服务器解封该玩家时出现错误')), quote=source)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -715,15 +686,15 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
         ],
     )
 )
-async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, source: Source):
+async def clear_leave_time(group: Group, message: MessageChain, source: Source):
     if not is_init:
-        await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
+        await group.send_message(MessageChain(Plain('数据库初始化中，请稍后再试...')))
         return
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if len(msg) != 2 or len(msg) == 2 and not msg[1].only_contains(At) and not msg[1].only_contains(Plain):
-        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+        await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
     elif len(msg) == 2 and msg[1].only_contains(At):
         target = msg[1].get_first(At).target
@@ -731,10 +702,10 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, so
     else:
         target = msg[1].display
         if not target.isdigit():
-            await app.send_message(group, MessageChain(Plain('请输入QQ号')), quote=source)
+            await group.send_message(MessageChain(Plain('请输入QQ号')), quote=source)
             return
         await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == target).values(leave_time=None))
-    await app.send_message(group, MessageChain(Plain('已清除该玩家的退群时间')), quote=source)
+    await group.send_message(MessageChain(Plain('已清除该玩家的退群时间')), quote=source)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -749,15 +720,15 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, so
         ],
     )
 )
-async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source):
+async def ban(group: Group, message: MessageChain, source: Source):
     if not is_init:
-        await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
+        await group.send_message(MessageChain(Plain('数据库初始化中，请稍后再试...')))
         return
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
     if not 2 <= len(msg) <= 3:
-        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+        await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
     elif msg[1].only_contains(At):
         block_reason = msg[2].include(Plain).merge().display if len(msg) == 3 else None
@@ -769,25 +740,25 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
         block_reason = msg[2].include(Plain).merge().display if len(msg) == 3 else None
         target = msg[1].display
         if not target.isdigit():
-            await app.send_message(group, MessageChain(Plain('请输入QQ号')))
+            await group.send_message(MessageChain(Plain('请输入QQ号')))
             return
         await Database.exec(
             update(PlayerInfo).where(PlayerInfo.qq == target).values(blocked=True, block_reason=block_reason)
         )
         target = int(target)
     else:
-        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
+        await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
     player = await query_uuid_by_qq(target)
     if player is None:
-        await app.send_message(group, MessageChain(Plain('已封禁该玩家')), quote=source)
+        await group.send_message(MessageChain(Plain('已封禁该玩家')), quote=source)
         return
     flags = []
     if player.uuid1:
         try:
             mc_id = await get_mc_id(player.uuid1)
         except asyncio.exceptions.TimeoutError as e:
-            await app.send_message(group, MessageChain(Plain(f'无法查询【{player.uuid1}】对应的正版id: 👇\n{e}')), quote=source)
+            await group.send_message(MessageChain(Plain(f'无法查询【{player.uuid1}】对应的正版id: 👇\n{e}')), quote=source)
             logger.error(f'无法查询【{player.uuid1}】对应的正版id')
             logger.exception(e)
             flags.append(False)
@@ -796,7 +767,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
                 try:
                     res = await execute_command(f'pardon {mc_id}')
                 except TimeoutError:
-                    await app.send_message(group, MessageChain(Plain('连接服务器超时')))
+                    await group.send_message(MessageChain(Plain('连接服务器超时')))
                     logger.error('rcon连接服务器超时')
                     flags.append(False)
                 except ValueError as e:
@@ -804,18 +775,18 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
                     flags.append(False)
                 else:
                     if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                        await app.send_message(group, MessageChain(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        await group.send_message(MessageChain(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
                         flags.append(False)
             else:
-                await app.send_message(
-                    group, MessageChain(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{player.uuid1}')), quote=source
+                await group.send_message(
+                    MessageChain(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{player.uuid1}')), quote=source
                 )
                 flags.append(False)
     if player.uuid2:
         try:
             mc_id = await get_mc_id(player.uuid2)
         except asyncio.exceptions.TimeoutError as e:
-            await app.send_message(group, MessageChain(Plain(f'无法查询【{player.uuid2}】对应的正版id: 👇\n{e}')), quote=source)
+            await group.send_message(MessageChain(Plain(f'无法查询【{player.uuid2}】对应的正版id: 👇\n{e}')), quote=source)
             logger.error(f'无法查询【{player.uuid2}】对应的正版id')
             logger.exception(e)
             flags.append(False)
@@ -824,7 +795,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
                 try:
                     res = await execute_command(f'pardon {mc_id}')
                 except TimeoutError:
-                    await app.send_message(group, MessageChain(Plain('连接服务器超时')))
+                    await group.send_message(MessageChain(Plain('连接服务器超时')))
                     logger.error('rcon连接服务器超时')
                     flags.append(False)
                 except ValueError as e:
@@ -832,15 +803,15 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
                     flags.append(False)
                 else:
                     if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
-                        await app.send_message(group, MessageChain(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
+                        await group.send_message(MessageChain(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
                         flags.append(False)
             else:
-                await app.send_message(
-                    group, MessageChain(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{player.uuid2}')), quote=source
+                await group.send_message(
+                    MessageChain(Plain(f'无法获取该玩家的 ID，因此无法在服务器封禁该玩家\nUUID：{player.uuid2}')), quote=source
                 )
                 flags.append(False)
-    await app.send_message(group, await del_whitelist_by_qq(int(target)), quote=source)
+    await group.send_message(await del_whitelist_by_qq(int(target)), quote=source)
     if False not in flags:
-        await app.send_message(group, MessageChain(Plain('已封禁该玩家')), quote=source)
+        await group.send_message(MessageChain(Plain('已封禁该玩家')), quote=source)
     else:
-        await app.send_message(group, MessageChain(Plain('在服务器封禁该玩家出现错误')), quote=source)
+        await group.send_message(MessageChain(Plain('在服务器封禁该玩家出现错误')), quote=source)

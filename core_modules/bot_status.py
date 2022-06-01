@@ -81,4 +81,4 @@ async def main(app: Ariadne, group: Group):
         msg_send += ''.join(f'  graiax-{name}：{version}\n' for name, version in community)
 
     img_bytes = await async_generate_img([msg_send.rstrip()])
-    await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
+    await group.send_message(MessageChain(Image(data_bytes=img_bytes)))
