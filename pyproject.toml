@@ -19,7 +19,7 @@ graia-ariadne = {extras = ["full"], version = "^0.6.16", allow-prereleases=true}
 httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
-lxml = "^4.8.0"
+lxml = "^4.9.0"
 numpy = "^1.22.4"
 opencv-python = "^4.5.5"
 orjson = "^3.6.8"
