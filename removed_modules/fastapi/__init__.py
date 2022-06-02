@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import importlib
-import os
 from contextvars import ContextVar
 
 from fastapi import WebSocket
@@ -55,20 +53,30 @@ fastapicore.asgi.add_api_route('/login', endpoint=login_for_access_token, respon
 
 fastapicore.asgi.add_api_websocket_route('/ws', endpoint=websocket)
 
-for i in os.listdir(os.path.join('api')):
-    if i.endswith('.py'):
-        importlib.import_module(f'api.{i[:-3]}')
-    else:
-        importlib.import_module(f'api.{i}')
+from .api import routes
 
+for route in routes:
+    fastapicore.asgi.add_api_route(
+        path=route.path,
+        methods=route.methods,
+        endpoint=route.endpoint,
+        response_model=route.response_model,
+        **route.kwargs,
+    )
 
-for i in Router.routes:
-    fastapicore.asgi.add_api_route(i.path, endpoint=i.endpoint, response_model=i.response_model, methods=i.methods)
+for route in Router.routes:
+    fastapicore.asgi.add_api_route(
+        path=route.path,
+        methods=route.methods,
+        endpoint=route.endpoint,
+        response_model=route.response_model,
+        **route.kwargs,
+    )
 
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
 async def on_launch():
-    broadcast.set(Ariadne.current().service.broadcast)
+    broadcast.set(Ariadne.broadcast)
     await fastapicore.start()
 
 

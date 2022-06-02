@@ -48,15 +48,11 @@ class FastApiCore:
         LOG_CONFIG = {
             "version": 1,
             "disable_existing_loggers": False,
-            "handlers": {
-                "default": {
-                    "class": "graia.ariadne.util.LoguruHandler",
-                },
-            },
             "loggers": {
-                "uvicorn.error": {"handlers": ["default"] if log else [], "level": "INFO"},
-                "uvicorn.access": {"handlers": ["default"] if log else [], "level": "INFO"},
-                "uvicorn.asgi": {"handlers": ["default"] if log else [], "level": "INFO"},
+                "uvicorn": {"handlers": [], "level": "INFO"},
+                "uvicorn.error": {"handlers": [], "level": "INFO"},
+                # "uvicorn.access": {"handlers": [] if log else [], "level": "INFO"},
+                # "uvicorn.asgi": {"handlers": [] if log else [], "level": "INFO"},
             },
         }
         self.server = NoSignalServer(
