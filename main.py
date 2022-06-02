@@ -1,31 +1,30 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
+import pkgutil
+from pathlib import Path
+
+from graia.ariadne.app import Ariadne
+from graia.ariadne.connection.config import (
+    HttpClientConfig,
+    WebsocketClientConfig,
+    config,
+)
+from graia.ariadne.model import LogConfig
+from graia.saya import Saya
+from graia.saya.builtins.broadcast import BroadcastBehaviour
+from graia.scheduler import GraiaScheduler
+from graia.scheduler.saya import GraiaSchedulerBehaviour
+
 from util import log_level_handler
+from util.config import basic_cfg, modules_cfg
+from util.database import Database
+from util.logger_rewrite import rewrite_ariadne_logger
+from util.path import modules_path, root_path
+from util.send_action import Safe
 
 if __name__ == '__main__':
-
-    import asyncio
-    import pkgutil
-    from pathlib import Path
-
-    from graia.ariadne.app import Ariadne
-    from graia.ariadne.connection.config import (
-        HttpClientConfig,
-        WebsocketClientConfig,
-        config,
-    )
-    from graia.ariadne.model import LogConfig
-    from graia.saya import Saya
-    from graia.saya.builtins.broadcast import BroadcastBehaviour
-    from graia.scheduler import GraiaScheduler
-    from graia.scheduler.saya import GraiaSchedulerBehaviour
-
-    from util.config import basic_cfg, modules_cfg
-    from util.database import Database
-    from util.logger_rewrite import rewrite_ariadne_logger
-    from util.path import modules_path, root_path
-    from util.send_action import Safe
 
     ignore = ('__init__.py', '__pycache__')
 
