@@ -7,7 +7,7 @@ from uuid import UUID
 import regex as re
 from aiohttp import ClientResponse
 
-from util.get_aiohtto_session import GetAiohttpSession
+from util import GetAiohttpSession
 
 
 def format_time(timestamp: int) -> str:

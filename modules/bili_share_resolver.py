@@ -30,10 +30,10 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
+from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import GetAiohttpSession
 from util.text2img import async_generate_img, hr
 
 channel = Channel.current()

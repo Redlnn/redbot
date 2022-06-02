@@ -28,11 +28,11 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from pydantic import AnyHttpUrl
 
+from util import GetAiohttpSession
 from util.config import RConfig, basic_cfg
 from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import GetAiohttpSession
 
 channel = Channel.current()
 

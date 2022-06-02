@@ -12,10 +12,10 @@ from graia.ariadne.connection.config import (
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Source
-from graia.ariadne.model import Group, Member
+from graia.ariadne.model import Group, LogConfig, Member
 from graia.broadcast import Broadcast
 
-from util.ariadne_rewrite import CustomLogConfig
+from util import log_level_handler
 from util.config import basic_cfg
 from util.logger_rewrite import rewrite_ariadne_logger
 from util.send_action import Safe
@@ -34,7 +34,7 @@ app = Ariadne(
         HttpClientConfig(host=basic_cfg.miraiApiHttp.host),
         WebsocketClientConfig(host=basic_cfg.miraiApiHttp.host),
     ),
-    log_config=CustomLogConfig(log_level='DEBUG' if basic_cfg.debug else 'INFO'),
+    log_config=LogConfig(log_level_handler),
 )
 app.default_send_action = Safe
 rewrite_ariadne_logger(basic_cfg.debug)  # 对logger进行调整，必须放在这里

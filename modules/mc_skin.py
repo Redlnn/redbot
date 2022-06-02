@@ -26,10 +26,10 @@ from graia.ariadne.model import Group
 from graia.saya.builtins.broadcast import ListenerSchema
 from graia.saya.channel import Channel
 
+from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import GetAiohttpSession
 
 channel = Channel.current()
 
