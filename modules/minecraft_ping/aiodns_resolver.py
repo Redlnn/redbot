@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
 from typing import Literal
 
 import aiodns
 from aiodns.error import DNSError
-from graia.saya import Saya
 
-resolver = aiodns.DNSResolver(loop=Saya.current().broadcast.loop, nameservers=['119.29.29.29'])  # type: ignore
+resolver = aiodns.DNSResolver(loop=asyncio.get_event_loop(), nameservers=['119.29.29.29'])
 
 
 async def dns_resolver(domain: str) -> bool | str:
