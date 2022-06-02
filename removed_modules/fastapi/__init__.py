@@ -23,6 +23,11 @@ from util.fastapi_core.router import Router
 from .oauth2 import Token, login_for_access_token
 
 channel = Channel.current()
+
+channel.meta['name'] = 'API'
+channel.meta['author'] = ['Red_lnn']
+channel.meta['can_disable'] = False
+
 manager = WsConnectionManager()
 fastapicore = FastApiCore(listen_host='0.0.0.0')
 broadcast: ContextVar[Broadcast] = ContextVar('bcc')
