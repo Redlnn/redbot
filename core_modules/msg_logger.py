@@ -59,7 +59,7 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
             case 'Poke' | 'Dice' | 'MusicShare' | 'File':
                 return
             case 'Image' | 'FlashImage' | 'Voice':
-                message.__root__[ind] = Plain(elem.as_persistent_string(bool=False))  # type: ignore
+                message.__root__[ind] = Plain(elem.as_persistent_string(binary=False))  # type: ignore
             case _:
                 message.__root__[ind] = Plain(elem.display)
     await log_msg(

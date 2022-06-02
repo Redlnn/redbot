@@ -130,7 +130,7 @@ async def b23_url_extract(b23_url: str) -> Literal[False] | str:
     return target if 'www.bilibili.com/video/' in target else False
 
 
-async def get_video_info(video_id: str) -> dict:  # type: ignore
+async def get_video_info(video_id: str) -> dict:
     session = GetAiohttpSession.get_session()
     if video_id[:2].lower() == 'av':
         async with session.get(f'http://api.bilibili.com/x/web-interface/view?aid={video_id[2:]}') as resp:
@@ -138,6 +138,7 @@ async def get_video_info(video_id: str) -> dict:  # type: ignore
     elif video_id[:2].lower() == 'bv':
         async with session.get(f'http://api.bilibili.com/x/web-interface/view?bvid={video_id}') as resp:
             return await resp.json()
+    return {}
 
 
 async def info_json_dump(obj: dict) -> VideoInfo:
