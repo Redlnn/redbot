@@ -51,9 +51,7 @@ def rewrite_ariadne_logger(debug: bool = False):
             '<cyan>{name}</cyan> - <level>{message}</level>'
         )
         log_level = 'INFO'
-    logger.add(
-        sys.stderr, level=log_level, format=log_format, colorize=True, backtrace=True, diagnose=True, enqueue=False
-    )
+    logger.add(sys.stderr, level=log_level, format=log_format, backtrace=True, diagnose=True, enqueue=True)
     logger.add(
         Path(logs_path, 'latest.log'),
         rotation='00:00',
