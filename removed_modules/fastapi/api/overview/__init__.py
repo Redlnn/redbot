@@ -55,10 +55,10 @@ memory_total: int = psutil.virtual_memory().total  # Byte
 
 
 async def get_sys_info():
-    if platform.uname().system.lower() == "windows":
-        disk_usage = psutil.disk_usage(__file__[:2]) if __file__[2] == ":" else psutil.disk_usage("C:")
+    if platform.uname().system.lower() == 'windows':
+        disk_usage = psutil.disk_usage(__file__[:2]) if __file__[2] == ':' else psutil.disk_usage('C:')
     else:
-        disk_usage = psutil.disk_usage("/")
+        disk_usage = psutil.disk_usage('/')
     return GeneralResponse(
         data={
             'system_type': uname.system,

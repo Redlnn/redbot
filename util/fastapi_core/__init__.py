@@ -42,17 +42,17 @@ class FastApiCore:
             CORSMiddleware,
             allow_origins=['*'],
             allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
+            allow_methods=['*'],
+            allow_headers=['*'],
         )
         LOG_CONFIG = {
-            "version": 1,
-            "disable_existing_loggers": False,
-            "loggers": {
-                "uvicorn": {"handlers": [], "level": "INFO"},
-                "uvicorn.error": {"handlers": [], "level": "INFO"},
-                # "uvicorn.access": {"handlers": [] if log else [], "level": "INFO"},
-                # "uvicorn.asgi": {"handlers": [] if log else [], "level": "INFO"},
+            'version': 1,
+            'disable_existing_loggers': False,
+            'loggers': {
+                'uvicorn': {'handlers': [], 'level': 'INFO'},
+                'uvicorn.error': {'handlers': [], 'level': 'INFO'},
+                # 'uvicorn.access': {'handlers': [] if log else [], 'level': 'INFO'},
+                # 'uvicorn.asgi': {'handlers': [] if log else [], 'level': 'INFO'},
             },
         }
         self.server = NoSignalServer(

@@ -36,13 +36,13 @@ channel.meta['name'] = 'mc正版皮肤获取'
 channel.meta['author'] = ['BlueGlassBlock']
 channel.meta['description'] = '[.!！]skin <name> {option}\noption: original|body|head|avatar'
 
-UUID_ADDRESS_STRING = "https://api.mojang.com/users/profiles/minecraft/{name}"
+UUID_ADDRESS_STRING = 'https://api.mojang.com/users/profiles/minecraft/{name}'
 
 RENDER_ADDR = {
-    "original": "https://crafatar.com/skins/{uuid}",
-    "body": "https://crafatar.com/renders/body/{uuid}?overlay",
-    "head": "https://crafatar.com/renders/head/{uuid}?overlay",
-    "avatar": "https://crafatar.com/avatars/{uuid}?overlay",
+    'original': 'https://crafatar.com/skins/{uuid}',
+    'body': 'https://crafatar.com/renders/body/{uuid}?overlay',
+    'head': 'https://crafatar.com/renders/head/{uuid}?overlay',
+    'avatar': 'https://crafatar.com/avatars/{uuid}?overlay',
 }
 
 
@@ -71,10 +71,10 @@ async def get_skin(group: Group, name: RegexResult, option: ArgResult):
     try:
         session = GetAiohttpSession.get_session()
         async with session.get(UUID_ADDRESS_STRING.format(name=name.result.display)) as resp:
-            uuid = orjson.loads(await resp.text())["id"]
+            uuid = orjson.loads(await resp.text())['id']
         url = RENDER_ADDR[option.result].format(uuid=uuid)
         await group.send_message(MessageChain(Image(url=url)))
     except TimeoutError:
-        await group.send_message(MessageChain("连接API超时"))
+        await group.send_message(MessageChain('连接API超时'))
     except Exception as e:
-        await group.send_message(MessageChain(f"无法获取皮肤: {e}"))
+        await group.send_message(MessageChain(f'无法获取皮肤: {e}'))

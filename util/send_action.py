@@ -10,7 +10,7 @@ from graia.ariadne.model import BotMessage
 from graia.ariadne.typing import SendMessageAction, SendMessageException
 from graia.ariadne.util.send import Ignore
 
-Exc_T = TypeVar("Exc_T", bound=SendMessageException)
+Exc_T = TypeVar('Exc_T', bound=SendMessageException)
 
 
 class Safe(SendMessageAction):
@@ -37,7 +37,7 @@ class Safe(SendMessageAction):
 
     @staticmethod
     async def _handle(item: SendMessageException, ignore: bool):
-        chain: MessageChain = item.send_data["message"]
+        chain: MessageChain = item.send_data['message']
         ariadne = Ariadne.current()
 
         def convert(msg_chain: MessageChain, type_: str) -> None:
@@ -70,7 +70,7 @@ class Safe(SendMessageAction):
     async def exception(self, i):
         ...
 
-    async def exception(self: Union["Safe", Exc_T], i: Optional[Exc_T] = None):  # type: ignore # noqa
+    async def exception(self: Union['Safe', Exc_T], i: Optional[Exc_T] = None):  # type: ignore # noqa
         if not isinstance(self, Safe):
             return await Safe._handle(self, True)
         if i:

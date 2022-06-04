@@ -631,7 +631,7 @@ async def pardon(group: Group, message: MessageChain, source: Source):
                     logger.exception(e)
                     flags.append(False)
                 else:
-                    if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                    if not res.startswith('Unbanned') and res != 'Nothing changed. The player isn\'t banned':
                         await group.send_message(MessageChain(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
                         flags.append(False)
             else:
@@ -659,7 +659,7 @@ async def pardon(group: Group, message: MessageChain, source: Source):
                     logger.exception(e)
                     flags.append(False)
                 else:
-                    if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                    if not res.startswith('Unbanned') and res != 'Nothing changed. The player isn\'t banned':
                         await group.send_message(MessageChain(Plain(f'在解封该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
                         flags.append(False)
             else:
@@ -773,7 +773,7 @@ async def ban(group: Group, message: MessageChain, source: Source):
                     logger.exception(e)
                     flags.append(False)
                 else:
-                    if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                    if not res.startswith('Unbanned') and res != 'Nothing changed. The player isn\'t banned':
                         await group.send_message(MessageChain(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
                         flags.append(False)
             else:
@@ -801,7 +801,7 @@ async def ban(group: Group, message: MessageChain, source: Source):
                     logger.exception(e)
                     flags.append(False)
                 else:
-                    if not res.startswith('Unbanned') and res != "Nothing changed. The player isn't banned":
+                    if not res.startswith('Unbanned') and res != 'Nothing changed. The player isn\'t banned':
                         await group.send_message(MessageChain(Plain(f'在封禁该玩家时服务器返回未知结果 👇\n{res}')), quote=source)
                         flags.append(False)
             else:

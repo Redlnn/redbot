@@ -64,7 +64,7 @@ async def main(app: Ariadne, event: NudgeEvent):
     with contextlib.suppress(UnknownTarget):
         await app.send_nudge(event.supplicant, event.group_id)  # 当戳一戳来自好友时 event.group_id 为 None，因此这里不判断也可以
         await asyncio.sleep(uniform(0.2, 0.6))
-        if event.context_type == "friend" and event.friend_id:
+        if event.context_type == 'friend' and event.friend_id:
             await app.send_friend_message(event.friend_id, (await get_message(event)))
-        elif event.context_type == "group" and event.group_id:
+        elif event.context_type == 'group' and event.group_id:
             await app.send_group_message(event.group_id, (await get_message(event)))

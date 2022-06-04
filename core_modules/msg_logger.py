@@ -78,9 +78,9 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
             Twilight(
                 [
                     RegexMatch(r'[!！.]msgcount').space(SpacePolicy.FORCE),
-                    'arg_type' @ ArgumentMatch("--type", optional=False),
-                    'arg_target' @ ArgumentMatch("--target"),
-                    'arg_day' @ ArgumentMatch("--day", default='7'),
+                    'arg_type' @ ArgumentMatch('--type', optional=False),
+                    'arg_target' @ ArgumentMatch('--target'),
+                    'arg_day' @ ArgumentMatch('--day', default='7'),
                 ],
             )
         ],

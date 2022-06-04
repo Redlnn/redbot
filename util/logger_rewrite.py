@@ -54,7 +54,7 @@ def rewrite_ariadne_logger(debug: bool = False):
     logger.add(
         Path(logs_path, 'latest.log'),
         rotation='00:00',
-        retention="30 days",
+        retention='30 days',
         compression='zip',
         encoding='utf-8',
         level=log_level,
