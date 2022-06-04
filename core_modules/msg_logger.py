@@ -4,7 +4,6 @@
 import datetime
 import time
 
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain, Source
@@ -99,7 +98,7 @@ async def get_msg_count(group: Group, member: Member, arg_type: ArgResult, arg_t
     target: int | None = None
     if arg_type.result == 'member':
         if arg_target.matched:
-            if arg_target.result.only_contains(At):
+            if arg_target.result.only(At):
                 target = arg_target.result.get_first(At).target
             elif arg_target.result.isdigit():
                 target = int(arg_target.result)

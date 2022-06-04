@@ -12,7 +12,6 @@ from asyncio import Lock
 from collections import defaultdict
 from typing import DefaultDict, Optional, Set, Tuple
 
-from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Group, Member

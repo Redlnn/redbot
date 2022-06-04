@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import re
 import socket
 import struct
 import time
 
-import orjson as json
-import regex as re
+import orjson
 from graia.ariadne.util.async_exec import io_bound
 
 from .aiodns_resolver import dns_resolver_srv
@@ -114,7 +114,7 @@ class PingClient:
             self._send_data(sock, b'\x01', time.time() * 1000)
             unix = self._read_fully(sock)
 
-        status = json.loads(data.decode('utf8'))
+        status = orjson.loads(data.decode('utf8'))
         if format_:
             status['description'] = self._format_desc(status['description'])
         status['delay'] = time.time() * 1000 - struct.unpack('Q', unix)[0]

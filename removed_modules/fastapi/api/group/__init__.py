@@ -15,7 +15,7 @@ perm_map = {
 
 async def get_group_list():
     app = Ariadne.current()
-    group_list = await app.get_groupList()
+    group_list = await app.get_group_list()
 
     tmp: dict[int, dict[str, int | str]] = {
         group.id: {

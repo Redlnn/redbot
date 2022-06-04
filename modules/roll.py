@@ -10,7 +10,6 @@
 
 from random import randint
 
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Dice, Plain, Source

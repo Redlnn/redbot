@@ -7,7 +7,6 @@
 移植自 Xenon：https://github.com/McZoo/Xenon/blob/master/lib/control.py
 """
 
-from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Group, Member, MemberPerm

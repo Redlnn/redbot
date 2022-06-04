@@ -3,7 +3,6 @@
 
 import asyncio
 import time
-from contextvars import ContextVar
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
@@ -94,7 +93,7 @@ is_init: bool = False
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[require_disable(channel.module)]))
 async def init(app: Ariadne):
     global is_init
-    group_list = await app.get_groupList()
+    group_list = await app.get_group_list()
     groups = [group.id for group in group_list]
     for group in module_config.activeGroups:
         if group not in groups:
@@ -104,7 +103,7 @@ async def init(app: Ariadne):
     result = await Database.select_all(select(PlayerInfo))
     if len(result) == 0:
         logger.info('初始化mc服务器管理数据库中...')
-        member_list = await app.get_memberList(module_config.serverGroup)
+        member_list = await app.get_member_list(module_config.serverGroup)
         data = [PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp) for member in member_list]
         if await Database.add_many(*data):
             logger.info('mc服务器管理数据库初始化完成')
@@ -169,16 +168,16 @@ async def add_whitelist(group: Group, source: Source, message: MessageChain):
         await group.send_message(MessageChain(Plain('无效的命令')), quote=source)
         return
 
-    if msg[2].only_contains(Plain) and msg[2].display.isdigit():
+    if msg[2].only(Plain) and msg[2].display.isdigit():
         target = int(msg[2].display)
-    elif msg[2].only_contains(At):
+    elif msg[2].only(At):
         target = msg[2].get_first(At).target
     else:
         await group.send_message(MessageChain(Plain('目标用户不是有效的 QQ 号或 at 对象')), quote=source)
         return
 
     mc_id = msg[3].display
-    if not msg[3].only_contains(Plain) or not await is_mc_id(mc_id):
+    if not msg[3].only(Plain) or not await is_mc_id(mc_id):
         await group.send_message(MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
         return
 
@@ -208,33 +207,33 @@ async def del_whitelist(group: Group, source: Source, message: MessageChain):
 
     match len(msg):
         case 3:
-            if msg[2].only_contains(At):
+            if msg[2].only(At):
                 target = msg[2].get_first(At).target
                 await group.send_message(await del_whitelist_by_qq(target), quote=source)
                 return
         case 4:
-            if msg[2].only_contains(Plain):
+            if msg[2].only(Plain):
                 func = msg[2].display
                 if func == 'qq':
-                    if msg[3].only_contains(At):
+                    if msg[3].only(At):
                         target = msg[3].get_first(At).target
                         await group.send_message(await del_whitelist_by_qq(target), quote=source)
                         return
-                    elif msg[3].only_contains(Plain):
+                    elif msg[3].only(Plain):
                         target = msg[3].display
                         if target.isdigit():
                             await group.send_message(await del_whitelist_by_qq(int(target)), quote=source)
                         else:
                             await group.send_message(MessageChain(Plain('无效的 QQ 号')), quote=source)
                         return
-                elif func == 'id' and msg[3].only_contains(Plain):
+                elif func == 'id' and msg[3].only(Plain):
                     target = msg[3].display
                     if await is_mc_id(target):
                         await group.send_message(await del_whitelist_by_id(target), quote=source)
                     else:
                         await group.send_message(MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
                     return
-                elif func == 'uuid' and msg[3].only_contains(Plain):
+                elif func == 'uuid' and msg[3].only(Plain):
                     target = msg[3].display
                     if await is_uuid(target):
                         await group.send_message(await del_whitelist_by_uuid(target), quote=source)
@@ -265,7 +264,7 @@ async def info_whitelist(group: Group, source: Source, message: MessageChain):
 
     match len(msg):
         case 3:
-            if msg[2].only_contains(At):
+            if msg[2].only(At):
                 target = msg[2].get_first(At).target
                 player = await query_uuid_by_qq(target)
                 if player is None:
@@ -274,17 +273,17 @@ async def info_whitelist(group: Group, source: Source, message: MessageChain):
                 await group.send_message(await gen_query_info_text(player), quote=source)
                 return
         case 4:
-            if msg[2].only_contains(Plain):
+            if msg[2].only(Plain):
                 func = msg[2].display
                 if func == 'qq':
-                    if msg[3].only_contains(At):
+                    if msg[3].only(At):
                         target = msg[3].get_first(At).target
                         player = await query_uuid_by_qq(target)
                         if player is None:
                             await group.send_message(MessageChain(At(target), Plain(f' 好像一个白名单都没有呢~')), quote=source)
                             return
                         await group.send_message(await gen_query_info_text(player), quote=source)
-                    elif msg[3].only_contains(Plain):
+                    elif msg[3].only(Plain):
                         target = msg[3].display
                         if target.isdigit():
                             player = await query_uuid_by_qq(int(target))
@@ -297,7 +296,7 @@ async def info_whitelist(group: Group, source: Source, message: MessageChain):
                         else:
                             await group.send_message(MessageChain(Plain('无效的 QQ 号')), quote=source)
                         return
-                elif func == 'id' and msg[3].only_contains(Plain):
+                elif func == 'id' and msg[3].only(Plain):
                     target = msg[3].display
                     if await is_mc_id(target):
                         status, player = await query_whitelist_by_id(target)
@@ -317,7 +316,7 @@ async def info_whitelist(group: Group, source: Source, message: MessageChain):
                     else:
                         await group.send_message(MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
                     return
-                elif func == 'uuid' and msg[3].only_contains(Plain):
+                elif func == 'uuid' and msg[3].only(Plain):
                     target = msg[3].display
                     if await is_uuid(target):
                         player = await query_whitelist_by_uuid(target)
@@ -414,7 +413,7 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
-    if len(msg) != 2 or not msg[1].only_contains(Plain):
+    if len(msg) != 2 or not msg[1].only(Plain):
         await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
 
@@ -592,12 +591,12 @@ async def pardon(group: Group, message: MessageChain, source: Source):
     if len(msg) != 2:
         await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
-    elif msg[1].only_contains(At):
+    elif msg[1].only(At):
         target = msg[1].get_first(At).target
         await Database.exec(
             update(PlayerInfo).where(PlayerInfo.qq == str(target)).values(blocked=False, block_reason=None)
         )
-    elif msg[1].only_contains(Plain):
+    elif msg[1].only(Plain):
         target = msg[1].display
         if not target.isdigit():
             await group.send_message(MessageChain(Plain('请输入QQ号')), quote=source)
@@ -693,10 +692,10 @@ async def clear_leave_time(group: Group, message: MessageChain, source: Source):
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
-    if len(msg) != 2 or len(msg) == 2 and not msg[1].only_contains(At) and not msg[1].only_contains(Plain):
+    if len(msg) != 2 or len(msg) == 2 and not msg[1].only(At) and not msg[1].only(Plain):
         await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
-    elif len(msg) == 2 and msg[1].only_contains(At):
+    elif len(msg) == 2 and msg[1].only(At):
         target = msg[1].get_first(At).target
         await Database.exec(update(PlayerInfo).where(PlayerInfo.qq == str(target)).values(leave_time=None))
     else:
@@ -730,13 +729,13 @@ async def ban(group: Group, message: MessageChain, source: Source):
     if not 2 <= len(msg) <= 3:
         await group.send_message(MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
-    elif msg[1].only_contains(At):
+    elif msg[1].only(At):
         block_reason = msg[2].include(Plain).merge().display if len(msg) == 3 else None
         target = msg[1].get_first(At).target
         await Database.exec(
             update(PlayerInfo).where(PlayerInfo.qq == str(target)).values(blocked=True, block_reason=block_reason)
         )
-    elif msg[1].only_contains(Plain):
+    elif msg[1].only(Plain):
         block_reason = msg[2].include(Plain).merge().display if len(msg) == 3 else None
         target = msg[1].display
         if not target.isdigit():

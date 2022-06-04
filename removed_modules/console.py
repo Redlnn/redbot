@@ -54,10 +54,10 @@ async def list_target(app: Ariadne, target_type: RegexResult):
         return
     match target_type.result.display:
         case 'group':
-            for group in await app.get_groupList():
+            for group in await app.get_group_list():
                 logger.opt(raw=True).info(f'{group.name}({group.id}) - {get_perm_name(group.accountPerm)}\n')
         case 'friend':
-            for friend in await app.get_friendList():
+            for friend in await app.get_friend_list():
                 logger.opt(raw=True).info(
                     f'{friend.remark}({friend.id})'
                     + (f' - {friend.nickname}\n' if friend.nickname != friend.remark else '\n')

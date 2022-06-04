@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import regex as re
+import re
+
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
@@ -43,7 +44,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
         except UnknownTarget:
             await group.send_message(MessageChain(Plain('找不到该消息，对象不存在')))
             return
-        chain = message_event.messageChain
+        chain = message_event.message_chain
         await group.send_message(MessageChain(Plain(f'消息ID: {quote_id}\n消息内容：{chain.as_persistent_string()}')))
     elif re.match(r'^[!！.]发送消息 .+', message.display):
         if msg := re.sub(r'[!！.]发送消息 ', '', message.display, count=1):

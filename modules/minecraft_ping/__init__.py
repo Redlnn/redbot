@@ -11,7 +11,6 @@ Ping mc服务器
 
 import socket
 
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain

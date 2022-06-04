@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 from loguru import logger
-from prompt_toolkit.patch_stdout import StdoutProxy
 
 from util.path import logs_path
 

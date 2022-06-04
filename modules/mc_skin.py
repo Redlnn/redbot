@@ -10,7 +10,6 @@ mc皮肤查询
 from asyncio.exceptions import TimeoutError
 
 import orjson
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image
@@ -67,13 +66,13 @@ RENDER_ADDR = {
     )
 )
 async def get_skin(group: Group, name: RegexResult, option: ArgResult):
-    if name.result is None:
+    if name.result is None or option.result is None:
         return
     try:
         session = GetAiohttpSession.get_session()
         async with session.get(UUID_ADDRESS_STRING.format(name=name.result.display)) as resp:
             uuid = orjson.loads(await resp.text())["id"]
-        url = RENDER_ADDR[option.result].format(uuid=uuid)  # type: ignore
+        url = RENDER_ADDR[option.result].format(uuid=uuid)
         await group.send_message(MessageChain(Image(url=url)))
     except TimeoutError:
         await group.send_message(MessageChain("连接API超时"))

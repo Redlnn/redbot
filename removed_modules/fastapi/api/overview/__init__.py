@@ -34,7 +34,7 @@ def get_running_time():
 
 async def get_info_card():
     ariadne = Ariadne.current()
-    joined_group_count = await ariadne.get_groupList()
+    joined_group_count = await ariadne.get_group_list()
     return GeneralResponse(
         data={
             'today_msg_count': 114,

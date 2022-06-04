@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import re
 import time
 from uuid import UUID
 
-import regex as re
 from aiohttp import ClientResponse
 
 from util import GetAiohttpSession

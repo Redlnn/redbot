@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import re
 from random import randint
 
-import regex as re
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain, Source
@@ -38,7 +37,7 @@ channel.meta['description'] = '@bot {主语}<介词>不<介词>{动作}\n如：@
     )
 )
 async def main(group: Group, source: Source, message: MessageChain, at: ElementResult):
-    if at.result.target != basic_cfg.miraiApiHttp.account:  # type: ignore
+    if at.result is None or at.result.target != basic_cfg.miraiApiHttp.account:
         return
     msg = message.include(Plain).display.strip()
     re1_match = re.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)
@@ -52,7 +51,7 @@ async def main(group: Group, source: Source, message: MessageChain, at: ElementR
         if roll % 2 == 0:
             chain = MessageChain(Plain(subject + preposition + action))
         else:
-            chain = MessageChain(Plain(subject + '不' + preposition + action))
+            chain = MessageChain(Plain(f'{subject}不{preposition}{action}'))
     elif re2_match:
         re2_match = re2_match.groups()
         subject = re2_match[0].replace('我', '你') if re2_match[0] else ''

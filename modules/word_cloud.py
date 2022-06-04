@@ -7,6 +7,7 @@
 
 import datetime
 import random
+import re
 import time
 from contextvars import ContextVar
 from io import BytesIO
@@ -15,8 +16,6 @@ from pathlib import Path
 
 import jieba.analyse
 import numpy
-import regex as re
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
@@ -90,7 +89,7 @@ config = WordCloudConfig()
         ],
     )
 )
-async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult):
+async def command(group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult):
     if day_length.result is None:
         return
     try:
@@ -119,7 +118,7 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexRe
             return
         else:
             await group.send_message(MessageChain(Plain(f'你最近{day}天的聊天词云 👇\n'), result))
-    elif match_result.only_contains(At):
+    elif match_result.only(At):
         at = match_result.get_first(At)
         result = await gen_wordcloud_member(group, at.target, day, False)
         if result is None:
@@ -156,7 +155,7 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexRe
         ],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, target_time: RegexResult):
+async def main(group: Group, member: Member, target: RegexResult, target_time: RegexResult):
     if target.result is None or target_time.result is None:
         return
     today = time.localtime(time.time())

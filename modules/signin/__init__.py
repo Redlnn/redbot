@@ -5,7 +5,6 @@ import time
 from pathlib import Path
 from random import choices, randint
 
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain, Source
@@ -139,9 +138,9 @@ async def signin(group: Group, member: Member, source: Source):
 )
 async def clear(group: Group, target: RegexResult):
     msg: MessageChain = target.result  # type: ignore
-    if msg.only_contains(At):
+    if msg.only(At):
         result = await clear_signin(str(msg.get_first(At).target))
-    elif msg.only_contains(Plain) and msg.display.strip().isdigit():
+    elif msg.only(Plain) and msg.display.strip().isdigit():
         result = await clear_signin(msg.display.strip())
     else:
         await group.send_message(MessageChain(Plain('参数错误，请输入正确的QQ号或者@某人')))

@@ -88,12 +88,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
         await group.send_message(MessageChain(Plain('未找到相应tag的色图')))
     elif res.get('code') == 200:
         forward_nodes = [
-            ForwardNode(
-                senderId=member.id,
-                time=datetime.now(),
-                senderName=member.name,
-                messageChain=MessageChain('我有涩图要给大伙康康，请米娜桑坐稳扶好哦嘿嘿嘿~'),
-            ),
+            ForwardNode(target=member, time=datetime.now(), message=MessageChain('我有涩图要给大伙康康，请米娜桑坐稳扶好哦嘿嘿嘿~')),
         ]
         for img in res['data']['imgs']:  # type: ignore
             forward_nodes.extend(
@@ -112,15 +107,11 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
                             ),
                         ),
                     ),
-                    ForwardNode(
-                        target=member,
-                        time=datetime.now(),
-                        message=MessageChain(Image(url=img['url'])),
-                    ),
+                    ForwardNode(target=member, time=datetime.now(), message=MessageChain(Image(url=img['url']))),
                 ]
             )
         forward_nodes.append(
-            ForwardNode(target=member, time=datetime.now(), messageChain=MessageChain(Plain('看够了吗？看够了就没了噢~'))),
+            ForwardNode(target=member, time=datetime.now(), message=MessageChain(Plain('看够了吗？看够了就没了噢~'))),
         )
         message = MessageChain(Forward(nodeList=forward_nodes))
         msg_id = await group.send_message(message)

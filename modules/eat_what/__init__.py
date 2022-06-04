@@ -5,7 +5,6 @@ import random
 from pathlib import Path
 
 from aiofile import async_open
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source

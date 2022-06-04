@@ -79,7 +79,7 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
     )
 )
 async def listener(event: ActiveGroupMessage):
-    source = event.messageChain.get_first(Source)
+    source = event.message_chain.get_first(Source)
     msg_list = lastest_msg.get()
     msg_list.append(
         {

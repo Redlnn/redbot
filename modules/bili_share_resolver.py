@@ -16,12 +16,11 @@
  - av2
 """
 
+import re
 import time
 from dataclasses import dataclass
 from typing import Literal
 
-import regex as re
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain

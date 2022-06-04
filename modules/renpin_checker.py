@@ -11,12 +11,11 @@
 
 import datetime
 import random
+import re
 from pathlib import Path
 
-import orjson as json
-import regex as re
+import orjson
 from aiofile import async_open
-from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -182,7 +181,7 @@ async def read_data(qq: str) -> tuple[bool, int, str]:
     try:
         async with async_open(data_file_path, 'r', encoding='utf-8') as afp:  # 以 追加+读 的方式打开文件
             f_data = await afp.read()
-            data = json.loads(f_data) if len(f_data) > 0 else {}
+            data = orjson.loads(f_data) if len(f_data) > 0 else {}
     except FileNotFoundError:
         data = {}
     if qq in data:
@@ -191,5 +190,5 @@ async def read_data(qq: str) -> tuple[bool, int, str]:
     qianwen = gen_qianwen(renpin)
     data[qq] = {'renpin': renpin, 'qianwen': qianwen}
     async with async_open(data_file_path, 'wb') as afp:
-        await afp.write(json.dumps(data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE))
+        await afp.write(orjson.dumps(data, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE))
     return True, renpin, qianwen
