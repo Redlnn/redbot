@@ -69,13 +69,4 @@ if __name__ == '__main__':
 
     loop.run_until_complete(Database.init())
 
-    # if not Path(f'{root_path}', 'alembic_data').exists():
-    #     from shutil import copyfile
-
-    #     os.system('poetry run alembic init alembic_data')
-    #     copyfile(Path(root_path, 'util', 'database', 'env.py'), Path(root_path, 'alembic_data', 'env.py'))
-    #     del copyfile
-    # os.system('poetry run alembic revision --autogenerate -m 'update'')
-    # os.system('poetry run alembic upgrade head')
-
     Ariadne.launch_blocking()

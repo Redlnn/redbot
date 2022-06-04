@@ -12,7 +12,6 @@ aiodns = "^3.0.0"
 aiofile = "^3.7.4"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
-alembic = "^1.8.0"
 fastapi = "^0.78.0"
 gitpython = "^3.1.27"
 graia-amnesia = {path = "wheels/graia_amnesia-0.5.0-py3-none-any.whl"}
@@ -23,7 +22,6 @@ launart = {path = "wheels/launart-0.1.0-py3-none-any.whl"}
 loguru = "^0.6.0"
 lxml = "^4.9.0"
 numpy = "^1.22.4"
-opencv-python = "^4.5.5"
 orjson = "^3.7.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pillow = "^9.1.1"
