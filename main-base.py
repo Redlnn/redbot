@@ -15,9 +15,8 @@ from graia.ariadne.message.element import Source
 from graia.ariadne.model import Group, LogConfig, Member
 from graia.broadcast import Broadcast
 
-from util import log_level_handler
+from util import log_level_handler, replace_logger
 from util.config import basic_cfg
-from util.logger_rewrite import rewrite_ariadne_logger
 from util.send_action import Safe
 
 if basic_cfg.miraiApiHttp.account == 123456789:
@@ -37,7 +36,7 @@ app = Ariadne(
     log_config=LogConfig(log_level_handler),
 )
 app.default_send_action = Safe
-rewrite_ariadne_logger(basic_cfg.debug)  # 对logger进行调整，必须放在这里
+replace_logger(level=0 if basic_cfg.debug else 20, richuru=True)  # 对logger进行调整，必须放在这里
 
 
 @bcc.receiver(GroupMessage)

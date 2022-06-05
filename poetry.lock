@@ -996,8 +996,8 @@ python-versions = ">=3.7"
 
 [package.source]
 type = "legacy"
-url = "https://mirrors.cloud.tencent.com/pypi/simple"
-reference = "tencent-cloud"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tuna-tsinghua"
 
 [[package]]
 name = "packaging"
@@ -1415,7 +1415,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "richuru"
-version = "0.1.0"
+version = "0.1.1"
 description = "a bridge between loguru & rich, rich's powerful render in loguru!"
 category = "main"
 optional = false
@@ -1559,8 +1559,8 @@ typing-extensions = ">=3.7.4"
 
 [package.source]
 type = "legacy"
-url = "https://mirrors.cloud.tencent.com/pypi/simple"
-reference = "tencent-cloud"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tuna-tsinghua"
 
 [[package]]
 name = "sqlmodel"
@@ -1801,7 +1801,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "055175b667ad3cd45f4dbdd4016f6e81f82c6becd8959d5914aab5bf18f327fa"
+content-hash = "642df7e86022e29cd1a34da79c2c322a4c2b43d3f2109b109eafcd29f3b72c59"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -2951,8 +2951,8 @@ rich = [
     {file = "rich-12.4.4.tar.gz", hash = "sha256:4c586de507202505346f3e32d1363eb9ed6932f0c2f63184dea88983ff4971e2"},
 ]
 richuru = [
-    {file = "richuru-0.1.0-py3-none-any.whl", hash = "sha256:327e0fec4246f6df73c52e10e25da413d52e698862860f68096f2c0ea2d1b48c"},
-    {file = "richuru-0.1.0.tar.gz", hash = "sha256:f655a0f91e967c98277accce6a6f575a5faeb0d6e2e9ed612cadf2b7ca6fc44f"},
+    {file = "richuru-0.1.1-py3-none-any.whl", hash = "sha256:e73d43913a372d741ff61106001b5e6adfa24c6d0665dd390328a33e34cd210d"},
+    {file = "richuru-0.1.1.tar.gz", hash = "sha256:815816f3a0142b67c53bd424fcced0821aa1104b5386301cff47fc7bbb6d90ea"},
 ]
 rsa = [
     {file = "rsa-4.8-py3-none-any.whl", hash = "sha256:95c5d300c4e879ee69708c428ba566c59478fd653cc3a22243eeb8ed846950bb"},

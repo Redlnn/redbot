@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging
+import sys
 from importlib import metadata
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from aiohttp import ClientSession
+from loguru import logger
+from richuru import LoguruHandler, install
 
 from util.config import basic_cfg
+from util.path import logs_path
 
 if TYPE_CHECKING:
     from graia.ariadne.event import MiraiEvent
@@ -36,6 +42,24 @@ class GetAiohttpSession:
         if cls.session is None:
             cls.session = ClientSession()
         return cls.session
+
+
+def replace_logger(level: str | int = 'INFO', richuru: bool = False):
+    if richuru:
+        install(level=level)
+    else:
+        logging.basicConfig(handlers=[LoguruHandler()], level=0)
+        logger.remove()
+        logger.add(sys.stderr, level=level, enqueue=True)
+    logger.add(
+        Path(logs_path, 'latest.log'),
+        level=level,
+        rotation='00:00',
+        retention='30 days',
+        compression='zip',
+        encoding='utf-8',
+        enqueue=True,
+    )
 
 
 def log_level_handler(event: 'MiraiEvent'):

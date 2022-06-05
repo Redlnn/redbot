@@ -30,7 +30,7 @@ pydantic = "^1.9.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 python-multipart = "^0.0.5"
 pyyaml = "^6.0"
-richuru = "^0.1.0"
+richuru = "^0.1.1"
 sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.37"}
 sqlmodel = "^0.0.6"
 uvicorn = {extras = ["standard"], version = "^0.17.6"}

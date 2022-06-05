@@ -49,10 +49,10 @@ class FastApiCore:
             'version': 1,
             'disable_existing_loggers': False,
             'loggers': {
-                'uvicorn': {'handlers': [], 'level': 'INFO'},
-                'uvicorn.error': {'handlers': [], 'level': 'INFO'},
-                # 'uvicorn.access': {'handlers': [] if log else [], 'level': 'INFO'},
-                # 'uvicorn.asgi': {'handlers': [] if log else [], 'level': 'INFO'},
+                'uvicorn': {'level': 0},
+                'uvicorn.error': {'level': 0},
+                'uvicorn.access': {'level': 0},
+                'uvicorn.asgi': {'level': 0},
             },
         }
         self.server = NoSignalServer(

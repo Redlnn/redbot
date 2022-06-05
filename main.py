@@ -17,10 +17,9 @@ from graia.saya.builtins.broadcast import BroadcastBehaviour
 from graia.scheduler import GraiaScheduler
 from graia.scheduler.saya import GraiaSchedulerBehaviour
 
-from util import log_level_handler
+from util import log_level_handler, replace_logger
 from util.config import basic_cfg, modules_cfg
 from util.database import Database
-from util.logger_rewrite import rewrite_ariadne_logger
 from util.path import modules_path, root_path
 from util.send_action import Safe
 
@@ -33,7 +32,7 @@ if __name__ == '__main__':
 
     loop = asyncio.new_event_loop()
 
-    Ariadne.config(loop=loop, install_log=True)
+    Ariadne.config(loop=loop)
     app = Ariadne(
         connection=config(
             basic_cfg.miraiApiHttp.account,  # 你的机器人的 qq 号
@@ -51,7 +50,7 @@ if __name__ == '__main__':
         app.create(GraiaSchedulerBehaviour),
     )
 
-    rewrite_ariadne_logger(basic_cfg.debug)
+    replace_logger(level=0 if basic_cfg.debug else 20, richuru=True)
 
     with saya.module_context():
         core_modules_path = Path(root_path, 'core_modules')
