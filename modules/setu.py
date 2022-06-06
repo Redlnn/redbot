@@ -54,13 +54,11 @@ setu_config = Setu()
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                [
-                    RegexMatch(r'[.!！]'),
-                    'tag' @ WildcardMatch(optional=True),
-                    'header' @ FullMatch('涩图'),
-                    'san' @ ArgumentMatch('--san', '-S', default='2', choices=['2', '4', '6']),  # 最高涩气值，可为2|4|6'
-                    'num' @ ArgumentMatch('--num', '-N', default='1', choices=['1', '2', '3', '4', '5']),  # 涩图数量
-                ],
+                RegexMatch(r'[.!！]'),
+                'tag' @ WildcardMatch(optional=True),
+                'header' @ FullMatch('涩图'),
+                'san' @ ArgumentMatch('--san', '-S', default='2', choices=['2', '4', '6']),  # 最高涩气值，可为2|4|6'
+                'num' @ ArgumentMatch('--num', '-N', default='1', choices=['1', '2', '3', '4', '5']),  # 涩图数量
             )
         ],
         decorators=[GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module)],
@@ -72,7 +70,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
     if int(san.result.display) >= 4 and not (
         member.permission in {MemberPerm.Administrator, MemberPerm.Owner} or member.id in basic_cfg.admin.admins
     ):
-        await group.send_message(MessageChain(Plain('你没有权限使用 san 参数')))
+        await app.send_message(group, MessageChain(Plain('你没有权限使用 san 参数')))
         return
     session = GetAiohttpSession.get_session()
     if tag.matched:
@@ -85,7 +83,7 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
         async with session.get(f'{setu_config.apiUrl}/?san={san.result}&num={num.result}') as resp:  # type: ignore
             res = await resp.json() if resp.status == 200 else {'code': 500}
     if res.get('code') == 404 and tag.matched:
-        await group.send_message(MessageChain(Plain('未找到相应tag的色图')))
+        await app.send_message(group, MessageChain(Plain('未找到相应tag的色图')))
     elif res.get('code') == 200:
         forward_nodes = [
             ForwardNode(target=member, time=datetime.now(), message=MessageChain('我有涩图要给大伙康康，请米娜桑坐稳扶好哦嘿嘿嘿~')),
@@ -114,9 +112,9 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
             ForwardNode(target=member, time=datetime.now(), message=MessageChain(Plain('看够了吗？看够了就没了噢~'))),
         )
         message = MessageChain(Forward(nodeList=forward_nodes))
-        msg_id = await group.send_message(message)
+        msg_id = await app.send_message(group, message)
         await asyncio.sleep(40)
         with contextlib.suppress(UnknownTarget):
             await app.recall_message(msg_id)  # type: ignore
     else:
-        await group.send_message(MessageChain(Plain('慢一点慢一点，别冲辣！')))
+        await app.send_message(group, MessageChain(Plain('慢一点慢一点，别冲辣！')))

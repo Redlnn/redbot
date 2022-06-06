@@ -10,6 +10,7 @@
 from asyncio.exceptions import TimeoutError
 from urllib.parse import quote
 
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
@@ -39,12 +40,12 @@ channel.meta['description'] = '[!！.]wiki <要搜索的关键词>'
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight([RegexMatch(r'[!！.]wiki').space(SpacePolicy.FORCE)], 'keyword' @ RegexMatch(r'\S+'))
+            Twilight(RegexMatch(r'[!！.]wiki').space(SpacePolicy.FORCE), 'keyword' @ RegexMatch(r'\S+'))
         ],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def main(group: Group, keyword: RegexResult):
+async def main(app: Ariadne, group: Group, keyword: RegexResult):
     if keyword.result is None:
         return
     key_word: str = keyword.result.display.strip()
@@ -92,4 +93,4 @@ async def main(group: Group, keyword: RegexResult):
                 )
             )
 
-    await group.send_message(msg)
+    await app.send_message(group, msg)

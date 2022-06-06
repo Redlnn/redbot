@@ -12,6 +12,7 @@ from asyncio import Lock
 from collections import defaultdict
 from typing import DefaultDict, Optional, Set, Tuple
 
+from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Group, Member
@@ -55,7 +56,7 @@ class GroupInterval:
         :param override_level: 可超越限制的最小等级，默认为群管理员
         """
 
-        async def cd_check(group: Group, member: Member):
+        async def cd_check(app: Ariadne, group: Group, member: Member):
             if await GroupPermission.get(member) >= override_level:
                 return
             current = time.time()
@@ -74,8 +75,8 @@ class GroupInterval:
                 if send_alert:
                     if group.id not in cls.sent_alert:
                         m, s = divmod(last[1] + suspend_time - current, 60)
-                        await group.send_message(
-                            MessageChain(Plain(f'功能冷却中...\n还有{f"{str(m)}分" if m else ""}{"%d" % s}秒结束'))
+                        await app.send_message(
+                            group, MessageChain(Plain(f'功能冷却中...\n还有{f"{str(m)}分" if m else ""}{"%d" % s}秒结束'))
                         )
                         cls.last_alert[group.id] = current
                         cls.sent_alert.add(group.id)
@@ -120,7 +121,7 @@ class MemberInterval:
         :param override_level: 可超越限制的最小等级，默认为群管理员
         """
 
-        async def cd_check(group: Group, member: Member):
+        async def cd_check(app: Ariadne, group: Group, member: Member):
             if await GroupPermission.get(member) >= override_level:
                 return
             current = time.time()
@@ -140,10 +141,11 @@ class MemberInterval:
                 if send_alert:
                     if member.id not in cls.sent_alert:
                         m, s = divmod(last[1] + suspend_time - current, 60)
-                        await group.send_message(
+                        await app.send_message(
+                            group,
                             MessageChain(
                                 At(member.id), Plain(f' 你在本群暂时不可调用bot，正在冷却中...\n还有{f"{m}分" if m else ""}{"%d" % s}秒结束')
-                            )
+                            ),
                         )
                         cls.last_alert[name] = current
                         cls.sent_alert.add(name)

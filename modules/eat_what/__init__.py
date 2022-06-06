@@ -5,6 +5,7 @@ import random
 from pathlib import Path
 
 from aiofile import async_open
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
@@ -32,11 +33,11 @@ async def get_food():
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]吃啥').space(SpacePolicy.NOSPACE)])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]吃啥').space(SpacePolicy.NOSPACE))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def main(group: Group, source: Source):
+async def main(app: Ariadne, group: Group, source: Source):
     food = await get_food()
     chain = MessageChain(Plain(f'吃{food}'))
-    await group.send_message(chain, quote=source)
+    await app.send_message(group, chain, quote=source)

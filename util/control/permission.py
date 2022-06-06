@@ -7,6 +7,7 @@
 移植自 Xenon：https://github.com/McZoo/Xenon/blob/master/lib/control.py
 """
 
+from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Group, Member, MemberPerm
@@ -80,7 +81,7 @@ class GroupPermission:
         :param alert_text: 无权限提示的消息内容
         """
 
-        async def wrapper(group: Group, member: Member):
+        async def wrapper(app: Ariadne, group: Group, member: Member):
             if group.id not in perm_cfg.group_whitelist or member.id in perm_cfg.user_blacklist:
                 raise ExecutionStop()
             if isinstance(perm, MemberPerm):
@@ -91,7 +92,7 @@ class GroupPermission:
                 raise ValueError('perm 参数类型错误')
             if (await cls.get(member)) < target:
                 if send_alert:
-                    await group.send_message(MessageChain(At(member.id), Plain(f' {alert_text}')))
+                    await app.send_message(group, MessageChain(At(member.id), Plain(f' {alert_text}')))
                 raise ExecutionStop()
 
         return Depend(wrapper)

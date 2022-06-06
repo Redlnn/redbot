@@ -45,7 +45,7 @@ pid = os.getpid()
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.](status|version)')])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](status|version)'))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
@@ -81,4 +81,4 @@ async def main(app: Ariadne, group: Group):
         msg_send += ''.join(f'  graiax-{name}：{version}\n' for name, version in community)
 
     img_bytes = await async_generate_img([msg_send.rstrip()])
-    await group.send_message(MessageChain(Image(data_bytes=img_bytes)))
+    await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))

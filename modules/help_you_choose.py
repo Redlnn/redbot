@@ -4,6 +4,7 @@
 import re
 from random import randint
 
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain, Source
@@ -36,7 +37,7 @@ channel.meta['description'] = '@bot {主语}<介词>不<介词>{动作}\n如：@
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def main(group: Group, source: Source, message: MessageChain, at: ElementResult):
+async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: ElementResult):
     if at.result is None or at.result.target != basic_cfg.miraiApiHttp.account:
         return
     msg = message.include(Plain).display.strip()
@@ -64,4 +65,4 @@ async def main(group: Group, source: Source, message: MessageChain, at: ElementR
             chain = MessageChain(Plain(subject + re2_match[2] + preposition + action))
     else:
         return
-    await group.send_message(chain, quote=source)
+    await app.send_message(group, chain, quote=source)

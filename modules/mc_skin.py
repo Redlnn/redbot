@@ -10,6 +10,7 @@ mc皮肤查询
 from asyncio.exceptions import TimeoutError
 
 import orjson
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image
@@ -51,21 +52,19 @@ RENDER_ADDR = {
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                [
-                    RegexMatch(r'[.!！]skin').space(SpacePolicy.FORCE),
-                    'name' @ RegexMatch(r'[0-9a-zA-Z_]+'),
-                    ArgumentMatch(
-                        '--type', '-T', default='head', type=str, choices=['original', 'body', 'head', 'avatar']
-                    ).param(
-                        'option'
-                    ),  # 为了black格式化后好看所以用了param
-                ],
+                RegexMatch(r'[.!！]skin').space(SpacePolicy.FORCE),
+                'name' @ RegexMatch(r'[0-9a-zA-Z_]+'),
+                ArgumentMatch(
+                    '--type', '-T', default='head', type=str, choices=['original', 'body', 'head', 'avatar']
+                ).param(
+                    'option'
+                ),  # 为了black格式化后好看所以用了param
             )
         ],
         decorators=[GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module)],
     )
 )
-async def get_skin(group: Group, name: RegexResult, option: ArgResult):
+async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult):
     if name.result is None or option.result is None:
         return
     try:
@@ -73,8 +72,8 @@ async def get_skin(group: Group, name: RegexResult, option: ArgResult):
         async with session.get(UUID_ADDRESS_STRING.format(name=name.result.display)) as resp:
             uuid = orjson.loads(await resp.text())['id']
         url = RENDER_ADDR[option.result].format(uuid=uuid)
-        await group.send_message(MessageChain(Image(url=url)))
+        await app.send_message(group, MessageChain(Image(url=url)))
     except TimeoutError:
-        await group.send_message(MessageChain('连接API超时'))
+        await app.send_message(group, MessageChain('连接API超时'))
     except Exception as e:
-        await group.send_message(MessageChain(f'无法获取皮肤: {e}'))
+        await app.send_message(group, MessageChain(f'无法获取皮肤: {e}'))

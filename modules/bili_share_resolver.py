@@ -21,6 +21,7 @@ import time
 from dataclasses import dataclass
 from typing import Literal
 
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
@@ -78,7 +79,7 @@ class VideoInfo:
         listening_events=[GroupMessage], decorators=[GroupPermission.require(), require_disable(channel.module)]
     )
 )
-async def main(group: Group, message: MessageChain, member: Member):
+async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
     p = re.compile(f'({avid_re})|({bvid_re})')
     msg_str = message.as_persistent_string()
     if 'b23.tv/' in msg_str:
@@ -92,20 +93,21 @@ async def main(group: Group, message: MessageChain, member: Member):
 
     rate_limit, remaining_time = ManualInterval.require(f'{group.id}_{member.id}_bilibiliVideoInfo', 5, 2)
     if not rate_limit:
-        await group.send_message(MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
 
     video_info = await get_video_info(video_id)
     if video_info['code'] == -404:
-        return await group.send_message(MessageChain(Plain('视频不存在')))
+        return await app.send_message(group, MessageChain(Plain('视频不存在')))
     elif video_info['code'] != 0:
         error_text = f'解析B站视频 {video_id} 时出错👇\n错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
         logger.error(error_text)
-        return await group.send_message(MessageChain(Plain(error_text)))
+        return await app.send_message(group, MessageChain(Plain(error_text)))
     else:
         video_info = await info_json_dump(video_info['data'])
         img: bytes = await gen_img(video_info)
-        await group.send_message(
+        await app.send_message(
+            group,
             MessageChain(
                 Image(data_bytes=img),
                 Plain(

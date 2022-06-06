@@ -16,6 +16,7 @@ from pathlib import Path
 
 import jieba.analyse
 import numpy
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
@@ -75,11 +76,9 @@ config = WordCloudConfig()
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                [
-                    RegexMatch(r'[!！.]wordcloud').space(SpacePolicy.FORCE),
-                    'wc_target' @ WildcardMatch(),
-                    'day_length' @ ArgumentMatch('--day', '-D', default='7'),
-                ],
+                RegexMatch(r'[!！.]wordcloud').space(SpacePolicy.FORCE),
+                'wc_target' @ WildcardMatch(),
+                'day_length' @ ArgumentMatch('--day', '-D', default='7'),
             )
         ],
         decorators=[
@@ -89,51 +88,51 @@ config = WordCloudConfig()
         ],
     )
 )
-async def command(group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult):
+async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult):
     if day_length.result is None:
         return
     try:
         day = int(day_length.result)
     except ValueError:
-        await group.send_message(MessageChain(Plain('请输入正确的天数！')), quote=True)
+        await app.send_message(group, MessageChain(Plain('请输入正确的天数！')), quote=True)
         return
     match_result: MessageChain = wc_target.result  # type: ignore # noqa: E275
 
     process_list = generating_list.get()
     if len(process_list) > 2:
-        await group.send_message(MessageChain(Plain('词云生成队列已满，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain('词云生成队列已满，请稍后再试')))
         return
 
     if len(match_result) == 0:
         return
     elif match_result.display == 'group':
-        result = await gen_wordcloud_group(group, day)
+        result = await gen_wordcloud_group(app, group, day)
         if result is None:
             return
         else:
-            await group.send_message(MessageChain(Plain(f'本群最近{day}天的聊天词云 👇\n'), result))
+            await app.send_message(group, MessageChain(Plain(f'本群最近{day}天的聊天词云 👇\n'), result))
     elif match_result.display == 'me':
-        result = await gen_wordcloud_member(group, member.id, day, True)
+        result = await gen_wordcloud_member(app, group, member.id, day, True)
         if result is None:
             return
         else:
-            await group.send_message(MessageChain(Plain(f'你最近{day}天的聊天词云 👇\n'), result))
+            await app.send_message(group, MessageChain(Plain(f'你最近{day}天的聊天词云 👇\n'), result))
     elif match_result.only(At):
         at = match_result.get_first(At)
-        result = await gen_wordcloud_member(group, at.target, day, False)
+        result = await gen_wordcloud_member(app, group, at.target, day, False)
         if result is None:
             return
         else:
-            await group.send_message(MessageChain(at, Plain(f' 最近{day}天的聊天词云 👇\n'), result))
+            await app.send_message(group, MessageChain(at, Plain(f' 最近{day}天的聊天词云 👇\n'), result))
     elif match_result.display.isdigit():
         target = int(match_result.display)
-        result = await gen_wordcloud_member(group, target, day, False)
+        result = await gen_wordcloud_member(app, group, target, day, False)
         if result is None:
             return
         else:
-            await group.send_message(MessageChain(At(target), Plain(f' 最近{day}天的聊天词云 👇\n'), result))
+            await app.send_message(group, MessageChain(At(target), Plain(f' 最近{day}天的聊天词云 👇\n'), result))
     else:
-        await group.send_message(MessageChain(Plain('参数错误，无效的命令')))
+        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')))
         return
 
 
@@ -142,10 +141,8 @@ async def command(group: Group, member: Member, wc_target: RegexResult, day_leng
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                [
-                    'target' @ UnionMatch('我的', '群').space(SpacePolicy.NOSPACE),
-                    'target_time' @ UnionMatch('本周总结', '月度总结', '年度总结'),
-                ],
+                'target' @ UnionMatch('我的', '群').space(SpacePolicy.NOSPACE),
+                'target_time' @ UnionMatch('本周总结', '月度总结', '年度总结'),
             )
         ],
         decorators=[
@@ -155,7 +152,7 @@ async def command(group: Group, member: Member, wc_target: RegexResult, day_leng
         ],
     )
 )
-async def main(group: Group, member: Member, target: RegexResult, target_time: RegexResult):
+async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, target_time: RegexResult):
     if target.result is None or target_time.result is None:
         return
     today = time.localtime(time.time())
@@ -163,53 +160,53 @@ async def main(group: Group, member: Member, target: RegexResult, target_time: R
         case '我的':
             match target_time.result.display:
                 case '本周总结':
-                    result = await gen_wordcloud_member(group, member.id, today.tm_wday + 1, True)
+                    result = await gen_wordcloud_member(app, group, member.id, today.tm_wday + 1, True)
                     if result is None:
                         return
                     else:
-                        await group.send_message(MessageChain(Plain(f'你本周的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain(f'你本周的聊天词云 👇\n'), result))
                 case '月度总结':
-                    result = await gen_wordcloud_member(group, member.id, today.tm_mday + 1, True)
+                    result = await gen_wordcloud_member(app, group, member.id, today.tm_mday + 1, True)
                     if result is None:
                         return
                     else:
-                        await group.send_message(MessageChain(Plain(f'你本月的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain(f'你本月的聊天词云 👇\n'), result))
                 case '年度总结':
-                    result = await gen_wordcloud_member(group, member.id, today.tm_yday + 1, True)
+                    result = await gen_wordcloud_member(app, group, member.id, today.tm_yday + 1, True)
                     if result is None:
                         return
                     else:
-                        await group.send_message(MessageChain(Plain(f'你今年的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain(f'你今年的聊天词云 👇\n'), result))
         case '群':
             match target_time.result.display:
                 case '本周总结':
-                    result = await gen_wordcloud_group(group, today.tm_wday + 1)
+                    result = await gen_wordcloud_group(app, group, today.tm_wday + 1)
                     if result is None:
                         return
                     else:
-                        await group.send_message(MessageChain(Plain(f'本群本周的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain(f'本群本周的聊天词云 👇\n'), result))
                 case '月度总结':
-                    result = await gen_wordcloud_group(group, today.tm_mday + 1)
+                    result = await gen_wordcloud_group(app, group, today.tm_mday + 1)
                     if result is None:
                         return
                     else:
-                        await group.send_message(MessageChain(Plain(f'本群本月的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain(f'本群本月的聊天词云 👇\n'), result))
                 case '年度总结':
-                    result = await gen_wordcloud_group(group, today.tm_yday + 1)
+                    result = await gen_wordcloud_group(app, group, today.tm_yday + 1)
                     if result is None:
                         return
                     else:
-                        await group.send_message(MessageChain(Plain(f'本群今年的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain(f'本群今年的聊天词云 👇\n'), result))
 
 
-async def gen_wordcloud_member(group: Group, target: int, day: int, me: bool) -> None | Image:
+async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int, me: bool) -> None | Image:
     process_list = generating_list.get()
     if target in process_list:
-        await group.send_message(MessageChain(Plain('你') if me else At(target), Plain('的词云已在生成中，请稍后...')))
+        await app.send_message(group, MessageChain(Plain('你') if me else At(target), Plain('的词云已在生成中，请稍后...')))
         return
     rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
     if not rate_limit:
-        await group.send_message(MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
     process_list.append(target)
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - (day - 1) * 86400
@@ -217,10 +214,10 @@ async def gen_wordcloud_member(group: Group, target: int, day: int, me: bool) ->
 
     if len(msg_list) < 50:
         process_list.remove(target)
-        await group.send_message(MessageChain(Plain('你') if me else At(target), Plain('的发言较少，无法生成词云')))
+        await app.send_message(group, MessageChain(Plain('你') if me else At(target), Plain('的发言较少，无法生成词云')))
         return
-    await group.send_message(
-        MessageChain(Plain('你') if me else At(target), Plain(f'最近{day}天共 {len(msg_list)} 条记录，正在生成词云，请稍后...'))
+    await app.send_message(
+        group, MessageChain(Plain('你') if me else At(target), Plain(f'最近{day}天共 {len(msg_list)} 条记录，正在生成词云，请稍后...'))
     )
 
     words = await get_frequencies(msg_list)
@@ -230,23 +227,23 @@ async def gen_wordcloud_member(group: Group, target: int, day: int, me: bool) ->
     return Image(data_bytes=image_bytes)
 
 
-async def gen_wordcloud_group(group: Group, day: int) -> None | Image:
+async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Image:
     process_list = generating_list.get()
     if group.id in process_list:
-        await group.send_message(MessageChain(Plain('本群词云已在生成中，请稍后...')))
+        await app.send_message(group, MessageChain(Plain('本群词云已在生成中，请稍后...')))
         return
     rate_limit, remaining_time = ManualInterval.require('wordcloud_group', 300, 1)
     if not rate_limit:
-        await group.send_message(MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
     process_list.append(group.id)
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - (day - 1) * 86400
     msg_list = await get_group_msg(str(group.id), target_timestamp)
     if len(msg_list) < 50:
-        await group.send_message(MessageChain(Plain('本群发言较少，无法生成词云')))
+        await app.send_message(group, MessageChain(Plain('本群发言较少，无法生成词云')))
         process_list.remove(group.id)
         return
-    await group.send_message(MessageChain(Plain(f'本群最近{day}天共 {len(msg_list)} 条记录，正在生成词云，请稍后...')))
+    await app.send_message(group, MessageChain(Plain(f'本群最近{day}天共 {len(msg_list)} 条记录，正在生成词云，请稍后...')))
     words = await get_frequencies(msg_list)
     image_bytes = await gen_wordcloud(words)
     process_list.remove(group.id)

@@ -61,7 +61,7 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
             for item in msg_list:
                 if item['id'] == target_id:
                     if item['time'] - time.time() > 115:
-                        await group.send_message(MessageChain(Plain('该消息已超过撤回时间。')), quote=True)
+                        await app.send_message(group, MessageChain(Plain('该消息已超过撤回时间。')), quote=True)
 
                         return
                     with contextlib.suppress(UnknownTarget, InvalidArgument, RemoteException, UnknownError):

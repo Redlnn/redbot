@@ -284,7 +284,7 @@ async def permission_change(event: BotGroupPermissionChangeEvent):
     ListenerSchema(
         listening_events=[FriendMessage],
         inline_dispatchers=[
-            Twilight([RegexMatch(r'[.!！]添加群白名单').space(SpacePolicy.FORCE), 'group' @ RegexMatch(r'\d+')])
+            Twilight(RegexMatch(r'[.!！]添加群白名单').space(SpacePolicy.FORCE), 'group' @ RegexMatch(r'\d+'))
         ],
         decorators=[require_disable(channel.module)],
     )
@@ -310,7 +310,7 @@ async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexResult):
     ListenerSchema(
         listening_events=[FriendMessage],
         inline_dispatchers=[
-            Twilight([RegexMatch(r'[.!！]添加用户黑名单').space(SpacePolicy.FORCE)], 'qq' @ RegexMatch(r'\d+'))
+            Twilight(RegexMatch(r'[.!！]添加用户黑名单').space(SpacePolicy.FORCE), 'qq' @ RegexMatch(r'\d+'))
         ],
         decorators=[require_disable(channel.module)],
     )

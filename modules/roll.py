@@ -10,6 +10,7 @@
 
 from random import randint
 
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Dice, Plain, Source
@@ -36,11 +37,11 @@ channel.meta['description'] = '获得一个随机数\n用法：\n  [!！.]roll {
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]roll'), 'target' @ WildcardMatch()])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]roll'), 'target' @ WildcardMatch())],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def roll(group: Group, source: Source, target: RegexResult):
+async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
     if target.result is None:
         return
     t = target.result.display.strip()
@@ -48,15 +49,15 @@ async def roll(group: Group, source: Source, target: RegexResult):
         chain = MessageChain(Plain(f'{t}的概率为：{randint(0, 100)}'))
     else:
         chain = MessageChain(Plain(str(randint(0, 100))))
-    await group.send_message(chain, quote=source)
+    await app.send_message(group, chain, quote=source)
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.](dice|骰子|色子)')])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](dice|骰子|色子)'))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def dice(group: Group):
-    await group.send_message(MessageChain(Dice(randint(1, 6))))
+async def dice(app: Ariadne, group: Group):
+    await app.send_message(group, MessageChain(Dice(randint(1, 6))))

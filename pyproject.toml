@@ -14,11 +14,9 @@ aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
 fastapi = "^0.78.0"
 gitpython = "^3.1.27"
-graia-amnesia = {path = "wheels/graia_amnesia-0.5.0-py3-none-any.whl"}
-graia-ariadne = {path = "wheels/graia_ariadne-0.7.0a1-py3-none-any.whl", extras = ["full"]}
+graia-ariadne = {extras = ["full"], version = "^0.7.0.dev1"}
 httpx = "^0.23.0"
 jieba = "^0.42.1"
-launart = {path = "wheels/launart-0.1.0-py3-none-any.whl"}
 loguru = "^0.6.0"
 lxml = "^4.9.0"
 numpy = "^1.22.4"

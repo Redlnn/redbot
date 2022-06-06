@@ -5,6 +5,7 @@ import time
 from pathlib import Path
 from random import choices, randint
 
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain, Source
@@ -54,11 +55,11 @@ levels = {
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]?签到').space(SpacePolicy.NOSPACE)])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]?签到').space(SpacePolicy.NOSPACE))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def signin(group: Group, member: Member, source: Source):
+async def signin(app: Ariadne, group: Group, member: Member, source: Source):
     font_path = Path(root_path, 'fonts', 'OPPOSans-B.ttf')
     result = await Database.select_first(select(UserInfo).where(UserInfo.qq == member.id))
     if result is None or result[0] is None:
@@ -68,7 +69,7 @@ async def signin(group: Group, member: Member, source: Source):
 
     # 判断时间戳是不是今天
     if time.localtime(user.last_signin_time).tm_yday == time.localtime().tm_yday:
-        await group.send_message(MessageChain(Plain('你今天已经签到过了哦~')), quote=source)
+        await app.send_message(group, MessageChain(Plain('你今天已经签到过了哦~')), quote=source)
         return
 
     user.total_signin_days += 1
@@ -90,7 +91,7 @@ async def signin(group: Group, member: Member, source: Source):
     user.last_signin_time = int(time.time())
 
     if not await Database.update_exist(user):
-        await group.send_message(MessageChain(Plain('签到数据保存失败，请联系 Bot 主人')))
+        await app.send_message(group, MessageChain(Plain('签到数据保存失败，请联系 Bot 主人')))
         return
 
     if user.exp >= 10500:
@@ -124,28 +125,26 @@ async def signin(group: Group, member: Member, source: Source):
         font_path=str(font_path),
     )
 
-    await group.send_message(MessageChain(Image(data_bytes=img_bytes)))
+    await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight([RegexMatch(r'[!！.]清除签到信息').space(SpacePolicy.FORCE), 'target' @ WildcardMatch()])
-        ],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]清除签到信息').space(SpacePolicy.FORCE), 'target' @ WildcardMatch())],
         decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
     )
 )
-async def clear(group: Group, target: RegexResult):
+async def clear(app: Ariadne, group: Group, target: RegexResult):
     msg: MessageChain = target.result  # type: ignore
     if msg.only(At):
         result = await clear_signin(str(msg.get_first(At).target))
     elif msg.only(Plain) and msg.display.strip().isdigit():
         result = await clear_signin(msg.display.strip())
     else:
-        await group.send_message(MessageChain(Plain('参数错误，请输入正确的QQ号或者@某人')))
+        await app.send_message(group, MessageChain(Plain('参数错误，请输入正确的QQ号或者@某人')))
         return
-    await group.send_message(MessageChain(Plain('Success!' if result else 'Failed!')))
+    await app.send_message(group, MessageChain(Plain('Success!' if result else 'Failed!')))
 
 
 async def clear_signin(qq: str):

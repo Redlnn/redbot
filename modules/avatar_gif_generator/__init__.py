@@ -3,6 +3,7 @@
 
 from pathlib import Path
 
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
@@ -32,7 +33,7 @@ func = {
         listening_events=[GroupMessage], decorators=[GroupPermission.require(), require_disable(channel.module)]
     )
 )
-async def main(group: Group, member: Member, message: MessageChain):
+async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if not message.has(Plain):
         return
     elif message.display[0] not in {'!', '！', '.'}:
@@ -53,11 +54,11 @@ async def main(group: Group, member: Member, message: MessageChain):
 
     rate_limit, remaining_time = ManualInterval.require(f'AvatarImgGen_{member.id}', 30, 1)
     if not rate_limit:
-        await group.send_message(MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
     img = await func[split_message[0][1:]](target)
 
     if isinstance(img, bytes):
-        await group.send_message(MessageChain(Image(data_bytes=img)))
+        await app.send_message(group, MessageChain(Image(data_bytes=img)))
     elif isinstance(img, Path | str):
-        await group.send_message(MessageChain(Image(path=img)))
+        await app.send_message(group, MessageChain(Image(path=img)))

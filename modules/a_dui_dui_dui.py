@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
@@ -22,11 +23,11 @@ channel.meta['description'] = '啊对对对'
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[啊阿]对+').space(SpacePolicy.NOSPACE)])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[啊阿]对+').space(SpacePolicy.NOSPACE))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
-async def main(group: Group, message: MessageChain):
+async def main(app: Ariadne, group: Group, message: MessageChain):
     message = message.copy()
     message.__root__.append(Plain('对'))
-    await group.send_message(message)
+    await app.send_message(group, message)
