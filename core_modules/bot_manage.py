@@ -43,8 +43,7 @@ channel.meta['name'] = 'Bot管理'
 channel.meta['description'] = '[.!！]添加群白名单 [群号]\n[.!！]添加群黑名单 [群号]\n[.!！]添加用户黑名单 [QQ号]'
 channel.meta['can_disable'] = False
 
-ASCII_LOGO = r'''\
- _____    _____   _____   _____   _____   _____
+ASCII_LOGO = r''' _____    _____   _____   _____   _____   _____
 |  _  \  | ____| |  _  \ |  _  \ /  _  \ |_   _|
 | |_| |  | |__   | | | | | |_| | | | | |   | |
 |  _  /  |  __|  | | | | |  _  < | | | |   | |
@@ -77,7 +76,7 @@ async def list_pkgs():
             f'Graiax <magenta>{name}</> version: <yellow>{version}</>',
             alt=f'[magenta]Graiax {name}[/] version: [yellow]{version}[/]',
         )
-    logger.success('启动完成!')
+    logger.success('launched!')
 
 
 # @channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[require_disable(channel.module)]))
