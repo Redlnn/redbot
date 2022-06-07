@@ -63,6 +63,8 @@ def replace_logger(level: str | int = 'INFO', richuru: bool = False):
 
 
 def log_level_handler(event: 'MiraiEvent'):
+    if basic_cfg.debug:
+        return 'DEBUG'
     from graia.ariadne.event.message import (
         ActiveMessage,
         FriendMessage,
@@ -80,5 +82,5 @@ def log_level_handler(event: 'MiraiEvent'):
         StrangerMessage,
         TempMessage,
     }:
-        return 'DEBUG' if basic_cfg.debug or not basic_cfg.logChat else 'INFO'
+        return 'INFO' if basic_cfg.logChat else 'DEBUG'
     return 'INFO'
