@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from asyncio import Semaphore
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from loguru import logger
 from sqlalchemy.engine.result import Result, Row
@@ -20,7 +20,7 @@ from .models import *
 
 
 class Database:
-    lock: Optional[Semaphore] = None
+    lock: Semaphore | None = None
     engine: AsyncEngine
     if TYPE_CHECKING:
         session: sessionmaker[AsyncSession]  # type: ignore
@@ -39,7 +39,7 @@ class Database:
         cls.session = sessionmaker(cls.engine, class_=AsyncSession, expire_on_commit=False, future=True)  # type: ignore
 
     @classmethod
-    async def exec(cls, sql: Executable) -> Optional[Result]:
+    async def exec(cls, sql: Executable) -> Result | None:
         async with cls.session() as session:
             # if cls.lock:
             #     await cls.lock.acquire()

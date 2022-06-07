@@ -4,7 +4,6 @@
 import time
 from io import BytesIO
 from pathlib import Path
-from typing import Optional, Union
 
 import httpx
 from graia.ariadne.util.async_exec import cpu_bound
@@ -12,19 +11,19 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 from PIL.ImageFont import FreeTypeFont
 from pydantic import BaseModel
 
-Ink = Union[str, int, tuple[int, int, int], tuple[int, int, int, int]]
+Ink = str | int | tuple[int, int, int] | tuple[int, int, int, int]
 
 
 class Reward(BaseModel):
     """奖励"""
 
-    name: Optional[str] = None
+    name: str | None = None
     """奖励名称"""
 
     num: int
     """奖励数量"""
 
-    ico: Optional[Union[str, Path]] = None
+    ico: str | Path | None = None
     """奖励图标"""
 
 

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Optional
-
 from sqlmodel import Field, SQLModel
 
 __all__ = ['MsgLog', 'UserInfo']
@@ -10,7 +8,7 @@ __all__ = ['MsgLog', 'UserInfo']
 
 class MsgLog(SQLModel, table=True):
     __tablename__: str = 'msg_history'
-    id: Optional[int] = Field(default=None, primary_key=True, nullable=False)
+    id: int | None = Field(default=None, primary_key=True, nullable=False)
     group_id: str = Field(max_length=12, nullable=False, index=True)
     member_id: str = Field(max_length=12, nullable=False, index=True)
     timestamp: int
@@ -19,7 +17,7 @@ class MsgLog(SQLModel, table=True):
 
 
 class UserInfo(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True, nullable=False)
+    id: int | None = Field(default=None, primary_key=True, nullable=False)
     qq: str = Field(max_length=12, nullable=False, index=True)
     exp: int = Field(default=0)
     coin: int = Field(default=0)

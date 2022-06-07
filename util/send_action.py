@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Optional, TypeVar, Union, overload
+from typing import TypeVar, overload
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
@@ -70,7 +70,7 @@ class Safe(SendMessageAction):
     async def exception(self, i):
         ...
 
-    async def exception(self: Union['Safe', Exc_T], i: Optional[Exc_T] = None):  # type: ignore # noqa
+    async def exception(self: 'Safe' | Exc_T, i: Exc_T | None = None):  # type: ignore # noqa
         if not isinstance(self, Safe):
             return await Safe._handle(self, True)
         if i:
