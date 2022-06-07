@@ -27,9 +27,9 @@ def get_graia_version():
         name: str = dist.metadata['Name']
         version: str = dist.version
         if name.startswith('graia-'):
-            official.append((' '.join(name.split('-')[1:]).title(), version))
+            official.append((''.join(name.split('-')[1:]).title(), version))
         elif name.startswith('graiax-'):
-            community.append((' '.join(name.split('-')).title(), version))
+            community.append((''.join(name.split('-')).title(), version))
 
     return official, community
 

@@ -29,7 +29,9 @@ from graia.ariadne.model import Friend
 from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
+from loguru import logger
 
+from util import get_graia_version
 from util.config import basic_cfg
 from util.control import require_disable
 from util.control.permission import perm_cfg
@@ -41,6 +43,14 @@ channel.meta['name'] = 'Bot管理'
 channel.meta['description'] = '[.!！]添加群白名单 [群号]\n[.!！]添加群黑名单 [群号]\n[.!！]添加用户黑名单 [QQ号]'
 channel.meta['can_disable'] = False
 
+ASCII_LOGO = r'''\
+ _____    _____   _____   _____   _____   _____
+|  _  \  | ____| |  _  \ |  _  \ /  _  \ |_   _|
+| |_| |  | |__   | | | | | |_| | | | | |   | |
+|  _  /  |  __|  | | | | |  _  < | | | |   | |
+| | \ \  | |___  | |_| | | |_| | | |_| |   | |
+|_|  \_\ |_____| |_____/ |_____/ \_____/   |_|'''
+
 
 async def send_to_admin(message: MessageChain):
     app = Ariadne.current()
@@ -48,6 +58,26 @@ async def send_to_admin(message: MessageChain):
         with contextlib.suppress(UnknownTarget):
             await app.send_friend_message(admin, message)
             await asyncio.sleep(uniform(0.5, 1.5))
+
+
+@channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
+async def list_pkgs():
+    logger.opt(colors=True, raw=True).info(
+        f'<cyan>{ASCII_LOGO}</>',
+        alt=f'[cyan]{ASCII_LOGO}[/]',
+    )
+    official, community = get_graia_version()
+    for name, version in official:
+        logger.opt(colors=True, raw=True).info(
+            f'Graia <magenta>{name}</> version: <yellow>{version}</>',
+            alt=f'[magenta]Graia {name}[/] version: [yellow]{version}[/]',
+        )
+    for name, version in community:
+        logger.opt(colors=True, raw=True).info(
+            f'Graiax <magenta>{name}</> version: <yellow>{version}</>',
+            alt=f'[magenta]Graiax {name}[/] version: [yellow]{version}[/]',
+        )
+    logger.success('启动完成!')
 
 
 # @channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[require_disable(channel.module)]))
@@ -309,9 +339,7 @@ async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexResult):
 @channel.use(
     ListenerSchema(
         listening_events=[FriendMessage],
-        inline_dispatchers=[
-            Twilight(RegexMatch(r'[.!！]添加用户黑名单').space(SpacePolicy.FORCE), 'qq' @ RegexMatch(r'\d+'))
-        ],
+        inline_dispatchers=[Twilight(RegexMatch(r'[.!！]添加用户黑名单').space(SpacePolicy.FORCE), 'qq' @ RegexMatch(r'\d+'))],
         decorators=[require_disable(channel.module)],
     )
 )
