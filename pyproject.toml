@@ -12,17 +12,15 @@ aiodns = "^3.0.0"
 aiofile = "^3.7.4"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
-alembic = "^1.7.7"
 fastapi = "^0.78.0"
 gitpython = "^3.1.27"
-graia-ariadne = {extras = ["full"], version = "^0.6.16", allow-prereleases=true}
+graia-ariadne = {extras = ["full"], version = "^0.7.0"}
 httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
-lxml = "^4.8.0"
+lxml = "^4.9.0"
 numpy = "^1.22.4"
-opencv-python = "^4.5.5"
-orjson = "^3.6.8"
+orjson = "^3.7.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pillow = "^9.1.1"
 psutil = "^5.9.0"
@@ -30,9 +28,8 @@ pydantic = "^1.9.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 python-multipart = "^0.0.5"
 pyyaml = "^6.0"
-regex = "^2022.4.24"
-richuru = "^0.1.0"
-sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.36"}
+richuru = "^0.1.1"
+sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.37"}
 sqlmodel = "^0.0.6"
 uvicorn = {extras = ["standard"], version = "^0.17.6"}
 wordcloud = "^1.8.1"
@@ -55,11 +52,6 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 name = "aliyun"
 default = false
 url = "https://mirrors.aliyun.com/pypi/simple/"
-
-[[tool.poetry.source]]
-name = "tencent-cloud"
-default = false
-url = "https://mirrors.cloud.tencent.com/pypi/simple"
 
 [tool.black]
 line-length = 120

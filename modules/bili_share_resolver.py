@@ -16,11 +16,11 @@
  - av2
 """
 
+import re
 import time
 from dataclasses import dataclass
 from typing import Literal
 
-import regex as re
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -30,10 +30,10 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
+from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import get_session
 from util.text2img import async_generate_img, hr
 
 channel = Channel.current()
@@ -81,7 +81,7 @@ class VideoInfo:
 )
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
     p = re.compile(f'({avid_re})|({bvid_re})')
-    msg_str = message.asPersistentString()
+    msg_str = message.as_persistent_string()
     if 'b23.tv/' in msg_str:
         msg_str = await b23_url_extract(msg_str)
         if not msg_str:
@@ -93,32 +93,30 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
 
     rate_limit, remaining_time = ManualInterval.require(f'{group.id}_{member.id}_bilibiliVideoInfo', 5, 2)
     if not rate_limit:
-        await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
 
     video_info = await get_video_info(video_id)
     if video_info['code'] == -404:
-        return await app.sendMessage(group, MessageChain.create(Plain('视频不存在')))
+        return await app.send_message(group, MessageChain(Plain('视频不存在')))
     elif video_info['code'] != 0:
         error_text = f'解析B站视频 {video_id} 时出错👇\n错误代码：{video_info["code"]}\n错误信息：{video_info["message"]}'
         logger.error(error_text)
-        return await app.sendMessage(group, MessageChain.create(Plain(error_text)))
+        return await app.send_message(group, MessageChain(Plain(error_text)))
     else:
         video_info = await info_json_dump(video_info['data'])
         img: bytes = await gen_img(video_info)
-        await app.sendMessage(
+        await app.send_message(
             group,
-            MessageChain.create(
-                [
-                    Image(data_bytes=img),
-                    Plain(
-                        f'{video_info.title}\n'
-                        '————————————————————\n'
-                        f'UP主：{video_info.up_name}\n'
-                        f'{math(video_info.views)}播放 {math(video_info.likes)}赞\n'
-                        f'链接：https://b23.tv/{video_info.bvid}'
-                    ),
-                ]
+            MessageChain(
+                Image(data_bytes=img),
+                Plain(
+                    f'{video_info.title}\n'
+                    '————————————————————\n'
+                    f'UP主：{video_info.up_name}\n'
+                    f'{math(video_info.views)}播放 {math(video_info.likes)}赞\n'
+                    f'链接：https://b23.tv/{video_info.bvid}'
+                ),
             ),
         )
 
@@ -127,20 +125,21 @@ async def b23_url_extract(b23_url: str) -> Literal[False] | str:
     url = re.search(r'b23.tv(/|\\)[0-9a-zA-Z]+', b23_url)
     if url is None:
         return False
-    session = get_session()
+    session = GetAiohttpSession.get_session()
     async with session.get(f'https://{url.group()}', allow_redirects=True) as resp:
         target = str(resp.url)
     return target if 'www.bilibili.com/video/' in target else False
 
 
-async def get_video_info(video_id: str) -> dict:  # type: ignore
-    session = get_session()
+async def get_video_info(video_id: str) -> dict:
+    session = GetAiohttpSession.get_session()
     if video_id[:2].lower() == 'av':
         async with session.get(f'http://api.bilibili.com/x/web-interface/view?aid={video_id[2:]}') as resp:
             return await resp.json()
     elif video_id[:2].lower() == 'bv':
         async with session.get(f'http://api.bilibili.com/x/web-interface/view?bvid={video_id}') as resp:
             return await resp.json()
+    return {}
 
 
 async def info_json_dump(obj: dict) -> VideoInfo:
@@ -200,7 +199,7 @@ async def gen_img(data: VideoInfo) -> bytes:
         f'{hr}\n{data.desc}'
     )
 
-    session = get_session()
+    session = GetAiohttpSession.get_session()
     async with session.get(data.cover_url) as resp:
         img_contents: list[str | bytes] = [await resp.content.read(), info_text]
     return await async_generate_img(img_contents)

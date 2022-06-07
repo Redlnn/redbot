@@ -42,21 +42,17 @@ class FastApiCore:
             CORSMiddleware,
             allow_origins=['*'],
             allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
+            allow_methods=['*'],
+            allow_headers=['*'],
         )
         LOG_CONFIG = {
-            "version": 1,
-            "disable_existing_loggers": False,
-            "handlers": {
-                "default": {
-                    "class": "graia.ariadne.util.LoguruHandler",
-                },
-            },
-            "loggers": {
-                "uvicorn.error": {"handlers": ["default"] if log else [], "level": "INFO"},
-                "uvicorn.access": {"handlers": ["default"] if log else [], "level": "INFO"},
-                "uvicorn.asgi": {"handlers": ["default"] if log else [], "level": "INFO"},
+            'version': 1,
+            'disable_existing_loggers': False,
+            'loggers': {
+                'uvicorn': {'level': 0},
+                'uvicorn.error': {'level': 0},
+                'uvicorn.access': {'level': 0},
+                'uvicorn.asgi': {'level': 0},
             },
         }
         self.server = NoSignalServer(

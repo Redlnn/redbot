@@ -59,15 +59,15 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
             case 'Poke' | 'Dice' | 'MusicShare' | 'File':
                 return
             case 'Image' | 'FlashImage' | 'Voice':
-                message.__root__[ind] = Plain(elem.asNoBinaryPersistentString())  # type: ignore
+                message.__root__[ind] = Plain(elem.as_persistent_string(binary=False))  # type: ignore
             case _:
-                message.__root__[ind] = Plain(elem.asDisplay())
+                message.__root__[ind] = Plain(elem.display)
     await log_msg(
         str(group.id),
         str(member.id),
         int(time.mktime(source.time.timetuple())) - time.timezone,
         source.id,
-        message.asPersistentString(),
+        message.as_persistent_string(),
     )
 
 
@@ -77,89 +77,68 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                [
-                    RegexMatch(r'[!！.]msgcount').space(SpacePolicy.FORCE),
-                    'arg_type' @ ArgumentMatch("--type", optional=False),
-                    'arg_target' @ ArgumentMatch("--target"),
-                    'arg_day' @ ArgumentMatch("--day", default='7'),
-                ],
+                RegexMatch(r'[!！.]msgcount').space(SpacePolicy.FORCE),
+                'arg_type' @ ArgumentMatch('--type', optional=False),
+                'arg_target' @ ArgumentMatch('--target'),
+                'arg_day' @ ArgumentMatch('--day', default='7'),
             )
         ],
         decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def get_msg_count(
-    app: Ariadne,
-    group: Group,
-    member: Member,
-    arg_type: ArgResult,
-    arg_target: ArgResult,
-    arg_day: ArgResult,
+    app: Ariadne, group: Group, member: Member, arg_type: ArgResult, arg_target: ArgResult, arg_day: ArgResult
 ):
-    if not arg_day.result.isdigit():  # type: ignore
-        await app.sendMessage(group, MessageChain.create(Plain('参数错误，天数不全为数字')))
+    if arg_day.result is None or arg_target.result is None:
+        return
+    if not arg_day.result.isdigit():
+        await app.send_message(group, MessageChain(Plain('参数错误，天数不全为数字')))
         return
     today_timestamp = int(time.mktime(datetime.date.today().timetuple()))
-    target_timestamp = today_timestamp - (86400 * (int(arg_day.result) - 1))  # type: ignore
+    target_timestamp = today_timestamp - (86400 * (int(arg_day.result) - 1))
     target: int | None = None
-    if arg_type.result == 'member':  # type: ignore
+    if arg_type.result == 'member':
         if arg_target.matched:
-            if arg_target.result.onlyContains(At):  # type: ignore
-                target = arg_target.result.getFirst(At).target  # type: ignore
-            elif arg_target.result.isdigit():  # type: ignore
-                target = int(arg_target.result)  # type: ignore
+            if arg_target.result.only(At):
+                target = arg_target.result.get_first(At).target
+            elif arg_target.result.isdigit():
+                target = int(arg_target.result)
         else:
             target = member.id
-    elif arg_type.result == 'group':  # type: ignore
+    elif arg_type.result == 'group':
         if arg_target.matched:
-            if arg_target.result.isdigit():  # type: ignore
-                target = int(arg_target.result)  # type: ignore
+            if arg_target.result.isdigit():
+                target = int(arg_target.result)
         else:
             target = group.id
     else:
-        await app.sendMessage(group, MessageChain.create(Plain('参数错误，目标类型不存在')))
+        await app.send_message(group, MessageChain(Plain('参数错误，目标类型不存在')))
         return
 
-    if arg_type.result.asDisplay() == 'member':  # type: ignore
+    if arg_type.result.display == 'member':
         if not target:
-            await app.sendMessage(group, MessageChain.create(Plain('参数错误，目标不是QQ号或At对象')))
+            await app.send_message(group, MessageChain(Plain('参数错误，目标不是QQ号或At对象')))
             return
         count = await get_member_talk_count(str(group.id), str(target), target_timestamp)
         if not count:
-            await app.sendMessage(
+            await app.send_message(
                 group,
-                MessageChain.create(At(target), Plain(' 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂')),
+                MessageChain(At(target), Plain(' 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂')),
             )
             return
-        await app.sendMessage(
-            group,
-            MessageChain.create(
-                At(target),
-                Plain(f' 最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),  # type: ignore
-            ),
-        )
+        await app.send_message(group, MessageChain(At(target), Plain(f' 最近{arg_day.result.display}天的发言条数为 {count} 条')))
     else:
         if not target:
-            await app.sendMessage(group, MessageChain.create(Plain('参数错误，目标不是群号')))
+            await app.send_message(group, MessageChain(Plain('参数错误，目标不是群号')))
             return
         count = await get_group_talk_count(str(group.id), target_timestamp)
         if not count:
-            await app.sendMessage(group, MessageChain.create(Plain(f'群 {target} 木有过发言')))
+            await app.send_message(group, MessageChain(Plain(f'群 {target} 木有过发言')))
             return
         if target == group.id:
-            await app.sendMessage(
-                group,
-                MessageChain.create(
-                    Plain(f'本群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),  # type: ignore
-                ),
-            )
+            await app.send_message(group, MessageChain(Plain(f'本群最近{arg_day.result.display}天的发言条数为 {count} 条')))
         else:
-            await app.sendMessage(
-                group,
-                MessageChain.create(
-                    Plain(f'该群最近{arg_day.result.asDisplay()}天的发言条数为 {count} 条'),  # type: ignore
-                ),
-            )
+            await app.send_message(group, MessageChain(Plain(f'该群最近{arg_day.result.display}天的发言条数为 {count} 条')))
 
 
 # 获取某人的最后一条发言
@@ -168,28 +147,28 @@ async def get_msg_count(
         listening_events=[GroupMessage],
         inline_dispatchers=[
             Twilight(
-                [
-                    RegexMatch(r'[!！.]getlast').space(SpacePolicy.FORCE),
-                    'qq' @ RegexMatch(r'\d+', optional=True),
-                    'at' @ ElementMatch(At, optional=True),
-                ],
+                RegexMatch(r'[!！.]getlast').space(SpacePolicy.FORCE),
+                'qq' @ RegexMatch(r'\d+', optional=True),
+                'at' @ ElementMatch(At, optional=True),
             )
         ],
         decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexResult, at: ElementResult):
+    if (qq.result is None and at.result is None) or qq.result is None:
+        return
     if qq.matched and not at.matched:
-        target = int(qq.result.asDisplay())  # type: ignore
+        target = int(qq.result.display)
     elif at.matched and not qq.matched:
-        target = message.getFirst(At).target
+        target = message.get_first(At).target
     else:
-        await app.sendMessage(group, MessageChain.create(Plain('无效的指令，参数过多')))
+        await app.send_message(group, MessageChain(Plain('无效的指令，参数过多')))
         return
     msg, send_time = await get_member_last_message(str(group.id), str(target))
     if not msg:
-        await app.sendMessage(group, MessageChain.create(Plain(f'{target} 木有说过话')))
+        await app.send_message(group, MessageChain(Plain(f'{target} 木有说过话')))
         return
-    chain = MessageChain.fromPersistentString(msg)
-    send = MessageChain.create(At(target), Plain(f' 在 {send_time} 说过最后一句话：\n')).extend(chain)
-    await app.sendMessage(group, send)
+    chain = MessageChain.from_persistent_string(msg)
+    send = MessageChain(At(target), Plain(f' 在 {send_time} 说过最后一句话：\n')).extend(chain)
+    await app.send_message(group, send)

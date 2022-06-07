@@ -11,10 +11,10 @@
 
 import datetime
 import random
+import re
 from pathlib import Path
 
-import orjson as json
-import regex as re
+import orjson
 from aiofile import async_open
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
@@ -96,7 +96,7 @@ lucky_things = {
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.](jrrp|抽签)')])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](jrrp|抽签)'))],
         decorators=[GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module)],
     )
 )
@@ -104,11 +104,11 @@ async def main(app: Ariadne, group: Group, member: Member):
     is_new, renpin, qianwen = await read_data(str(member.id))
     img_bytes = await async_generate_img([qianwen, f'{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
     if is_new:
-        await app.sendMessage(group, MessageChain.create(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
+        await app.send_message(group, MessageChain(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
     else:
-        await app.sendMessage(
+        await app.send_message(
             group,
-            MessageChain.create(
+            MessageChain(
                 At(member.id), Plain(' 你今天已经抽到过一支签了，你没有好好保管吗？这样吧，再告诉你一次好了，你抽到的签是：'), Image(data_bytes=img_bytes)
             ),
         )
@@ -160,17 +160,17 @@ def chouqian(renpin: int) -> str:
 def gen_qianwen(renpin: int) -> str:
     match chouqian(renpin):
         case '大吉':
-            return '——大吉——\n' f'{random.choice(qianwens["大吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["吉"])}'
+            return f'——大吉——\n{random.choice(qianwens["大吉"])}\n\n今天的幸运物是：{random.choice(lucky_things["吉"])}'
         case '中吉':
-            return '——中吉——\n' f'{random.choice(qianwens["吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["吉"])}'
+            return f'——中吉——\n{random.choice(qianwens["吉"])}\n\n今天的幸运物是：{random.choice(lucky_things["吉"])}'
         case '吉':
-            return '——吉——\n' f'{random.choice(qianwens["吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["吉"])}'
+            return f'——吉——\n{random.choice(qianwens["吉"])}\n\n今天的幸运物是：{random.choice(lucky_things["吉"])}'
         case '末吉':
-            return '——末吉——\n' f'{random.choice(qianwens["末吉"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
+            return f'——末吉——\n{random.choice(qianwens["末吉"])}\n\n今天的幸运物是：{random.choice(lucky_things["凶"])}'
         case '凶':
-            return '——凶——\n' f'{random.choice(qianwens["凶"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
+            return f'——凶——\n{random.choice(qianwens["凶"])}\n\n今天的幸运物是：{random.choice(lucky_things["凶"])}'
         case '大凶':
-            return '——大凶——\n' f'{random.choice(qianwens["凶"])}\n\n' f'今天的幸运物是：{random.choice(lucky_things["凶"])}'
+            return f'——大凶——\n{random.choice(qianwens["凶"])}\n\n今天的幸运物是：{random.choice(lucky_things["凶"])}'
         case _:
             return ''
 
@@ -183,7 +183,7 @@ async def read_data(qq: str) -> tuple[bool, int, str]:
     try:
         async with async_open(data_file_path, 'r', encoding='utf-8') as afp:  # 以 追加+读 的方式打开文件
             f_data = await afp.read()
-            data = json.loads(f_data) if len(f_data) > 0 else {}
+            data = orjson.loads(f_data) if len(f_data) > 0 else {}
     except FileNotFoundError:
         data = {}
     if qq in data:
@@ -192,5 +192,5 @@ async def read_data(qq: str) -> tuple[bool, int, str]:
     qianwen = gen_qianwen(renpin)
     data[qq] = {'renpin': renpin, 'qianwen': qianwen}
     async with async_open(data_file_path, 'wb') as afp:
-        await afp.write(json.dumps(data, option=json.OPT_INDENT_2 | json.OPT_APPEND_NEWLINE))
+        await afp.write(orjson.dumps(data, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE))
     return True, renpin, qianwen

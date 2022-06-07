@@ -44,32 +44,28 @@ lastest_msg: ContextVar[list[dict]] = ContextVar('lastest_msg', default=[])
 async def recall_message(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if member.id not in basic_cfg.admin.admins:
         return
-    if message.asDisplay() == '.撤回最近':
+    if message.display == '.撤回最近':
         msg_list = lastest_msg.get()
         for item in msg_list:
             with contextlib.suppress(UnknownTarget, InvalidArgument, RemoteException, UnknownError):
-                await app.recallMessage(item['id'])
+                await app.recall_message(item['id'])
             with contextlib.suppress(ValueError):
                 msg_list.remove(item)
                 lastest_msg.set(msg_list)
     elif message.has(Quote):
-        if message.getFirst(Quote).senderId != basic_cfg.miraiApiHttp.account:
+        if message.get_first(Quote).senderId != basic_cfg.miraiApiHttp.account:
             return
-        if message.include(Plain).merge().asDisplay().strip() == '.撤回':
-            target_id = message.getFirst(Quote).id
+        if message.include(Plain).merge().display.strip() == '.撤回':
+            target_id = message.get_first(Quote).id
             msg_list = lastest_msg.get()
             for item in msg_list:
                 if item['id'] == target_id:
                     if item['time'] - time.time() > 115:
-                        await app.sendMessage(
-                            group,
-                            MessageChain.create(Plain('该消息已超过撤回时间。')),
-                            quote=True,
-                        )
+                        await app.send_message(group, MessageChain(Plain('该消息已超过撤回时间。')), quote=True)
 
                         return
                     with contextlib.suppress(UnknownTarget, InvalidArgument, RemoteException, UnknownError):
-                        await app.recallMessage(item['id'])
+                        await app.recall_message(item['id'])
                     with contextlib.suppress(ValueError):
                         msg_list.remove(item)
                         lastest_msg.set(msg_list)
@@ -83,7 +79,7 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
     )
 )
 async def listener(event: ActiveGroupMessage):
-    source = event.messageChain.getFirst(Source)
+    source = event.message_chain.get_first(Source)
     msg_list = lastest_msg.get()
     msg_list.append(
         {

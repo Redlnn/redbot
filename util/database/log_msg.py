@@ -11,7 +11,7 @@ from .models import MsgLog
 
 
 async def log_msg(group: str, qq: str, timestamp: int, msg_id: int, msg_chain: str) -> None:
-    # 此处的 msg_chain 需要的是 MessageChain().asPersistentString()
+    # 此处的 msg_chain 需要的是 MessageChain().as_persistent_string()
     await Database.add(MsgLog(group_id=group, member_id=qq, timestamp=timestamp, msg_id=msg_id, msg_chain=msg_chain))
 
 

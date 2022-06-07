@@ -38,7 +38,7 @@ channel.meta['description'] = '获取指定mc服务器的信息\n用法：\n[!�
 
 class McServerPingConfig(RConfig):
     __filename__: str = 'mc_server_ping'
-    servers: dict[int, str] = {123456789: 'localhost:25565'}
+    servers: dict[str, str] = {'123456789': 'localhost:25565'}
 
 
 ping_cfg = McServerPingConfig()
@@ -47,31 +47,24 @@ ping_cfg = McServerPingConfig()
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(
-                [
-                    RegexMatch(r'[!！.]ping'),
-                    'ping_target' @ RegexMatch(r'\S+', optional=True),
-                ],
-            )
-        ],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]ping'), 'ping_target' @ RegexMatch(r'\S+', optional=True))],
         decorators=[GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, ping_target: RegexResult):
-    if ping_target.matched:
-        server_address = ping_target.result.asDisplay().strip()  # type: ignore
+    if ping_target.matched and ping_target.result is not None:
+        server_address = ping_target.result.display.strip()
     else:
-        if group.id not in ping_cfg.servers:
-            await app.sendMessage(group, MessageChain.create(Plain('该群组没有设置默认服务器地址')))
+        if str(group.id) not in ping_cfg.servers:
+            await app.send_message(group, MessageChain(Plain('该群组没有设置默认服务器地址')))
             return
-        server_address = ping_cfg.servers[group.id]
+        server_address = ping_cfg.servers[str(group.id)]
 
     if '://' in server_address:
-        await app.sendMessage(group, MessageChain.create(Plain('不支持带有协议前缀的地址')))
+        await app.send_message(group, MessageChain(Plain('不支持带有协议前缀的地址')))
         return
     elif '/' in server_address:
-        await app.sendMessage(group, MessageChain.create(Plain('ping目标地址出现意外字符')))
+        await app.send_message(group, MessageChain(Plain('ping目标地址出现意外字符')))
         return
 
     if is_ip(server_address):
@@ -82,34 +75,34 @@ async def main(app: Ariadne, group: Group, ping_target: RegexResult):
             if port.isdigit():
                 kwargs = {'url': host, 'port': int(port)}
             else:
-                await app.sendMessage(group, MessageChain.create(Plain('端口号格式不正确')))
+                await app.send_message(group, MessageChain(Plain('端口号格式不正确')))
                 return
         else:
-            await app.sendMessage(group, MessageChain.create(Plain('目标地址不是一个有效的域名或IP（不支持中文域名）')))
+            await app.send_message(group, MessageChain(Plain('目标地址不是一个有效的域名或IP（不支持中文域名）')))
             return
     elif is_domain(server_address):
         kwargs = {'url': server_address}
     else:
-        await app.sendMessage(group, MessageChain.create(Plain('目标地址不是一个有效的域名或IP（不支持中文域名）')))
+        await app.send_message(group, MessageChain(Plain('目标地址不是一个有效的域名或IP（不支持中文域名）')))
         return
 
     try:
         ping_result = await ping(**kwargs)
     except ConnectionRefusedError:
-        await app.sendMessage(group, MessageChain.create(Plain('连接被目标拒绝，该地址（及端口）可能不存在 Minecraft 服务器')))
+        await app.send_message(group, MessageChain(Plain('连接被目标拒绝，该地址（及端口）可能不存在 Minecraft 服务器')))
         logger.warning(f'连接被目标拒绝，该地址（及端口）可能不存在Minecraft服务器，目标地址：{server_address}')
         return
     except socket.timeout:
-        await app.sendMessage(group, MessageChain.create(Plain('连接超时')))
+        await app.send_message(group, MessageChain(Plain('连接超时')))
         logger.warning(f'连接超时，目标地址：{server_address}')
         return
     except socket.gaierror as e:
-        await app.sendMessage(group, MessageChain.create(Plain('出错了，可能是无法解析目标地址\n' + str(e))))
+        await app.send_message(group, MessageChain(Plain('出错了，可能是无法解析目标地址\n' + str(e))))
         logger.exception(e)
         return
 
     if not ping_result:
-        await app.sendMessage(group, MessageChain.create(Plain('无法解析目标地址')))
+        await app.send_message(group, MessageChain(Plain('无法解析目标地址')))
         return
 
     if ping_result['motd'] is not None and ping_result['motd'] != '':
@@ -129,4 +122,4 @@ async def main(app: Ariadne, group: Group, ping_target: RegexResult):
         else:
             msg_send += f'\n在线列表：\n{players_list.rstrip()}'
 
-    await app.sendMessage(group, MessageChain.create(Plain(msg_send)))
+    await app.send_message(group, MessageChain(Plain(msg_send)))

@@ -8,12 +8,10 @@ import time
 from random import randint
 
 import psutil
-from graia.ariadne import get_running
 from graia.ariadne.app import Ariadne
 from graia.saya import Saya
 
 from util.fastapi_core.response_model import GeneralResponse
-from util.fastapi_core.router import Router
 
 saya = Saya.current()
 pid = os.getpid()
@@ -34,10 +32,9 @@ def get_running_time():
     return {'duration': int(running_time), 'unit': '秒'}
 
 
-@Router.get('/api/overview/get_info_card', response_model=GeneralResponse)
 async def get_info_card():
-    ariadne = get_running(Ariadne)
-    joined_group_count = await ariadne.getGroupList()
+    ariadne = Ariadne.current()
+    joined_group_count = await ariadne.get_group_list()
     return GeneralResponse(
         data={
             'today_msg_count': 114,
@@ -57,12 +54,11 @@ cpu_physical_count = psutil.cpu_count(logical=False)
 memory_total: int = psutil.virtual_memory().total  # Byte
 
 
-@Router.get('/api/overview/get_sys_info', response_model=GeneralResponse)
 async def get_sys_info():
-    if platform.uname().system.lower() == "windows":
-        disk_usage = psutil.disk_usage(__file__[:2]) if __file__[2] == ":" else psutil.disk_usage("C:")
+    if platform.uname().system.lower() == 'windows':
+        disk_usage = psutil.disk_usage(__file__[:2]) if __file__[2] == ':' else psutil.disk_usage('C:')
     else:
-        disk_usage = psutil.disk_usage("/")
+        disk_usage = psutil.disk_usage('/')
     return GeneralResponse(
         data={
             'system_type': uname.system,
@@ -80,7 +76,6 @@ async def get_sys_info():
 # ----------------------------------------
 
 
-@Router.get('/api/overview/get_function_called', response_model=GeneralResponse)
 async def get_function_called():
     # 获取所有模块的调用次数
     # 返回调用次数最多的前5个模块
@@ -100,7 +95,6 @@ async def get_function_called():
 # ----------------------------------------
 
 
-@Router.get('/api/overview/get_message_sent_freq', response_model=GeneralResponse)
 async def get_message_sent_freq():
     """获取消息发送频率
     即每三小时发送的消息数量
@@ -149,18 +143,17 @@ weekday_map = {
 }
 
 
-@Router.get('/api/overview/get_siginin_count', response_model=GeneralResponse)
 async def get_siginin_count():
     today = datetime.datetime.now()
     weekday = today.isoweekday()
 
     return GeneralResponse(
         data={
-            weekday_map[weekday - 7] if weekday > 7 else weekday + 1: randint(0, 100),
-            weekday_map[weekday - 6] if weekday > 6 else weekday + 2: randint(0, 100),
-            weekday_map[weekday - 5] if weekday > 5 else weekday + 3: randint(0, 100),
-            weekday_map[weekday - 4] if weekday > 4 else weekday + 4: randint(0, 100),
-            weekday_map[weekday - 3] if weekday > 3 else weekday + 5: randint(0, 100),
+            str(weekday_map[weekday - 7] if weekday > 7 else weekday + 1): randint(0, 100),
+            str(weekday_map[weekday - 6] if weekday > 6 else weekday + 2): randint(0, 100),
+            str(weekday_map[weekday - 5] if weekday > 5 else weekday + 3): randint(0, 100),
+            str(weekday_map[weekday - 4] if weekday > 4 else weekday + 4): randint(0, 100),
+            str(weekday_map[weekday - 3] if weekday > 3 else weekday + 5): randint(0, 100),
             '昨天': randint(0, 100),
             '今天': randint(0, 100),
         }

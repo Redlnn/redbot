@@ -36,17 +36,17 @@ func = {
 async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if not message.has(Plain):
         return
-    elif message.asDisplay()[0] not in {'!', '！', '.'}:
+    elif message.display[0] not in {'!', '！', '.'}:
         return
 
-    split_message = message.asDisplay().strip().split(' ')
+    split_message = message.display.strip().split(' ')
     if len(split_message) != 2:
         return
     elif split_message[0][1:] not in func:
         return
 
     if message.has(At):
-        target = message.getFirst(At).target
+        target = message.get_first(At).target
     elif split_message[1].isdigit():
         target = split_message[1]
     else:
@@ -54,11 +54,11 @@ async def main(app: Ariadne, group: Group, member: Member, message: MessageChain
 
     rate_limit, remaining_time = ManualInterval.require(f'AvatarImgGen_{member.id}', 30, 1)
     if not rate_limit:
-        await app.sendMessage(group, MessageChain.create(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
     img = await func[split_message[0][1:]](target)
 
     if isinstance(img, bytes):
-        await app.sendMessage(group, MessageChain.create(Image(data_bytes=img)))
+        await app.send_message(group, MessageChain(Image(data_bytes=img)))
     elif isinstance(img, Path | str):
-        await app.sendMessage(group, MessageChain.create(Image(path=img)))
+        await app.send_message(group, MessageChain(Image(path=img)))

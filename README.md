@@ -24,8 +24,6 @@
   <img src="https://count.getloli.com/get/@Redlnn-redbot?theme=rule34" alt="访问次数" />
 </p>
 
-<p align="center">⇒ <a href="./FILES.md"><b>文件目录结构</b></a> ⇐</p>
-
 ## 注意事项
 
 1. **本仓库经常 Force Push，不建议 Fork 和 Clone**

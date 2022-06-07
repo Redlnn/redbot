@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from contextvars import ContextVar
-
-from graia.ariadne import get_running
 from graia.ariadne.app import Ariadne
 from graia.ariadne.model import MemberPerm
 
 from util.fastapi_core.response_model import GeneralResponse
-from util.fastapi_core.router import Router
 
 perm_map = {
     MemberPerm.Member: '群成语',
@@ -17,10 +13,9 @@ perm_map = {
 }
 
 
-@Router.get('/api/get_group_list', response_model=GeneralResponse)
 async def get_group_list():
-    app = get_running(Ariadne)
-    group_list = await app.getGroupList()
+    app = Ariadne.current()
+    group_list = await app.get_group_list()
 
     tmp: dict[int, dict[str, int | str]] = {
         group.id: {

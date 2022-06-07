@@ -5,10 +5,10 @@ from pydantic import BaseModel
 
 class Route(BaseModel):
     path: str
-    methods: list[str]
+    methods: list[str] = ['GET']
     endpoint: Callable[..., Coroutine[Any, Any, Any]]
-    response_model: Any
-    kwargs: dict[str, Any]
+    response_model: Any | None = None
+    kwargs: dict = {}
 
 
 class Router:

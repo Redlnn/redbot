@@ -45,7 +45,7 @@ pid = os.getpid()
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.](status|version)')])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](status|version)'))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
@@ -73,7 +73,7 @@ async def main(app: Ariadne, group: Group):
         f'CPU 占用率：{psutil.cpu_percent()}%\n'
         f'系统内存占用：{"%.1f" % (psutil.virtual_memory().available / 1073741824)}G / {total_memory}G\n'
         f'{hr}\n'
-        f'MiraiApiHttp版本：{await app.getVersion()}\n'
+        f'MiraiApiHttp版本：{await app.get_version()}\n'
         'Graia 相关库版本：\n'
     )
     msg_send += ''.join(f'  graia-{name}：{version}\n' for name, version in official)
@@ -81,4 +81,4 @@ async def main(app: Ariadne, group: Group):
         msg_send += ''.join(f'  graiax-{name}：{version}\n' for name, version in community)
 
     img_bytes = await async_generate_img([msg_send.rstrip()])
-    await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
+    await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))

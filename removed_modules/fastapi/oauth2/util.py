@@ -13,30 +13,30 @@ from passlib.context import CryptContext
 from .model import UserInDB
 
 fake_users_db = {
-    "admin": {
-        "username": "admin",
-        "full_name": "Admin",
-        "hashed_password": "$2b$12$2e37MUpnmOvra3qdxAc2AObVm87629UtktkrG8CTItH6ISCBJiThG",
-        "disabled": False,
+    'admin': {
+        'username': 'admin',
+        'full_name': 'Admin',
+        'hashed_password': '$2b$12$2e37MUpnmOvra3qdxAc2AObVm87629UtktkrG8CTItH6ISCBJiThG',
+        'disabled': False,
     }
 }
 
 # to get a string like this run:
 # openssl rand -hex 32
-# SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+# SECRET_KEY = '09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7'
 SECRET_KEY = secrets.token_urlsafe(64)
-ALGORITHM = "HS256"
+ALGORITHM = 'HS256'
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
 class UnauthorizedException(HTTPException):
-    def __init__(self, detail="Unauthorized", *args, **kwargs):
+    def __init__(self, detail='Unauthorized', *args, **kwargs):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=detail,
-            headers={"WWW-Authenticate": "Bearer"},
+            headers={'WWW-Authenticate': 'Bearer'},
         )
 
 
@@ -87,11 +87,11 @@ def authenticate_user(username: str, plain_password: str) -> UserInDB:
     """
     user = get_user(username)
     if user is None:
-        raise UnauthorizedException(detail="无效的用户名或密码")
+        raise UnauthorizedException(detail='无效的用户名或密码')
     if user.disabled:
-        raise UnauthorizedException(detail="该用户已被禁用")
+        raise UnauthorizedException(detail='该用户已被禁用')
     if not verify_password(plain_password, user.hashed_password):
-        raise UnauthorizedException(detail="无效的用户名或密码")
+        raise UnauthorizedException(detail='无效的用户名或密码')
     return user
 
 
@@ -114,16 +114,16 @@ def create_access_token(
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode["exp"] = expire
+    to_encode['exp'] = expire
 
     if scopes is not None:
-        to_encode["scopes"] = scopes
+        to_encode['scopes'] = scopes
 
     return jwt.encode(
         to_encode,
         SECRET_KEY,
         algorithm=ALGORITHM,
-        headers={"typ": "JWT", "alg": ALGORITHM},
+        headers={'typ': 'JWT', 'alg': ALGORITHM},
     )
 
 
@@ -139,14 +139,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInDB:
     """
     try:
         payload: Mapping = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
-        username: str = payload.get("sub", None)
+        username: str = payload.get('sub', None)
         if username is None:
-            raise UnauthorizedException(detail="无效的用户")
+            raise UnauthorizedException(detail='无效的用户')
     except JWTError as e:
-        raise UnauthorizedException(detail="无效的 Token 或 Token 已过期") from e
+        raise UnauthorizedException(detail='无效的 Token 或 Token 已过期') from e
     user = get_user(username=username)
     if user is None:
-        raise UnauthorizedException(detail="无效的用户")
+        raise UnauthorizedException(detail='无效的用户')
     if user.disabled:
-        raise UnauthorizedException(detail="该用户已被禁用")
+        raise UnauthorizedException(detail='该用户已被禁用')
     return user

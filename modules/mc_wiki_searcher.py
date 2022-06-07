@@ -25,9 +25,9 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from lxml import etree
 
+from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.permission import GroupPermission
-from util.get_aiohtto_session import get_session
 
 channel = Channel.current()
 
@@ -40,13 +40,15 @@ channel.meta['description'] = '[!！.]wiki <要搜索的关键词>'
     ListenerSchema(
         listening_events=[GroupMessage],
         inline_dispatchers=[
-            Twilight([RegexMatch(r'[!！.]wiki').space(SpacePolicy.FORCE)], 'keyword' @ RegexMatch(r'\S+'))
+            Twilight(RegexMatch(r'[!！.]wiki').space(SpacePolicy.FORCE), 'keyword' @ RegexMatch(r'\S+'))
         ],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, keyword: RegexResult):
-    key_word: str = keyword.result.asDisplay().strip()  # type: ignore
+    if keyword.result is None:
+        return
+    key_word: str = keyword.result.display.strip()
     search_parm: str = quote(key_word, encoding='utf-8')
 
     bili_search_url = 'https://searchwiki.biligame.com/mc/index.php?search=' + search_parm
@@ -55,7 +57,7 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
     bili_url = 'https://wiki.biligame.com/mc/' + search_parm
     fandom_url = 'https://minecraft.fandom.com/zh/wiki/' + search_parm + '?variant=zh-cn'
 
-    session = get_session()
+    session = GetAiohttpSession.get_session()
     try:
         async with session.get(bili_url) as resp:
             status_code = resp.status
@@ -65,7 +67,7 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
 
     match status_code:
         case 404:
-            msg = MessageChain.create(
+            msg = MessageChain(
                 Plain(
                     f'Minecraft Wiki 没有名为【{key_word}】的页面，'
                     '要继续搜索请点击下面的链接：\n'
@@ -80,11 +82,9 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
                 '//div[contains(@id,"toc")]/preceding::p[1]/descendant-or-self::*/text()'
             )
             introduction = ''.join(introduction_list).strip()
-            msg = MessageChain.create(
-                Plain(f'{title}\n' f'{introduction}\n' f'Bilibili 镜像: {bili_url}\n' f'Fandom: {fandom_url}')
-            )
+            msg = MessageChain(Plain(f'{title}\n{introduction}\nBilibili 镜像: {bili_url}\nFandom: {fandom_url}'))
         case _:
-            msg = MessageChain.create(
+            msg = MessageChain(
                 Plain(
                     f'无法查询 Minecraft Wiki，错误代码：{status_code}\n'
                     f'要继续搜索【{key_word}】请点击下面的链接：\n'
@@ -93,4 +93,4 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
                 )
             )
 
-    await app.sendMessage(group, msg)
+    await app.send_message(group, msg)

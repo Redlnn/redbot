@@ -46,16 +46,16 @@ channel.meta['can_disable'] = False
 # emsp = ' '  # 全角空格
 
 
-async def get_channel(module_id: str, app: Ariadne, group: Group):
+async def get_channel(app: Ariadne, module_id: str, group: Group):
     if module_id.isdigit():
         target_id = int(module_id) - 1
         if target_id >= len(saya.channels):
-            await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+            await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
             return
         return saya.channels[str(list(saya.channels.keys())[target_id])]
     else:
         if module_id not in saya.channels:
-            await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+            await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
             return
         return saya.channels[module_id]
 
@@ -63,12 +63,12 @@ async def get_channel(module_id: str, app: Ariadne, group: Group):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.](菜单|menu)')])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](菜单|menu)'))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def menu(app: Ariadne, group: Group):
-    msg_send = f'-= {basic_cfg.botName} 功能菜单 for {group.id} =-\n' f'-= {group.name} =-\n{hr}\nID    模块状态    模块名\n'
+    msg_send = f'-= {basic_cfg.botName} 功能菜单 for {group.id} =-\n-= {group.name} =-\n{hr}\nID    模块状态    模块名\n'
     for index, module in enumerate(saya.channels, start=1):
         global_disabled = module in modules_cfg.globalDisabledModules
         disabled_groups = modules_cfg.disabledGroups[module] if module in modules_cfg.disabledGroups else []
@@ -90,124 +90,130 @@ async def menu(app: Ariadne, group: Group):
         '或是命令中有无多余空格，除特别说明外均不需要 @bot'
     )
     img_bytes = await async_generate_img([msg_send], Text2ImgConfig(FontName='sarasa-mono-sc-semibold.ttf'))
-    await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
+    await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]启用')], 'module_id' @ RegexMatch(r'\d+'))],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]启用'), 'module_id' @ RegexMatch(r'\d+'))],
         decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = module_id.result.asDisplay()  # type: ignore
-    target_module = await get_channel(target_id, app, group)
+    if module_id.result is None:
+        return
+    target_id = module_id.result.display
+    target_module = await get_channel(app, target_id, group)
     if target_module is None:
-        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
         return
     disabled_groups = (
         modules_cfg.disabledGroups[target_module.module] if target_module.module in modules_cfg.disabledGroups else []
     )
     if target_module.module in modules_cfg.globalDisabledModules:
-        await app.sendMessage(group, MessageChain.create(Plain('模块已全局禁用无法开启')))
+        await app.send_message(group, MessageChain(Plain('模块已全局禁用无法开启')))
     elif group.id in disabled_groups:
         disabled_groups.remove(group.id)
         modules_cfg.disabledGroups[target_module.module] = disabled_groups
         modules_cfg.save()
-        await app.sendMessage(group, MessageChain.create(Plain('模块已启用')))
+        await app.send_message(group, MessageChain(Plain('模块已启用')))
     else:
-        await app.sendMessage(group, MessageChain.create(Plain('无变化，模块已处于开启状态')))
+        await app.send_message(group, MessageChain(Plain('无变化，模块已处于开启状态')))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]禁用')], 'module_id' @ RegexMatch(r'\d+'))],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]禁用'), 'module_id' @ RegexMatch(r'\d+'))],
         decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = module_id.result.asDisplay()  # type: ignore
-    target_module = await get_channel(target_id, app, group)
+    if module_id.result is None:
+        return
+    target_module = await get_channel(app, module_id.result.display, group)
     if target_module is None:
-        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
         return
     disabled_groups = (
         modules_cfg.disabledGroups[target_module.module] if target_module.module in modules_cfg.disabledGroups else []
     )
     if not target_module.meta.get('can_disable', True):
-        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不允许禁用')))
+        await app.send_message(group, MessageChain(Plain('你指定的模块不允许禁用')))
     elif group.id not in disabled_groups:
         disabled_groups.append(group.id)
         modules_cfg.disabledGroups[target_module.module] = disabled_groups
         modules_cfg.save()
-        await app.sendMessage(group, MessageChain.create(Plain('模块已禁用')))
+        await app.send_message(group, MessageChain(Plain('模块已禁用')))
     else:
-        await app.sendMessage(group, MessageChain.create(Plain('无变化，模块已处于禁用状态')))
+        await app.send_message(group, MessageChain(Plain('无变化，模块已处于禁用状态')))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]全局启用')], 'module_id' @ RegexMatch(r'\d+'))],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]全局启用'), 'module_id' @ RegexMatch(r'\d+'))],
         decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def global_enable_module(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = module_id.result.asDisplay()  # type: ignore
-    target_module = await get_channel(target_id, app, group)
+    if module_id.result is None:
+        return
+    target_module = await get_channel(app, module_id.result.display, group)
     if target_module is None:
-        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
         return
     if target_module.module not in modules_cfg.globalDisabledModules:
-        await app.sendMessage(group, MessageChain.create(Plain('无变化，模块已处于全局开启状态')))
+        await app.send_message(group, MessageChain(Plain('无变化，模块已处于全局开启状态')))
     else:
         modules_cfg.globalDisabledModules.remove(target_module.module)
         modules_cfg.save()
-        await app.sendMessage(group, MessageChain.create(Plain('模块已全局启用')))
+        await app.send_message(group, MessageChain(Plain('模块已全局启用')))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]全局禁用')], 'module_id' @ RegexMatch(r'\d+'))],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]全局禁用'), 'module_id' @ RegexMatch(r'\d+'))],
         decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def global_disable_module(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = module_id.result.asDisplay()  # type: ignore
-    target_module = await get_channel(target_id, app, group)
+    if module_id.result is None:
+        return
+    target_module = await get_channel(app, module_id.result.display, group)
     if target_module is None:
-        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不存在')))
+        await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
         return
     if not target_module.meta.get('can_disable', True):
-        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不允许禁用')))
+        await app.send_message(group, MessageChain(Plain('你指定的模块不允许禁用')))
     elif target_module.module not in modules_cfg.globalDisabledModules:
         modules_cfg.globalDisabledModules.append(target_module.module)
         modules_cfg.save()
-        await app.sendMessage(group, MessageChain.create(Plain('模块已全局禁用')))
+        await app.send_message(group, MessageChain(Plain('模块已全局禁用')))
     else:
-        await app.sendMessage(group, MessageChain.create(Plain('无变化，模块已处于全局禁用状态')))
+        await app.send_message(group, MessageChain(Plain('无变化，模块已处于全局禁用状态')))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]用法')], 'module_id' @ RegexMatch(r'\d+'))],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]用法'), 'module_id' @ RegexMatch(r'\d+'))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = module_id.result.asDisplay()  # type: ignore
-    target_module = await get_channel(target_id, app, group)
+    if module_id.result is None:
+        return
+    target_module = await get_channel(app, module_id.result.display, group)
     if target_module is None:
         return
     disabled_groups = (
         modules_cfg.disabledGroups[target_module.module] if target_module.module in modules_cfg.disabledGroups else []
     )
     if group.id in disabled_groups:
-        await app.sendMessage(group, MessageChain.create(Plain('该模块已在本群禁用')))
+        await app.send_message(group, MessageChain(Plain('该模块已在本群禁用')))
         return
     authors = ''
     if target_module.meta['author']:
@@ -218,122 +224,124 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
     if target_module.meta['description']:
         msg_send += '>>>>>>>>>>>>>>>>>>>>>>> 描述 <<<<<<<<<<<<<<<<<<<<<<<\n' + target_module.meta['description'] + '\n\n'
     img_bytes = await async_generate_img([msg_send], Text2ImgConfig(FontName='sarasa-mono-sc-semibold.ttf'))
-    await app.sendMessage(group, MessageChain.create(Image(data_bytes=img_bytes)))
+    await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]重载模块')], 'module_id' @ RegexMatch(r'\d+'))],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]重载模块'), 'module_id' @ RegexMatch(r'\d+'))],
         decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
     )
 )
 async def reload_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
     # 重载即卸载重新加载，在加载含有 `saya = Saya.current()` 的模块时 100% 报错
-    await app.sendMessage(
+    await app.send_message(
         group,
-        MessageChain.create(
-            At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')
-        ),
+        MessageChain(At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')),
     )
 
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> bool | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
-            saying = waiter_message.asDisplay()
+            saying = waiter_message.display
             if saying == '.force':
                 return True
             elif saying == '.cancel':
                 return False
             else:
-                await app.sendMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
+                await app.send_message(group, MessageChain(At(member.id), Plain('请发送 .force 或 .cancel')))
 
     try:
         answer: bool = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
     except asyncio.exceptions.TimeoutError:
-        await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
+        await app.send_message(group, MessageChain(Plain('已超时取消')))
         return
     if not answer:
-        await app.sendMessage(group, MessageChain.create(Plain('已取消操作')))
+        await app.send_message(group, MessageChain(Plain('已取消操作')))
         return
 
-    target_id = module_id.result.asDisplay()  # type: ignore
-    target_module = await get_channel(target_id, app, group)
+    if module_id.result is None:
+        return
+    target_module = await get_channel(app, module_id.result.display, group)
     if target_module is None:
         return
     logger.info(f'重载模块: {target_module.name} —— {target_module.module}')
     try:
         saya.reload_channel(saya.channels[target_module.module])
     except Exception as e:
-        await app.sendMessage(group, MessageChain.create(Plain(f'重载模块 {target_module.module} 时出错')))
+        await app.send_message(group, MessageChain(Plain(f'重载模块 {target_module.module} 时出错')))
         logger.error(f'重载模块 {target_module.module} 时出错')
         logger.exception(e)
     else:
-        await app.sendMessage(group, MessageChain.create(Plain(f'重载模块 {target_module.module} 成功')))
+        await app.send_message(group, MessageChain(Plain(f'重载模块 {target_module.module} 成功')))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]加载')], 'module_id' @ RegexMatch(r'\d+'))],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]加载'), 'module_id' @ RegexMatch(r'\d+'))],
         decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
     )
 )
 async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
+    if module_id.result is None:
+        return
     # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
-    await app.sendMessage(
-        group, MessageChain.create(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
+    await app.send_message(
+        group, MessageChain(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
     )
 
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> bool | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
-            saying = waiter_message.asDisplay()
+            saying = waiter_message.display
             if saying == '.force':
                 return True
             elif saying == '.cancel':
                 return False
             else:
-                await app.sendMessage(group, MessageChain.create(At(member.id), Plain('请发送 .force 或 .cancel')))
+                await app.send_message(group, MessageChain(At(member.id), Plain('请发送 .force 或 .cancel')))
 
     try:
         answer: bool = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=600)
     except asyncio.exceptions.TimeoutError:
-        await app.sendMessage(group, MessageChain.create(Plain('已超时取消')))
+        await app.send_message(group, MessageChain(Plain('已超时取消')))
         return
     if not answer:
-        await app.sendMessage(group, MessageChain.create(Plain('已取消操作')))
+        await app.send_message(group, MessageChain(Plain('已取消操作')))
         return
-    match_result = module_id.result.asDisplay()  # type: ignore
+    match_result = module_id.result.display
     target_filename = match_result if match_result[-3:] != '.py' else match_result[:-3]
     modules_dir_list = os.listdir(Path(Path.cwd(), 'modules'))
     if target_filename + '.py' in modules_dir_list or target_filename in modules_dir_list:
         try:
             saya.require('modules.' + target_filename)
         except Exception as e:
-            await app.sendMessage(group, MessageChain.create(Plain(f'加载模块 modules.{target_filename} 时出错')))
+            await app.send_message(group, MessageChain(Plain(f'加载模块 modules.{target_filename} 时出错')))
             logger.error(f'加载模块 modules.{target_filename} 时出错')
             logger.exception(e)
             return
         else:
-            await app.sendMessage(group, MessageChain.create(Plain(f'加载模块 modules.{target_filename} 成功')))
+            await app.send_message(group, MessageChain(Plain(f'加载模块 modules.{target_filename} 成功')))
             return
     else:
-        await app.sendMessage(group, MessageChain.create(Plain(f'模块 modules.{target_filename} 不存在')))
+        await app.send_message(group, MessageChain(Plain(f'模块 modules.{target_filename} 不存在')))
 
 
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]卸载')], 'module_id' @ RegexMatch(r'\d+'))],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]卸载'), 'module_id' @ RegexMatch(r'\d+'))],
         decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
     )
 )
 async def unload_module(app: Ariadne, group: Group, module_id: RegexResult):
-    target_id = module_id.result.asDisplay()  # type: ignore
-    target_module = await get_channel(target_id, app, group)
+    if module_id.result is None:
+        return
+    target_module = await get_channel(app, module_id.result.display, group)
     if target_module is None:
         return
     if not target_module.meta.get('can_disable', True):
-        await app.sendMessage(group, MessageChain.create(Plain('你指定的模块不允许禁用或卸载')))
+        await app.send_message(group, MessageChain(Plain('你指定的模块不允许禁用或卸载')))
         return
     logger.debug(f'原channels: {saya.channels}')
     logger.debug(f'要卸载的channel: {saya.channels["modules.BiliVideoInfo"]}')
@@ -341,9 +349,9 @@ async def unload_module(app: Ariadne, group: Group, module_id: RegexResult):
     try:
         saya.uninstall_channel(saya.channels[target_module.module])
     except Exception as e:
-        await app.sendMessage(group, MessageChain.create(Plain(f'卸载模块 {target_module.module} 时出错')))
+        await app.send_message(group, MessageChain(Plain(f'卸载模块 {target_module.module} 时出错')))
         logger.error(f'卸载模块 {target_module.module} 时出错')
         logger.exception(e)
     else:
         logger.debug(f'卸载后的channels: {saya.channels}')
-        await app.sendMessage(group, MessageChain.create(Plain(f'卸载模块 {target_module.module} 成功')))
+        await app.send_message(group, MessageChain(Plain(f'卸载模块 {target_module.module} 成功')))

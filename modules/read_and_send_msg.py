@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import regex as re
+import re
+
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
@@ -33,18 +34,18 @@ channel.meta['description'] = '仅限群管理员使用\n'
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if re.match(r'^[!！.]读取消息$', message.asDisplay()):
+    if re.match(r'^[!！.]读取消息$', message.display):
         try:
-            quote_id = message.include(Quote).getFirst(Quote).id
+            quote_id = message.include(Quote).get_first(Quote).id
         except IndexError:
             return
         try:
-            message_event = await app.getMessageFromId(quote_id)
+            message_event = await app.get_message_from_id(quote_id)
         except UnknownTarget:
-            await app.sendMessage(group, MessageChain.create(Plain('找不到该消息，对象不存在')))
+            await app.send_message(group, MessageChain(Plain('找不到该消息，对象不存在')))
             return
-        chain = message_event.messageChain
-        await app.sendMessage(group, MessageChain.create(Plain(f'消息ID: {quote_id}\n消息内容：{chain.asPersistentString()}')))
-    elif re.match(r'^[!！.]发送消息 .+', message.asDisplay()):
-        if msg := re.sub(r'[!！.]发送消息 ', '', message.asDisplay(), count=1):
-            await app.sendMessage(group, MessageChain.fromPersistentString(msg))
+        chain = message_event.message_chain
+        await app.send_message(group, MessageChain(Plain(f'消息ID: {quote_id}\n消息内容：{chain.as_persistent_string()}')))
+    elif re.match(r'^[!！.]发送消息 .+', message.display):
+        if msg := re.sub(r'[!！.]发送消息 ', '', message.display, count=1):
+            await app.send_message(group, MessageChain.from_persistent_string(msg))

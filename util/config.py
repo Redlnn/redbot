@@ -27,7 +27,7 @@ class RConfig(BaseModel):
         if not path.exists():
             super().__init__(**data)
             with open(path, 'w') as f:
-                f.write(self.json(dumps_kwargs=[orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE]))
+                f.write(self.json(option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE))
         else:
             with open(path, 'rb') as fb:
                 file_data = orjson.loads(fb.read())
@@ -44,7 +44,7 @@ class RConfig(BaseModel):
         else:
             path = Path(config_path, f'{self.__filename__}.json')
         with open(path, 'w') as f:
-            f.write(self.json(dumps_kwargs=[orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE]))
+            f.write(self.json(option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE))
 
     def reload(self) -> None:
         if self.__filename__ is None:
@@ -86,7 +86,7 @@ class ModulesConfig(RConfig):
     __filename__: str = 'modules'
     enabled: bool = True  # 是否允许加载模块
     globalDisabledModules: list[str] = []  # 全局禁用的模块列表
-    disabledGroups: dict[str, list[int]] = {'BotManage': [123456789, 123456780]}  # 分群禁用模块的列表
+    disabledGroups: dict[str, list[int]] = {'core_modules.bot_manage': [123456789, 123456780]}  # 分群禁用模块的列表
 
 
 basic_cfg = BasicConfig()

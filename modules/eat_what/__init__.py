@@ -33,11 +33,11 @@ async def get_food():
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[!！.]吃啥').space(SpacePolicy.NOSPACE)])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]吃啥').space(SpacePolicy.NOSPACE))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, source: Source):
     food = await get_food()
-    chain = MessageChain.create(Plain(f'吃{food}'))
-    await app.sendMessage(group, chain, quote=source)
+    chain = MessageChain(Plain(f'吃{food}'))
+    await app.send_message(group, chain, quote=source)

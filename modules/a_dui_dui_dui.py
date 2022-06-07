@@ -23,9 +23,11 @@ channel.meta['description'] = '啊对对对'
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight([RegexMatch(r'[啊阿]对+').space(SpacePolicy.NOSPACE)])],
+        inline_dispatchers=[Twilight(RegexMatch(r'[啊阿]对+').space(SpacePolicy.NOSPACE))],
         decorators=[GroupPermission.require(), require_disable(channel.module)],
     )
 )
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    await app.sendMessage(group, message + MessageChain.create(Plain('对')))
+    message = message.copy()
+    message.__root__.append(Plain('对'))
+    await app.send_message(group, message)
