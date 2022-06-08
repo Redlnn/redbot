@@ -634,7 +634,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.7.4"
+version = "0.7.5"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -1799,7 +1799,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "1a95415cc737ed6bda6ab749ebfeef7da8955f60dbabf5503517e91698022df0"
+content-hash = "00fea3030428bb3a1117b0b58633cf5d4d548698216960bf2a79580b1cb25520"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -2280,8 +2280,8 @@ graia-amnesia = [
     {file = "graia_amnesia-0.5.2-py3-none-any.whl", hash = "sha256:8f5c3fa216cdc198a17b93c420ec339f007e5b44dec6a434a5276bcaf9aeca0f"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.7.4.tar.gz", hash = "sha256:88d3dd8c2f9b21e0913590b54a6c7e304e37427665bee75bfb241dd5229524ed"},
-    {file = "graia_ariadne-0.7.4-py3-none-any.whl", hash = "sha256:393f9a3f02e9eec159e40566b9af965136b6b960f99145ae585f0bf7db68c98a"},
+    {file = "graia-ariadne-0.7.5.tar.gz", hash = "sha256:b1d82e385ac4b46cd94dc184990e23a9b8ab5c604923484c476c419ac4158e56"},
+    {file = "graia_ariadne-0.7.5-py3-none-any.whl", hash = "sha256:99eea45178f15686a629880a050f7126bf8c354c03ee3a6f94792c8d100890f8"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.17.1.tar.gz", hash = "sha256:cb5cee732ec23ee37528ad82c7c397ba16238dc675e2190a8de18bfd4e099515"},
