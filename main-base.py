@@ -14,6 +14,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Source
 from graia.ariadne.model import Group, LogConfig, Member
 from graia.broadcast import Broadcast
+from graia.scheduler import GraiaScheduler
+from graia.scheduler.timers import crontabify
 
 from util import log_level_handler, replace_logger
 from util.config import basic_cfg
@@ -25,7 +27,7 @@ if basic_cfg.miraiApiHttp.account == 123456789:
 loop = asyncio.new_event_loop()
 bcc = Broadcast(loop=loop)
 
-Ariadne.config(loop=loop, broadcast=bcc, install_log=True)
+Ariadne.config(loop=loop, broadcast=bcc)
 app = Ariadne(
     connection=config(
         basic_cfg.miraiApiHttp.account,  # 你的机器人的 qq 号
@@ -36,7 +38,13 @@ app = Ariadne(
     log_config=LogConfig(log_level_handler),
 )
 app.default_send_action = Safe
+sche = app.create(GraiaScheduler)
 replace_logger(level=0 if basic_cfg.debug else 20, richuru=True)  # 对logger进行调整，必须放在这里
+
+
+@sche.schedule(crontabify('0 0 * * *'))
+async def test():
+    ...
 
 
 @bcc.receiver(GroupMessage)
