@@ -33,6 +33,7 @@ if __name__ == '__main__':
     loop = asyncio.new_event_loop()
 
     Ariadne.config(loop=loop)
+    Ariadne.options['installed_log'] = True
     app = Ariadne(
         connection=config(
             basic_cfg.miraiApiHttp.account,  # 你的机器人的 qq 号
