@@ -45,9 +45,9 @@ class Safe(SendMessageAction):
                 if elem.type == type_:
                     if elem.type == 'at':
                         msg_chain.__root__[ind] = (
-                            Plain(f'@{elem.display}({elem.target})')
+                            Plain(f'@{elem.display}({elem.target})')  # type: ignore
                             if elem.display is not None
-                            else Plain(f'@{elem.target}')
+                            else Plain(f'@{elem.target}')  # type: ignore
                         )
                     else:
                         msg_chain.__root__[ind] = Plain(elem.display)

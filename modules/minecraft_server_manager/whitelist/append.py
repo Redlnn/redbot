@@ -46,7 +46,7 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> MessageChain:
     if player is None:
         app = Ariadne.current()
         member: Member = await app.get_member(config.serverGroup, qq)
-        player = PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp)
+        player = PlayerInfo(qq=str(member.id), join_time=member.join_timestamp)
         await Database.add(player)
     elif player.blocked:
         return MessageChain(Plain(f'你的账号已被封禁，封禁原因：{player.block_reason}'))

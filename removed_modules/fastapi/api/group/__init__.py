@@ -21,7 +21,7 @@ async def get_group_list():
         group.id: {
             'id': group.id,
             'name': group.name,
-            'accountPerm': perm_map[group.accountPerm],
+            'accountPerm': perm_map[group.account_perm],
         }
         for group in group_list
     }

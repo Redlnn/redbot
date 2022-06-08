@@ -104,7 +104,7 @@ async def init(app: Ariadne):
     if len(result) == 0:
         logger.info('初始化mc服务器管理数据库中...')
         member_list = await app.get_member_list(module_config.serverGroup)
-        data = [PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp) for member in member_list]
+        data = [PlayerInfo(qq=str(member.id), join_time=member.join_timestamp) for member in member_list]
         if await Database.add_many(*data):
             logger.info('mc服务器管理数据库初始化完成')
         else:
@@ -525,9 +525,9 @@ async def member_join(group: Group, member: Member):
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(member.id)))
     if result is None:
-        await Database.add(PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp))
+        await Database.add(PlayerInfo(qq=str(member.id), join_time=member.join_timestamp))
     else:
-        result[0].join_time = member.joinTimestamp
+        result[0].join_time = member.join_timestamp
         result[0].leave_time = None
         await Database.update_exist(result[0])
 
@@ -545,7 +545,7 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == str(member.id)))
     if result is None:
-        await Database.add(PlayerInfo(qq=str(member.id), join_time=member.joinTimestamp, leave_time=int(time.time())))
+        await Database.add(PlayerInfo(qq=str(member.id), join_time=member.join_timestamp, leave_time=int(time.time())))
     else:
         result[0].leave_time = int(time.time())
         await Database.update_exist(result[0])
@@ -565,7 +565,7 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
         return
     result = await Database.select_first(select(PlayerInfo).where(PlayerInfo.qq == target.id))
     if result is None:
-        await Database.add(PlayerInfo(qq=str(target.id), join_time=target.joinTimestamp, leave_time=int(time.time())))
+        await Database.add(PlayerInfo(qq=str(target.id), join_time=target.join_timestamp, leave_time=int(time.time())))
     else:
         result[0].leave_time = int(time.time())
         result[0].blocked = True

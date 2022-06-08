@@ -38,7 +38,7 @@ channel.meta['description'] = '@bot {主语}<介词>不<介词>{动作}\n如：@
     )
 )
 async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: ElementResult):
-    if at.result is None or at.result.target != basic_cfg.miraiApiHttp.account:
+    if at.result is None or at.result.target != basic_cfg.miraiApiHttp.account:  # type: ignore
         return
     msg = message.include(Plain).display.strip()
     re1_match = re.match(r'(.+)?(?P<v>\S+)不(?P=v)(.+)?', msg)
