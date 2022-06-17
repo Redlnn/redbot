@@ -53,7 +53,7 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
                 msg_list.remove(item)
                 lastest_msg.set(msg_list)
     elif message.has(Quote):
-        if message.get_first(Quote).senderId != basic_cfg.miraiApiHttp.account:
+        if message.get_first(Quote).sender_id != basic_cfg.miraiApiHttp.account:
             return
         if message.include(Plain).merge().display.strip() == '.撤回':
             target_id = message.get_first(Quote).id
