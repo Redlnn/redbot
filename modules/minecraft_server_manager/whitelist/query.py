@@ -7,7 +7,6 @@ from uuid import UUID
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from sqlalchemy import select
-from sqlmodel import col, or_
 
 from util.database import Database
 
@@ -18,9 +17,7 @@ from ..utils import format_time, get_mc_id, get_uuid
 async def query_whitelist_by_uuid(mc_uuid: str) -> PlayerInfo | None:
     query_target = UUID(mc_uuid)
     result = await Database.select_first(
-        select(PlayerInfo).where(
-            or_(col(PlayerInfo.uuid1) == query_target.hex), col(PlayerInfo.uuid2) == query_target.hex
-        )
+        select(PlayerInfo).where((PlayerInfo.uuid1 == query_target.hex) | (PlayerInfo.uuid2 == query_target.hex))
     )
     return None if result is None or len(result) == 0 else result[0]
 
@@ -43,7 +40,7 @@ async def query_uuid_by_qq(
 async def query_qq_by_uuid(mc_uuid: str) -> PlayerInfo | None:
     target = UUID(mc_uuid)
     result = await Database.select_first(
-        select(PlayerInfo).where(or_(col(PlayerInfo.uuid1) == target.hex, col(PlayerInfo.uuid2) == target.hex))
+        select(PlayerInfo).where((PlayerInfo.uuid1 == target.hex) | (PlayerInfo.uuid2 == target.hex))
     )
     return None if result is None or len(result) == 0 else result[0]
 
