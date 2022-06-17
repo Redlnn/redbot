@@ -634,7 +634,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "graia-ariadne"
-version = "0.7.6"
+version = "0.7.11"
 description = "Another elegant Python QQ Bot framework for mirai and mirai-api-http v2."
 category = "main"
 optional = false
@@ -1799,7 +1799,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "ceeaf86b4a4ac2ef8896a9ce87b62bfe87524fd2dc98c58b9ca2b8bbb658d014"
+content-hash = "72d31ec98137dba4d580967b543cc6e7190d950f6d6fe8abbae1d911091d9d2c"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -2280,8 +2280,8 @@ graia-amnesia = [
     {file = "graia_amnesia-0.5.2-py3-none-any.whl", hash = "sha256:8f5c3fa216cdc198a17b93c420ec339f007e5b44dec6a434a5276bcaf9aeca0f"},
 ]
 graia-ariadne = [
-    {file = "graia-ariadne-0.7.6.tar.gz", hash = "sha256:8b30461b57913346d49ab4a9258e24779b3caccddf295afa6a98ec44150268c2"},
-    {file = "graia_ariadne-0.7.6-py3-none-any.whl", hash = "sha256:a66ebc6e5e64cac61cf1bc59fe46c62e42bf3161db88f2e2d40d37e8a8778bb0"},
+    {file = "graia-ariadne-0.7.11.tar.gz", hash = "sha256:367e6714f979a13b18bb12a796f32e5b0e7eb73484d1bae19e8c96d9a7d813db"},
+    {file = "graia_ariadne-0.7.11-py3-none-any.whl", hash = "sha256:f1aafb174941380fea36d8a678cd88a7325ab719bbf2531baeb36d09054eb5b2"},
 ]
 graia-broadcast = [
     {file = "graia-broadcast-0.17.1.tar.gz", hash = "sha256:cb5cee732ec23ee37528ad82c7c397ba16238dc675e2190a8de18bfd4e099515"},
@@ -2976,6 +2976,7 @@ sqlalchemy = [
     {file = "SQLAlchemy-1.4.37-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:d9050b0c4a7f5538650c74aaba5c80cd64450e41c206f43ea6d194ae6d060ff9"},
     {file = "SQLAlchemy-1.4.37-cp27-cp27m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:b4c92823889cf9846b972ee6db30c0e3a92c0ddfc76c6060a6cda467aa5fb694"},
     {file = "SQLAlchemy-1.4.37-cp27-cp27m-win32.whl", hash = "sha256:b55932fd0e81b43f4aff397c8ad0b3c038f540af37930423ab8f47a20b117e4c"},
+    {file = "SQLAlchemy-1.4.37-cp27-cp27m-win_amd64.whl", hash = "sha256:4a17c1a1152ca4c29d992714aa9df3054da3af1598e02134f2e7314a32ef69d8"},
     {file = "SQLAlchemy-1.4.37-cp27-cp27mu-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:ffe487570f47536b96eff5ef2b84034a8ba4e19aab5ab7647e677d94a119ea55"},
     {file = "SQLAlchemy-1.4.37-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:78363f400fbda80f866e8e91d37d36fe6313ff847ded08674e272873c1377ea5"},
     {file = "SQLAlchemy-1.4.37-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:7ee34c85cbda7779d66abac392c306ec78c13f5c73a1f01b8b767916d4895d23"},
