@@ -19,7 +19,7 @@ from graia.saya.builtins.broadcast import ListenerSchema
 from util import get_graia_version
 from util.control import require_disable
 from util.control.permission import GroupPermission
-from util.text2img import async_generate_img, hr
+from util.text2img import async_generate_img
 
 channel = Channel.current()
 
@@ -66,13 +66,13 @@ async def main(app: Ariadne, group: Group):
         f'PID: {pid}\n'
         f'启动时间：{time.strftime("%Y-%m-%d %H:%M:%S", started_time)}\n'
         f'已运行时长：{running_time}\n'
-        f'{hr}\n'
+        '{hr}\n'
         f'Python 版本：{python_version}\n'
         f'系统版本：{system_version}\n'
         f'CPU 核心数：{psutil.cpu_count()}\n'
         f'CPU 占用率：{psutil.cpu_percent()}%\n'
         f'系统内存占用：{"%.1f" % (psutil.virtual_memory().available / 1073741824)}G / {total_memory}G\n'
-        f'{hr}\n'
+        '{hr}\n'
         f'MiraiApiHttp版本：{await app.get_version()}\n'
         'Graia 相关库版本：\n'
     )

@@ -33,7 +33,7 @@ from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
 from util.path import data_path
-from util.text2img import async_generate_img, hr
+from util.text2img import async_generate_img
 
 channel = Channel.current()
 
@@ -102,7 +102,7 @@ lucky_things = {
 )
 async def main(app: Ariadne, group: Group, member: Member):
     is_new, renpin, qianwen = await read_data(str(member.id))
-    img_bytes = await async_generate_img([qianwen, f'{hr}\n悄悄告诉你噢，你今天的人品值是 {renpin}'])
+    img_bytes = await async_generate_img([qianwen, '{hr}\n悄悄告诉你噢，你今天的人品值是 ' + str(renpin)])
     if is_new:
         await app.send_message(group, MessageChain(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
     else:

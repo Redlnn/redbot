@@ -34,7 +34,7 @@ from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
-from util.text2img import async_generate_img, hr
+from util.text2img import async_generate_img
 
 channel = Channel.current()
 
@@ -195,8 +195,8 @@ async def gen_img(data: VideoInfo) -> bytes:
     info_text += (
         f'{math(data.views)}播放 {math(data.danmu)}弹幕\n'
         f'{math(data.likes)}点赞 {math(data.coins)}投币 {math(data.favorites)}收藏\n'
-        f'简介：\n'
-        f'{hr}\n{data.desc}'
+        '简介：\n{hr}\n'
+        f'{data.desc}'
     )
 
     session = GetAiohttpSession.get_session()

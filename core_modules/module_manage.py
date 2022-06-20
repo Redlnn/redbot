@@ -24,7 +24,7 @@ from loguru import logger
 from util.config import basic_cfg, modules_cfg
 from util.control import require_disable
 from util.control.permission import GroupPermission
-from util.text2img import Text2ImgConfig, async_generate_img, hr
+from util.text2img import Text2ImgConfig, async_generate_img
 
 saya = Saya.current()
 channel = Channel.current()
@@ -68,7 +68,7 @@ async def get_channel(app: Ariadne, module_id: str, group: Group):
     )
 )
 async def menu(app: Ariadne, group: Group):
-    msg_send = f'-= {basic_cfg.botName} 功能菜单 for {group.id} =-\n-= {group.name} =-\n{hr}\nID    模块状态    模块名\n'
+    msg_send = f'-= {basic_cfg.botName} 功能菜单 for {group.id} =-\n-= {group.name} =-\n' '{hr}\nID    模块状态    模块名\n'
     for index, module in enumerate(saya.channels, start=1):
         global_disabled = module in modules_cfg.globalDisabledModules
         disabled_groups = modules_cfg.disabledGroups[module] if module in modules_cfg.disabledGroups else []
@@ -82,7 +82,7 @@ async def menu(app: Ariadne, group: Group):
             status = '            '
         msg_send += f'{num}. {status}  {saya.channels[module]._name if saya.channels[module]._name is not None else saya.channels[module].module}\n'
     msg_send += (
-        f'{hr}\n'
+        '{hr}\n'
         f'私は {basic_cfg.admin.masterName} の {basic_cfg.botName} です www\n'
         '群管理员要想配置模块开关请发送【.启用/禁用 <id>】\n'
         '要想查询某模块的用法和介绍请发送【.用法 <id>】\n'

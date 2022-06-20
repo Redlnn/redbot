@@ -42,9 +42,6 @@ class Text2ImgConfig(RConfig):
     BorderOutlineWidth: int = 5  # 边框描边（内描边）厚度
 
 
-hr = '{hr}'
-
-
 def _get_time(mode: int = 1) -> str:
     """
     返回当前时间
