@@ -38,6 +38,15 @@ class GetAiohttpSession:
     session: ClientSession | None = None
 
     @classmethod
+    def set_session(cls, session: ClientSession):
+        cls.session = session
+
+    @classmethod
+    async def close_session(cls):
+        if cls.session and not cls.session.closed:
+            await cls.session.close()
+
+    @classmethod
     def get_session(cls) -> ClientSession:
         if cls.session is None:
             cls.session = ClientSession()

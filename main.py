@@ -17,7 +17,7 @@ from graia.saya.builtins.broadcast import BroadcastBehaviour
 from graia.scheduler import GraiaScheduler
 from graia.scheduler.saya import GraiaSchedulerBehaviour
 
-from util import log_level_handler, replace_logger
+from util import GetAiohttpSession, log_level_handler, replace_logger
 from util.config import basic_cfg, modules_cfg
 from util.database import Database
 from util.path import modules_path, root_path
@@ -70,3 +70,4 @@ if __name__ == '__main__':
     loop.run_until_complete(Database.init())
 
     Ariadne.launch_blocking()
+    loop.run_until_complete(GetAiohttpSession.close_session())
