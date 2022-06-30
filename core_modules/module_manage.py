@@ -31,15 +31,17 @@ channel = Channel.current()
 
 channel.meta['name'] = 'Bot模块管理'
 channel.meta['author'] = ['Red_lnn']
-channel.meta['description'] = '管理Bot已加载的模块\n'
-'[!！.](菜单|menu) —— 获取模块列表\n'
-'[!！.]启用 <模块ID> —— 【群管理员】启用某个已禁用的模块（全局禁用除外）\n'
-'[!！.]禁用 <模块ID> —— 【群管理员】禁用某个已启用的模块（禁止禁用的模块除外）\n'
-'[!！.]全局启用 <模块ID> —— 【Bot管理员】全局启用某个已禁用的模块\n'
-'[!！.]全局禁用 <模块ID> —— 【Bot管理员】全局禁用某个已启用的模块（禁止禁用的模块除外）\n'
-'[!！.]重载 <模块ID> —— 【Bot管理员，强烈不推荐】重载指定模块\n'
-'[!！.]加载 <模块文件名> —— 【Bot管理员，强烈不推荐】加载新模块（xxx.xxx 无需后缀）\n'
-'[!！.]卸载 <模块ID> —— 【Bot管理员】卸载指定模块'
+channel.meta['description'] = (
+    '管理Bot已加载的模块\n'
+    '[!！.](菜单|menu) —— 获取模块列表\n'
+    '[!！.]启用 <模块ID> —— 【群管理员】启用某个已禁用的模块（全局禁用除外）\n'
+    '[!！.]禁用 <模块ID> —— 【群管理员】禁用某个已启用的模块（禁止禁用的模块除外）\n'
+    '[!！.]全局启用 <模块ID> —— 【Bot管理员】全局启用某个已禁用的模块\n'
+    '[!！.]全局禁用 <模块ID> —— 【Bot管理员】全局禁用某个已启用的模块（禁止禁用的模块除外）\n'
+    '[!！.]重载 <模块ID> —— 【Bot管理员，强烈不推荐】重载指定模块\n'
+    '[!！.]加载 <模块文件名> —— 【Bot管理员，强烈不推荐】加载新模块（xxx.xxx 无需后缀）\n'
+    '[!！.]卸载 <模块ID> —— 【Bot管理员】卸载指定模块'
+)
 channel.meta['can_disable'] = False
 
 # ensp = ' '  # 半角空格
@@ -216,13 +218,13 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
         await app.send_message(group, MessageChain(Plain('该模块已在本群禁用')))
         return
     authors = ''
-    if target_module.meta['author']:
-        for author in target_module.meta['author']:
+    if target_module._author:
+        for author in target_module._author:
             authors += f'{author}, '
         authors = authors.rstrip(', ')
-    msg_send = f'{target_module.name}{f" By {authors}" if authors else ""}\n\n'
-    if target_module.meta['description']:
-        msg_send += '>>>>>>>>>>>>>>>>>>>>>>> 描述 <<<<<<<<<<<<<<<<<<<<<<<\n' + target_module.meta['description'] + '\n\n'
+    msg_send = f'{target_module._name}{f" By {authors}" if authors else ""}\n\n'
+    if target_module._description:
+        msg_send += '>>>>>>>>>>>>>>>>>>>>>> 描述 <<<<<<<<<<<<<<<<<<<<<<\n' + target_module._description + '\n\n'
     img_bytes = await async_generate_img([msg_send], Text2ImgConfig(FontName='sarasa-mono-sc-semibold.ttf'))
     await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
 
@@ -265,7 +267,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
     target_module = await get_channel(app, module_id.result.display, group)
     if target_module is None:
         return
-    logger.info(f'重载模块: {target_module.name} —— {target_module.module}')
+    logger.info(f'重载模块: {target_module._name} —— {target_module.module}')
     try:
         saya.reload_channel(saya.channels[target_module.module])
     except Exception as e:
@@ -345,7 +347,7 @@ async def unload_module(app: Ariadne, group: Group, module_id: RegexResult):
         return
     logger.debug(f'原channels: {saya.channels}')
     logger.debug(f'要卸载的channel: {saya.channels["modules.BiliVideoInfo"]}')
-    logger.info(f'卸载模块: {target_module.name} —— {target_module.module}')
+    logger.info(f'卸载模块: {target_module._name} —— {target_module.module}')
     try:
         saya.uninstall_channel(saya.channels[target_module.module])
     except Exception as e:

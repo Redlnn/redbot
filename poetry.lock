@@ -1784,7 +1784,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "2a294abf5c741158b901bcc6576dc0519eddd586e0cdb48ce36de639202c9486"
+content-hash = "a6fd915e0ec5bb016a92294e5d5001492329140d3a4f47847d22c574fe154802"
 
 [metadata.files]
 aio-mc-rcon = [

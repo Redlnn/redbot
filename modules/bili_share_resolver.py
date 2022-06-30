@@ -40,15 +40,17 @@ channel = Channel.current()
 
 channel.meta['name'] = 'B站视频信息获取'
 channel.meta['author'] = ['Red_lnn']
-channel.meta['description'] = '识别群内的B站链接、分享、av号、BV号并获取其对应的视频的信息\n'
-'以下几种消息均可触发：\n'
-' - 新版B站app分享的两种小程序\n'
-' - 旧版B站app分享的xml消息\n'
-' - B站概念版分享的json消息\n'
-' - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/{av/bv号} （m.bilibili.com 也可以）\n'
-' - 文字消息里含有B站视频地址，如 https://b23.tv/3V31Ap\n'
-' - 文字消息里含有BV号，如 BV1xx411c7mD\n'
-' - 文字消息里含有av号，如 av2'
+channel.meta['description'] = (
+    '识别群内的B站链接、分享、av号、BV号并获取其对应的视频的信息\n'
+    '以下几种消息均可触发：\n'
+    ' - 新版B站app分享的两种小程序\n'
+    ' - 旧版B站app分享的xml消息\n'
+    ' - B站概念版分享的json消息\n'
+    ' - 文字消息里含有B站视频地址，如 https://www.bilibili.com/video/{av/bv号} （m.bilibili.com 也可以）\n'
+    ' - 文字消息里含有B站视频地址，如 https://b23.tv/3V31Ap\n'
+    ' - 文字消息里含有BV号，如 BV1xx411c7mD\n'
+    ' - 文字消息里含有av号，如 av2'
+)
 
 avid_re = '(av|AV)(\\d{1,12})'
 bvid_re = '[Bb][Vv]1([0-9a-zA-Z]{2})4[1y]1[0-9a-zA-Z]7([0-9a-zA-Z]{2})'

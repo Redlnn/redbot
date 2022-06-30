@@ -35,13 +35,15 @@ channel = Channel.current()
 
 channel.meta['name'] = '历史聊天数据记录'
 channel.meta['author'] = ['Red_lnn']
-channel.meta['description'] = '记录聊天数据到数据库\n用法：\n'
-'  [!！.]msgcount —— 【管理】获得目标最近n天内的发言次数\n'
-'    参数：\n'
-'      --type   member/group 目标类型，本群成员或群\n'
-'      --target 【可选】群号/本群成员的QQ号/At群成员\n'
-'      --day    【可选，默认7天】天数（含今天）\n'
-'  [!！.]getlast <At/QQ号> —— 【管理】获取某人的最后一条发言'
+channel.meta['description'] = (
+    '记录聊天数据到数据库\n用法：\n'
+    '  [!！.]msgcount —— 【管理】获得目标最近n天内的发言次数\n'
+    '    参数：\n'
+    '      --type   member/group 目标类型，本群成员或群\n'
+    '      --target 【可选】群号/本群成员的QQ号/At群成员\n'
+    '      --day    【可选，默认7天】天数（含今天）\n'
+    '  [!！.]getlast <At/QQ号> —— 【管理】获取某人的最后一条发言'
+)
 channel.meta['can_disable'] = False
 
 

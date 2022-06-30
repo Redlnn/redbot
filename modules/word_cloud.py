@@ -50,15 +50,17 @@ channel = Channel.current()
 
 channel.meta['name'] = '聊天历史词云生成'
 channel.meta['author'] = ['Red_lnn', 'A60(djkcyl)']
-channel.meta['description'] = '获取指定目标在最近n天内的聊天词云\n用法：\n'
-'  - 群/我的本周总结'
-'  - 群/我的月度总结'
-'  - 群/我的年度总结'
-'  - [!！.]wordcloud group —— 获得本群最近n天内的聊天词云\n'
-'  - [!！.]wordcloud At/本群成员QQ号 —— 获得ta在本群最近n天内的聊天词云\n'
-'  - [!！.]wordcloud me —— 获得你在本群最近n天内的聊天词云\n'
-'    参数：\n'
-'        --day, -D 最近n天的天数，默认为7天'
+channel.meta['description'] = (
+    '获取指定目标在最近n天内的聊天词云\n用法：\n'
+    '  - 群/我的本周总结'
+    '  - 群/我的月度总结'
+    '  - 群/我的年度总结'
+    '  - [!！.]wordcloud group —— 获得本群最近n天内的聊天词云\n'
+    '  - [!！.]wordcloud At/本群成员QQ号 —— 获得ta在本群最近n天内的聊天词云\n'
+    '  - [!！.]wordcloud me —— 获得你在本群最近n天内的聊天词云\n'
+    '    参数：\n'
+    '        --day, -D 最近n天的天数，默认为7天'
+)
 
 
 class WordCloudConfig(RConfig):
