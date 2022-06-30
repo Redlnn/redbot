@@ -1748,7 +1748,7 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "wordcloud"
-version = "1.8.1"
+version = "1.8.2.2"
 description = "A little word cloud generator"
 category = "main"
 optional = false
@@ -1800,7 +1800,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "64d6c1addf9b2d020592429f73f49da454414505f118a6aefb1822e730fd8246"
+content-hash = "2a294abf5c741158b901bcc6576dc0519eddd586e0cdb48ce36de639202c9486"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -3124,22 +3124,54 @@ win32-setctime = [
     {file = "win32_setctime-1.1.0.tar.gz", hash = "sha256:15cf5750465118d6929ae4de4eb46e8edae9a5634350c01ba582df868e932cb2"},
 ]
 wordcloud = [
-    {file = "wordcloud-1.8.1-cp27-cp27m-macosx_10_6_x86_64.whl", hash = "sha256:2e85b1a6b8211436d47f902837c866c682c5d00046706f1d8e72cc0cd9210d64"},
-    {file = "wordcloud-1.8.1-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:e0d3f03e4f27faf543859b4bcd229d320361d065cf4786f149081adea4ee68e8"},
-    {file = "wordcloud-1.8.1-cp27-cp27m-win32.whl", hash = "sha256:a02b27400bc4b2e4efdd8377e8cd138496b6b6e15a082d9c7b7c7b74a9ee8a55"},
-    {file = "wordcloud-1.8.1-cp27-cp27m-win_amd64.whl", hash = "sha256:6450f67c207f2ab4513c4aac803226427b39f7fc8d3498c0b41a03834b2fc426"},
-    {file = "wordcloud-1.8.1-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:f49f5213e978fb5d8ff8f6e6067de657e81ca863cab549b198579f58e1430e7c"},
-    {file = "wordcloud-1.8.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:41dafafe3768675ba8285d21ac68bd53191b50da85aba2a7fb35964d1649156f"},
-    {file = "wordcloud-1.8.1-cp36-cp36m-win32.whl", hash = "sha256:cd8c44a21a3207da813c7b7e486ed41fe517eb7b8535deef945437f4cea2b245"},
-    {file = "wordcloud-1.8.1-cp36-cp36m-win_amd64.whl", hash = "sha256:2d5f63cf1f65126d6d1b8d55acae15961c5bd55e6ef8978bf269831dafcd1408"},
-    {file = "wordcloud-1.8.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:6ff0ca777c801cd2a38deef30019f02fe35df1be9c31f6c301a34bd45006e26b"},
-    {file = "wordcloud-1.8.1-cp37-cp37m-win32.whl", hash = "sha256:9ed09d2d2916514845e42b0cc5dd86f65d4f0f89ab4bf164cc9a628d9db5a76b"},
-    {file = "wordcloud-1.8.1-cp37-cp37m-win_amd64.whl", hash = "sha256:2e1fc5991f52a0e191873025f5d8cf852eb1c39f2579d43e6d2589dc04d620d9"},
-    {file = "wordcloud-1.8.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:daa7d72f0004fcfea5f649f1683dbe47c4a9c5f721aabeb41278a4ee33f21424"},
-    {file = "wordcloud-1.8.1-cp38-cp38-win32.whl", hash = "sha256:a4a626df47eacec207988e1ffdb5bd16b2b62ac83ea2442a0043080c0c5103ac"},
-    {file = "wordcloud-1.8.1-cp38-cp38-win_amd64.whl", hash = "sha256:f190eb3efcc17765a4ed9d78001fdb713988886b93e54b2758fcf4f6c519ad51"},
-    {file = "wordcloud-1.8.1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:90e9cff2c6939b5e1fa87d2a2c5d79c8ac2eafc4c9b9bc1bcb865ca5fde7e758"},
-    {file = "wordcloud-1.8.1.tar.gz", hash = "sha256:e6ef771aac17c1cf8558c8d5ef025796184066d7b78f8118aefe011fb0d22952"},
+    {file = "wordcloud-1.8.2.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2a90f512c1c3c2a483d9d12b06a80124cecf813ec7a49b328dce6181c5440f2d"},
+    {file = "wordcloud-1.8.2.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e6376f09543416d03844313d7e6e39eb0a42547e07001ac50be93fbd4c6c4431"},
+    {file = "wordcloud-1.8.2.2-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:334318eb345eafc3494d81fbbe11823fc945833e6a77cf05c7a6a1b88c1e1db0"},
+    {file = "wordcloud-1.8.2.2-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:c162814bc0ca2f1436e553ef8c451009c689f5a3f04be8acb5f1df7389b2dbc2"},
+    {file = "wordcloud-1.8.2.2-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:66bd735eb869a769806154067da01ecaeb4ce165d3c523c306e8ea7d376a1706"},
+    {file = "wordcloud-1.8.2.2-cp310-cp310-win32.whl", hash = "sha256:7344df98ea8556a4f8e12924cf0b2e2d7055b1565440fd0c2a453c2b7e1e240b"},
+    {file = "wordcloud-1.8.2.2-cp310-cp310-win_amd64.whl", hash = "sha256:bc2974162313e3702cfd314401c943bb94add4ae64a4d7d4ecdf93863133b5e1"},
+    {file = "wordcloud-1.8.2.2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:90174d2154d554e186e4db14121315bb0e2cb4b0c88d0ca0f8f99831f672cfea"},
+    {file = "wordcloud-1.8.2.2-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:948a947960ce688088e7617c9f82c26a0992c1e4e28a4de1f9a0afa736102556"},
+    {file = "wordcloud-1.8.2.2-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:52acd837fdd26239352f77be1491148b36e77f3c31ce7a9fe232664bfadd1a2c"},
+    {file = "wordcloud-1.8.2.2-cp36-cp36m-musllinux_1_1_i686.whl", hash = "sha256:a17055e10baee8e5f19d2b72c474d59dfb45660f66b92d3468fef44f0cc67b37"},
+    {file = "wordcloud-1.8.2.2-cp36-cp36m-musllinux_1_1_x86_64.whl", hash = "sha256:7b0a7e43b961ea7be13d7d7397fd131f8e795e1b36a23fdcab914a14d7c50def"},
+    {file = "wordcloud-1.8.2.2-cp36-cp36m-win32.whl", hash = "sha256:3d4da63b8f315caf3f715b23ab0a05d43139b9395e5e78b7e12b7ed2701d3a8e"},
+    {file = "wordcloud-1.8.2.2-cp36-cp36m-win_amd64.whl", hash = "sha256:ccd027f089df42d9d99f0a2d227823f1248d49826b82dc942e6066a16b825d99"},
+    {file = "wordcloud-1.8.2.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:61b292af5d88e719a641bb832280b81902df24a39936e6cf87ae0b6ea7910262"},
+    {file = "wordcloud-1.8.2.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:43a71a15ac8f721f425d1030633f26a8037ddb767fe9bb45647fe5ed94b92eda"},
+    {file = "wordcloud-1.8.2.2-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:14f7d34c25ddad412fac32760bd5d6d1565a98821f6dd021cf6617203b0db5ae"},
+    {file = "wordcloud-1.8.2.2-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:cf81862e9ff7c7abca1fb883ee60d3274b1ce1b30f99cd07cc29c5f5d95cbab8"},
+    {file = "wordcloud-1.8.2.2-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:3639eeb7c8b09f71376c6369277fb78d2dd8c96648034c3c25ee0f34f3e9249c"},
+    {file = "wordcloud-1.8.2.2-cp37-cp37m-win32.whl", hash = "sha256:d2a966bdebdb4eab57ce4ce9a31e96b8772c0e5c46f7e334cb2e8afa59297d8a"},
+    {file = "wordcloud-1.8.2.2-cp37-cp37m-win_amd64.whl", hash = "sha256:b8fc88ce6bd9edb514473f10ea4fb14ef78fbd5266b56a614939c5a8a0256283"},
+    {file = "wordcloud-1.8.2.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:9595200d2e30ba161f585dfc5bf568010e76adc7c7bbc5d7149f0bf3b96996aa"},
+    {file = "wordcloud-1.8.2.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5b6573eaab49a3682822ea7208077ed5b81210daa3ddb41a9d4879f9803d7b6b"},
+    {file = "wordcloud-1.8.2.2-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:55f6416f9958042fe92d751962a3dfd83e583828504d9f6e8f886e034b3354d0"},
+    {file = "wordcloud-1.8.2.2-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:4580f1cbf42b3a0565b140d580d6e249230373b8fa31e4491620af1caec45e92"},
+    {file = "wordcloud-1.8.2.2-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:3e3f01635def27b971f178b8bc3438f3be09d91f72ab3b51b90a1ae16e4028d8"},
+    {file = "wordcloud-1.8.2.2-cp38-cp38-win32.whl", hash = "sha256:b4e4dcd8c1c2483c2c45082d1e9cd600924d84b52154324cce5579a3dac33c46"},
+    {file = "wordcloud-1.8.2.2-cp38-cp38-win_amd64.whl", hash = "sha256:31c09d77a01b3d5638f2e0e043cfcb0d90f1c8b4d12864132e1d421dc525467f"},
+    {file = "wordcloud-1.8.2.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:f6377f570838661ade045793e100f506a4e1f92ddac23455470a03617e30d2a8"},
+    {file = "wordcloud-1.8.2.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3b50378e7cb7b9a1990ff3a10dfcad968185a1fbfd99de68c436245bbd5cd669"},
+    {file = "wordcloud-1.8.2.2-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d76e1939ca45907dcdf8b17fd64d5a392534f42a90b6194e806f08b65ed73948"},
+    {file = "wordcloud-1.8.2.2-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:c70fd9ff86a4370d0ba9aede977440635a859b3c6a86693e178f2ecb4369e153"},
+    {file = "wordcloud-1.8.2.2-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:c1fa72f4f94d7236eb6a1a86cfcfa6df292411047320c8deb173cac379a87c2a"},
+    {file = "wordcloud-1.8.2.2-cp39-cp39-win32.whl", hash = "sha256:55224971bd7c3ba2a1038dd5aefa0559b3a320bf6f0b864c0469db5dfa7d587b"},
+    {file = "wordcloud-1.8.2.2-cp39-cp39-win_amd64.whl", hash = "sha256:a3e6c77da50d1f5263281c72db8c2cf5893b2dd624ce684910b7830eb7069163"},
+    {file = "wordcloud-1.8.2.2-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:be045984d2cdb4f181c7aff24001a97ade10d04b1098ac5c859748e2802263f4"},
+    {file = "wordcloud-1.8.2.2-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:15da7c4ff531b19527fb605da11e747d418a4d81d78503c34fb11babf3196b7a"},
+    {file = "wordcloud-1.8.2.2-pp37-pypy37_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:dd6d3f253f163ce21f6efc2cc675caf16ce474977de925b0adcdae9b97fe8659"},
+    {file = "wordcloud-1.8.2.2-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:47f329426a0952a4509d4d0c8b84867f8d11e65cb81ee852ebcfad588598cda8"},
+    {file = "wordcloud-1.8.2.2-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:001a0b4483fe4ec26302b306c1590a4c44a99483c2da8232012ac62177296594"},
+    {file = "wordcloud-1.8.2.2-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d512c9867a43cbbfa51661ea2d7e3e84c4309ef29ee1be3e10b64f9d3353bd70"},
+    {file = "wordcloud-1.8.2.2-pp38-pypy38_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c887681e9353e559f25421bfd3b358990ae80ed77c42f28eed810ab180047578"},
+    {file = "wordcloud-1.8.2.2-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:aa0ddb25cde58232131072870f139d6c737d74d7a3b6a80fcb9721f3b9b2e7bb"},
+    {file = "wordcloud-1.8.2.2-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:16ed864495573094e5b64f424d66d9030a638569182ad7c5b2c8e11ab78a2541"},
+    {file = "wordcloud-1.8.2.2-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:19c444200056b3d75b5d84a6cc018d6491da1841462546663ea3a88300db03f1"},
+    {file = "wordcloud-1.8.2.2-pp39-pypy39_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:1dc69a57a349272119ae633b8d6bcc9cde600aeb4342261e12ce169badcd28ca"},
+    {file = "wordcloud-1.8.2.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:3c39bd66f172f56257f09cec8fe246cd11ef36e9e16eeabe88933788d983c6a1"},
+    {file = "wordcloud-1.8.2.2.tar.gz", hash = "sha256:523db887e47e840eb5c2e60428243bb1d7439fdc60f89626b17bafa1be64459c"},
 ]
 yarg = [
     {file = "yarg-0.1.9-py2.py3-none-any.whl", hash = "sha256:4f9cebdc00fac946c9bf2783d634e538a71c7d280a4d806d45fd4dc0ef441492"},
