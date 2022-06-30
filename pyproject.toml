@@ -20,7 +20,7 @@ jieba = "^0.42.1"
 loguru = "^0.6.0"
 lxml = "^4.9.0"
 numpy = "^1.23.0"
-orjson = "^3.7.3"
+orjson = "^3.7.5"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pillow = "^9.1.1"
 psutil = "^5.9.0"
