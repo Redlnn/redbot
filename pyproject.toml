@@ -31,7 +31,7 @@ pyyaml = "^6.0"
 richuru = "^0.1.1"
 sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.39"}
 sqlmodel = "^0.0.6"
-uvicorn = {extras = ["standard"], version = "^0.17.6"}
+uvicorn = {extras = ["standard"], version = "^0.18.2"}
 wordcloud = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
