@@ -43,12 +43,13 @@ channel.meta['name'] = 'Bot管理'
 channel.meta['description'] = '[.!！]添加群白名单 [群号]\n[.!！]添加群黑名单 [群号]\n[.!！]添加用户黑名单 [QQ号]'
 channel.meta['can_disable'] = False
 
-ASCII_LOGO = r''' _____    _____   _____   _____   _____   _____
-|  _  \  | ____| |  _  \ |  _  \ /  _  \ |_   _|
-| |_| |  | |__   | | | | | |_| | | | | |   | |
-|  _  /  |  __|  | | | | |  _  < | | | |   | |
-| | \ \  | |___  | |_| | | |_| | | |_| |   | |
-|_|  \_\ |_____| |_____/ |_____/ \_____/   |_|'''
+ASCII_LOGO = r'''\
+ _____   _____  _____  _____  _____  _____
+|  _  \ | ____||  _  \|  _  \/  _  \|_   _|
+| |_| | | |__  | | | || |_| || | | |  | |
+|  _  / |  __| | | | ||  _  <| | | |  | |
+| | \ \ | |___ | |_| || |_| || |_| |  | |
+|_|  \_\|_____||_____/|_____/\_____/  |_|'''
 
 
 async def send_to_admin(message: MessageChain):
@@ -60,22 +61,11 @@ async def send_to_admin(message: MessageChain):
 
 
 @channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
-async def list_pkgs():
+async def launch_handler():
     logger.opt(colors=True, raw=True).info(
         f'<cyan>{ASCII_LOGO}</>',
         alt=f'[cyan]{ASCII_LOGO}[/]',
     )
-    official, community = get_graia_version()
-    for name, version in official:
-        logger.opt(colors=True, raw=True).info(
-            f'Graia <magenta>{name}</> version: <yellow>{version}</>',
-            alt=f'[magenta]Graia {name}[/] version: [yellow]{version}[/]',
-        )
-    for name, version in community:
-        logger.opt(colors=True, raw=True).info(
-            f'Graiax <magenta>{name}</> version: <yellow>{version}</>',
-            alt=f'[magenta]Graiax {name}[/] version: [yellow]{version}[/]',
-        )
     logger.success('launched!')
 
 
