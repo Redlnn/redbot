@@ -8,6 +8,7 @@
 import asyncio
 import contextlib
 from datetime import datetime
+from typing import Any
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -20,6 +21,7 @@ from graia.ariadne.message.parser.twilight import (
     FullMatch,
     RegexMatch,
     RegexResult,
+    SpacePolicy,
     Twilight,
     WildcardMatch,
 )
@@ -55,40 +57,45 @@ setu_config = Setu()
         inline_dispatchers=[
             Twilight(
                 RegexMatch(r'[.!！]'),
-                'tag' @ WildcardMatch(optional=True),
+                'tag' @ WildcardMatch(optional=True).space(SpacePolicy.NOSPACE),
                 'header' @ FullMatch('涩图'),
-                'san' @ ArgumentMatch('--san', '-S', default='2', choices=['2', '4', '6']),  # 最高涩气值，可为2|4|6'
-                'num' @ ArgumentMatch('--num', '-N', default='1', choices=['1', '2', '3', '4', '5']),  # 涩图数量
+                'san' @ ArgumentMatch('--san', '-S', type=int, default=2, choices=[2, 4, 6]),  # 最高涩气值，可为2|4|6'
+                'num' @ ArgumentMatch('--num', '-N', type=int, default=1, choices=[1, 2, 3, 4, 5]),  # 涩图数量
             )
         ],
         decorators=[GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module)],
     )
 )
-async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san: ArgResult, num: ArgResult):
+async def main(
+    app: Ariadne,
+    group: Group,
+    member: Member,
+    tag: RegexResult,
+    san: ArgResult[int],
+    num: ArgResult[int],
+):
     if san.result is None:
         return
-    if int(san.result.display) >= 4 and not (
+    if int(san.result) >= 4 and not (
         member.permission in {MemberPerm.Administrator, MemberPerm.Owner} or member.id in basic_cfg.admin.admins
     ):
         await app.send_message(group, MessageChain(Plain('你没有权限使用 san 参数')))
         return
     session = GetAiohttpSession.get_session()
-    if tag.matched:
-        target_tag = tag.result.get_first(Plain).text  # type: ignore
-        async with session.get(
-            f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result}&num={num.result}'  # type: ignore
-        ) as resp:
-            res: dict = await resp.json() if resp.status in {200, 404} else {'code': 500}
+    if tag.matched and tag.result is not None:
+        target_tag = tag.result.get_first(Plain).text
+        async with session.get(f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result}&num={num.result}') as resp:
+            res: dict[str, Any] = await resp.json() if resp.status in {200, 404} else {'code': 500}
     else:
-        async with session.get(f'{setu_config.apiUrl}/?san={san.result}&num={num.result}') as resp:  # type: ignore
-            res = await resp.json() if resp.status == 200 else {'code': 500}
+        async with session.get(f'{setu_config.apiUrl}/?san={san.result}&num={num.result}') as resp:
+            res: dict[str, Any] = await resp.json() if resp.status == 200 else {'code': 500}
     if res.get('code') == 404 and tag.matched:
         await app.send_message(group, MessageChain(Plain('未找到相应tag的色图')))
     elif res.get('code') == 200:
         forward_nodes = [
             ForwardNode(target=member, time=datetime.now(), message=MessageChain('我有涩图要给大伙康康，请米娜桑坐稳扶好哦嘿嘿嘿~')),
         ]
-        for img in res['data']['imgs']:  # type: ignore
+        for img in res['data']['imgs']:
             forward_nodes.extend(
                 [
                     ForwardNode(
@@ -115,6 +122,6 @@ async def main(app: Ariadne, group: Group, member: Member, tag: RegexResult, san
         msg_id = await app.send_message(group, message)
         await asyncio.sleep(40)
         with contextlib.suppress(UnknownTarget):
-            await app.recall_message(msg_id)  # type: ignore
+            await app.recall_message(msg_id)
     else:
         await app.send_message(group, MessageChain(Plain('慢一点慢一点，别冲辣！')))

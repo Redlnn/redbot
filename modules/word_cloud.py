@@ -23,6 +23,7 @@ from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import (
     ArgResult,
     ArgumentMatch,
+    ParamMatch,
     RegexMatch,
     RegexResult,
     SpacePolicy,
@@ -35,7 +36,6 @@ from graia.ariadne.util.async_exec import cpu_bound
 from graia.saya import Channel
 from graia.saya.builtins.broadcast import ListenerSchema
 from jieba import load_userdict
-from matplotlib import pyplot
 from PIL import Image as Img
 from wordcloud import ImageColorGenerator, WordCloud
 
@@ -79,8 +79,8 @@ config = WordCloudConfig()
         inline_dispatchers=[
             Twilight(
                 RegexMatch(r'[!！.]wordcloud').space(SpacePolicy.FORCE),
-                'wc_target' @ WildcardMatch(),
-                'day_length' @ ArgumentMatch('--day', '-D', default='7'),
+                'wc_target' @ ParamMatch(),
+                'day_length' @ ArgumentMatch('--day', '-D', type=int, default=7),
             )
         ],
         decorators=[
@@ -90,14 +90,10 @@ config = WordCloudConfig()
         ],
     )
 )
-async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult):
+async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult[int]):
     if day_length.result is None:
         return
-    try:
-        day = int(day_length.result)
-    except ValueError:
-        await app.send_message(group, MessageChain(Plain('请输入正确的天数！')), quote=True)
-        return
+    day = day_length.result
     match_result: MessageChain = wc_target.result  # type: ignore # noqa: E275
 
     process_list = generating_list.get()
@@ -208,7 +204,7 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
         return
     rate_limit, remaining_time = ManualInterval.require('wordcloud_member', 30, 2)
     if not rate_limit:
-        await app.send_message(group, MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain(f'本功能跨群冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
     process_list.append(target)
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - (day - 1) * 86400
@@ -236,7 +232,7 @@ async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Im
         return
     rate_limit, remaining_time = ManualInterval.require('wordcloud_group', 300, 1)
     if not rate_limit:
-        await app.send_message(group, MessageChain(Plain(f'冷却中，剩余{remaining_time}秒，请稍后再试')))
+        await app.send_message(group, MessageChain(Plain(f'本功能跨群冷却中，剩余{remaining_time}秒，请稍后再试')))
         return
     process_list.append(group.id)
     target_timestamp = int(time.mktime(datetime.date.today().timetuple())) - (day - 1) * 86400

@@ -10,11 +10,11 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain, Source
 from graia.ariadne.message.parser.twilight import (
+    ParamMatch,
     RegexMatch,
     RegexResult,
     SpacePolicy,
     Twilight,
-    WildcardMatch,
 )
 from graia.ariadne.model import Group, Member
 from graia.saya import Channel
@@ -131,7 +131,7 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
 @channel.use(
     ListenerSchema(
         listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]清除签到信息').space(SpacePolicy.FORCE), 'target' @ WildcardMatch())],
+        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]清除签到信息').space(SpacePolicy.FORCE), 'target' @ ParamMatch())],
         decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
     )
 )

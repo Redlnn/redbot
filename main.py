@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import asyncio
 import pkgutil
+from asyncio import AbstractEventLoop
 from pathlib import Path
 
+from creart import create
 from graia.ariadne.app import Ariadne
 from graia.ariadne.connection.config import (
     HttpClientConfig,
@@ -13,9 +14,6 @@ from graia.ariadne.connection.config import (
 )
 from graia.ariadne.model import LogConfig
 from graia.saya import Saya
-from graia.saya.builtins.broadcast import BroadcastBehaviour
-from graia.scheduler import GraiaScheduler
-from graia.scheduler.saya import GraiaSchedulerBehaviour
 
 from util import GetAiohttpSession, log_level_handler, replace_logger
 from util.config import basic_cfg, modules_cfg
@@ -30,9 +28,12 @@ if __name__ == '__main__':
     if basic_cfg.miraiApiHttp.account == 123456789:
         raise ValueError('在?¿ 填一下配置文件？')
 
-    loop = asyncio.new_event_loop()
+    loop = create(AbstractEventLoop)  # 若不需要 loop.run_until_complete()，则不需要此行
+    # 若 create Saya 则可以省掉 bcc 和 scheduler 的
+    # sche = create(GraiaScheduler)
+    # bcc = create(Broadcast)
+    saya = create(Saya)
 
-    Ariadne.config(loop=loop)
     Ariadne.options['installed_log'] = True
     app = Ariadne(
         connection=config(
@@ -44,12 +45,6 @@ if __name__ == '__main__':
         log_config=LogConfig(log_level_handler),
     )
     app.default_send_action = Safe
-    app.create(GraiaScheduler)
-    saya = app.create(Saya)
-    saya.install_behaviours(
-        app.create(BroadcastBehaviour),
-        app.create(GraiaSchedulerBehaviour),
-    )
 
     replace_logger(level=0 if basic_cfg.debug else 20, richuru=True)
 
@@ -68,6 +63,5 @@ if __name__ == '__main__':
                 saya.require(f'modules.{module.name}')
 
     loop.run_until_complete(Database.init())
-
     Ariadne.launch_blocking()
     loop.run_until_complete(GetAiohttpSession.close_session())

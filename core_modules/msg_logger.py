@@ -80,44 +80,46 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
         inline_dispatchers=[
             Twilight(
                 RegexMatch(r'[!！.]msgcount').space(SpacePolicy.FORCE),
-                'arg_type' @ ArgumentMatch('--type', optional=False),
+                'arg_type' @ ArgumentMatch('--type', type=str, optional=False),
                 'arg_target' @ ArgumentMatch('--target'),
-                'arg_day' @ ArgumentMatch('--day', default='7'),
+                'arg_day' @ ArgumentMatch('--day', type=int, default=7),
             )
         ],
         decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
     )
 )
 async def get_msg_count(
-    app: Ariadne, group: Group, member: Member, arg_type: ArgResult, arg_target: ArgResult, arg_day: ArgResult
+    app: Ariadne,
+    group: Group,
+    member: Member,
+    arg_type: ArgResult[str],
+    arg_target: ArgResult[MessageChain],
+    arg_day: ArgResult[int],
 ):
     if arg_day.result is None or arg_target.result is None:
         return
-    if not arg_day.result.isdigit():
-        await app.send_message(group, MessageChain(Plain('参数错误，天数不全为数字')))
-        return
     today_timestamp = int(time.mktime(datetime.date.today().timetuple()))
-    target_timestamp = today_timestamp - (86400 * (int(arg_day.result) - 1))
+    target_timestamp = today_timestamp - (86400 * (arg_day.result - 1))
     target: int | None = None
     if arg_type.result == 'member':
         if arg_target.matched:
             if arg_target.result.only(At):
                 target = arg_target.result.get_first(At).target
-            elif arg_target.result.isdigit():
-                target = int(arg_target.result)
+            elif arg_target.result.display.isdigit():
+                target = int(arg_target.result.display)
         else:
             target = member.id
     elif arg_type.result == 'group':
         if arg_target.matched:
-            if arg_target.result.isdigit():
-                target = int(arg_target.result)
+            if arg_target.result.display.isdigit():
+                target = int(arg_target.result.display)
         else:
             target = group.id
     else:
         await app.send_message(group, MessageChain(Plain('参数错误，目标类型不存在')))
         return
 
-    if arg_type.result.display == 'member':
+    if arg_type.result == 'member':
         if not target:
             await app.send_message(group, MessageChain(Plain('参数错误，目标不是QQ号或At对象')))
             return
@@ -128,7 +130,7 @@ async def get_msg_count(
                 MessageChain(At(target), Plain(' 还木有说过话，或者是他说话了但没被记录到，又或者他根本不在这个群啊喂')),
             )
             return
-        await app.send_message(group, MessageChain(At(target), Plain(f' 最近{arg_day.result.display}天的发言条数为 {count} 条')))
+        await app.send_message(group, MessageChain(At(target), Plain(f' 最近{arg_day.result}天的发言条数为 {count} 条')))
     else:
         if not target:
             await app.send_message(group, MessageChain(Plain('参数错误，目标不是群号')))
@@ -138,9 +140,9 @@ async def get_msg_count(
             await app.send_message(group, MessageChain(Plain(f'群 {target} 木有过发言')))
             return
         if target == group.id:
-            await app.send_message(group, MessageChain(Plain(f'本群最近{arg_day.result.display}天的发言条数为 {count} 条')))
+            await app.send_message(group, MessageChain(Plain(f'本群最近{arg_day.result}天的发言条数为 {count} 条')))
         else:
-            await app.send_message(group, MessageChain(Plain(f'该群最近{arg_day.result.display}天的发言条数为 {count} 条')))
+            await app.send_message(group, MessageChain(Plain(f'该群最近{arg_day.result}天的发言条数为 {count} 条')))
 
 
 # 获取某人的最后一条发言

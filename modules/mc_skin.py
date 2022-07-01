@@ -64,7 +64,7 @@ RENDER_ADDR = {
         decorators=[GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module)],
     )
 )
-async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult):
+async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult[str]):
     if name.result is None or option.result is None:
         return
     try:
