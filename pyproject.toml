@@ -18,17 +18,15 @@ graia-ariadne = {extras = ["full"], version = "^0.7.15"}
 httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
-lxml = "^4.9.0"
+lxml = "^4.9.1"
 numpy = "^1.23.0"
 orjson = "^3.7.5"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-pillow = "^9.1.1"
+pillow = "^9.2.0"
 psutil = "^5.9.0"
 pydantic = "^1.9.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 python-multipart = "^0.0.5"
-pyyaml = "^6.0"
-richuru = "^0.1.1"
 sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.39"}
 sqlmodel = "^0.0.6"
 uvicorn = {extras = ["standard"], version = "^0.18.2"}
