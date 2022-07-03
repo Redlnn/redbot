@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from sqlalchemy import Column
+from sqlalchemy.types import TEXT
 from sqlmodel import Field, SQLModel
 
 __all__ = ['MsgLog', 'UserInfo']
@@ -13,7 +15,7 @@ class MsgLog(SQLModel, table=True):
     member_id: str = Field(max_length=12, nullable=False, index=True)
     timestamp: int
     msg_id: int
-    msg_chain: str
+    msg_chain: str = Field(sa_column=Column(TEXT, nullable=False), nullable=False)
 
 
 class UserInfo(SQLModel, table=True):
