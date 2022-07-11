@@ -181,7 +181,7 @@ async def add_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
         await app.send_message(group, MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
         return
 
-    await app.send_message(group, await add_whitelist_to_qq(target, mc_id, True), quote=source)
+    await app.send_message(group, (await add_whitelist_to_qq(target, mc_id, True))[0], quote=source)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -424,20 +424,17 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
     if not await is_mc_id(mc_id):
         await app.send_message(group, MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
         return
-    if mc_id.lower() not in member.name.lower():
+    target = member.id
+    result = await add_whitelist_to_qq(target, mc_id, member.permission >= MemberPerm.Administrator)
+    if result[1] and mc_id.lower() in member.name.lower():
         try:
             await app.modify_member_info(member, MemberInfo(name=mc_id))
         except UnknownTarget as e:
-            await app.send_message(
-                group, MessageChain(Plain(f'请保证你的群名片包含你要申请白名单的ID\n（发生内部错误，请联系管理员：{e}）')), quote=source
-            )
-            return
+            await app.send_message(group, MessageChain(Plain(f'请修改你的群名片为你申请白名单的ID\n（发生内部错误，请联系管理员：{e}）')), quote=source)
         else:
-            await app.send_message(group, MessageChain(Plain('由于你的群名片不包含你要申请白名单的ID，已自动为你修改')), quote=source)
-    target = member.id
-    await app.send_message(
-        group, await add_whitelist_to_qq(target, mc_id, member.permission >= MemberPerm.Administrator), quote=source
-    )
+            await app.send_message(group, MessageChain(At(target), Plain(' 呐呐呐，白名单给你!\n已自动为你更改群名片')), quote=source)
+        return
+    await app.send_message(group, result[0], quote=source)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
