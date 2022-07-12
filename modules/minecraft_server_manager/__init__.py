@@ -426,7 +426,7 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
         return
     target = member.id
     result = await add_whitelist_to_qq(target, mc_id, member.permission >= MemberPerm.Administrator)
-    if result[1] and mc_id.lower() in member.name.lower():
+    if result[1] and mc_id.lower() not in member.name.lower():
         try:
             await app.modify_member_info(member, MemberInfo(name=mc_id))
         except UnknownTarget as e:
