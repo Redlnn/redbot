@@ -29,7 +29,7 @@ class Database:
     async def init(cls, debug: bool = False) -> None:
         if basic_cfg.databaseUrl.startswith('sqlite'):
             cls.lock = Semaphore(1)
-        if not basic_cfg.databaseUrl.startswith('sqlite') and not basic_cfg.databaseUrl.startswith('mysql+asyncmy'):
+        if not basic_cfg.databaseUrl.startswith('sqlite+aiosqlite') and not basic_cfg.databaseUrl.startswith('mysql+asyncmy'):
             raise ValueError('不支持的数据库类型')
         cls.engine = create_async_engine(
             basic_cfg.databaseUrl, echo=debug, future=True, pool_pre_ping=True, pool_recycle=180
