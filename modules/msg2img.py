@@ -40,9 +40,8 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
         if waiter_group.id == group.id and waiter_member.id == member.id:
             return waiter_message.include(Plain, At, Image)
 
-    try:
-        answer: MessageChain = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
-    except asyncio.exceptions.TimeoutError:
+    answer = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
+    if answer is None:
         await app.send_message(group, MessageChain(Plain('已超时取消')), quote=source)
         return
 

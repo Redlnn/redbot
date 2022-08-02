@@ -129,22 +129,18 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
             else:
                 await app.send_friend_message(waiter_friend, MessageChain(Plain('请发送同意或拒绝')))
 
-    try:
-        result, admin = await FunctionWaiter(waiter, [FriendMessage]).wait(timeout=600)
-    except asyncio.exceptions.TimeoutError:
+    result = await FunctionWaiter(waiter, [FriendMessage]).wait(timeout=600)
+    if result is None:
         await event.accept()
         await send_to_admin(MessageChain(Plain(f'由于超时未审核，已自动同意 {event.nickname}({event.supplicant}) 的好友请求')))
+        return
+
+    if result[0]:
+        await event.accept()
+        await send_to_admin(MessageChain(Plain(f'Bot 管理员 {result[1]} 已同意 {event.nickname}({event.supplicant}) 的好友请求')))
     else:
-        if result:
-            await event.accept()
-            await send_to_admin(
-                MessageChain(Plain(f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) 的好友请求')),
-            )
-        else:
-            await event.reject('Bot 管理员拒绝了你的好友请求')
-            await send_to_admin(
-                MessageChain(Plain(f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) 的好友请求')),
-            )
+        await event.reject('Bot 管理员拒绝了你的好友请求')
+        await send_to_admin(MessageChain(Plain(f'Bot 管理员 {result[1]} 已拒绝 {event.nickname}({event.supplicant}) 的好友请求')))
 
 
 @channel.use(
@@ -191,9 +187,8 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
             else:
                 await app.send_friend_message(waiter_friend, MessageChain(Plain('请发送同意或拒绝')))
 
-    try:
-        result, admin = await FunctionWaiter(waiter, [FriendMessage]).wait(timeout=600)
-    except asyncio.exceptions.TimeoutError:
+    result = await FunctionWaiter(waiter, [FriendMessage]).wait(timeout=600)
+    if result is None:
         await event.reject('由于 Bot 管理员长时间未审核，已自动拒绝')
         await send_to_admin(
             MessageChain(
@@ -203,30 +198,30 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
                 )
             ),
         )
+        return
+    if result[0]:
+        await event.accept()
+        if event.source_group:
+            perm_cfg.group_whitelist.append(event.source_group)
+            perm_cfg.save()
+        await send_to_admin(
+            MessageChain(
+                Plain(
+                    f'Bot 管理员 {result[1]} 已同意 {event.nickname}({event.supplicant}) '
+                    f'邀请进入群 {event.group_name}({event.source_group}) 请求'
+                )
+            ),
+        )
     else:
-        if result:
-            await event.accept()
-            if event.source_group:
-                perm_cfg.group_whitelist.append(event.source_group)
-                perm_cfg.save()
-            await send_to_admin(
-                MessageChain(
-                    Plain(
-                        f'Bot 管理员 {admin} 已同意 {event.nickname}({event.supplicant}) '
-                        f'邀请进入群 {event.group_name}({event.source_group}) 请求'
-                    )
-                ),
-            )
-        else:
-            await event.reject('Bot 管理员拒绝加入该群')
-            await send_to_admin(
-                MessageChain(
-                    Plain(
-                        f'Bot 管理员 {admin} 已拒绝 {event.nickname}({event.supplicant}) '
-                        f'邀请进入群 {event.group_name}({event.source_group}) 请求'
-                    )
-                ),
-            )
+        await event.reject('Bot 管理员拒绝加入该群')
+        await send_to_admin(
+            MessageChain(
+                Plain(
+                    f'Bot 管理员 {result[1]} 已拒绝 {event.nickname}({event.supplicant}) '
+                    f'邀请进入群 {event.group_name}({event.source_group}) 请求'
+                )
+            ),
+        )
 
 
 @channel.use(ListenerSchema(listening_events=[BotJoinGroupEvent], decorators=[require_disable(channel.module)]))

@@ -253,9 +253,8 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
             else:
                 await app.send_message(group, MessageChain(At(member.id), Plain('请发送 .force 或 .cancel')))
 
-    try:
-        answer: bool = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
-    except asyncio.exceptions.TimeoutError:
+    answer = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=10)
+    if answer is None:
         await app.send_message(group, MessageChain(Plain('已超时取消')))
         return
     if not answer:
@@ -303,9 +302,8 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
             else:
                 await app.send_message(group, MessageChain(At(member.id), Plain('请发送 .force 或 .cancel')))
 
-    try:
-        answer: bool = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=600)
-    except asyncio.exceptions.TimeoutError:
+    answer = await FunctionWaiter(waiter, [GroupMessage]).wait(timeout=600)
+    if answer is None:
         await app.send_message(group, MessageChain(Plain('已超时取消')))
         return
     if not answer:
