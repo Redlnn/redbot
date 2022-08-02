@@ -124,7 +124,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
 
 
 async def b23_url_extract(b23_url: str) -> Literal[False] | str:
-    url = re.search(r'b23.tv(/|\\)[0-9a-zA-Z]+', b23_url)
+    url = re.search(r'b23.tv[/\\]+([0-9a-zA-Z]+)', b23_url)
     if url is None:
         return False
     session = GetAiohttpSession.get_session()
