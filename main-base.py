@@ -3,6 +3,7 @@
 
 import asyncio
 
+from creart import create
 from graia.ariadne.app import Ariadne
 from graia.ariadne.connection.config import (
     HttpClientConfig,
@@ -24,10 +25,7 @@ from util.send_action import Safe
 if basic_cfg.miraiApiHttp.account == 123456789:
     raise ValueError('在?¿ 填一下配置文件？')
 
-loop = asyncio.new_event_loop()
-bcc = Broadcast(loop=loop)
-
-Ariadne.config(loop=loop, broadcast=bcc)
+bcc = create(Broadcast)
 app = Ariadne(
     connection=config(
         basic_cfg.miraiApiHttp.account,  # 你的机器人的 qq 号
@@ -38,7 +36,7 @@ app = Ariadne(
     log_config=LogConfig(log_level_handler),
 )
 app.default_send_action = Safe
-sche = app.create(GraiaScheduler)
+sche = create(GraiaScheduler)
 replace_logger(level=0 if basic_cfg.debug else 20, richuru=True)  # 对logger进行调整，必须放在这里
 
 
