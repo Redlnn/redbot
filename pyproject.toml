@@ -9,7 +9,7 @@ repository = "https://github.com/Redlnn/redbot"
 [tool.poetry.dependencies]
 python = "^3.10"
 aiodns = "^3.0.0"
-aiofile = "^3.7.4"
+aiofile = "^3.8.1"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
 fastapi = "^0.79.0"
