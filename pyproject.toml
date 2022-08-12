@@ -27,7 +27,7 @@ psutil = "^5.9.0"
 pydantic = "^1.9.1"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 python-multipart = "^0.0.5"
-sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.39"}
+sqlalchemy = {extras = ["asyncmy", "aiosqlite"], version = "^1.4.40"}
 sqlmodel = "^0.0.6"
 uvicorn = {extras = ["standard"], version = "^0.18.2"}
 wordcloud = "^1.8.2"
