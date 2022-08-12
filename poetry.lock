@@ -29,17 +29,17 @@ reference = "tuna-tsinghua"
 
 [[package]]
 name = "aiofile"
-version = "3.7.4"
+version = "3.8.1"
 description = "Asynchronous file operations."
 category = "main"
 optional = false
-python-versions = ">3.4.*, <4"
+python-versions = ">=3.7, <4"
 
 [package.dependencies]
 caio = ">=0.9.0,<0.10.0"
 
 [package.extras]
-develop = ["aiomisc", "asynctest", "pytest", "pytest-cov"]
+develop = ["aiomisc", "pytest", "pytest-cov"]
 
 [package.source]
 type = "legacy"
@@ -1818,7 +1818,7 @@ reference = "tuna-tsinghua"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "6312b44cf22d741a8eb43b23fc9c6d96e912a8c7e61c447655904c2884b630c2"
+content-hash = "f61094e7591f4dda410deb66d0995bf34d5412705f73f61e6a04a94531770faf"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -1830,8 +1830,7 @@ aiodns = [
     {file = "aiodns-3.0.0.tar.gz", hash = "sha256:946bdfabe743fceeeb093c8a010f5d1645f708a241be849e17edfb0e49e08cd6"},
 ]
 aiofile = [
-    {file = "aiofile-3.7.4-py3-none-any.whl", hash = "sha256:0e2a524e4714efda47ce8964b13d4da94cf553411f9f6da813df615a4cd73d95"},
-    {file = "aiofile-3.7.4.tar.gz", hash = "sha256:0aefa1d91d000d3a20a515d153db2ebf713076c7c94edf2fca85d3d83316abc5"},
+    {file = "aiofile-3.8.1.tar.gz", hash = "sha256:1623b98d88fbd16bbd2808d010de4e185a700e950ed3f17455dd851aa2455f40"},
 ]
 aiohttp = [
     {file = "aiohttp-3.8.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:1ed0b6477896559f17b9eaeb6d38e07f7f9ffe40b9f0f9627ae8b9926ae260a8"},
