@@ -54,7 +54,9 @@ async def websocket(client: WebSocket):
 
 
 fastapicore.asgi.add_api_route('/', endpoint=root, methods=['GET'])  # type: ignore
-fastapicore.asgi.add_api_route('/login', endpoint=login_for_access_token, response_model=Token, methods=['POST'])  # type: ignore
+fastapicore.asgi.add_api_route(
+    '/login', endpoint=login_for_access_token, response_model=Token, methods=['POST']  # type: ignore
+)
 
 fastapicore.asgi.add_api_websocket_route('/ws', endpoint=websocket)
 

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import asyncio
-
 from creart import create
 from graia.ariadne.app import Ariadne
 from graia.ariadne.connection.config import (

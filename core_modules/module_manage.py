@@ -6,7 +6,6 @@ Bot 管理
 包含 分群配置 插件配置更改 菜单
 """
 
-import asyncio
 import os
 from pathlib import Path
 
@@ -82,7 +81,7 @@ async def menu(app: Ariadne, group: Group):
         # if len(disabled_groups) > 0 只有本群启用 else 全局启用
         else:
             status = '            '
-        msg_send += f'{num}. {status}  {saya.channels[module]._name if saya.channels[module]._name is not None else saya.channels[module].module}\n'
+        msg_send += f'{num}. {status}  {saya.channels[module]._name if saya.channels[module]._name is not None else saya.channels[module].module}\n '
     msg_send += (
         '{hr}\n'
         f'私は {basic_cfg.admin.masterName} の {basic_cfg.botName} です www\n'

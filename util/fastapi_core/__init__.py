@@ -26,13 +26,11 @@ class FastApiCore:
         app: FastAPI | None = None,
         listen_host: str = 'localhost',
         listen_port: int = 8000,
-        log: bool = True,
         **config_kwargs,
     ):
         """初始化 FastApiCore
         Args:
             app (Optional[FastAPI], optional): ASGI 应用. Defaults to None.
-            log (bool, optional): 是否启用连接日志. Defaults to True.
             listen_host (str, optional): 服务地址. Defaults to localhost.
             listen_port (int, optional): 服务端口. Defaults to 8000.
             **config_kwargs (Any, optional): 额外配置参数. Defaults to {}.

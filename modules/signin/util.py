@@ -27,14 +27,14 @@ class Reward(BaseModel):
     """奖励图标"""
 
 
-def get_qlogo(id: int) -> bytes:
+def get_qlogo(qq_id: int) -> bytes:
     """获取QQ头像
     Args:
-        id (int): QQ号
+        qq_id (int): QQ号
     Returns:
         bytes: 图片二进制数据
     """
-    resp = httpx.get(f'http://q1.qlogo.cn/g?b=qq&nk={id}&s=640')
+    resp = httpx.get(f'http://q1.qlogo.cn/g?b=qq&nk={qq_id}&s=640')
     return resp.content
 
 
@@ -154,7 +154,7 @@ def get_signin_img(
     canvas = Image.new('RGB', size, '#FFFFFF')
     draw = ImageDraw.Draw(canvas)
 
-    qlogo = Image.open(BytesIO(get_qlogo(id=qq)))
+    qlogo = Image.open(BytesIO(get_qlogo(qq_id=qq)))
     # qlogo = Image.open('3.jpg')
 
     # 背景
@@ -249,7 +249,7 @@ def get_signin_img(
         print(e)
     else:
         hotokoto = hotokoto.text
-    # hotokoto = '''由于一言目前属于公益性运营，为了保证资源的公平利用和不过度消耗公益资金，我们会定期的屏蔽某些大流量的站点。若您的站点的流量较大，您需要提前联系我们获得授权后再开始使用。对于超过阈值的站点，我们有可'''
+    # hotokoto = '由于一言目前属于公益性运营，为了保证资源的公平利用和不过度消耗公益资金，我们会定期的屏蔽某些大流量的站点。若您的站点的流量较大，您需要提前联系我们获得授权后再开始使用。对于超过阈值的站点，我们有可'
     font_4 = ImageFont.truetype(font_path, size=45)
     draw.text(
         (2 * avatar_xy + avatar_size + 50, avatar_xy + avatar_size + 100),

@@ -31,7 +31,6 @@ from graia.saya import Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
-from util import get_graia_version
 from util.config import basic_cfg
 from util.control import require_disable
 from util.control.permission import perm_cfg

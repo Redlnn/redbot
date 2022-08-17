@@ -32,11 +32,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
 class UnauthorizedException(HTTPException):
-    def __init__(self, detail='Unauthorized', *args, **kwargs):
+    def __init__(self, detail='Unauthorized'):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=detail,
-            headers={'WWW-Authenticate': 'Bearer'},
+            headers={'WWW-Authenticate': 'Bearer'}
         )
 
 
