@@ -208,10 +208,9 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
 @dispatch(Twilight(RegexMatch(r'[!！.]重载模块'), 'module_id' @ RegexMatch(r'\d+')))
 @decorate(GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module))
 async def reload_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
-    # 重载即卸载重新加载，在加载含有 `saya = Saya.current()` 的模块时 100% 报错
     await app.send_message(
         group,
-        MessageChain(At(member.id), Plain(' 重载模块有极大可能会出错且只有重启bot才能恢复，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')),
+        MessageChain(At(member.id), Plain(' 重载模块有极大可能会出错，请问你确实要重载吗？\n强制重载请在10s内发送 .force ，取消请发送 .cancel')),
     )
 
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> bool | None:
@@ -239,7 +238,8 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
         return
     logger.info(f'重载模块: {target_module._name} —— {target_module.module}')
     try:
-        saya.reload_channel(saya.channels[target_module.module])
+        with saya.module_context():
+            saya.reload_channel(saya.channels[target_module.module])
     except Exception as e:
         await app.send_message(group, MessageChain(Plain(f'重载模块 {target_module.module} 时出错')))
         logger.error(f'重载模块 {target_module.module} 时出错')
@@ -254,7 +254,6 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
 async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
     if module_id.result is None:
         return
-    # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
     await app.send_message(
         group,
         MessageChain(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel')),
@@ -283,7 +282,8 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     modules_dir_list = os.listdir(Path(Path.cwd(), 'modules'))
     if f'{target_filename}.py' in modules_dir_list or target_filename in modules_dir_list:
         try:
-            saya.require(f'modules.{target_filename}')
+            with saya.module_context():
+                saya.require(f'modules.{target_filename}')
         except Exception as e:
             await app.send_message(group, MessageChain(Plain(f'加载模块 modules.{target_filename} 时出错')))
             logger.error(f'加载模块 modules.{target_filename} 时出错')
