@@ -23,8 +23,8 @@ from graia.ariadne.message.parser.twilight import (
 )
 from graia.ariadne.model import Group, Member, MemberInfo, MemberPerm
 from graia.ariadne.util.interrupt import FunctionWaiter
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
-from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 from sqlalchemy import select, update
 
@@ -90,7 +90,8 @@ is_init: bool = False
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[require_disable(channel.module)]))
+@listen(ApplicationLaunched)
+@decorate(require_disable(channel.module))
 async def init(app: Ariadne):
     global is_init
     group_list = await app.get_group_list()
@@ -115,13 +116,9 @@ async def init(app: Ariadne):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]mc'))],
-        decorators=[GroupPermission.require()],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]mc')))
+@decorate(GroupPermission.require())
 async def main_menu(app: Ariadne, group: Group):
     if not is_init or group.id not in module_config.activeGroups:
         return
@@ -131,13 +128,9 @@ async def main_menu(app: Ariadne, group: Group):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]wl'))],
-        decorators=[GroupPermission.require()],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]wl')))
+@decorate(GroupPermission.require())
 async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
     if not is_init or group.id not in module_config.activeGroups:
         return
@@ -148,15 +141,9 @@ async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]wl add').space(SpacePolicy.FORCE), WildcardMatch())],
-        decorators=[
-            GroupPermission.require(MemberPerm.Administrator),
-        ],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]wl add').space(SpacePolicy.FORCE), WildcardMatch()))
+@decorate(GroupPermission.require(MemberPerm.Administrator))
 async def add_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
     if not is_init:
         await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
@@ -187,17 +174,9 @@ async def add_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]wl del').space(SpacePolicy.FORCE), WildcardMatch())],
-        decorators=[
-            GroupPermission.require(
-                MemberPerm.Administrator,
-            ),
-        ],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]wl del').space(SpacePolicy.FORCE), WildcardMatch()))
+@decorate(GroupPermission.require(MemberPerm.Administrator))
 async def del_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
     if not is_init:
         return
@@ -247,13 +226,9 @@ async def del_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]wl info').space(SpacePolicy.FORCE), WildcardMatch())],
-        decorators=[GroupPermission.require()],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]wl info').space(SpacePolicy.FORCE), WildcardMatch()))
+@decorate(GroupPermission.require())
 async def info_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
     if not is_init:
         await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
@@ -336,15 +311,9 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]wl clear'))],
-        decorators=[
-            GroupPermission.require(MemberPerm.Administrator),
-        ],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]wl clear')))
+@decorate(GroupPermission.require(MemberPerm.Administrator))
 async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: Source, message: MessageChain):
     if not is_init:
         await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
@@ -401,13 +370,9 @@ async def clear_whitelist(app: Ariadne, group: Group, member: Member, source: So
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]myid').space(SpacePolicy.FORCE), WildcardMatch())],
-        decorators=[GroupPermission.require()],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]myid').space(SpacePolicy.FORCE), WildcardMatch()))
+@decorate(GroupPermission.require())
 async def myid(app: Ariadne, group: Group, member: Member, source: Source, message: MessageChain):
     if not is_init:
         await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
@@ -439,13 +404,9 @@ async def myid(app: Ariadne, group: Group, member: Member, source: Source, messa
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]list'))],
-        decorators=[GroupPermission.require()],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]list')))
+@decorate(GroupPermission.require())
 async def get_player_list(app: Ariadne, group: Group):
     if group.id not in module_config.activeGroups:
         return
@@ -473,15 +434,9 @@ async def get_player_list(app: Ariadne, group: Group):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]run'), WildcardMatch())],
-        decorators=[
-            GroupPermission.require(MemberPerm.Administrator),
-        ],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]run'), WildcardMatch()))
+@decorate(GroupPermission.require(MemberPerm.Administrator))
 async def run_command_list(app: Ariadne, group: Group, message: MessageChain, source: Source):
     if group.id not in module_config.activeGroups:
         return
@@ -511,11 +466,7 @@ async def run_command_list(app: Ariadne, group: Group, message: MessageChain, so
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[MemberJoinEvent],
-    )
-)
+@listen(MemberJoinEvent)
 async def member_join(group: Group, member: Member):
     if not is_init or group.id != module_config.serverGroup:
         return
@@ -531,11 +482,7 @@ async def member_join(group: Group, member: Member):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[MemberLeaveEventQuit],
-    )
-)
+@listen(MemberLeaveEventQuit)
 async def member_leave(app: Ariadne, group: Group, member: Member):
     if not is_init or group.id != module_config.serverGroup:
         return
@@ -551,11 +498,7 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[MemberLeaveEventKick],
-    )
-)
+@listen(MemberLeaveEventKick)
 async def member_kick(app: Ariadne, group: Group, target: Member):
     if not is_init or group.id != module_config.serverGroup:
         return
@@ -573,15 +516,9 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]pardon').space(SpacePolicy.FORCE), WildcardMatch())],
-        decorators=[
-            GroupPermission.require(MemberPerm.Administrator),
-        ],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]pardon').space(SpacePolicy.FORCE), WildcardMatch()))
+@decorate(GroupPermission.require(MemberPerm.Administrator))
 async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Source):
     if not is_init:
         await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
@@ -677,15 +614,9 @@ async def pardon(app: Ariadne, group: Group, message: MessageChain, source: Sour
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]clear_leave_time').space(SpacePolicy.FORCE), WildcardMatch())],
-        decorators=[
-            GroupPermission.require(MemberPerm.Administrator),
-        ],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]clear_leave_time').space(SpacePolicy.FORCE), WildcardMatch()))
+@decorate(GroupPermission.require(MemberPerm.Administrator))
 async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, source: Source):
     if not is_init:
         await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))
@@ -711,15 +642,9 @@ async def clear_leave_time(app: Ariadne, group: Group, message: MessageChain, so
 # ---------------------------------------------------------------------------------------------------------------------
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]ban').space(SpacePolicy.FORCE), WildcardMatch())],
-        decorators=[
-            GroupPermission.require(MemberPerm.Administrator),
-        ],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]ban').space(SpacePolicy.FORCE), WildcardMatch()))
+@decorate(GroupPermission.require(MemberPerm.Administrator))
 async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source):
     if not is_init:
         await app.send_message(group, MessageChain(Plain('数据库初始化中，请稍后再试...')))

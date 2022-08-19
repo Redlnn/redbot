@@ -23,7 +23,7 @@ from graia.ariadne.message.parser.twilight import (
     Twilight,
 )
 from graia.ariadne.model import Group
-from graia.saya.builtins.broadcast import ListenerSchema
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya.channel import Channel
 
 from util import GetAiohttpSession
@@ -47,23 +47,17 @@ RENDER_ADDR = {
 }
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(
-                RegexMatch(r'[.!！]skin').space(SpacePolicy.FORCE),
-                'name' @ RegexMatch(r'[0-9a-zA-Z_]+'),
-                ArgumentMatch(
-                    '--type', '-T', default='head', type=str, choices=['original', 'body', 'head', 'avatar']
-                ).param(
-                    'option'
-                ),  # 为了black格式化后好看所以用了param
-            )
-        ],
-        decorators=[GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module)],
+@listen(GroupMessage)
+@dispatch(
+    Twilight(
+        RegexMatch(r'[.!！]skin').space(SpacePolicy.FORCE),
+        'name' @ RegexMatch(r'[0-9a-zA-Z_]+'),
+        ArgumentMatch('--type', '-T', default='head', type=str, choices=['original', 'body', 'head', 'avatar']).param(
+            'option'
+        ),  # 为了black格式化后好看所以用了param
     )
 )
+@decorate(GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module))
 async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgResult[str]):
     if name.result is None or option.result is None:
         return

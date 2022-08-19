@@ -14,7 +14,7 @@ aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
 fastapi = "^0.79.1"
 gitpython = "^3.1.27"
-graia-ariadne = {extras = ["full"], version = "^0.8.0"}
+graia-ariadne = {extras = ["full"], version = "^0.8.3"}
 httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
@@ -34,12 +34,17 @@ wordcloud = "^1.8.2"
 
 [tool.poetry.dev-dependencies]
 black = ">=22.3.0"
-flake8 = ">=5.0.3"
+flake8 = ">=5.0.4"
 isort = {extras = ["requirements_deprecated_finder"], version = ">=5.10.1"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "pypi-"
+default = false
+url = "https://pypi.org/simple"
 
 [[tool.poetry.source]]
 name = "tuna-tsinghua"

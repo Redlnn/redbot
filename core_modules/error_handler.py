@@ -7,9 +7,9 @@ from io import StringIO
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
+from graia.ariadne.util.saya import listen
 from graia.broadcast.builtin.event import ExceptionThrowed
 from graia.saya import Channel
-from graia.saya.builtins.broadcast.schema import ListenerSchema
 
 from util.config import basic_cfg
 from util.text2img import Text2ImgConfig, async_generate_img
@@ -18,7 +18,7 @@ channel = Channel.current()
 channel.meta['can_disable'] = False
 
 
-@channel.use(ListenerSchema(listening_events=[ExceptionThrowed]))
+@listen(ExceptionThrowed)
 async def except_handle(event: ExceptionThrowed):
     if isinstance(event.event, ExceptionThrowed):
         return
@@ -37,7 +37,7 @@ async def except_handle(event: ExceptionThrowed):
 
 
 # from graia.ariadne.event.message import GroupMessage
-# @channel.use(ListenerSchema(listening_events=[GroupMessage]))
+# @listen(GroupMessage)
 # async def test(msg: MessageChain):
 #     if msg.display == 'error_handler_test':
 #         raise ValueError('test')

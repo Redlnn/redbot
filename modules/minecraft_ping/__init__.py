@@ -17,8 +17,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, RegexResult, Twilight
 from graia.ariadne.model import Group
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
 from util.config import RConfig
@@ -44,13 +44,9 @@ class McServerPingConfig(RConfig):
 ping_cfg = McServerPingConfig()
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]ping'), 'ping_target' @ RegexMatch(r'\S+', optional=True))],
-        decorators=[GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]ping'), 'ping_target' @ RegexMatch(r'\S+', optional=True)))
+@decorate(GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, ping_target: RegexResult):
     if ping_target.matched and ping_target.result is not None:
         server_address = ping_target.result.display.strip()

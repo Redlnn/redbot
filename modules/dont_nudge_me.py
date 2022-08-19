@@ -12,8 +12,8 @@ from graia.ariadne.event.mirai import NudgeEvent
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
+from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.config import basic_cfg
 from util.control import require_disable
@@ -54,7 +54,8 @@ async def get_message(event: NudgeEvent):
     return MessageChain(Image(path=Path(data_path, 'Nudge', os.listdir(Path(data_path, 'Nudge'))[tmp - len(msg)])))
 
 
-@channel.use(ListenerSchema(listening_events=[NudgeEvent], decorators=[require_disable(channel.module)]))
+@listen(NudgeEvent)
+@decorate(require_disable(channel.module))
 async def main(app: Ariadne, event: NudgeEvent):
     if event.target != basic_cfg.miraiApiHttp.account:
         return

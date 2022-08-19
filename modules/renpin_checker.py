@@ -23,8 +23,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Group, Member
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
 from loguru import logger
@@ -93,13 +93,9 @@ lucky_things = {
 }
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](jrrp|抽签)'))],
-        decorators=[GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.](jrrp|抽签)')))
+@decorate(GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, member: Member):
     is_new, renpin, qianwen = await read_data(str(member.id))
     img_bytes = await async_generate_img([qianwen, '{hr}\n悄悄告诉你噢，你今天的人品值是 ' + str(renpin)])
@@ -128,7 +124,7 @@ async def scheduled_del_outdated_data() -> None:
             logger.info(f'发现过期的数据文件 {_}，已删除')
 
 
-@channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
+@listen(ApplicationLaunched)
 async def del_outdated_data() -> None:
     """
     在bot启动时删除过时的数据文件

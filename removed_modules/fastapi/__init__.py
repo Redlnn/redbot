@@ -8,9 +8,9 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched, ApplicationShutdowned
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
+from graia.ariadne.util.saya import listen
 from graia.broadcast import Broadcast
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 from starlette.websockets import WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedOK
@@ -81,22 +81,22 @@ for route in Router.routes:
     )
 
 
-@channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
+@listen(ApplicationLaunched)
 async def on_launch():
     broadcast.set(Ariadne.broadcast)
     await fastapicore.start()
 
 
-@channel.use(ListenerSchema(listening_events=[ApplicationShutdowned]))
+@listen(ApplicationShutdowned)
 async def on_shutdown():
     await fastapicore.stop()
 
 
-@channel.use(ListenerSchema(listening_events=[NewWebsocketClient]))
+@listen(NewWebsocketClient)
 async def new_websocket_client(client: WebSocket):
     await client.send_text('Hello Broadcast')
 
 
-@channel.use(ListenerSchema(listening_events=[GroupMessage]))
+@listen(GroupMessage)
 async def on_msg(message: MessageChain):
     await manager.broadcast(message.display)

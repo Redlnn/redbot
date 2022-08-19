@@ -11,8 +11,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.message.parser.twilight import RegexMatch, SpacePolicy, Twilight
 from graia.ariadne.model import Group
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.control import require_disable
 from util.control.permission import GroupPermission
@@ -30,13 +30,9 @@ async def get_food():
     return random.choice(foods.strip().split('\n'))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]吃啥').space(SpacePolicy.NOSPACE))],
-        decorators=[GroupPermission.require(), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]吃啥').space(SpacePolicy.NOSPACE)))
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, source: Source):
     food = await get_food()
     chain = MessageChain(Plain(f'吃{food}'))

@@ -8,8 +8,8 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.model import Group, Member
+from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.control import require_disable
 from util.control.interval import ManualInterval
@@ -28,11 +28,8 @@ func = {
 }
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage], decorators=[GroupPermission.require(), require_disable(channel.module)]
-    )
-)
+@listen(GroupMessage)
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if not message.has(Plain):
         return

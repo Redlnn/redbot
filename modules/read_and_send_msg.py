@@ -9,8 +9,8 @@ from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Quote
 from graia.ariadne.model import Group, MemberPerm
+from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.control import require_disable
 from util.control.permission import GroupPermission
@@ -26,15 +26,8 @@ channel.meta['description'] = '仅限群管理员使用\n'
 # fmt: on
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        decorators=[
-            GroupPermission.require(MemberPerm.Administrator, send_alert=False),
-            require_disable(channel.module),
-        ],
-    )
-)
+@listen(GroupMessage)
+@decorate(GroupPermission.require(MemberPerm.Administrator, send_alert=False), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, message: MessageChain):
     if re.match(r'^[!！.]读取消息$', message.display):
         try:

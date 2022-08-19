@@ -27,8 +27,8 @@ from graia.ariadne.message.parser.twilight import (
 )
 from graia.ariadne.model import Friend
 from graia.ariadne.util.interrupt import FunctionWaiter
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
 from util.config import basic_cfg
@@ -59,7 +59,7 @@ async def send_to_admin(message: MessageChain):
             await asyncio.sleep(uniform(0.5, 1.5))
 
 
-@channel.use(ListenerSchema(listening_events=[ApplicationLaunched]))
+@listen(ApplicationLaunched)
 async def launch_handler():
     logger.opt(colors=True, raw=True).info(
         f'<cyan>{ASCII_LOGO}</>',
@@ -68,7 +68,8 @@ async def launch_handler():
     logger.success('launched!')
 
 
-# @channel.use(ListenerSchema(listening_events=[ApplicationLaunched], decorators=[require_disable(channel.module)]))
+# @listen(ApplicationLaunched)
+# @decorate(require_disable(channel.module))
 # async def launched(app: Ariadne):
 #     group_list = await app.get_group_list()
 #     quit_groups = 0
@@ -85,7 +86,8 @@ async def launch_handler():
 #         logger.warning('无法向 Bot 主人发送消息，请添加 Bot 为好友')
 
 
-# @channel.use(ListenerSchema(listening_events=[ApplicationShutdowned], decorators=[require_disable(channel.module)]))
+# @listen(ApplicationShutdowned)
+# @decorate(require_disable(channel.module))
 # async def shutdowned(app: Ariadne):
 #     try:
 #         await app.send_friend_message(basic_cfg.admin.masterId, MessageChain(Plain(f'{basic_cfg.botName} 正在关闭')))
@@ -93,7 +95,7 @@ async def launch_handler():
 #         logger.warning('无法向 Bot 主人发送消息，请添加 Bot 为好友')
 
 
-@channel.use(ListenerSchema(listening_events=[NewFriendRequestEvent]))
+@listen(NewFriendRequestEvent)
 async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
     """
     收到好友申请
@@ -142,9 +144,8 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
         await send_to_admin(MessageChain(Plain(f'Bot 管理员 {result[1]} 已拒绝 {event.nickname}({event.supplicant}) 的好友请求')))
 
 
-@channel.use(
-    ListenerSchema(listening_events=[BotInvitedJoinGroupRequestEvent], decorators=[require_disable(channel.module)])
-)
+@listen(BotInvitedJoinGroupRequestEvent)
+@decorate(require_disable(channel.module))
 async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEvent):
     """
     被邀请入群
@@ -223,7 +224,8 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
         )
 
 
-@channel.use(ListenerSchema(listening_events=[BotJoinGroupEvent], decorators=[require_disable(channel.module)]))
+@listen(BotJoinGroupEvent)
+@decorate(require_disable(channel.module))
 async def join_group(app: Ariadne, event: BotJoinGroupEvent):
     """
     收到入群事件
@@ -255,7 +257,8 @@ async def join_group(app: Ariadne, event: BotJoinGroupEvent):
         )
 
 
-@channel.use(ListenerSchema(listening_events=[BotLeaveEventKick], decorators=[require_disable(channel.module)]))
+@listen(BotLeaveEventKick)
+@decorate(require_disable(channel.module))
 async def kick_group(event: BotLeaveEventKick):
     """
     被踢出群
@@ -268,7 +271,8 @@ async def kick_group(event: BotLeaveEventKick):
     )
 
 
-@channel.use(ListenerSchema(listening_events=[BotLeaveEventActive], decorators=[require_disable(channel.module)]))
+@listen(BotLeaveEventActive)
+@decorate(require_disable(channel.module))
 async def leave_group(event: BotLeaveEventActive):
     """
     主动退群
@@ -281,9 +285,8 @@ async def leave_group(event: BotLeaveEventActive):
     )
 
 
-@channel.use(
-    ListenerSchema(listening_events=[BotGroupPermissionChangeEvent], decorators=[require_disable(channel.module)])
-)
+@listen(BotGroupPermissionChangeEvent)
+@decorate(require_disable(channel.module))
 async def permission_change(event: BotGroupPermissionChangeEvent):
     """
     群内权限变动
@@ -293,15 +296,9 @@ async def permission_change(event: BotGroupPermissionChangeEvent):
     )
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[FriendMessage],
-        inline_dispatchers=[
-            Twilight(RegexMatch(r'[.!！]添加群白名单').space(SpacePolicy.FORCE), 'group' @ RegexMatch(r'\d+'))
-        ],
-        decorators=[require_disable(channel.module)],
-    )
-)
+@listen(FriendMessage)
+@dispatch(Twilight(RegexMatch(r'[.!！]添加群白名单').space(SpacePolicy.FORCE), 'group' @ RegexMatch(r'\d+')))
+@decorate(require_disable(channel.module))
 async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexResult):
     """
     添加群白名单
@@ -319,13 +316,9 @@ async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexResult):
     )
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[FriendMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[.!！]添加用户黑名单').space(SpacePolicy.FORCE), 'qq' @ RegexMatch(r'\d+'))],
-        decorators=[require_disable(channel.module)],
-    )
-)
+@listen(FriendMessage)
+@dispatch(Twilight(RegexMatch(r'[.!！]添加用户黑名单').space(SpacePolicy.FORCE), 'qq' @ RegexMatch(r'\d+')))
+@decorate(require_disable(channel.module))
 async def add_qq_blacklist(app: Ariadne, friend: Friend, qq: RegexResult):
     """
     添加用户黑名单

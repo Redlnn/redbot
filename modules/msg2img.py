@@ -8,8 +8,8 @@ from graia.ariadne.message.element import At, AtAll, Image, Plain, Source
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Group, Member
 from graia.ariadne.util.interrupt import FunctionWaiter
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 
 from util import GetAiohttpSession
 from util.control import require_disable
@@ -24,13 +24,9 @@ channel.meta['author'] = ['Red_lnn']
 channel.meta['description'] = '仿锤子便签样式的消息转图片，支持纯文本与图像\n用法：\n  [!！.](文本转图片|消息转图片)'
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](文本转图片|消息转图片)'))],
-        decorators=[GroupPermission.require(), GroupInterval.require(15), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.](文本转图片|消息转图片)')))
+@decorate(GroupPermission.require(), GroupInterval.require(15), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, member: Member, source: Source):
     await app.send_message(group, MessageChain(Plain('请发送要转换的内容')), quote=source)
 

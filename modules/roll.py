@@ -21,8 +21,8 @@ from graia.ariadne.message.parser.twilight import (
     WildcardMatch,
 )
 from graia.ariadne.model import Group
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.control import require_disable
 from util.control.permission import GroupPermission
@@ -34,13 +34,9 @@ channel.meta['author'] = ['Red_lnn']
 channel.meta['description'] = '获得一个随机数\n用法：\n  [!！.]roll {要roll的事件}\n  [!！.](dice|骰子|色子)'
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]roll'), 'target' @ WildcardMatch())],
-        decorators=[GroupPermission.require(), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]roll'), 'target' @ WildcardMatch()))
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
     if target.result is None:
         return
@@ -52,12 +48,8 @@ async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
     await app.send_message(group, chain, quote=source)
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](dice|骰子|色子)'))],
-        decorators=[GroupPermission.require(), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.](dice|骰子|色子)')))
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def dice(app: Ariadne, group: Group):
     await app.send_message(group, MessageChain(Dice(randint(1, 6))))

@@ -33,8 +33,8 @@ from graia.ariadne.message.parser.twilight import (
 )
 from graia.ariadne.model import Group, Member
 from graia.ariadne.util.async_exec import cpu_bound
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 from jieba import load_userdict
 from PIL import Image as Img
 from wordcloud import ImageColorGenerator, WordCloud
@@ -73,23 +73,15 @@ generating_list: ContextVar[list[int | str]] = ContextVar('generating_list', def
 config = WordCloudConfig()
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(
-                RegexMatch(r'[!！.]wordcloud').space(SpacePolicy.FORCE),
-                'wc_target' @ ParamMatch(),
-                'day_length' @ ArgumentMatch('--day', '-D', type=int, default=7),
-            )
-        ],
-        decorators=[
-            GroupPermission.require(),
-            require_disable(channel.module),
-            require_disable('core_modules.msg_loger'),
-        ],
+@listen(GroupMessage)
+@dispatch(
+    Twilight(
+        RegexMatch(r'[!！.]wordcloud').space(SpacePolicy.FORCE),
+        'wc_target' @ ParamMatch(),
+        'day_length' @ ArgumentMatch('--day', '-D', type=int, default=7),
     )
 )
+@decorate(GroupPermission.require(), require_disable(channel.module), require_disable('core_modules.msg_loger'))
 async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult[int]):
     if day_length.result is None:
         return
@@ -134,22 +126,14 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexRe
         return
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(
-                'target' @ UnionMatch('我的', '群').space(SpacePolicy.NOSPACE),
-                'target_time' @ UnionMatch('本周总结', '月度总结', '年度总结'),
-            )
-        ],
-        decorators=[
-            GroupPermission.require(),
-            require_disable(channel.module),
-            require_disable('core_modules.msg_loger'),
-        ],
+@listen(GroupMessage)
+@dispatch(
+    Twilight(
+        'target' @ UnionMatch('我的', '群').space(SpacePolicy.NOSPACE),
+        'target_time' @ UnionMatch('本周总结', '月度总结', '年度总结'),
     )
 )
+@decorate(GroupPermission.require(), require_disable(channel.module), require_disable('core_modules.msg_loger'))
 async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, target_time: RegexResult):
     if target.result is None or target_time.result is None:
         return

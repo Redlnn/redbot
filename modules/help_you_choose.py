@@ -16,8 +16,8 @@ from graia.ariadne.message.parser.twilight import (
     WildcardMatch,
 )
 from graia.ariadne.model import Group
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.config import basic_cfg
 from util.control import require_disable
@@ -30,13 +30,9 @@ channel.meta['author'] = ['Red_lnn']
 channel.meta['description'] = '@bot {主语}<介词>不<介词>{动作}\n如：@bot 我要不要去吃饭\n@bot 我有没有机会'
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight('at' @ ElementMatch(At).space(SpacePolicy.FORCE), 'any' @ WildcardMatch())],
-        decorators=[GroupPermission.require(), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight('at' @ ElementMatch(At).space(SpacePolicy.FORCE), 'any' @ WildcardMatch()))
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, source: Source, message: MessageChain, at: ElementResult):
     if at.result is None or at.result.target != basic_cfg.miraiApiHttp.account:  # type: ignore
         return

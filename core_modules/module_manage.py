@@ -16,8 +16,8 @@ from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, RegexResult, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
 from graia.ariadne.util.interrupt import FunctionWaiter
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
-from graia.saya.builtins.broadcast import ListenerSchema
 from loguru import logger
 
 from util.config import basic_cfg, modules_cfg
@@ -61,13 +61,9 @@ async def get_channel(app: Ariadne, module_id: str, group: Group):
         return saya.channels[module_id]
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](菜单|menu)'))],
-        decorators=[GroupPermission.require(), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.](菜单|menu)')))
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def menu(app: Ariadne, group: Group):
     msg_send = f'-= {basic_cfg.botName} 功能菜单 for {group.id} =-\n-= {group.name} =-\n' '{hr}\nID    模块状态    模块名\n'
     for index, module in enumerate(saya.channels, start=1):
@@ -94,13 +90,9 @@ async def menu(app: Ariadne, group: Group):
     await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]启用'), 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]启用'), 'module_id' @ RegexMatch(r'\d+')))
+@decorate(GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module))
 async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
@@ -123,13 +115,9 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
         await app.send_message(group, MessageChain(Plain('无变化，模块已处于开启状态')))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]禁用'), 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]禁用'), 'module_id' @ RegexMatch(r'\d+')))
+@decorate(GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module))
 async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
@@ -151,13 +139,9 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
         await app.send_message(group, MessageChain(Plain('无变化，模块已处于禁用状态')))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]全局启用'), 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]全局启用'), 'module_id' @ RegexMatch(r'\d+')))
+@decorate(GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module))
 async def global_enable_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
@@ -173,13 +157,9 @@ async def global_enable_module(app: Ariadne, group: Group, module_id: RegexResul
         await app.send_message(group, MessageChain(Plain('模块已全局启用')))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]全局禁用'), 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]全局禁用'), 'module_id' @ RegexMatch(r'\d+')))
+@decorate(GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module))
 async def global_disable_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
@@ -197,13 +177,9 @@ async def global_disable_module(app: Ariadne, group: Group, module_id: RegexResu
         await app.send_message(group, MessageChain(Plain('无变化，模块已处于全局禁用状态')))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]用法'), 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]用法'), 'module_id' @ RegexMatch(r'\d+')))
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
@@ -228,13 +204,9 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
     await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]重载模块'), 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]重载模块'), 'module_id' @ RegexMatch(r'\d+')))
+@decorate(GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module))
 async def reload_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
     # 重载即卸载重新加载，在加载含有 `saya = Saya.current()` 的模块时 100% 报错
     await app.send_message(
@@ -276,19 +248,16 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
         await app.send_message(group, MessageChain(Plain(f'重载模块 {target_module.module} 成功')))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]加载'), 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch('[!！.]加载'), 'module_id' @ RegexMatch('\d+')))
+@decorate(GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module))
 async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
     if module_id.result is None:
         return
     # 在加载含有 `saya = Saya.current()` 的模块时 100% 报错
     await app.send_message(
-        group, MessageChain(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel'))
+        group,
+        MessageChain(At(member.id), Plain(' 加载新模块有极大可能会出错，请问你确实吗？\n强制加载请在10s内发送 .force ，取消请发送 .cancel')),
     )
 
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> bool | None:
@@ -310,10 +279,11 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
         return
     match_result = module_id.result.display
     target_filename = match_result if match_result[-3:] != '.py' else match_result[:-3]
+
     modules_dir_list = os.listdir(Path(Path.cwd(), 'modules'))
-    if target_filename + '.py' in modules_dir_list or target_filename in modules_dir_list:
+    if f'{target_filename}.py' in modules_dir_list or target_filename in modules_dir_list:
         try:
-            saya.require('modules.' + target_filename)
+            saya.require(f'modules.{target_filename}')
         except Exception as e:
             await app.send_message(group, MessageChain(Plain(f'加载模块 modules.{target_filename} 时出错')))
             logger.error(f'加载模块 modules.{target_filename} 时出错')
@@ -326,13 +296,9 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
         await app.send_message(group, MessageChain(Plain(f'模块 modules.{target_filename} 不存在')))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]卸载'), 'module_id' @ RegexMatch(r'\d+'))],
-        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]卸载'), 'module_id' @ RegexMatch(r'\d+')))
+@decorate(GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module))
 async def unload_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return

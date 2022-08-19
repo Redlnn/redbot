@@ -26,8 +26,8 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Group, Member
+from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast.schema import ListenerSchema
 from loguru import logger
 
 from util import GetAiohttpSession
@@ -76,11 +76,8 @@ class VideoInfo:
     favorites: int  # 收藏量
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage], decorators=[GroupPermission.require(), require_disable(channel.module)]
-    )
-)
+@listen(GroupMessage)
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, message: MessageChain, member: Member):
     p = re.compile(f'({avid_re})|({bvid_re})')
     msg_str = message.as_persistent_string()

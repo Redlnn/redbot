@@ -26,8 +26,8 @@ from graia.ariadne.message.parser.twilight import (
     WildcardMatch,
 )
 from graia.ariadne.model import Group, Member, MemberPerm
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 from pydantic import AnyHttpUrl
 
 from util import GetAiohttpSession
@@ -51,21 +51,17 @@ class Setu(RConfig):
 setu_config = Setu()
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(
-                RegexMatch(r'[.!！]'),
-                'tag' @ WildcardMatch(optional=True).space(SpacePolicy.NOSPACE),
-                'header' @ FullMatch('涩图'),
-                'san' @ ArgumentMatch('--san', '-S', type=int, default=2, choices=[2, 4, 6]),  # 最高涩气值，可为2|4|6'
-                'num' @ ArgumentMatch('--num', '-N', type=int, default=1, choices=[1, 2, 3, 4, 5]),  # 涩图数量
-            )
-        ],
-        decorators=[GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module)],
+@listen(GroupMessage)
+@dispatch(
+    Twilight(
+        RegexMatch(r'[.!！]'),
+        'tag' @ WildcardMatch(optional=True).space(SpacePolicy.NOSPACE),
+        'header' @ FullMatch('涩图'),
+        'san' @ ArgumentMatch('--san', '-S', type=int, default=2, choices=[2, 4, 6]),  # 最高涩气值，可为2|4|6'
+        'num' @ ArgumentMatch('--num', '-N', type=int, default=1, choices=[1, 2, 3, 4, 5]),  # 涩图数量
     )
 )
+@decorate(GroupPermission.require(), MemberInterval.require(30), require_disable(channel.module))
 async def main(
     app: Ariadne,
     group: Group,

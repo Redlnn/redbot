@@ -19,8 +19,8 @@ from graia.ariadne.message.parser.twilight import (
     Twilight,
 )
 from graia.ariadne.model import Group, Member, MemberPerm
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 
 from util.control import require_disable
 from util.control.permission import GroupPermission
@@ -47,11 +47,8 @@ channel.meta['description'] = (
 channel.meta['can_disable'] = False
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage], decorators=[GroupPermission.require(), require_disable(channel.module)]
-    )
-)
+@listen(GroupMessage)
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def main(group: Group, member: Member, message: MessageChain, source: Source):
     message = message.copy()
     for ind, elem in enumerate(message[:]):
@@ -74,20 +71,16 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
 
 
 # 获取某人指定天数内的发言条数
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(
-                RegexMatch(r'[!！.]msgcount').space(SpacePolicy.FORCE),
-                'arg_type' @ ArgumentMatch('--type', type=str, optional=False),
-                'arg_target' @ ArgumentMatch('--target'),
-                'arg_day' @ ArgumentMatch('--day', type=int, default=7),
-            )
-        ],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
+@listen(GroupMessage)
+@dispatch(
+    Twilight(
+        RegexMatch(r'[!！.]msgcount').space(SpacePolicy.FORCE),
+        'arg_type' @ ArgumentMatch('--type', type=str, optional=False),
+        'arg_target' @ ArgumentMatch('--target'),
+        'arg_day' @ ArgumentMatch('--day', type=int, default=7),
     )
 )
+@decorate(GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module))
 async def get_msg_count(
     app: Ariadne,
     group: Group,
@@ -146,19 +139,15 @@ async def get_msg_count(
 
 
 # 获取某人的最后一条发言
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[
-            Twilight(
-                RegexMatch(r'[!！.]getlast').space(SpacePolicy.FORCE),
-                'qq' @ RegexMatch(r'\d+', optional=True),
-                'at' @ ElementMatch(At, optional=True),
-            )
-        ],
-        decorators=[GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module)],
+@listen(GroupMessage)
+@dispatch(
+    Twilight(
+        RegexMatch(r'[!！.]getlast').space(SpacePolicy.FORCE),
+        'qq' @ RegexMatch(r'\d+', optional=True),
+        'at' @ ElementMatch(At, optional=True),
     )
 )
+@decorate(GroupPermission.require(MemberPerm.Administrator), require_disable(channel.module))
 async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: RegexResult, at: ElementResult):
     if (qq.result is None and at.result is None) or qq.result is None:
         return

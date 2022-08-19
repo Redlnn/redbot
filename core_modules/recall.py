@@ -17,8 +17,8 @@ from graia.ariadne.exception import (
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Quote, Source
 from graia.ariadne.model import Group, Member
+from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
 
@@ -35,12 +35,8 @@ channel.meta['can_disable'] = False
 lastest_msg: ContextVar[list[dict]] = ContextVar('lastest_msg', default=[])
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        decorators=[require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@decorate(require_disable(channel.module))
 async def recall_message(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if member.id not in basic_cfg.admin.admins:
         return
@@ -72,12 +68,8 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
                     break
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[ActiveGroupMessage],
-        decorators=[require_disable(channel.module)],
-    )
-)
+@listen(ActiveGroupMessage)
+@decorate(require_disable(channel.module))
 async def listener(event: ActiveGroupMessage):
     source = event.message_chain.get_first(Source)
     msg_list = lastest_msg.get()

@@ -13,8 +13,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Group
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 
 from util import get_graia_version
 from util.control import require_disable
@@ -42,13 +42,9 @@ total_memory = '%.1f' % (psutil.virtual_memory().total / 1073741824)
 pid = os.getpid()
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.](status|version)'))],
-        decorators=[GroupPermission.require(), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.](status|version)')))
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def main(app: Ariadne, group: Group):
     p = psutil.Process(pid)
     started_time = time.localtime(p.create_time())

@@ -17,8 +17,8 @@ from graia.ariadne.message.parser.twilight import (
     Twilight,
 )
 from graia.ariadne.model import Group, Member
+from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from graia.saya.builtins.broadcast import ListenerSchema
 from sqlalchemy import select
 
 from util.control import require_disable
@@ -52,13 +52,9 @@ levels = {
 }
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]?签到').space(SpacePolicy.NOSPACE))],
-        decorators=[GroupPermission.require(), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]?签到').space(SpacePolicy.NOSPACE)))
+@decorate(GroupPermission.require(), require_disable(channel.module))
 async def signin(app: Ariadne, group: Group, member: Member, source: Source):
     font_path = Path(root_path, 'fonts', 'OPPOSans-B.ttf')
     result = await Database.select_first(select(UserInfo).where(UserInfo.qq == member.id))
@@ -128,13 +124,9 @@ async def signin(app: Ariadne, group: Group, member: Member, source: Source):
     await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
 
 
-@channel.use(
-    ListenerSchema(
-        listening_events=[GroupMessage],
-        inline_dispatchers=[Twilight(RegexMatch(r'[!！.]清除签到信息').space(SpacePolicy.FORCE), 'target' @ ParamMatch())],
-        decorators=[GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module)],
-    )
-)
+@listen(GroupMessage)
+@dispatch(Twilight(RegexMatch(r'[!！.]清除签到信息').space(SpacePolicy.FORCE), 'target' @ ParamMatch()))
+@decorate(GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module))
 async def clear(app: Ariadne, group: Group, target: RegexResult):
     msg: MessageChain = target.result  # type: ignore
     if msg.only(At):
