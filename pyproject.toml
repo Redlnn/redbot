@@ -12,7 +12,7 @@ aiodns = "^3.0.0"
 aiofile = "^3.8.1"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.1.1"
-fastapi = "^0.79.0"
+fastapi = "^0.79.1"
 gitpython = "^3.1.27"
 graia-ariadne = {extras = ["full"], version = "^0.8.0"}
 httpx = "^0.23.0"
