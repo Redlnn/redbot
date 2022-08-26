@@ -11,7 +11,7 @@ import psutil
 from graia.ariadne.app import Ariadne
 from graia.saya import Saya
 
-from util.fastapi_core.response_model import GeneralResponse
+from util.fastapi_service.response_model import GeneralResponse
 
 saya = Saya.current()
 pid = os.getpid()

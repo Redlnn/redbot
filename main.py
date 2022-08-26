@@ -6,6 +6,7 @@ from asyncio import AbstractEventLoop
 from pathlib import Path
 
 from creart import create
+from graia.amnesia.builtins.uvicorn import UvicornService
 from graia.ariadne.app import Ariadne
 from graia.ariadne.connection.config import (
     HttpClientConfig,
@@ -15,7 +16,12 @@ from graia.ariadne.connection.config import (
 from graia.ariadne.model import LogConfig
 from graia.saya import Saya
 
-from util import GetAiohttpSession, log_level_handler, replace_logger
+from util import (
+    FastAPIStarletteService,
+    GetAiohttpSession,
+    log_level_handler,
+    replace_logger,
+)
 from util.config import basic_cfg, modules_cfg
 from util.database import Database
 from util.path import modules_path, root_path
@@ -45,6 +51,9 @@ if __name__ == '__main__':
         log_config=LogConfig(log_level_handler),
     )
     app.default_send_action = Safe
+
+    app.launch_manager.add_service(FastAPIStarletteService())
+    app.launch_manager.add_service(UvicornService())
 
     replace_logger(level=0 if basic_cfg.debug else 20, richuru=True)
 

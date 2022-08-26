@@ -52,7 +52,7 @@ channel.meta['can_disable'] = False
 async def main(group: Group, member: Member, message: MessageChain, source: Source):
     message = message.copy()
     for ind, elem in enumerate(message[:]):
-        match elem.type:
+        match elem.type:  # type: ignore
             case 'Plain' | 'At' | 'AtAll' | 'Face' | 'MarketFace' | 'Xml' | 'Json' | 'App' | 'Forward':
                 continue
             case 'Poke' | 'Dice' | 'MusicShare' | 'File':

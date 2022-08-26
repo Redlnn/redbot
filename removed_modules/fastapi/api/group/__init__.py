@@ -4,7 +4,7 @@
 from graia.ariadne.app import Ariadne
 from graia.ariadne.model import MemberPerm
 
-from util.fastapi_core.response_model import GeneralResponse
+from util.fastapi_service.response_model import GeneralResponse
 
 perm_map = {
     MemberPerm.Member: '群成语',

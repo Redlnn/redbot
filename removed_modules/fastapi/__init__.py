@@ -3,9 +3,10 @@
 
 from contextvars import ContextVar
 
-from fastapi import WebSocket
+from fastapi import FastAPI, WebSocket
+from graia.amnesia.transport.common.asgi import ASGIHandlerProvider
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.lifecycle import ApplicationLaunched, ApplicationShutdowned
+from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.util.saya import listen
@@ -15,10 +16,9 @@ from loguru import logger
 from starlette.websockets import WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedOK
 
-from util.fastapi_core import FastApiCore
-from util.fastapi_core.event import NewWebsocketClient
-from util.fastapi_core.manager import WsConnectionManager
-from util.fastapi_core.router import Router
+from util.fastapi_service.event import NewWebsocketClient
+from util.fastapi_service.manager import WsConnectionManager
+from util.fastapi_service.router import Router
 
 from .oauth2 import Token, login_for_access_token
 
@@ -29,7 +29,6 @@ channel.meta['author'] = ['Red_lnn']
 channel.meta['can_disable'] = False
 
 manager = WsConnectionManager()
-fastapicore = FastApiCore(listen_host='0.0.0.0')
 broadcast: ContextVar[Broadcast] = ContextVar('bcc')
 
 
@@ -53,43 +52,38 @@ async def websocket(client: WebSocket):
             break
 
 
-fastapicore.asgi.add_api_route('/', endpoint=root, methods=['GET'])  # type: ignore
-fastapicore.asgi.add_api_route(
-    '/login', endpoint=login_for_access_token, response_model=Token, methods=['POST']  # type: ignore
-)
-
-fastapicore.asgi.add_api_websocket_route('/ws', endpoint=websocket)
-
 from .api import routes
-
-for route in routes:
-    fastapicore.asgi.add_api_route(
-        path=route.path,
-        methods=route.methods,
-        endpoint=route.endpoint,
-        response_model=route.response_model,
-        **route.kwargs,
-    )
-
-for route in Router.routes:
-    fastapicore.asgi.add_api_route(
-        path=route.path,
-        methods=route.methods,
-        endpoint=route.endpoint,
-        response_model=route.response_model,
-        **route.kwargs,
-    )
 
 
 @listen(ApplicationLaunched)
-async def on_launch():
-    broadcast.set(Ariadne.broadcast)
-    await fastapicore.start()
+async def init(app: Ariadne):
+    mgr = app.launch_manager
+    asgi: FastAPI = mgr.get_interface(ASGIHandlerProvider).get_asgi_handler()  # type: ignore
 
+    asgi.add_api_route('/', endpoint=root, methods=['GET'])  # type: ignore
+    asgi.add_api_route(
+        '/login', endpoint=login_for_access_token, response_model=Token, methods=['POST']  # type: ignore
+    )
 
-@listen(ApplicationShutdowned)
-async def on_shutdown():
-    await fastapicore.stop()
+    asgi.add_api_websocket_route('/ws', endpoint=websocket)
+
+    for route in routes:
+        asgi.add_api_route(
+            path=route.path,
+            methods=route.methods,
+            endpoint=route.endpoint,
+            response_model=route.response_model,
+            **route.kwargs,
+        )
+
+    for route in Router.routes:
+        asgi.add_api_route(
+            path=route.path,
+            methods=route.methods,
+            endpoint=route.endpoint,
+            response_model=route.response_model,
+            **route.kwargs,
+        )
 
 
 @listen(NewWebsocketClient)

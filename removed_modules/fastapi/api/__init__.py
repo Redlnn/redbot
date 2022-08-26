@@ -3,8 +3,8 @@
 
 from fastapi.responses import ORJSONResponse
 
-from util.fastapi_core.response_model import GeneralResponse
-from util.fastapi_core.router import Route as OriginRoute
+from util.fastapi_service.response_model import GeneralResponse
+from util.fastapi_service.router import Route as OriginRoute
 
 from .group import get_group_list
 from .overview import (
