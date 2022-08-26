@@ -63,7 +63,7 @@ async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgRes
         return
     try:
         session = GetAiohttpSession.get_session()
-        async with session.get(UUID_ADDRESS_STRING.format(name=name.result.display)) as resp:
+        async with session.get(UUID_ADDRESS_STRING.format(name=str(name.result))) as resp:
             uuid = orjson.loads(await resp.text())['id']
         url = RENDER_ADDR[option.result].format(uuid=uuid)
         await app.send_message(group, MessageChain(Image(url=url)))

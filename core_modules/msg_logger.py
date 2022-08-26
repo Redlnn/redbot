@@ -60,7 +60,7 @@ async def main(group: Group, member: Member, message: MessageChain, source: Sour
             case 'Image' | 'FlashImage' | 'Voice':
                 message.__root__[ind] = Plain(elem.as_persistent_string(binary=False))  # type: ignore
             case _:
-                message.__root__[ind] = Plain(elem.display)
+                message.__root__[ind] = Plain(str(elem))
     await log_msg(
         str(group.id),
         str(member.id),
@@ -98,14 +98,14 @@ async def get_msg_count(
         if arg_target.matched:
             if arg_target.result.only(At):
                 target = arg_target.result.get_first(At).target
-            elif arg_target.result.display.isdigit():
-                target = int(arg_target.result.display)
+            elif str(arg_target.result).isdigit():
+                target = int(str(arg_target.result))
         else:
             target = member.id
     elif arg_type.result == 'group':
         if arg_target.matched:
-            if arg_target.result.display.isdigit():
-                target = int(arg_target.result.display)
+            if str(arg_target.result).isdigit():
+                target = int(str(arg_target.result))
         else:
             target = group.id
     else:
@@ -152,7 +152,7 @@ async def get_last_msg(app: Ariadne, group: Group, message: MessageChain, qq: Re
     if (qq.result is None and at.result is None) or qq.result is None:
         return
     if qq.matched and not at.matched:
-        target = int(qq.result.display)
+        target = int(str(qq.result))
     elif at.matched and not qq.matched:
         target = message.get_first(At).target
     else:

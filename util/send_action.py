@@ -45,12 +45,12 @@ class Safe(SendMessageAction):
                 if elem.type == type_:
                     if elem.type == 'at':
                         msg_chain.__root__[ind] = (
-                            Plain(f'@{elem.display}({elem.target})')  # type: ignore
-                            if elem.display is not None
+                            Plain(f'@{elem}({elem.target})')  # type: ignore
+                            if elem.target is not None  # type: ignore
                             else Plain(f'@{elem.target}')  # type: ignore
                         )
                     else:
-                        msg_chain.__root__[ind] = Plain(elem.display)
+                        msg_chain.__root__[ind] = Plain(str(elem))
 
         for element_type in {'AtAll', 'At', 'Poke', 'Forward', 'MultimediaElement'}:
             convert(chain, element_type)

@@ -131,8 +131,8 @@ async def clear(app: Ariadne, group: Group, target: RegexResult):
     msg: MessageChain = target.result  # type: ignore
     if msg.only(At):
         result = await clear_signin(str(msg.get_first(At).target))
-    elif msg.only(Plain) and msg.display.strip().isdigit():
-        result = await clear_signin(msg.display.strip())
+    elif msg.only(Plain) and str(msg).strip().isdigit():
+        result = await clear_signin(str(msg).strip())
     else:
         await app.send_message(group, MessageChain(Plain('参数错误，请输入正确的QQ号或者@某人')))
         return

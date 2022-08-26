@@ -29,7 +29,7 @@ channel.meta['description'] = '仅限群管理员使用\n'
 @listen(GroupMessage)
 @decorate(GroupPermission.require(MemberPerm.Administrator, send_alert=False), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, message: MessageChain):
-    if re.match(r'^[!！.]读取消息$', message.display):
+    if re.match(r'^[!！.]读取消息$', str(message)):
         try:
             quote_id = message.include(Quote).get_first(Quote).id
         except IndexError:
@@ -41,6 +41,6 @@ async def main(app: Ariadne, group: Group, message: MessageChain):
             return
         chain = message_event.message_chain
         await app.send_message(group, MessageChain(Plain(f'消息ID: {quote_id}\n消息内容：{chain.as_persistent_string()}')))
-    elif re.match(r'^[!！.]发送消息 .+', message.display):
-        if msg := re.sub(r'[!！.]发送消息 ', '', message.display, count=1):
+    elif re.match(r'^[!！.]发送消息 .+', str(message)):
+        if msg := re.sub(r'[!！.]发送消息 ', '', str(message), count=1):
             await app.send_message(group, MessageChain.from_persistent_string(msg))

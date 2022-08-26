@@ -42,7 +42,7 @@ channel.meta['description'] = '[!！.]wiki <要搜索的关键词>'
 async def main(app: Ariadne, group: Group, keyword: RegexResult):
     if keyword.result is None:
         return
-    key_word: str = keyword.result.display.strip()
+    key_word: str = str(keyword.result).strip()
     search_parm: str = quote(key_word, encoding='utf-8')
 
     bili_search_url = 'https://searchwiki.biligame.com/mc/index.php?search=' + search_parm

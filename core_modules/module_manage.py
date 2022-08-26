@@ -96,7 +96,7 @@ async def menu(app: Ariadne, group: Group):
 async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
-    target_id = module_id.result.display
+    target_id = str(module_id.result)
     target_module = await get_channel(app, target_id, group)
     if target_module is None:
         await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
@@ -121,7 +121,7 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
 async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
-    target_module = await get_channel(app, module_id.result.display, group)
+    target_module = await get_channel(app, str(module_id.result), group)
     if target_module is None:
         await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
         return
@@ -145,7 +145,7 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
 async def global_enable_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
-    target_module = await get_channel(app, module_id.result.display, group)
+    target_module = await get_channel(app, str(module_id.result), group)
     if target_module is None:
         await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
         return
@@ -163,7 +163,7 @@ async def global_enable_module(app: Ariadne, group: Group, module_id: RegexResul
 async def global_disable_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
-    target_module = await get_channel(app, module_id.result.display, group)
+    target_module = await get_channel(app, str(module_id.result), group)
     if target_module is None:
         await app.send_message(group, MessageChain(Plain('你指定的模块不存在')))
         return
@@ -183,7 +183,7 @@ async def global_disable_module(app: Ariadne, group: Group, module_id: RegexResu
 async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
-    target_module = await get_channel(app, module_id.result.display, group)
+    target_module = await get_channel(app, str(module_id.result), group)
     if target_module is None:
         return
     disabled_groups = (
@@ -215,7 +215,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
 
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> bool | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
-            saying = waiter_message.display
+            saying = str(waiter_message)
             if saying == '.force':
                 return True
             elif saying == '.cancel':
@@ -233,7 +233,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
 
     if module_id.result is None:
         return
-    target_module = await get_channel(app, module_id.result.display, group)
+    target_module = await get_channel(app, str(module_id.result), group)
     if target_module is None:
         return
     logger.info(f'重载模块: {target_module._name} —— {target_module.module}')
@@ -249,7 +249,7 @@ async def reload_module(app: Ariadne, group: Group, member: Member, module_id: R
 
 
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch('[!！.]加载'), 'module_id' @ RegexMatch('\d+')))
+@dispatch(Twilight(RegexMatch('[!！.]加载'), 'module_id' @ RegexMatch(r'\d+')))
 @decorate(GroupPermission.require(GroupPermission.BOT_ADMIN), require_disable(channel.module))
 async def load_module(app: Ariadne, group: Group, member: Member, module_id: RegexResult):
     if module_id.result is None:
@@ -261,7 +261,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
 
     async def waiter(waiter_group: Group, waiter_member: Member, waiter_message: MessageChain) -> bool | None:
         if waiter_group.id == group.id and waiter_member.id == member.id:
-            saying = waiter_message.display
+            saying = str(waiter_message)
             if saying == '.force':
                 return True
             elif saying == '.cancel':
@@ -276,7 +276,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
     if not answer:
         await app.send_message(group, MessageChain(Plain('已取消操作')))
         return
-    match_result = module_id.result.display
+    match_result = str(module_id.result)
     target_filename = match_result if match_result[-3:] != '.py' else match_result[:-3]
 
     modules_dir_list = os.listdir(Path(Path.cwd(), 'modules'))
@@ -302,7 +302,7 @@ async def load_module(app: Ariadne, group: Group, member: Member, module_id: Reg
 async def unload_module(app: Ariadne, group: Group, module_id: RegexResult):
     if module_id.result is None:
         return
-    target_module = await get_channel(app, module_id.result.display, group)
+    target_module = await get_channel(app, str(module_id.result), group)
     if target_module is None:
         return
     if not target_module.meta.get('can_disable', True):

@@ -40,7 +40,7 @@ lastest_msg: ContextVar[list[dict]] = ContextVar('lastest_msg', default=[])
 async def recall_message(app: Ariadne, group: Group, member: Member, message: MessageChain):
     if member.id not in basic_cfg.admin.admins:
         return
-    if message.display == '.撤回最近':
+    if str(message) == '.撤回最近':
         msg_list = lastest_msg.get()
         for item in msg_list:
             with contextlib.suppress(UnknownTarget, InvalidArgument, RemoteException, UnknownError):
@@ -51,7 +51,7 @@ async def recall_message(app: Ariadne, group: Group, member: Member, message: Me
     elif message.has(Quote):
         if message.get_first(Quote).sender_id != basic_cfg.miraiApiHttp.account:
             return
-        if message.include(Plain).merge().display.strip() == '.撤回':
+        if str(message.include(Plain).merge()).strip() == '.撤回':
             target_id = message.get_first(Quote).id
             msg_list = lastest_msg.get()
             for item in msg_list:

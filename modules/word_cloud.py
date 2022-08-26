@@ -95,13 +95,13 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexRe
 
     if len(match_result) == 0:
         return
-    elif match_result.display == 'group':
+    elif str(match_result) == 'group':
         result = await gen_wordcloud_group(app, group, day)
         if result is None:
             return
         else:
             await app.send_message(group, MessageChain(Plain(f'本群最近{day}天的聊天词云 👇\n'), result))
-    elif match_result.display == 'me':
+    elif str(match_result) == 'me':
         result = await gen_wordcloud_member(app, group, member.id, day, True)
         if result is None:
             return
@@ -114,8 +114,8 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexRe
             return
         else:
             await app.send_message(group, MessageChain(at, Plain(f' 最近{day}天的聊天词云 👇\n'), result))
-    elif match_result.display.isdigit():
-        target = int(match_result.display)
+    elif str(match_result).isdigit():
+        target = int(str(match_result))
         result = await gen_wordcloud_member(app, group, target, day, False)
         if result is None:
             return
@@ -138,9 +138,9 @@ async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, 
     if target.result is None or target_time.result is None:
         return
     today = time.localtime(time.time())
-    match target.result.display:
+    match str(target.result):
         case '我的':
-            match target_time.result.display:
+            match str(target_time.result):
                 case '本周总结':
                     result = await gen_wordcloud_member(app, group, member.id, today.tm_wday + 1, True)
                     if result is None:
@@ -160,7 +160,7 @@ async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, 
                     else:
                         await app.send_message(group, MessageChain(Plain(f'你今年的聊天词云 👇\n'), result))
         case '群':
-            match target_time.result.display:
+            match str(target_time.result):
                 case '本周总结':
                     result = await gen_wordcloud_group(app, group, today.tm_wday + 1)
                     if result is None:

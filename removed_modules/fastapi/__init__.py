@@ -99,4 +99,4 @@ async def new_websocket_client(client: WebSocket):
 
 @listen(GroupMessage)
 async def on_msg(message: MessageChain):
-    await manager.broadcast(message.display)
+    await manager.broadcast(str(message))

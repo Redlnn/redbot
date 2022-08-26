@@ -40,11 +40,8 @@ channel.meta['description'] = '获得一个随机数\n用法：\n  [!！.]roll {
 async def roll(app: Ariadne, group: Group, source: Source, target: RegexResult):
     if target.result is None:
         return
-    t = target.result.display.strip()
-    if len(t) != 0:
-        chain = MessageChain(Plain(f'{t}的概率为：{randint(0, 100)}'))
-    else:
-        chain = MessageChain(Plain(str(randint(0, 100))))
+    t = str(target.result).strip()
+    chain = MessageChain(Plain(f'{t}的概率为：{randint(0, 100)}')) if t else MessageChain(Plain(str(randint(0, 100))))
     await app.send_message(group, chain, quote=source)
 
 

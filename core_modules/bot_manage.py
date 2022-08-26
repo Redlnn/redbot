@@ -122,7 +122,7 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
 
     async def waiter(waiter_friend: Friend, waiter_message: MessageChain) -> tuple[bool, int] | None:
         if waiter_friend.id in basic_cfg.admin.admins:
-            saying = waiter_message.display
+            saying = str(waiter_message)
             if saying == '同意':
                 return True, waiter_friend.id
             elif saying == '拒绝':
@@ -179,7 +179,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
 
     async def waiter(waiter_friend: Friend, waiter_message: MessageChain) -> tuple[bool, int] | None:
         if waiter_friend.id in basic_cfg.admin.admins:
-            saying = waiter_message.display
+            saying = str(waiter_message)
             if saying == '同意':
                 return True, waiter_friend.id
             elif saying == '拒绝':
@@ -305,13 +305,13 @@ async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexResult):
     """
     if friend.id not in basic_cfg.admin.admins or group.result is None:
         return
-    perm_cfg.group_whitelist.append(int(group.result.display))
+    perm_cfg.group_whitelist.append(int(str(group.result)))
     perm_cfg.save()
 
     await app.send_friend_message(
         friend,
         MessageChain(
-            Plain(f'已添加群 {group.result.display} 至白名单'),
+            Plain(f'已添加群 {group.result} 至白名单'),
         ),
     )
 
@@ -325,12 +325,12 @@ async def add_qq_blacklist(app: Ariadne, friend: Friend, qq: RegexResult):
     """
     if friend.id not in basic_cfg.admin.admins or qq.result is None:
         return
-    perm_cfg.user_blacklist.append(int(qq.result.display))
+    perm_cfg.user_blacklist.append(int(str(qq.result)))
     perm_cfg.save()
 
     await app.send_friend_message(
         friend,
         MessageChain(
-            Plain(f'已添加用户 {qq.result.display} 至黑名单'),
+            Plain(f'已添加用户 {qq.result} 至黑名单'),
         ),
     )

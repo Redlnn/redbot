@@ -47,13 +47,13 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
     session = GetAiohttpSession.get_session()
     for ind, elem in enumerate(answer[:]):
         if type(elem) in {At, AtAll}:
-            answer.__root__[ind] = Plain(elem.display)
+            answer.__root__[ind] = Plain(str(elem))
     for i in answer[:]:
         if isinstance(i, Image) and i.url:
             async with session.get(i.url) as resp:
                 img_list.append(await resp.content.read())
         else:
-            img_list.append(i.display)
+            img_list.append(str(i))
 
     if img_list:
         img_bytes = await async_generate_img(img_list)

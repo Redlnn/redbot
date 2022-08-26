@@ -34,10 +34,3 @@ async def except_handle(event: ExceptionThrowed):
     ]
     img_bytes = await async_generate_img(msg, Text2ImgConfig(CharsPerLine=80))
     await app.send_friend_message(basic_cfg.admin.masterId, MessageChain(Plain('发生异常\n'), Image(data_bytes=img_bytes)))
-
-
-# from graia.ariadne.event.message import GroupMessage
-# @listen(GroupMessage)
-# async def test(msg: MessageChain):
-#     if msg.display == 'error_handler_test':
-#         raise ValueError('test')
