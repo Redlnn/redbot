@@ -4,9 +4,9 @@
 from typing import TypeVar, overload
 
 from graia.ariadne.app import Ariadne
+from graia.ariadne.event.message import ActiveMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
-from graia.ariadne.model import BotMessage
 from graia.ariadne.typing import SendMessageAction, SendMessageException
 from graia.ariadne.util.send import Ignore
 
@@ -28,11 +28,11 @@ class Safe(SendMessageAction):
 
     @overload
     @staticmethod
-    async def exception(item) -> BotMessage:
+    async def exception(item) -> ActiveMessage:
         ...
 
     @overload
-    async def exception(self, item) -> BotMessage:
+    async def exception(self, item) -> ActiveMessage:
         ...
 
     @staticmethod
@@ -67,11 +67,12 @@ class Safe(SendMessageAction):
         ...
 
     @overload
-    async def exception(self, i):
+    async def exception(s, i):  # sourcery skip: instance-method-first-arg-name
         ...
 
-    async def exception(self: 'Safe' | Exc_T, i: Exc_T | None = None):  # type: ignore # noqa
-        if not isinstance(self, Safe):
-            return await Safe._handle(self, True)
+    async def exception(s: 'Safe' | Exc_T, i: Exc_T | None = None):  # type: ignore # noqa
+        # sourcery skip: instance-method-first-arg-name
+        if not isinstance(s, Safe):
+            return await Safe._handle(s, True)
         if i:
-            return await Safe._handle(i, self.ignore)
+            return await Safe._handle(i, s.ignore)
