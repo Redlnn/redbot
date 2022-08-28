@@ -16,14 +16,13 @@ from graia.ariadne.connection.config import (
 from graia.ariadne.model import LogConfig
 from graia.saya import Saya
 
-from util import (
-    FastAPIStarletteService,
-    GetAiohttpSession,
-    log_level_handler,
-    replace_logger,
-)
+from util import GetAiohttpSession, log_level_handler, replace_logger
 from util.config import basic_cfg, modules_cfg
-from util.database import Database
+from util.launart_services import (
+    CloseAiohttpSessionService,
+    DatabeseService,
+    FastAPIStarletteService,
+)
 from util.path import modules_path, root_path
 from util.send_action import Safe
 
@@ -34,7 +33,7 @@ if __name__ == '__main__':
     if basic_cfg.miraiApiHttp.account == 123456789:
         raise ValueError('在?¿ 填一下配置文件？')
 
-    loop = create(AbstractEventLoop)  # 若不需要 loop.run_until_complete()，则不需要此行
+    # loop = create(AbstractEventLoop)  # 若不需要 loop.run_until_complete()，则不需要此行
     # 若 create Saya 则可以省掉 bcc 和 scheduler 的
     # sche = create(GraiaScheduler)
     # bcc = create(Broadcast)
@@ -52,8 +51,10 @@ if __name__ == '__main__':
     )
     app.default_send_action = Safe
 
+    app.launch_manager.add_service(DatabeseService())
     app.launch_manager.add_service(FastAPIStarletteService())
     app.launch_manager.add_service(UvicornService())
+    app.launch_manager.add_service(CloseAiohttpSessionService())
 
     replace_logger(level=0 if basic_cfg.debug else 20, richuru=True)
 
@@ -71,6 +72,4 @@ if __name__ == '__main__':
                     continue
                 saya.require(f'modules.{module.name}')
 
-    loop.run_until_complete(Database.init())
     Ariadne.launch_blocking()
-    loop.run_until_complete(GetAiohttpSession.close_session())
