@@ -1626,7 +1626,7 @@ reference = "pypi-"
 
 [[package]]
 name = "sqlmodel"
-version = "0.0.6"
+version = "0.0.7"
 description = "SQLModel, SQL databases in Python, designed for simplicity, compatibility, and robustness."
 category = "main"
 optional = false
@@ -1634,7 +1634,7 @@ python-versions = ">=3.6.1,<4.0.0"
 
 [package.dependencies]
 pydantic = ">=1.8.2,<2.0.0"
-SQLAlchemy = ">=1.4.17,<1.5.0"
+SQLAlchemy = ">=1.4.17,<=1.4.41"
 sqlalchemy2-stubs = "*"
 
 [package.source]
@@ -1879,7 +1879,7 @@ reference = "pypi-"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "a98f3afadbf8ede5030c62d1173d236a5eee40d26eb889b2689aacd3ca4efbe7"
+content-hash = "455f9bd0a5624a37564dcdac03787a0c4902e33d2565dc1c26b08334755da0fa"
 
 [metadata.files]
 aio-mc-rcon = [
@@ -3202,8 +3202,8 @@ sqlalchemy2-stubs = [
     {file = "sqlalchemy2_stubs-0.0.2a26-py3-none-any.whl", hash = "sha256:bb2e2cd88cb7c3710c2361ad0b085c86a287667a4a51b640c66711dd83fce82b"},
 ]
 sqlmodel = [
-    {file = "sqlmodel-0.0.6-py3-none-any.whl", hash = "sha256:c5fd8719e09da348cd32ce2a5b6a44f289d3029fa8f1c9818229b6f34f1201b4"},
-    {file = "sqlmodel-0.0.6.tar.gz", hash = "sha256:3b4f966b9671b24d85529d274e6c4dbc7753b468e35d2d6a40bd75cad1f66813"},
+    {file = "sqlmodel-0.0.7-py3-none-any.whl", hash = "sha256:d0ede27b532759df2b8c094ae6dca785ecd8e5a12207a6362a9616131cb8a41d"},
+    {file = "sqlmodel-0.0.7.tar.gz", hash = "sha256:5d4399f95cc9f54332013a0d57a90b3a1fb4cd9ec98f19f473bbf3046dfcd6be"},
 ]
 starlette = [
     {file = "starlette-0.19.1-py3-none-any.whl", hash = "sha256:5a60c5c2d051f3a8eb546136aa0c9399773a689595e099e0877704d5888279bf"},
