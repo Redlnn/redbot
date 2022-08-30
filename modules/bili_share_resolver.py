@@ -18,6 +18,7 @@
 
 import re
 import time
+from base64 import b64encode
 from dataclasses import dataclass
 from typing import Literal
 
@@ -34,7 +35,7 @@ from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
-from util.text2img import async_generate_img
+from util.text2img import md2img
 
 channel = Channel.current()
 
@@ -200,5 +201,5 @@ async def gen_img(data: VideoInfo) -> bytes:
 
     session = GetAiohttpSession.get_session()
     async with session.get(data.cover_url) as resp:
-        img_contents: list[str | bytes] = [await resp.content.read(), info_text]
-    return await async_generate_img(img_contents)
+        img = b64encode(await resp.content.read())
+    return await md2img(f'<img src="base64,{img.decode("utf8")}"></img>\n\n{info_text}')

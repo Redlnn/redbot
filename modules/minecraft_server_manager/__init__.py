@@ -31,7 +31,7 @@ from sqlalchemy import select, update
 from util.control import require_disable
 from util.control.permission import GroupPermission
 from util.database import Database
-from util.text2img import generate_img
+from util.text2img import text2img
 
 from .config import config as module_config
 from .model import PlayerInfo
@@ -81,8 +81,8 @@ wl_menu = (
     '[!！.]wl clear —— 【管理】清空数据库中的白名单信息（服务器端请自行处理）\n'
 )
 
-menu_img_bytes = generate_img([menu])
-wl_menu_img_bytes = generate_img([wl_menu])
+menu_img_bytes: bytes
+wl_menu_img_bytes: bytes
 
 is_init: bool = False
 
@@ -93,7 +93,7 @@ is_init: bool = False
 @listen(ApplicationLaunched)
 @decorate(require_disable(channel.module))
 async def init(app: Ariadne):
-    global is_init
+    global is_init, menu_img_bytes, wl_menu_img_bytes
     group_list = await app.get_group_list()
     groups = [group.id for group in group_list]
     for group in module_config.activeGroups:
@@ -110,6 +110,9 @@ async def init(app: Ariadne):
             logger.info('mc服务器管理数据库初始化完成')
         else:
             logger.error('mc服务器管理数据库初始化失败')
+            raise ValueError('mc服务器管理数据库初始化失败')
+    menu_img_bytes = await text2img(menu)
+    wl_menu_img_bytes = await text2img(wl_menu)
     is_init = True
 
 
@@ -175,12 +178,10 @@ async def add_whitelist(app: Ariadne, group: Group, source: Source, message: Mes
 
 
 @listen(GroupMessage)
-@dispatch(Twilight(RegexMatch(r'[!！.]wl del').space(SpacePolicy.FORCE), WildcardMatch()))
+@dispatch(Twilight(RegexMatch('[!！.]wl del').space(SpacePolicy.FORCE), WildcardMatch()))
 @decorate(GroupPermission.require(MemberPerm.Administrator))
 async def del_whitelist(app: Ariadne, group: Group, source: Source, message: MessageChain):
-    if not is_init:
-        return
-    elif group.id not in module_config.activeGroups:
+    if not is_init or group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
 

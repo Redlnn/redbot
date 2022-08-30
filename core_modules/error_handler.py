@@ -12,7 +12,7 @@ from graia.broadcast.builtin.event import ExceptionThrowed
 from graia.saya import Channel
 
 from util.config import basic_cfg
-from util.text2img import Text2ImgConfig, async_generate_img
+from util.text2img import text2img
 
 channel = Channel.current()
 channel.meta['can_disable'] = False
@@ -26,11 +26,11 @@ async def except_handle(event: ExceptionThrowed):
     with StringIO() as fp:
         traceback.print_tb(event.exception.__traceback__, file=fp)
         tb = fp.getvalue()
-    msg = [
+    msg = (
         f'异常事件：\n{str(event.event)}\n'
         f'异常类型：\n{type(event.exception)}\n'
         f'异常内容：\n{str(event.exception)}\n'
         f'异常追踪：\n{tb}'
-    ]
-    img_bytes = await async_generate_img(msg, Text2ImgConfig(CharsPerLine=80))
+    )
+    img_bytes = await text2img(msg, 1500)
     await app.send_friend_message(basic_cfg.admin.masterId, MessageChain(Plain('发生异常\n'), Image(data_bytes=img_bytes)))

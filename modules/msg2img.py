@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from base64 import b64encode
+
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -15,7 +17,7 @@ from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.interval import GroupInterval
 from util.control.permission import GroupPermission
-from util.text2img import async_generate_img
+from util.text2img import md2img
 
 channel = Channel.current()
 
@@ -43,7 +45,7 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
         await app.send_message(group, MessageChain(Plain('你所发送的消息的类型错误')), quote=source)
         return
 
-    img_list: list[str | bytes] = []
+    content = ''
     session = GetAiohttpSession.get_session()
     for ind, elem in enumerate(answer[:]):
         if type(elem) in {At, AtAll}:
@@ -51,10 +53,11 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
     for i in answer[:]:
         if isinstance(i, Image) and i.url:
             async with session.get(i.url) as resp:
-                img_list.append(await resp.content.read())
+                img = b64encode(await resp.content.read())
+            content += f'\n\n<img src="base64,{img.decode("utf8")}"></img>\n\n'
         else:
-            img_list.append(str(i))
+            content += str(i)
 
-    if img_list:
-        img_bytes = await async_generate_img(img_list)
+    if content:
+        img_bytes = await md2img(content)
         await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))

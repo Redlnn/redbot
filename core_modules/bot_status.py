@@ -19,7 +19,7 @@ from graia.saya import Channel
 from util import get_graia_version
 from util.control import require_disable
 from util.control.permission import GroupPermission
-from util.text2img import async_generate_img
+from util.text2img import text2img
 
 channel = Channel.current()
 
@@ -76,5 +76,4 @@ async def main(app: Ariadne, group: Group):
     if community:
         msg_send += ''.join(f'  graiax-{name}：{version}\n' for name, version in community)
 
-    img_bytes = await async_generate_img([msg_send.rstrip()])
-    await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
+    await app.send_message(group, MessageChain(Image(data_bytes=await text2img(msg_send.rstrip()))))
