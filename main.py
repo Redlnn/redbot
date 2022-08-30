@@ -16,13 +16,10 @@ from graia.ariadne.connection.config import (
 from graia.ariadne.model import LogConfig
 from graia.saya import Saya
 
-from util import GetAiohttpSession, log_level_handler, replace_logger
+from util import log_level_handler, replace_logger
 from util.config import basic_cfg, modules_cfg
-from util.launart_services import (
-    CloseAiohttpSessionService,
-    DatabeseService,
-    FastAPIStarletteService,
-)
+from util.fastapi_service import FastAPIStarletteService
+from util.launart_services import CloseAiohttpSessionService, DatabeseService
 from util.path import modules_path, root_path
 from util.send_action import Safe
 

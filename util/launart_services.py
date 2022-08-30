@@ -3,27 +3,11 @@
 
 from typing import Literal
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from graia.amnesia.builtins.starlette import StarletteService
 from launart import ExportInterface, Launchable
 from loguru import logger
 
 from util import GetAiohttpSession
 from util.database import Database
-
-
-class FastAPIStarletteService(StarletteService):
-    def __init__(self, fastapi: FastAPI | None = None) -> None:
-        self.fastapi = fastapi or FastAPI()
-        self.fastapi.add_middleware(
-            CORSMiddleware,
-            allow_origins=['*'],
-            allow_credentials=True,
-            allow_methods=['*'],
-            allow_headers=['*'],
-        )
-        super().__init__(self.fastapi)
 
 
 class DatabeseService(Launchable):
