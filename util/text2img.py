@@ -38,12 +38,13 @@ class GetPage:
         await self.context.close()
 
 
-async def text2img(text: str, width: int = 1000) -> bytes:
+async def text2img(text: str, width: int = 800) -> bytes:
     async with async_open(Path(__file__).parent / 'browser' / 'template' / 'text2img.min.html') as f:
         template: str = await f.read()
-    template = template.replace('{{content}}', text)
-    template = template.replace('{{extra1}}', '由 Redbot 生成')
-    text = template.replace('{{extra2}}', datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
+    text = template.replace('{{content}}', text)
+    text = text.replace('{{extra1}}', '由 Redbot 生成')
+    text = text.replace('{{extra2}}', datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
+    text = text.replace('\n', '</p><p>')
 
     async with GetPage(width) as page:
         await page.set_content(text)
@@ -51,14 +52,14 @@ async def text2img(text: str, width: int = 1000) -> bytes:
     return img
 
 
-async def md2img(md: str, width: int = 1000) -> bytes:
+async def md2img(md: str, width: int = 800) -> bytes:
     md = markdown(md)
 
     async with async_open(Path(__file__).parent / 'browser' / 'template' / 'text2img.min.html') as f:
         template: str = await f.read()
-    template = template.replace('{{content}}', md)
-    template = template.replace('{{extra1}}', '由 Redbot 生成')
-    md = template.replace('{{extra2}}', datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
+    md = template.replace('{{content}}', md)
+    md = md.replace('{{extra1}}', '由 Redbot 生成')
+    md = md.replace('{{extra2}}', datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
 
     async with GetPage(width) as page:
         await page.set_content(md)
