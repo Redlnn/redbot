@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     app.launch_manager.add_service(DatabeseService())
     app.launch_manager.add_service(FastAPIStarletteService())
-    app.launch_manager.add_service(UvicornService())
+    # app.launch_manager.add_service(UvicornService())
     app.launch_manager.add_service(CloseAiohttpSessionService())
     app.launch_manager.add_service(ChromiumBrowserService())
 
