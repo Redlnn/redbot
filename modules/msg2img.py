@@ -54,7 +54,7 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
         if isinstance(i, Image) and i.url:
             async with session.get(i.url) as resp:
                 img = b64encode(await resp.content.read())
-            content += f'\n\n<img src="base64,{img.decode("utf8")}"></img>\n\n'
+            content += f'\n\n<img src="data:image;base64,{img.decode("utf8")}"></img>\n\n'
         else:
             content += str(i)
 

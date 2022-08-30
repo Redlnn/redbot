@@ -6,7 +6,6 @@ from pathlib import Path
 
 from aiofile import async_open
 from graia.ariadne.app import Ariadne
-from jinja2 import Template
 from launart import Launart
 from markdown import markdown
 from playwright.async_api import BrowserContext, Page
@@ -63,7 +62,7 @@ async def md2img(md: str, width: int = 800) -> bytes:
 
     async with GetPage(width) as page:
         await page.set_content(md)
-        img = await page.screenshot(type='jpeg', path='1.jpg', quality=80, full_page=True, scale='device')
+        img = await page.screenshot(type='jpeg', quality=80, full_page=True, scale='device')
     return img
 
 
