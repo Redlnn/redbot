@@ -117,8 +117,8 @@ async def scheduled_del_outdated_data() -> None:
     """
     for _ in data_path.iterdir():
         if (
-            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', str(_))
-            and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json'
+            re.search('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', str(_))
+            and _.parts[-1] != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json'
         ):
             Path(data_path, _).unlink()
             logger.info(f'发现过期的数据文件 {_}，已删除')
@@ -131,8 +131,8 @@ async def del_outdated_data() -> None:
     """
     for _ in data_path.iterdir():
         if (
-            re.match('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', str(_))
-            and _ != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json'
+            re.search('jrrp_20[0-9]{2}-[0-9]{2}-[0-9]{2}.json', str(_))
+            and _.parts[-1] != f'jrrp_{datetime.datetime.now().strftime("%Y-%m-%d")}.json'
         ):
             Path(data_path, _).unlink()
             logger.info(f'发现过期的数据文件 {_}，已删除')
