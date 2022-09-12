@@ -17,7 +17,7 @@ httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
 lxml = "^4.9.1"
-numpy = "^1.23.2"
+numpy = "^1.23.3"
 orjson = "^3.8.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pillow = "^9.2.0"
