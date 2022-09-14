@@ -29,11 +29,11 @@ async def except_handle(event: ExceptionThrowed):
     msg = f'''\
 ## 异常事件：
 
-{str(event.event)}
+{str(event.event.__repr__())}
 
 ## 异常类型：
 
-{type(event.exception)}
+`{type(event.exception)}`
 
 ## 异常内容：
 
@@ -41,6 +41,18 @@ async def except_handle(event: ExceptionThrowed):
 
 ## 异常追踪：
 
-{tb}'''
+```py
+{tb}
+```
+'''
     img_bytes = await md2img(msg, 1500)
     await app.send_friend_message(basic_cfg.admin.masterId, MessageChain(Plain('发生异常\n'), Image(data_bytes=img_bytes)))
+
+
+# from graia.ariadne.event.message import GroupMessage
+
+
+# @listen(GroupMessage)
+# async def error_handler_test(msg: MessageChain):
+#     if str(msg) == '.错误捕捉测试':
+#         raise ValueError('错误捕捉测试')

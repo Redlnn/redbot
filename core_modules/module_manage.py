@@ -80,7 +80,7 @@ for {group.name}({group.id})
         global_disabled = module in modules_cfg.globalDisabledModules
         disabled_groups = modules_cfg.disabledGroups[module] if module in modules_cfg.disabledGroups else []
         num = f' {index}' if index < 10 else str(index)
-        status = '❌' if global_disabled or group.id in disabled_groups else '✔'
+        status = '❌' if global_disabled or group.id in disabled_groups else '✔️'
         md += f'| {num} | {status} | {saya.channels[module]._name if saya.channels[module]._name is not None else saya.channels[module].module} |\n'
     md += f'''
 ---
