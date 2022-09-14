@@ -18,7 +18,6 @@
 
 import re
 import time
-from base64 import b64encode
 from dataclasses import dataclass
 from typing import Literal
 
@@ -181,25 +180,23 @@ async def gen_img(data: VideoInfo) -> bytes:
         video_length = f'{video_length_h}:{video_length_m}:{video_length_s}'
 
     info_text = (
-        f'BV号：{data.bvid}\n'
-        f'av号：av{data.avid}\n'
-        f'标题：{data.title}\n'
-        f'UP主：{data.up_name}\n'
-        f'时长：{video_length}\n'
-        f'发布时间：{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data.pub_timestamp))}\n'
+        f'BV号：{data.bvid}  \n'
+        f'av号：av{data.avid}  \n'
+        f'标题：{data.title}  \n'
+        f'UP主：{data.up_name}  \n'
+        f'时长：{video_length}  \n'
+        f'发布时间：{time.strftime("%Y-%m-%d %P %I:%M:%S", time.localtime(data.pub_timestamp))}  \n'
     )
 
     if data.sub_count > 1:
-        info_text += f'分P数量：{data.sub_count}\n'
+        info_text += f'分P数量：{data.sub_count}  \n'
 
+    desc = data.desc.strip().replace('\n', '<br/>')
     info_text += (
-        f'{math(data.views)}播放 {math(data.danmu)}弹幕\n'
+        f'{math(data.views)}播放 {math(data.danmu)}弹幕  \n'
         f'{math(data.likes)}点赞 {math(data.coins)}投币 {math(data.favorites)}收藏\n'
-        '简介：\n{hr}\n'
-        f'{data.desc}'
+        '\n---\n'
+        f'### 简介\n{desc}'
     )
 
-    session = GetAiohttpSession.get_session()
-    async with session.get(data.cover_url) as resp:
-        img = b64encode(await resp.content.read())
-    return await md2img(f'<img src="base64,{img.decode("utf8")}"></img>\n\n{info_text}')
+    return await md2img(f'![]({data.cover_url})\n\n{info_text}', extra_css='img{display:block;text-align:center}')

@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import pkgutil
-from asyncio import AbstractEventLoop
 from pathlib import Path
 
 from creart import create
-from graia.amnesia.builtins.uvicorn import UvicornService
+
+# from graia.amnesia.builtins.uvicorn import UvicornService
 from graia.ariadne.app import Ariadne
 from graia.ariadne.connection.config import (
     HttpClientConfig,
@@ -15,12 +15,13 @@ from graia.ariadne.connection.config import (
 )
 from graia.ariadne.model import LogConfig
 from graia.saya import Saya
+from graiax.playwright import PlaywrightService
 
 from util import log_level_handler, replace_logger
-from util.browser import ChromiumBrowserService
 from util.config import basic_cfg, modules_cfg
-from util.fastapi_service import FastAPIStarletteService
-from util.launart_services import CloseAiohttpSessionService, DatabeseService
+
+# from util.fastapi_service import FastAPIStarletteService
+from util.launart_services import CloseAiohttpSessionService, DatabaseService
 from util.path import modules_path, root_path
 from util.send_action import Safe
 
@@ -49,13 +50,13 @@ if __name__ == '__main__':
     )
     app.default_send_action = Safe
 
-    app.launch_manager.add_service(DatabeseService())
-    app.launch_manager.add_service(FastAPIStarletteService())
+    app.launch_manager.add_service(DatabaseService())
+    # app.launch_manager.add_service(FastAPIStarletteService())
     # app.launch_manager.add_service(UvicornService())
     app.launch_manager.add_service(CloseAiohttpSessionService())
-    app.launch_manager.add_service(ChromiumBrowserService())
+    app.launch_manager.add_service(PlaywrightService())
 
-    replace_logger(level=0 if basic_cfg.debug else 20, richuru=True)
+    replace_logger(level=0 if basic_cfg.debug else 20, richuru=False)
 
     with saya.module_context():
         core_modules_path = Path(root_path, 'core_modules')

@@ -23,7 +23,7 @@ from loguru import logger
 from util.config import basic_cfg, modules_cfg
 from util.control import require_disable
 from util.control.permission import GroupPermission
-from util.text2img import md2img, text2img
+from util.text2img import md2img
 
 saya = Saya.current()
 channel = Channel.current()
@@ -65,29 +65,34 @@ async def get_channel(app: Ariadne, module_id: str, group: Group):
 @dispatch(Twilight(RegexMatch(r'[!！.](菜单|menu)')))
 @decorate(GroupPermission.require(), require_disable(channel.module))
 async def menu(app: Ariadne, group: Group):
-    msg_send = f'-= {basic_cfg.botName} 功能菜单 for {group.id} =-\n-= {group.name} =-\n' '{hr}\nID    模块状态    模块名\n'
+    md = f'''\
+<div align="center">
+
+# {basic_cfg.botName} 功能菜单
+
+for {group.name}({group.id})
+
+| ID  | 模块状态 | 模块名 |
+| --- | --- | --- |
+'''
+
     for index, module in enumerate(saya.channels, start=1):
         global_disabled = module in modules_cfg.globalDisabledModules
         disabled_groups = modules_cfg.disabledGroups[module] if module in modules_cfg.disabledGroups else []
         num = f' {index}' if index < 10 else str(index)
-        if global_disabled:
-            status = '【全局禁用】'
-        elif group.id in disabled_groups:
-            status = '  【禁用】  '
-        # if len(disabled_groups) > 0 只有本群启用 else 全局启用
-        else:
-            status = '            '
-        msg_send += f'{num}. {status}  {saya.channels[module]._name if saya.channels[module]._name is not None else saya.channels[module].module}\n '
-    msg_send += (
-        '\n\n<hr />\n\n'
-        f'私は {basic_cfg.admin.masterName} の {basic_cfg.botName} です www  '
-        '群管理员要想配置模块开关请发送【.启用/禁用 <id>】  '
-        '要想查询某模块的用法和介绍请发送【.用法 <id>】  '
-        '若无法触发，请检查前缀符号是否正确如！与!  '
-        '或是命令中有无多余空格，除特别说明外均不需要 @bot'
-    )
-    img_bytes = await md2img(msg_send)
-    await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
+        status = '❌' if global_disabled or group.id in disabled_groups else '✔'
+        md += f'| {num} | {status} | {saya.channels[module]._name if saya.channels[module]._name is not None else saya.channels[module].module} |\n'
+    md += f'''
+---
+
+私は {basic_cfg.admin.masterName} の {basic_cfg.botName} です www  
+群管理员要想配置模块开关请发送【.启用/禁用 <id>】  
+要想查询某模块的用法和介绍请发送【.用法 <id>】  
+若无法触发，请检查前缀符号是否正确如！与!  
+或是命令中有无多余空格，除特别说明外均不需要 @bot
+
+</div>'''
+    await app.send_message(group, MessageChain(Image(data_bytes=await md2img(md))))
 
 
 @listen(GroupMessage)
@@ -197,10 +202,10 @@ async def get_usage(app: Ariadne, group: Group, module_id: RegexResult):
         for author in target_module._author:
             authors += f'{author}, '
         authors = authors.rstrip(', ')
-    msg_send = f'{target_module._name}{f" By {authors}" if authors else ""}\n\n'
+    md = f'## {target_module._name}{f" By {authors}" if authors else ""}\n\n'
     if target_module._description:
-        msg_send += '>>>>>>>>>>>>>>>>>>>>>> 描述 <<<<<<<<<<<<<<<<<<<<<<\n' + target_module._description
-    img_bytes = await text2img(msg_send)
+        md += '### 描述\n' + target_module._description
+    img_bytes = await md2img(md)
     await app.send_message(group, MessageChain(Image(data_bytes=img_bytes)))
 
 

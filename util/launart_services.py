@@ -10,7 +10,7 @@ from util import GetAiohttpSession
 from util.database import Database
 
 
-class DatabeseService(Launchable):
+class DatabaseService(Launchable):
     id: str = 'database/init'
 
     @property
@@ -39,5 +39,5 @@ class CloseAiohttpSessionService(Launchable):
 
     async def launch(self, _):
         async with self.stage('cleanup'):
-            print('Closing aiohttp session...')
+            logger.info('Closing aiohttp session...')
             await GetAiohttpSession.close_session()

@@ -261,7 +261,7 @@ def get_signin_img(
 
     # footer
     font_5 = ImageFont.truetype(font_path, size=15)
-    draw.text((15, size[1] - 55), f'redbot ©2022\n{get_time()}', font=font_5, fill='#cccccc')
+    draw.text((15, size[1] - 55), f'RedBot ©2022\n{get_time()}', font=font_5, fill='#cccccc')
 
     # canvas.show()  # 直接展示生成结果（保存为临时文件）
 

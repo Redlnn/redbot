@@ -31,7 +31,7 @@ from sqlalchemy import select, update
 from util.control import require_disable
 from util.control.permission import GroupPermission
 from util.database import Database
-from util.text2img import text2img
+from util.text2img import md2img
 
 from .config import config as module_config
 from .model import PlayerInfo
@@ -58,7 +58,7 @@ channel.meta['author'] = ['Red_lnn']
 channel.meta['description'] = '（自用，仅特殊群启用）提供白名单管理、在线列表查询、服务器命令执行功能\n用法：\n  [!！.]mc'
 
 menu = (
-    '-----------服务器管理菜单-----------\n'
+    '## 服务器管理菜单\n'
     ' - [!！.]myid <mc正版id> —— 自助申请白名单\n'
     ' - [!！.]list —— 获取服务器在线列表\n'
     ' - [!！.]wl —— 白名单相关的菜单\n'
@@ -69,7 +69,7 @@ menu = (
 )
 
 wl_menu = (
-    '-----------白名单管理菜单-----------\n'
+    '## 白名单管理菜单\n'
     '[!！.]wl add <QQ号或@QQ> <游戏ID> —— 【管理】为某个ID绑定QQ并给予白名单\n'
     '[!！.]wl del @QQ —— 【管理】删除某个QQ的所有白名单\n'
     '[!！.]wl del qq <QQ号> —— 【管理】删除某个QQ的所有白名单\n'
@@ -111,8 +111,8 @@ async def init(app: Ariadne):
         else:
             logger.error('mc服务器管理数据库初始化失败')
             raise ValueError('mc服务器管理数据库初始化失败')
-    menu_img_bytes = await text2img(menu)
-    wl_menu_img_bytes = await text2img(wl_menu)
+    menu_img_bytes = await md2img(menu)
+    wl_menu_img_bytes = await md2img(wl_menu)
     is_init = True
 
 

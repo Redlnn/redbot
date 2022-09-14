@@ -2,69 +2,37 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-from pathlib import Path
 
-from aiofile import async_open
-from graia.ariadne.app import Ariadne
-from launart import Launart
-from markdown import markdown
-from playwright.async_api import BrowserContext, Page
+from graiax.text2img.playwright import html2img as _html2img
+from graiax.text2img.playwright.builtin import md2img as _md2img
+from graiax.text2img.playwright.builtin import text2img as _text2img
+from graiax.text2img.playwright.types import NewPageParms, ScreenshotParms
 
-from util.browser import ChromiumBrowserProvider
-
-
-class GetPage:
-    launart: Launart
-    context: BrowserContext
-    page: Page
-    width: int
-
-    def __init__(self, width):
-        ariadne = Ariadne.current()
-        self.launart = ariadne.launch_manager
-        self.width = width
-
-    async def __aenter__(self):
-        browser = await self.launart.get_interface(ChromiumBrowserProvider).get()
-        self.context = await browser.new_context(
-            viewport={'width': int(self.width / 1.5), 'height': 10}, device_scale_factor=1.5
-        )
-        self.page = await self.context.new_page()
-        return self.page
-
-    async def __aexit__(self, type, value, trace):
-        await self.page.close()
-        await self.context.close()
+footer = (
+    '<style>.footer{box-sizing:border-box;position:absolute;left:0;width:100%;background:#eee;'
+    'padding:50px 40px;margin-top:50px;font-size:0.85rem;color:#6b6b6b;}'
+    '.footer p{margin:5px auto;}</style>'
+    f'<div class="footer"><p>由 RedBot 生成</p><p>{datetime.now().strftime("%Y/%m/%d %P %I:%M:%S")}</p></div>'
+)
 
 
 async def text2img(text: str, width: int = 800) -> bytes:
-    async with async_open(Path(__file__).parent / 'browser' / 'template' / 'text2img.min.html') as f:
-        template: str = await f.read()
-    text = template.replace('{{content}}', text)
-    text = text.replace('{{extra1}}', '由 Redbot 生成')
-    text = text.replace('{{extra2}}', datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
-    text = text.replace('\n', '</p><p>')
+    html = await _text2img(text, html=True)
+    html += footer
 
-    async with GetPage(width) as page:
-        await page.set_content(text)
-        img = await page.screenshot(type='jpeg', quality=80, full_page=True, scale='device')
-    return img
+    return await _html2img(
+        html,
+        NewPageParms(viewport={'width': width, 'height': 10}, device_scale_factor=1.5),
+        ScreenshotParms(type='jpeg', quality=80, full_page=True, scale='device'),
+    )
 
 
-async def md2img(md: str, width: int = 800) -> bytes:
-    md = markdown(md)
+async def md2img(text: str, width: int = 800, extra_css: str = '') -> bytes:
+    html = await _md2img(text, extra_css=extra_css, html=True)
+    html += footer
 
-    async with async_open(Path(__file__).parent / 'browser' / 'template' / 'text2img.min.html') as f:
-        template: str = await f.read()
-    md = template.replace('{{content}}', md)
-    md = md.replace('{{extra1}}', '由 Redbot 生成')
-    md = md.replace('{{extra2}}', datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
-
-    async with GetPage(width) as page:
-        await page.set_content(md)
-        img = await page.screenshot(type='jpeg', quality=80, full_page=True, scale='device')
-    return img
-
-
-async def template2img() -> bytes:
-    ...
+    return await _html2img(
+        html,
+        NewPageParms(viewport={'width': width, 'height': 10}, device_scale_factor=1.5),
+        ScreenshotParms(type='jpeg', quality=80, full_page=True, scale='device'),
+    )

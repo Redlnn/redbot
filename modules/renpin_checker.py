@@ -98,7 +98,7 @@ lucky_things = {
 @decorate(GroupPermission.require(), MemberInterval.require(10), require_disable(channel.module))
 async def main(app: Ariadne, group: Group, member: Member):
     is_new, renpin, qianwen = await read_data(str(member.id))
-    img_bytes = await md2img(f'{qianwen}\n\n<hr />\n\n悄悄告诉你噢，你今天的人品值是：{renpin}')
+    img_bytes = await md2img(f'{qianwen}\n\n---\n悄悄告诉你噢，你今天的人品值是：{renpin}')
     if is_new:
         await app.send_message(group, MessageChain(At(member.id), Plain(' 你抽到一支签：'), Image(data_bytes=img_bytes)))
     else:

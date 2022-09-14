@@ -19,7 +19,7 @@ from graia.saya import Channel
 from util import get_graia_version
 from util.control import require_disable
 from util.control.permission import GroupPermission
-from util.text2img import text2img
+from util.text2img import md2img
 
 channel = Channel.current()
 
@@ -29,7 +29,7 @@ channel.meta['description'] = '[!！.](status|version)'
 channel.meta['can_disable'] = False
 
 repo = Repo(os.getcwd())
-official, community = get_graia_version()
+extra, official, community = get_graia_version()
 
 commit = repo.head.reference.commit.hexsha
 commit_date = repo.head.reference.commit.committed_datetime
@@ -55,25 +55,35 @@ async def main(app: Ariadne, group: Group):
     second = int(running_time % 86400 % 3600 % 60)
     running_time = f'{f"{day}d " if day else ""}{f"{hour}h " if hour else ""}{f"{minute}m " if minute else ""}{second}s'
 
-    msg_send = (
-        '-= Red_lnn Bot 状态 =-\n\n'
-        f'bot 版本：{commit[:7]}-dev\n'
-        f'更新日期：{commit_date}\n'
-        f'PID: {pid}\n'
-        f'启动时间：{time.strftime("%Y-%m-%d %H:%M:%S", started_time)}\n'
-        f'已运行时长：{running_time}\n'
-        '{hr}\n'
-        f'Python 版本：{python_version}\n'
-        f'系统版本：{system_version}\n'
-        f'CPU 核心数：{psutil.cpu_count()}\n'
-        f'CPU 占用率：{psutil.cpu_percent()}%\n'
-        f'系统内存占用：{"%.1f" % (psutil.virtual_memory().available / 1073741824)}G / {total_memory}G\n'
-        '{hr}\n'
-        f'MiraiApiHttp版本：{await app.get_version()}\n'
-        'Graia 相关库版本：\n'
-    )
-    msg_send += ''.join(f'  graia-{name}：{version}\n' for name, version in official)
-    if community:
-        msg_send += ''.join(f'  graiax-{name}：{version}\n' for name, version in community)
+    md = f'''\
+<div align="center">
 
-    await app.send_message(group, MessageChain(Image(data_bytes=await text2img(msg_send.rstrip()))))
+# RedBot 状态
+
+</div>
+
+## 基本信息
+**bot 版本**：{commit[:7]}-dev  
+**更新日期**：{commit_date}  
+**PID**: {pid}  
+**启动时间**：{time.strftime("%Y-%m-%d %P %I:%M:%S", started_time)}  
+**已运行时长**：{running_time}  
+
+## 运行环境
+**Python 版本**：{python_version}  
+**系统版本**：{system_version}  
+**CPU 核心数**：{psutil.cpu_count()}  
+**CPU 占用率**：{psutil.cpu_percent()}%  
+**系统内存占用**：{"%.1f" % (psutil.virtual_memory().available / 1073741824)}G / {total_memory}G
+
+## 依赖版本
+**Mirai Api Http**：{await app.get_version()}  
+**Graia 相关**：
+'''
+    if extra:
+        md += ''.join(f'  - {name}：{version}\n' for name, version in extra)
+    md += ''.join(f'  - {name}：{version}\n' for name, version in official)
+    if community:
+        md += ''.join(f'  - {name}：{version}\n' for name, version in community)
+
+    await app.send_message(group, MessageChain(Image(data_bytes=await md2img(md.rstrip()))))

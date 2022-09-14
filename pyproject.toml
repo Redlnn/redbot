@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "redbot"
+name = "RedBot"
 version = "0.1.0"
 description = "一个使用 Graia Ariadne 搭建的 QQ 机器人"
 authors = ["Redlnn <w731347477@gmail.com>"]
@@ -12,7 +12,9 @@ aiofile = "^3.8.1"
 aiohttp = {extras = ["speedups"], version = "^3.8.1"}
 aio-mc-rcon = "^3.2.0"
 gitpython = "^3.1.27"
-graia-ariadne = {extras = ["full", "fastapi"], version = "^0.9.1"}
+graia-ariadne = {extras = ["full", "fastapi"], version = "^0.9.4"}
+graiax-playwright = "^0.2.0"
+graiax-text2img-playwright = "^0.1.0b5"
 httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
@@ -48,7 +50,7 @@ url = "https://mirrors.aliyun.com/pypi/simple/"
 
 [tool.black]
 line-length = 120
-target-version = ["py310"]
+target-version = ["py310", "py311"]
 skip-string-normalization = true
 safe = true
 

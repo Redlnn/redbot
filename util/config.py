@@ -72,7 +72,7 @@ class AdminConfig(RConfig):
 
 class BasicConfig(RConfig):
     __filename__: str = 'redbot'
-    botName: str = 'redbot'
+    botName: str = 'RedBot'
     logChat: bool = True
     console: bool = False
     debug: bool = False
