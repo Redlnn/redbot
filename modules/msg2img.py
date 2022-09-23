@@ -3,6 +3,7 @@
 
 from base64 import b64encode
 
+from graia.amnesia.builtins.aiohttp import AiohttpClientInterface
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -12,8 +13,8 @@ from graia.ariadne.model import Group, Member
 from graia.ariadne.util.interrupt import FunctionWaiter
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
+from launart import Launart
 
-from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.interval import GroupInterval
 from util.control.permission import GroupPermission
@@ -46,7 +47,9 @@ async def main(app: Ariadne, group: Group, member: Member, source: Source):
         return
 
     content = ''
-    session = GetAiohttpSession.get_session()
+    launart = Launart.current()
+    session = launart.get_interface(AiohttpClientInterface).service.session
+
     for ind, elem in enumerate(answer[:]):
         if type(elem) in {At, AtAll}:
             answer.__root__[ind] = Plain(str(elem))

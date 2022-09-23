@@ -11,7 +11,7 @@ from .overview import (
     get_function_called,
     get_info_card,
     get_message_sent_freq,
-    get_siginin_count,
+    get_signin_count,
     get_sys_info,
 )
 
@@ -26,5 +26,5 @@ routes: list[OriginRoute] = [
     Route(path='/api/overview/get_sys_info', endpoint=get_sys_info, response_model=GeneralResponse),
     Route(path='/api/overview/get_function_called', endpoint=get_function_called, response_model=GeneralResponse),
     Route(path='/api/overview/get_message_sent_freq', endpoint=get_message_sent_freq, response_model=GeneralResponse),
-    Route(path='/api/overview/get_siginin_count', endpoint=get_siginin_count, response_model=GeneralResponse),
+    Route(path='/api/overview/get_signin_count', endpoint=get_signin_count, response_model=GeneralResponse),
 ]

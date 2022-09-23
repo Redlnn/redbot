@@ -6,8 +6,8 @@ import time
 from uuid import UUID
 
 from aiohttp import ClientResponse
-
-from util import GetAiohttpSession
+from graia.amnesia.builtins.aiohttp import AiohttpClientInterface
+from launart import Launart
 
 
 def format_time(timestamp: int) -> str:
@@ -48,7 +48,9 @@ async def get_uuid(mc_id: str) -> tuple[str | ClientResponse, str]:
 
     :param mc_id: 正版用户名（id）
     """
-    session = GetAiohttpSession.get_session()
+    launart = Launart.current()
+    session = launart.get_interface(AiohttpClientInterface).service.session
+
     async with session.get(f'https://api.mojang.com/users/profiles/minecraft/{mc_id}') as resp:
         if resp.status != 200:
             return resp, ''
@@ -62,7 +64,9 @@ async def get_mc_id(mc_uuid: str | UUID) -> str | ClientResponse:
 
     :param mc_uuid: 输入一个uuid
     """
-    session = GetAiohttpSession.get_session()
+    launart = Launart.current()
+    session = launart.get_interface(AiohttpClientInterface).service.session
+
     async with session.get(f'https://sessionserver.mojang.com/session/minecraft/profile/{mc_uuid}') as resp:
         if resp.status != 200:
             return resp

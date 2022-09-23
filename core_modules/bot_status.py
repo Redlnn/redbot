@@ -66,7 +66,7 @@ async def main(app: Ariadne, group: Group):
 **bot 版本**：{commit[:7]}-dev  
 **更新日期**：{commit_date}  
 **PID**: {pid}  
-**启动时间**：{time.strftime("%Y-%m-%d %P %I:%M:%S", started_time)}  
+**启动时间**：{time.strftime("%Y-%m-%d %p %I:%M:%S", started_time)}  
 **已运行时长**：{running_time}  
 
 ## 运行环境

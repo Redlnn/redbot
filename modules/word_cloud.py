@@ -9,13 +9,13 @@ import datetime
 import random
 import re
 import time
-from contextvars import ContextVar
 from io import BytesIO
 from os import listdir
 from pathlib import Path
 
 import jieba.analyse
 import numpy
+from graia.amnesia.builtins.memcache import Memcache
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -29,7 +29,6 @@ from graia.ariadne.message.parser.twilight import (
     SpacePolicy,
     Twilight,
     UnionMatch,
-    WildcardMatch,
 )
 from graia.ariadne.model import Group, Member
 from graia.ariadne.util.async_exec import cpu_bound
@@ -69,7 +68,6 @@ class WordCloudConfig(RConfig):
     fontName: str = 'OPPOSans-B.ttf'
 
 
-generating_list: ContextVar[list[int | str]] = ContextVar('generating_list', default=[])
 config = WordCloudConfig()
 
 
@@ -88,7 +86,7 @@ async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexRe
     day = day_length.result
     match_result: MessageChain = wc_target.result  # type: ignore # noqa: E275
 
-    process_list = generating_list.get()
+    process_list = await app.launch_manager.get_interface(Memcache).get('wordcloud_process_list', [])
     if len(process_list) > 2:
         await app.send_message(group, MessageChain(Plain('词云生成队列已满，请稍后再试')))
         return
@@ -182,7 +180,7 @@ async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, 
 
 
 async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int, me: bool) -> None | Image:
-    process_list = generating_list.get()
+    process_list = await app.launch_manager.get_interface(Memcache).get('wordcloud_process_list', [])
     if target in process_list:
         await app.send_message(group, MessageChain(Plain('你') if me else At(target), Plain('的词云已在生成中，请稍后...')))
         return
@@ -205,12 +203,12 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
     words = await get_frequencies(msg_list)
     image_bytes = await gen_wordcloud(words)
     process_list.remove(target)
-    generating_list.set(process_list)
+    await app.launch_manager.get_interface(Memcache).set('wordcloud_process_list', process_list)
     return Image(data_bytes=image_bytes)
 
 
 async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Image:
-    process_list = generating_list.get()
+    process_list = await app.launch_manager.get_interface(Memcache).get('wordcloud_process_list', [])
     if group.id in process_list:
         await app.send_message(group, MessageChain(Plain('本群词云已在生成中，请稍后...')))
         return
@@ -229,7 +227,7 @@ async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Im
     words = await get_frequencies(msg_list)
     image_bytes = await gen_wordcloud(words)
     process_list.remove(group.id)
-    generating_list.set(process_list)
+    await app.launch_manager.get_interface(Memcache).set('wordcloud_process_list', process_list)
     return Image(data_bytes=image_bytes)
 
 

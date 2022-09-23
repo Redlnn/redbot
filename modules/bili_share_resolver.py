@@ -18,9 +18,13 @@
 
 import re
 import time
+from base64 import b64encode
 from dataclasses import dataclass
+from io import BytesIO
+from pathlib import Path
 from typing import Literal
 
+from graia.amnesia.builtins.aiohttp import AiohttpClientInterface
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -28,13 +32,18 @@ from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Group, Member
 from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel
+from graiax.text2img.playwright.builtin import template2img
+from graiax.text2img.playwright.types import PageParms
+from launart import Launart
 from loguru import logger
+from PIL.Image import Image as PILImage
+from qrcode import QRCode
 
-from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
-from util.text2img import md2img
+from util.fonts_provider import fill_font
+from util.path import root_path
 
 channel = Channel.current()
 
@@ -64,15 +73,17 @@ class VideoInfo:
     title: str  # 视频标题
     sub_count: int  # 视频分P数
     pub_timestamp: int  # 视频发布时间（时间戳）
-    unload_timestamp: int  # 视频上传时间（时间戳，不一定准确）
+    upload_timestamp: int  # 视频上传时间（时间戳，不一定准确）
     desc: str  # 视频简介
     duration: int  # 视频长度（单位：秒）
     up_mid: int  # up主mid
     up_name: str  # up主名称
+    up_face: str  # up主头像地址
     views: int  # 播放量
     danmu: int  # 弹幕数
     likes: int  # 点赞数
     coins: int  # 投币数
+    replys: int  # 评论数
     favorites: int  # 收藏量
 
 
@@ -124,14 +135,19 @@ async def b23_url_extract(b23_url: str) -> Literal[False] | str:
     url = re.search(r'b23.tv[/\\]+([0-9a-zA-Z]+)', b23_url)
     if url is None:
         return False
-    session = GetAiohttpSession.get_session()
+
+    launart = Launart.current()
+    session = launart.get_interface(AiohttpClientInterface).service.session
+
     async with session.get(f'https://{url.group()}', allow_redirects=True) as resp:
         target = str(resp.url)
     return target if 'www.bilibili.com/video/' in target else False
 
 
 async def get_video_info(video_id: str) -> dict:
-    session = GetAiohttpSession.get_session()
+    launart = Launart.current()
+    session = launart.get_interface(AiohttpClientInterface).service.session
+
     if video_id[:2].lower() == 'av':
         async with session.get(f'http://api.bilibili.com/x/web-interface/view?aid={video_id[2:]}') as resp:
             return await resp.json()
@@ -149,15 +165,17 @@ async def info_json_dump(obj: dict) -> VideoInfo:
         title=obj['title'],
         sub_count=obj['videos'],
         pub_timestamp=obj['pubdate'],
-        unload_timestamp=obj['ctime'],
+        upload_timestamp=obj['ctime'],
         desc=obj['desc'].strip(),
         duration=obj['duration'],
         up_mid=obj['owner']['mid'],
         up_name=obj['owner']['name'],
+        up_face=obj['owner']['face'],
         views=obj['stat']['view'],
         danmu=obj['stat']['danmaku'],
         likes=obj['stat']['like'],
         coins=obj['stat']['coin'],
+        replys=obj['stat']['reply'],
         favorites=obj['stat']['favorite'],
     )
 
@@ -171,6 +189,9 @@ def math(num: int):
         return ('%.2f' % (num / 100000000)) + '亿'
 
 
+template = Path(root_path, 'libs', 'jinja2_templates', 'bili_video.html').read_text(encoding='utf-8')
+
+
 async def gen_img(data: VideoInfo) -> bytes:
     video_length_m, video_length_s = divmod(data.duration, 60)  # 将总的秒数转换为时分秒格式
     video_length_h, video_length_m = divmod(video_length_m, 60)
@@ -179,24 +200,51 @@ async def gen_img(data: VideoInfo) -> bytes:
     else:
         video_length = f'{video_length_h}:{video_length_m}:{video_length_s}'
 
-    info_text = (
-        f'BV号：{data.bvid}  \n'
-        f'av号：av{data.avid}  \n'
-        f'标题：{data.title}  \n'
-        f'UP主：{data.up_name}  \n'
-        f'时长：{video_length}  \n'
-        f'发布时间：{time.strftime("%Y-%m-%d %P %I:%M:%S", time.localtime(data.pub_timestamp))}  \n'
-    )
-
-    if data.sub_count > 1:
-        info_text += f'分P数量：{data.sub_count}  \n'
-
     desc = data.desc.strip().replace('\n', '<br/>')
-    info_text += (
-        f'{math(data.views)}播放 {math(data.danmu)}弹幕  \n'
-        f'{math(data.likes)}点赞 {math(data.coins)}投币 {math(data.favorites)}收藏\n'
-        '\n---\n'
-        f'### 简介\n{desc}'
-    )
 
-    return await md2img(f'![]({data.cover_url})\n\n{info_text}', extra_css='img{display:block;text-align:center}')
+    launart = Launart.current()
+    session = launart.get_interface(AiohttpClientInterface).service.session
+
+    async with session.get(f'https://api.bilibili.com/x/relation/stat?vmid={data.up_mid}') as resp:
+        result = await resp.json()
+        fans_num: int = result['data']['follower']
+
+    qr = QRCode(version=2, box_size=4)
+    qr.add_data(f'https://b23.tv/{data.bvid}')
+    qr.make()
+    qrcode: PILImage | None = qr.make_image()._img
+    if qrcode is None:
+        qrcode_src = ''
+    else:
+        output_buffer = BytesIO()
+        qrcode.save(output_buffer, format='png')
+        base64_str = b64encode(output_buffer.getvalue()).decode('utf-8')
+        qrcode_src = f'data:image/png;base64,{base64_str}'
+
+    return await template2img(
+        template,
+        {
+            'cover_src': data.cover_url,
+            'duration': video_length,
+            'title': data.title,
+            'play_num': math(data.views),
+            'danmaku_num': math(data.danmu),
+            'reply_num': math(data.replys),
+            'like_num': math(data.likes),
+            'coin_num': math(data.coins),
+            'favorite_num': math(data.favorites),
+            'desc': desc,
+            'publish_time': time.strftime('%Y/%m/%d %H %I:%M:%S', time.localtime(data.upload_timestamp)),
+            'profile_src': data.up_face,
+            'name': data.up_name,
+            'fans_num': math(fans_num),
+            'qrcode_src': qrcode_src,
+        },
+        page_parms=PageParms(viewport={'width': 960, 'height': 10}),
+        extra_page_methods=[
+            lambda page: page.route(
+                lambda url: True if re.match('^http://static.graiax/fonts/(.+)$', url) else False,
+                fill_font,
+            )
+        ],
+    )

@@ -10,6 +10,7 @@
 from asyncio.exceptions import TimeoutError
 from urllib.parse import quote
 
+from graia.amnesia.builtins.aiohttp import AiohttpClientInterface
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -23,9 +24,9 @@ from graia.ariadne.message.parser.twilight import (
 from graia.ariadne.model import Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
+from launart import Launart
 from lxml import etree
 
-from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.permission import GroupPermission
 
@@ -51,7 +52,9 @@ async def main(app: Ariadne, group: Group, keyword: RegexResult):
     bili_url = 'https://wiki.biligame.com/mc/' + search_parm
     fandom_url = 'https://minecraft.fandom.com/zh/wiki/' + search_parm + '?variant=zh-cn'
 
-    session = GetAiohttpSession.get_session()
+    launart = Launart.current()
+    session = launart.get_interface(AiohttpClientInterface).service.session
+
     try:
         async with session.get(bili_url) as resp:
             status_code = resp.status

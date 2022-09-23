@@ -10,6 +10,7 @@ import contextlib
 from datetime import datetime
 from typing import Any
 
+from graia.amnesia.builtins.aiohttp import AiohttpClientInterface
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.exception import UnknownTarget
@@ -28,9 +29,9 @@ from graia.ariadne.message.parser.twilight import (
 from graia.ariadne.model import Group, Member, MemberPerm
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
+from launart import Launart
 from pydantic import AnyHttpUrl
 
-from util import GetAiohttpSession
 from util.config import RConfig, basic_cfg
 from util.control import require_disable
 from util.control.interval import MemberInterval
@@ -77,7 +78,10 @@ async def main(
     ):
         await app.send_message(group, MessageChain(Plain('你没有权限使用 san 参数')))
         return
-    session = GetAiohttpSession.get_session()
+
+    launart = Launart.current()
+    session = launart.get_interface(AiohttpClientInterface).service.session
+
     if tag.matched and tag.result is not None:
         target_tag = tag.result.get_first(Plain).text
         async with session.get(f'{setu_config.apiUrl}/get/tags/{target_tag}?san={san.result}&num={num.result}') as resp:

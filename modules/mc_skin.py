@@ -10,6 +10,7 @@ mc皮肤查询
 from asyncio.exceptions import TimeoutError
 
 import orjson
+from graia.amnesia.builtins.aiohttp import AiohttpClientInterface
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -25,8 +26,8 @@ from graia.ariadne.message.parser.twilight import (
 from graia.ariadne.model import Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya.channel import Channel
+from launart import Launart
 
-from util import GetAiohttpSession
 from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
@@ -62,7 +63,9 @@ async def get_skin(app: Ariadne, group: Group, name: RegexResult, option: ArgRes
     if name.result is None or option.result is None:
         return
     try:
-        session = GetAiohttpSession.get_session()
+        launart = Launart.current()
+        session = launart.get_interface(AiohttpClientInterface).service.session
+
         async with session.get(UUID_ADDRESS_STRING.format(name=str(name.result))) as resp:
             uuid = orjson.loads(await resp.text())['id']
         url = RENDER_ADDR[option.result].format(uuid=uuid)

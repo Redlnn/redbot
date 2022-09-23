@@ -143,7 +143,7 @@ weekday_map = {
 }
 
 
-async def get_siginin_count():
+async def get_signin_count():
     today = datetime.datetime.now()
     weekday = today.isoweekday()
 

@@ -21,7 +21,7 @@ from util import log_level_handler, replace_logger
 from util.config import basic_cfg, modules_cfg
 
 # from util.fastapi_service import FastAPIStarletteService
-from util.launart_services import CloseAiohttpSessionService, DatabaseService
+from util.launart_services import DatabaseInitService
 from util.path import modules_path, root_path
 from util.send_action import Safe
 
@@ -50,10 +50,9 @@ if __name__ == '__main__':
     )
     app.default_send_action = Safe
 
-    app.launch_manager.add_service(DatabaseService())
+    app.launch_manager.add_service(DatabaseInitService())
     # app.launch_manager.add_service(FastAPIStarletteService())
     # app.launch_manager.add_service(UvicornService())
-    app.launch_manager.add_service(CloseAiohttpSessionService())
     app.launch_manager.add_service(PlaywrightService())
 
     replace_logger(level=0 if basic_cfg.debug else 20, richuru=False)

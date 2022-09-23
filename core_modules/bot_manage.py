@@ -106,15 +106,15 @@ async def new_friend(app: Ariadne, event: NewFriendRequestEvent):
         return
 
     source_group: int | None = event.source_group
-    groupname = '未知'
+    group_name = '未知'
     if source_group:
         group = await app.get_group(source_group)
-        groupname = group.name if group else '未知'
+        group_name = group.name if group else '未知'
 
     await send_to_admin(
         MessageChain(
             Plain(f'收到添加好友事件\nQQ：{event.supplicant}\n昵称：{event.nickname}\n'),
-            Plain(f'来自群：{groupname}({source_group})\n') if source_group else Plain('\n来自好友搜索\n'),
+            Plain(f'来自群：{group_name}({source_group})\n') if source_group else Plain('\n来自好友搜索\n'),
             Plain(event.message) if event.message else Plain('无附加信息'),
             Plain('\n\n是否同意申请？请在10分钟内发送“同意”或“拒绝”，否则自动同意'),
         )
@@ -242,7 +242,7 @@ async def join_group(app: Ariadne, event: BotJoinGroupEvent):
             event.group,
             MessageChain(f'该群未在白名单中，将不会启用本 Bot 的绝大部分功能，如有需要请联系 {basic_cfg.admin.masterId} 申请白名单'),
         )
-        # return await app.quit_group(joingroup.group.id)
+        # return await app.quit_group(event.group.id)
     else:
         await app.send_group_message(
             event.group,

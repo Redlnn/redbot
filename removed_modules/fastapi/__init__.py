@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from contextvars import ContextVar
-
+from creart import create
 from fastapi import FastAPI, WebSocket
 from graia.amnesia.transport.common.asgi import ASGIHandlerProvider
 from graia.ariadne.app import Ariadne
@@ -29,7 +28,6 @@ channel.meta['author'] = ['Red_lnn']
 channel.meta['can_disable'] = False
 
 manager = WsConnectionManager()
-broadcast: ContextVar[Broadcast] = ContextVar('bcc')
 
 
 async def root():
@@ -38,17 +36,14 @@ async def root():
 
 async def websocket(client: WebSocket):
     await manager.connect(client)
-    bcc = broadcast.get(None)
-    if bcc is None:
-        return
+    bcc = create(Broadcast)
     bcc.postEvent(NewWebsocketClient(client))
     while True:
         try:
             data = await client.receive_text()
-            logger.info(f'websockets recived: {data}')
-        except (WebSocketDisconnect, ConnectionClosedOK):
+            logger.info(f'websockets received: {data}')
+        except (WebSocketDisconnect, ConnectionClosedOK, RuntimeError):
             manager.disconnect(client)
-        except RuntimeError:
             break
 
 
