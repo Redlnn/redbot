@@ -14,7 +14,7 @@ aio-mc-rcon = "^3.2.0"
 gitpython = "^3.1.27"
 graia-ariadne = {extras = ["full", "fastapi"], version = "^0.9.4"}
 graiax-playwright = "^0.2.0"
-graiax-text2img-playwright = "^0.1.0b5"
+graiax-text2img-playwright = "^0.1.0b6"
 httpx = "^0.23.0"
 jieba = "^0.42.1"
 loguru = "^0.6.0"
