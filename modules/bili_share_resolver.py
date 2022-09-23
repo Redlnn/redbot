@@ -234,7 +234,7 @@ async def gen_img(data: VideoInfo) -> bytes:
             'coin_num': math(data.coins),
             'favorite_num': math(data.favorites),
             'desc': desc,
-            'publish_time': time.strftime('%Y/%m/%d %H %I:%M:%S', time.localtime(data.upload_timestamp)),
+            'publish_time': time.strftime('%Y/%m/%d %p %I:%M:%S', time.localtime(data.upload_timestamp)),
             'profile_src': data.up_face,
             'name': data.up_name,
             'fans_num': math(fans_num),
