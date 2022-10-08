@@ -6,7 +6,6 @@ import platform
 import time
 
 import psutil
-from git.repo.base import Repo
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -28,11 +27,8 @@ channel.meta['name'] = 'Bot版本与系统运行情况查询'
 channel.meta['description'] = '[!！.](status|version)'
 channel.meta['can_disable'] = False
 
-repo = Repo(os.getcwd())
 extra, official, community = get_graia_version()
 
-commit = repo.head.reference.commit.hexsha
-commit_date = repo.head.reference.commit.committed_datetime
 python_version = platform.python_version()
 if platform.uname().system == 'Windows':
     system_version = platform.platform()
@@ -63,8 +59,6 @@ async def main(app: Ariadne, group: Group):
 </div>
 
 ## 基本信息
-**bot 版本**：{commit[:7]}-dev  
-**更新日期**：{commit_date}  
 **PID**: {pid}  
 **启动时间**：{time.strftime("%Y-%m-%d %p %I:%M:%S", started_time)}  
 **已运行时长**：{running_time}  

@@ -11,11 +11,9 @@ python = ">=3.10,<4.0.0"
 aiofile = ">=3.8.1"
 aiohttp = {extras = ["speedups"], version = ">=3.8.1,<4.0"}
 aio-mc-rcon = ">=3.2.0"
-gitpython = ">=3.1.27"
 graia-ariadne = {extras = ["full", "fastapi"], version = ">=0.9.5,<0.10.0"}
 graiax-playwright = ">=0.2.0.post1"
 graiax-text2img-playwright = {version = "0.1.0b6", allow-prereleases = true}
-httpx = ">=0.23.0"
 jieba = ">=0.42.1"
 lxml = ">=4.9.1"
 numpy = ">=1.23.3"
@@ -31,7 +29,7 @@ sqlmodel = ">=0.0.8"
 wordcloud = ">=1.8.2"
 
 [tool.poetry.dev-dependencies]
-black = ">=22.3.0"
+black = ">=22.10.0"
 flake8 = ">=5.0.4"
 isort = {extras = ["requirements_deprecated_finder"], version = ">=5.10.1"}
 
