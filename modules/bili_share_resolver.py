@@ -122,7 +122,7 @@ async def main(app: Ariadne, group: Group, message: MessageChain, member: Member
                 Image(data_bytes=img),
                 Plain(
                     f'{video_info.title}\n'
-                    '————————————————————\n'
+                    '—————————————\n'
                     f'UP主：{video_info.up_name}\n'
                     f'{math(video_info.views)}播放 {math(video_info.likes)}赞\n'
                     f'链接：https://b23.tv/{video_info.bvid}'
