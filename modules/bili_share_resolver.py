@@ -39,6 +39,7 @@ from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.path import root_path
+
 from ..util.text2img import template2img
 
 channel = Channel.current()

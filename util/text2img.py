@@ -1,7 +1,15 @@
 import re
-from jinja2 import Template
 from datetime import datetime
-from graiax.text2img.playwright import PageOption, ScreenshotOption, HTMLRenderer, convert_text, MarkdownConverter
+
+from graiax.text2img.playwright import (
+    HTMLRenderer,
+    MarkdownConverter,
+    PageOption,
+    ScreenshotOption,
+    convert_text,
+)
+from jinja2 import Template
+
 from util.fonts_provider import fill_font
 
 footer = (
