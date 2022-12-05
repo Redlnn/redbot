@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from typing import Literal
 
 from launart import ExportInterface, Launchable

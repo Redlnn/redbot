@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """
 识别群内的B站链接、分享、av号、BV号并获取其对应的视频的信息
 
@@ -32,8 +29,7 @@ from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Group, Member
 from graia.ariadne.util.saya import decorate, listen
 from graia.saya import Channel
-from graiax.text2img.playwright.builtin import template2img
-from graiax.text2img.playwright.types import PageParms
+from graiax.text2img.playwright import PageOption
 from launart import Launart
 from loguru import logger
 from PIL.Image import Image as PILImage
@@ -42,8 +38,8 @@ from qrcode import QRCode
 from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
-from util.fonts_provider import fill_font
 from util.path import root_path
+from ..util.text2img import template2img
 
 channel = Channel.current()
 
@@ -240,11 +236,5 @@ async def gen_img(data: VideoInfo) -> bytes:
             'fans_num': math(fans_num),
             'qrcode_src': qrcode_src,
         },
-        page_parms=PageParms(viewport={'width': 960, 'height': 10}),
-        extra_page_methods=[
-            lambda page: page.route(
-                lambda url: True if re.match('^http://static.graiax/fonts/(.+)$', url) else False,
-                fill_font,
-            )
-        ],
+        extra_page_option=PageOption(viewport={'width': 960, 'height': 10}),
     )

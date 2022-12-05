@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from typing import TypeVar, overload
 
 from graia.ariadne.app import Ariadne
@@ -52,7 +49,7 @@ class Safe(SendMessageAction):
                     else:
                         msg_chain.__root__[ind] = Plain(str(elem))
 
-        for element_type in {'AtAll', 'At', 'Poke', 'Forward', 'MultimediaElement'}:
+        for element_type in ('AtAll', 'At', 'Poke', 'Forward', 'MultimediaElement'):
             convert(chain, element_type)
             val = await ariadne.send_message(**item.send_data, action=Ignore)  # type: ignore # noqa
             if val is not None:

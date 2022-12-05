@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import re
 
 from graia.ariadne.app import Ariadne
@@ -20,9 +17,11 @@ channel = Channel.current()
 channel.meta['name'] = '读取/发送消息的可持久化字符串'
 channel.meta['author'] = ['Red_lnn']
 # fmt: off
-channel.meta['description'] = '仅限群管理员使用\n'
-' - 回复需要读取的消息并且回复内容只含有“[!！.]读取消息”获得消息的可持久化字符串\n'
-' - [!！.]发送消息 <可持久化字符串> —— 用于从可持久化字符串发送消息'
+channel.meta['description'] = (
+    '仅限群管理员使用\n'
+    ' - 回复需要读取的消息并且回复内容只含有“[!！.]读取消息”获得消息的可持久化字符串\n'
+    ' - [!！.]发送消息 <可持久化字符串> —— 用于从可持久化字符串发送消息'
+)
 # fmt: on
 
 

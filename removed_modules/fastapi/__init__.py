@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from creart import create
 from fastapi import FastAPI, WebSocket
 from graia.amnesia.transport.common.asgi import ASGIHandlerProvider
@@ -17,7 +14,6 @@ from websockets.exceptions import ConnectionClosedOK
 
 from util.fastapi_service.event import NewWebsocketClient
 from util.fastapi_service.manager import WsConnectionManager
-from util.fastapi_service.router import Router
 
 from .oauth2 import Token, login_for_access_token
 
@@ -47,38 +43,35 @@ async def websocket(client: WebSocket):
             break
 
 
-from .api import routes
+# @listen(ApplicationLaunched)
+# async def init(app: Ariadne, asgi_handler: ASGIHandlerProvider):
+#     mgr = app.launch_manager
+#     asgi: FastAPI = asgi_handler.get_asgi_handler()  # type: ignore
 
+#     asgi.add_api_route('/', endpoint=root, methods=['GET'])  # type: ignore
+#     asgi.add_api_route(
+#         '/login', endpoint=login_for_access_token, response_model=Token, methods=['POST']  # type: ignore
+#     )
 
-@listen(ApplicationLaunched)
-async def init(app: Ariadne):
-    mgr = app.launch_manager
-    asgi: FastAPI = mgr.get_interface(ASGIHandlerProvider).get_asgi_handler()  # type: ignore
+#     asgi.add_api_websocket_route('/ws', endpoint=websocket)
 
-    asgi.add_api_route('/', endpoint=root, methods=['GET'])  # type: ignore
-    asgi.add_api_route(
-        '/login', endpoint=login_for_access_token, response_model=Token, methods=['POST']  # type: ignore
-    )
+#     for route in routes:
+#         asgi.add_api_route(
+#             path=route.path,
+#             methods=route.methods,
+#             endpoint=route.endpoint,
+#             response_model=route.response_model,
+#             **route.kwargs,
+#         )
 
-    asgi.add_api_websocket_route('/ws', endpoint=websocket)
-
-    for route in routes:
-        asgi.add_api_route(
-            path=route.path,
-            methods=route.methods,
-            endpoint=route.endpoint,
-            response_model=route.response_model,
-            **route.kwargs,
-        )
-
-    for route in Router.routes:
-        asgi.add_api_route(
-            path=route.path,
-            methods=route.methods,
-            endpoint=route.endpoint,
-            response_model=route.response_model,
-            **route.kwargs,
-        )
+#     for route in Router.routes:
+#         asgi.add_api_route(
+#             path=route.path,
+#             methods=route.methods,
+#             endpoint=route.endpoint,
+#             response_model=route.response_model,
+#             **route.kwargs,
+#         )
 
 
 @listen(NewWebsocketClient)

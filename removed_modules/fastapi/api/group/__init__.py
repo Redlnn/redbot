@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from graia.ariadne.app import Ariadne
 from graia.ariadne.model import MemberPerm
 

@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from fastapi.websockets import WebSocket
 from graia.broadcast import BaseDispatcher, Dispatchable
 from graia.broadcast.interfaces.dispatcher import DispatcherInterface

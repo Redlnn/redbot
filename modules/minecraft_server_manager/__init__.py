@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import asyncio
 import time
 
@@ -123,6 +120,7 @@ async def init(app: Ariadne):
 @dispatch(Twilight(RegexMatch(r'[!！.]mc')))
 @decorate(GroupPermission.require())
 async def main_menu(app: Ariadne, group: Group):
+    global menu_img_bytes
     if not is_init or group.id not in module_config.activeGroups:
         return
     await app.send_message(group, MessageChain(Image(data_bytes=menu_img_bytes)))
@@ -135,6 +133,7 @@ async def main_menu(app: Ariadne, group: Group):
 @dispatch(Twilight(RegexMatch(r'[!！.]wl')))
 @decorate(GroupPermission.require())
 async def whitelist_menu(app: Ariadne, group: Group, message: MessageChain):
+    global wl_menu_img_bytes
     if not is_init or group.id not in module_config.activeGroups:
         return
     if len(str(message)[1:]) == 2:
@@ -244,7 +243,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                 target = msg[2].get_first(At).target
                 player = await query_uuid_by_qq(target)
                 if player is None:
-                    await app.send_message(group, MessageChain(At(target), Plain(f' 好像一个白名单都没有呢~')), quote=source)
+                    await app.send_message(group, MessageChain(At(target), Plain(' 好像一个白名单都没有呢~')), quote=source)
                     return
                 await app.send_message(group, await gen_query_info_text(player), quote=source)
                 return
@@ -257,7 +256,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                         player = await query_uuid_by_qq(target)
                         if player is None:
                             await app.send_message(
-                                group, MessageChain(At(target), Plain(f' 好像一个白名单都没有呢~')), quote=source
+                                group, MessageChain(At(target), Plain(' 好像一个白名单都没有呢~')), quote=source
                             )
                             return
                         await app.send_message(group, await gen_query_info_text(player), quote=source)
@@ -267,7 +266,7 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                             player = await query_uuid_by_qq(int(target))
                             if player is None:
                                 await app.send_message(
-                                    group, MessageChain(At(int(target)), Plain(f' 好像一个白名单都没有呢~')), quote=source
+                                    group, MessageChain(At(int(target)), Plain(' 好像一个白名单都没有呢~')), quote=source
                                 )
                                 return
                             await app.send_message(group, await gen_query_info_text(player), quote=source)
@@ -280,17 +279,17 @@ async def info_whitelist(app: Ariadne, group: Group, source: Source, message: Me
                         status, player = await query_whitelist_by_id(target)
                         if status['code'] == 200:
                             if player is None:
-                                await app.send_message(group, MessageChain(Plain(f'没有使用该 ID 的白名单')), quote=source)
+                                await app.send_message(group, MessageChain(Plain('没有使用该 ID 的白名单')), quote=source)
                             else:
                                 await app.send_message(group, await gen_query_info_text(player), quote=source)
                         elif status['code'] == 204:
-                            await app.send_message(group, MessageChain(Plain(f'没有使用该 ID 的正版用户')), quote=source)
+                            await app.send_message(group, MessageChain(Plain('没有使用该 ID 的正版用户')), quote=source)
                         elif status['code'] == 400:
-                            await app.send_message(group, MessageChain(Plain(f'无效的正版用户名')), quote=source)
+                            await app.send_message(group, MessageChain(Plain('无效的正版用户名')), quote=source)
                         elif status['code'] == 500:
-                            await app.send_message(group, MessageChain(Plain(f'Mojang API超时')), quote=source)
+                            await app.send_message(group, MessageChain(Plain('Mojang API超时')), quote=source)
                         else:
-                            await app.send_message(group, MessageChain(Plain(f'在查询使用该 ID 的正版用户时出错')), quote=source)
+                            await app.send_message(group, MessageChain(Plain('在查询使用该 ID 的正版用户时出错')), quote=source)
                     else:
                         await app.send_message(group, MessageChain(Plain('目标 ID 不是有效的 Minecraft 正版ID')), quote=source)
                     return

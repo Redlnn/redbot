@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from asyncio import Semaphore
 from typing import TYPE_CHECKING
 
@@ -16,7 +13,7 @@ from ..config import basic_cfg
 from .models import *
 
 # sqlite_url = 'sqlite+aiosqlite:///data/redbot.db'
-# mysql_url = 'mysql+asyncmy://user:pass@hostname/dbname?charset=utf8mb4
+# mysql_url = 'mysql+aiomysql://user:pass@hostname/dbname?charset=utf8mb4
 
 
 class Database:
@@ -30,7 +27,7 @@ class Database:
         if basic_cfg.databaseUrl.startswith('sqlite'):
             cls.lock = Semaphore(1)
         if not basic_cfg.databaseUrl.startswith('sqlite+aiosqlite') and not basic_cfg.databaseUrl.startswith(
-            'mysql+asyncmy'
+            'mysql+aiomysql'
         ):
             raise ValueError('不支持的数据库类型')
         cls.engine = create_async_engine(
@@ -60,8 +57,7 @@ class Database:
     async def exec_read(cls, sql: Executable) -> Result:
         """Only for read operation"""
         async with cls.session() as session:
-            result = await session.execute(sql)
-            return result
+            return await session.execute(sql)
 
     @classmethod
     async def select_all(cls, sql: Executable) -> list[Row]:

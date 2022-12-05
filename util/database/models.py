@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from sqlalchemy import Column
 from sqlalchemy.types import TEXT
 from sqlmodel import Field, SQLModel

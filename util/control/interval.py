@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """
 群、用户调用频率限制（bot主人与bot管理员可以无视，没有开关）
 

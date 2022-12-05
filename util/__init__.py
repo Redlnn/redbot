@@ -1,13 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import logging
 import sys
 from importlib import metadata
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from aiohttp import ClientSession
 from loguru import logger
 from richuru import LoguruHandler, install
 

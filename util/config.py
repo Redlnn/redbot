@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from pathlib import Path
 
 import orjson
@@ -77,7 +74,7 @@ class BasicConfig(RConfig):
     console: bool = False
     debug: bool = False
     databaseUrl: str = 'sqlite+aiosqlite:///data/database.db'
-    # mysql+asyncmy://user:pass@hostname/dbname?charset=utf8mb4
+    # mysql+aiomysql://user:pass@hostname/dbname?charset=utf8mb4
     miraiApiHttp: MAHConfig = MAHConfig(account=123456789, verifyKey='VerifyKey')
     admin: AdminConfig = AdminConfig()
 

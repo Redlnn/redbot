@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from sqlalchemy.types import VARCHAR
 from sqlmodel import Column, Field, SQLModel
 

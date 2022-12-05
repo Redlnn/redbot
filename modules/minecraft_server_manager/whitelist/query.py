@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-from asyncio.exceptions import TimeoutError
+from asyncio.exceptions import TimeoutError as AsyncIOTimeoutError
 from uuid import UUID
 
 from graia.ariadne.message.chain import MessageChain
@@ -56,7 +53,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
     if player.uuid1 is not None and player.uuid2 is None:
         try:
             mc_id = await get_mc_id(player.uuid1)
-        except TimeoutError:
+        except AsyncIOTimeoutError:
             info_text += f' | UUID: {player.uuid1}\n'
         else:
             info_text += f' | ID: {mc_id}\n' if isinstance(mc_id, str) else f' | UUID: {player.uuid1}\n'
@@ -65,7 +62,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
     elif player.uuid2 is not None and player.uuid1 is None:
         try:
             mc_id = await get_mc_id(player.uuid2)
-        except TimeoutError:
+        except AsyncIOTimeoutError:
             info_text += f' | UUID: {player.uuid2}\n'
         else:
             info_text += f' | ID: {mc_id}\n' if isinstance(mc_id, str) else f' | UUID: {player.uuid2}\n'
@@ -74,7 +71,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
     elif bool(player.uuid1 and player.uuid2):
         try:
             mc_id1 = await get_mc_id(player.uuid1)  # type: ignore
-        except TimeoutError:
+        except AsyncIOTimeoutError:
             info_text += f' | UUID 1: {player.uuid1}\n'
         else:
             info_text += f' | ID 1: {mc_id1}\n' if isinstance(mc_id1, str) else f' | UUID 1: {player.uuid1}\n'
@@ -82,7 +79,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
         info_text += f' | ID 1添加时间：{format_time(player.uuid1_add_time)}\n'  # type: ignore
         try:
             mc_id2 = await get_mc_id(player.uuid2)  # type: ignore
-        except TimeoutError:
+        except AsyncIOTimeoutError:
             info_text += f' | UUID 2: {player.uuid2}\n'
         else:
             info_text += f' | ID 2: {mc_id2}\n' if isinstance(mc_id2, str) else f' | UUID 2: {player.uuid2}\n'

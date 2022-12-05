@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Mapping

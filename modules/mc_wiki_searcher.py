@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """
 搜索我的世界中文Wiki
 
@@ -24,7 +21,6 @@ from graia.ariadne.message.parser.twilight import (
 from graia.ariadne.model import Group
 from graia.ariadne.util.saya import decorate, dispatch, listen
 from graia.saya import Channel
-from launart import Launart
 from lxml import etree
 
 from util.control import require_disable
@@ -40,23 +36,20 @@ channel.meta['description'] = '[!！.]wiki <要搜索的关键词>'
 @listen(GroupMessage)
 @dispatch(Twilight(RegexMatch(r'[!！.]wiki').space(SpacePolicy.FORCE), 'keyword' @ RegexMatch(r'\S+')))
 @decorate(GroupPermission.require(), require_disable(channel.module))
-async def main(app: Ariadne, group: Group, keyword: RegexResult):
+async def main(app: Ariadne, group: Group, keyword: RegexResult, aiohttp: AiohttpClientInterface):
     if keyword.result is None:
         return
     key_word: str = str(keyword.result).strip()
     search_parm: str = quote(key_word, encoding='utf-8')
 
-    bili_search_url = 'https://searchwiki.biligame.com/mc/index.php?search=' + search_parm
-    fandom_search_url = 'https://minecraft.fandom.com/zh/index.php?search=' + search_parm
+    bili_search_url = f'https://searchwiki.biligame.com/mc/index.php?search={search_parm}'
+    fandom_search_url = f'https://minecraft.fandom.com/zh/index.php?search={search_parm}'
 
-    bili_url = 'https://wiki.biligame.com/mc/' + search_parm
-    fandom_url = 'https://minecraft.fandom.com/zh/wiki/' + search_parm + '?variant=zh-cn'
-
-    launart = Launart.current()
-    session = launart.get_interface(AiohttpClientInterface).service.session
+    bili_url = f'https://wiki.biligame.com/mc/{search_parm}'
+    fandom_url = f'https://minecraft.fandom.com/zh/wiki/{search_parm}?variant=zh-cn'
 
     try:
-        async with session.get(bili_url) as resp:
+        async with aiohttp.service.session.get(bili_url) as resp:
             status_code = resp.status
             text = await resp.text()
     except TimeoutError:

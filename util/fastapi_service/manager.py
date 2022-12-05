@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from fastapi import WebSocketDisconnect
 from fastapi.websockets import WebSocket
 from websockets.exceptions import ConnectionClosedOK

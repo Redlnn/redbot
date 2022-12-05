@@ -1,12 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
+import re
+from jinja2 import Template
 from datetime import datetime
-
-from graiax.text2img.playwright import html2img as _html2img
-from graiax.text2img.playwright.builtin import md2img as _md2img
-from graiax.text2img.playwright.builtin import text2img as _text2img
-from graiax.text2img.playwright.types import PageParms, ScreenshotParms
+from graiax.text2img.playwright import PageOption, ScreenshotOption, HTMLRenderer, convert_text, MarkdownConverter
+from util.fonts_provider import fill_font
 
 footer = (
     '<style>.footer{box-sizing:border-box;position:absolute;left:0;width:100%;background:#eee;'
@@ -15,24 +11,58 @@ footer = (
     f'<div class="footer"><p>由 RedBot 生成</p><p>{datetime.now().strftime("%Y/%m/%d %p %I:%M:%S")}</p></div>'
 )
 
+html_render = HTMLRenderer(
+    page_option=PageOption(device_scale_factor=1.5),
+    screenshot_option=ScreenshotOption(type='jpeg', quality=80, full_page=True, scale='device'),
+    page_modifiers=[
+        lambda page: page.route(lambda url: bool(re.match('^http://static.graiax/fonts/(.+)$', url)), fill_font)
+    ],
+)
+
+md_converter = MarkdownConverter()
+
 
 async def text2img(text: str, width: int = 800) -> bytes:
-    html = await _text2img(text, return_html=True)
+    html = convert_text(text)
     html += footer
 
-    return await _html2img(
+    return await html_render.render(
         html,
-        page_parms=PageParms(viewport={'width': width, 'height': 10}, device_scale_factor=1.5),
-        screenshot_parms=ScreenshotParms(type='jpeg', quality=80, full_page=True, scale='device'),
+        extra_page_option=PageOption(viewport={'width': width, 'height': 10}),
     )
 
 
-async def md2img(text: str, width: int = 800, extra_css: str = '') -> bytes:
-    html = await _md2img(text, extra_css=extra_css, return_html=True)
+async def md2img(text: str, width: int = 800) -> bytes:
+    html = md_converter.convert(text)
     html += footer
 
-    return await _html2img(
+    return await html_render.render(
         html,
-        page_parms=PageParms(viewport={'width': width, 'height': 10}, device_scale_factor=1.5),
-        screenshot_parms=ScreenshotParms(type='jpeg', quality=80, full_page=True, scale='device'),
+        extra_page_option=PageOption(viewport={'width': width, 'height': 10}),
+    )
+
+
+async def template2img(
+    template: str,
+    render_option: dict[str, str],
+    *,
+    extra_page_option: PageOption | None = None,
+    extra_screenshot_option: ScreenshotOption | None = None,
+) -> bytes:
+    """Jinja2 模板转图片
+    Args:
+        template (str): Jinja2 模板
+        render_option (Dict[str, str]): Jinja2.Template.render 的参数
+        return_html (bool): 返回生成的 HTML 代码而不是图片生成结果的 bytes
+        extra_page_option (PageOption, optional): Playwright 浏览器 new_page 方法的参数
+        extra_screenshot_option (ScreenshotOption, optional): Playwright 浏览器页面截图方法的参数
+        extra_page_methods (Optional[List[Callable[[Page], Awaitable]]]):
+            默认为 None，用于 https://playwright.dev/python/docs/api/class-page 中提到的部分方法，
+            如 `page.route(...)` 等
+    """
+    html_code: str = Template(template).render(**render_option)
+    return await html_render.render(
+        html_code,
+        extra_page_option=extra_page_option,
+        extra_screenshot_option=extra_screenshot_option,
     )

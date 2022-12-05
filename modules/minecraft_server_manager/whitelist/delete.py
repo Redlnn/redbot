@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-from asyncio.exceptions import TimeoutError
+from asyncio.exceptions import TimeoutError as AsyncIOTimeoutError
 from typing import Literal
 from uuid import UUID
 
@@ -21,7 +18,7 @@ from .query import query_uuid_by_qq, query_whitelist_by_uuid
 async def del_whitelist_from_server(mc_uuid: str | UUID) -> Literal[True] | MessageChain:
     try:
         mc_id = await get_mc_id(mc_uuid)
-    except TimeoutError as e:
+    except AsyncIOTimeoutError as e:
         logger.error(f'无法查询【{mc_uuid}】对应的正版id')
         logger.exception(e)
         return MessageChain(Plain(f'无法查询【{mc_uuid}】对应的正版id: 👇\n{e}'))
@@ -29,7 +26,7 @@ async def del_whitelist_from_server(mc_uuid: str | UUID) -> Literal[True] | Mess
         return MessageChain(Plain(f'向 mojang 查询【{mc_uuid}】的 uuid 时获得意外内容:  👇\n{await mc_id.text()}'))
     try:
         result = await execute_command(f'whitelist remove {mc_id}')
-    except TimeoutError:
+    except AsyncIOTimeoutError:
         return MessageChain(Plain('连接服务器超时'))
     except ValueError as e:
         logger.exception(e)
@@ -57,11 +54,11 @@ async def del_whitelist_by_qq(qq: int) -> MessageChain:
     if player.uuid2:
         flag2 = await del_whitelist_from_server(player.uuid2)
     if flag1 is True and isinstance(flag2, MessageChain):
-        return MessageChain(Plain('只从服务器上删除了 '), At(qq), Plain(f' 的部分白名单 👇\n')) + flag2
+        return MessageChain(Plain('只从服务器上删除了 '), At(qq), Plain(' 的部分白名单 👇\n')) + flag2
     elif flag2 is True and isinstance(flag1, MessageChain):
-        return MessageChain(Plain('只从服务器上删除了 '), At(qq), Plain(f' 的部分白名单 👇\n')) + flag1
+        return MessageChain(Plain('只从服务器上删除了 '), At(qq), Plain(' 的部分白名单 👇\n')) + flag1
     elif isinstance(flag1, MessageChain) and isinstance(flag2, MessageChain):
-        return MessageChain(Plain('从服务器上删除 '), At(qq), Plain(f' 的白名单时失败 👇\n\n')) + flag1 + MessageChain('\n') + flag2
+        return MessageChain(Plain('从服务器上删除 '), At(qq), Plain(' 的白名单时失败 👇\n\n')) + flag1 + MessageChain('\n') + flag2
     else:
         return MessageChain(At(qq), Plain(' 的白名单都删掉啦~'))
 
@@ -69,7 +66,7 @@ async def del_whitelist_by_qq(qq: int) -> MessageChain:
 async def del_whitelist_by_id(mc_id: str) -> MessageChain:
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
-    except TimeoutError as e:
+    except AsyncIOTimeoutError as e:
         logger.error(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误')
         logger.exception(e)
         return MessageChain(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误:  👇\n{e}'))

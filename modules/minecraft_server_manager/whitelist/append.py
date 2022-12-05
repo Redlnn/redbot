@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import time
-from asyncio.exceptions import TimeoutError
+from asyncio.exceptions import TimeoutError as AsyncIOTimeoutError
 from uuid import UUID
 
 from graia.ariadne.app import Ariadne
@@ -24,7 +21,7 @@ from .query import query_uuid_by_qq, query_whitelist_by_uuid
 async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> tuple[MessageChain, bool]:
     try:
         real_mc_id, mc_uuid = await get_uuid(mc_id)
-    except TimeoutError as e:
+    except AsyncIOTimeoutError as e:
         logger.error(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误')
         logger.exception(e)
         return MessageChain(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误:  👇\n{e}')), False
@@ -82,7 +79,7 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> tuple[Message
 
     try:
         res: str = await execute_command(f'whitelist add {real_mc_id}')
-    except TimeoutError:
+    except AsyncIOTimeoutError:
         return MessageChain(Plain('添加白名单时已写入数据库，但连接服务器超时，请联系管理解决')), False
     except ValueError as e:
         logger.exception(e)

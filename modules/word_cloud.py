@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """
 移植自：https://github.com/djkcyl/ABot-Graia/blob/MAH-V2/saya/WordCloud/__init__.py
 """
@@ -80,13 +77,15 @@ config = WordCloudConfig()
     )
 )
 @decorate(GroupPermission.require(), require_disable(channel.module), require_disable('core_modules.msg_loger'))
-async def command(app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult[int]):
+async def command(
+    app: Ariadne, group: Group, member: Member, wc_target: RegexResult, day_length: ArgResult[int], memcache: Memcache
+):
     if day_length.result is None:
         return
     day = day_length.result
     match_result: MessageChain = wc_target.result  # type: ignore # noqa: E275
 
-    process_list = await app.launch_manager.get_interface(Memcache).get('wordcloud_process_list', [])
+    process_list = await memcache.get('wordcloud_process_list', [])
     if len(process_list) > 2:
         await app.send_message(group, MessageChain(Plain('词云生成队列已满，请稍后再试')))
         return
@@ -144,19 +143,19 @@ async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, 
                     if result is None:
                         return
                     else:
-                        await app.send_message(group, MessageChain(Plain(f'你本周的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain('你本周的聊天词云 👇\n'), result))
                 case '月度总结':
                     result = await gen_wordcloud_member(app, group, member.id, today.tm_mday + 1, True)
                     if result is None:
                         return
                     else:
-                        await app.send_message(group, MessageChain(Plain(f'你本月的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain('你本月的聊天词云 👇\n'), result))
                 case '年度总结':
                     result = await gen_wordcloud_member(app, group, member.id, today.tm_yday + 1, True)
                     if result is None:
                         return
                     else:
-                        await app.send_message(group, MessageChain(Plain(f'你今年的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain('你今年的聊天词云 👇\n'), result))
         case '群':
             match str(target_time.result):
                 case '本周总结':
@@ -164,19 +163,19 @@ async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, 
                     if result is None:
                         return
                     else:
-                        await app.send_message(group, MessageChain(Plain(f'本群本周的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain('本群本周的聊天词云 👇\n'), result))
                 case '月度总结':
                     result = await gen_wordcloud_group(app, group, today.tm_mday + 1)
                     if result is None:
                         return
                     else:
-                        await app.send_message(group, MessageChain(Plain(f'本群本月的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain('本群本月的聊天词云 👇\n'), result))
                 case '年度总结':
                     result = await gen_wordcloud_group(app, group, today.tm_yday + 1)
                     if result is None:
                         return
                     else:
-                        await app.send_message(group, MessageChain(Plain(f'本群今年的聊天词云 👇\n'), result))
+                        await app.send_message(group, MessageChain(Plain('本群今年的聊天词云 👇\n'), result))
 
 
 async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int, me: bool) -> None | Image:
@@ -244,8 +243,7 @@ def get_frequencies(msg_list: list[str]) -> dict:
         tmp = re.sub(r'\[mirai:.+\]', '', persistent_string)
         text += f'{tmp}\n' if tmp else ''
     if not Path(data_path, 'WordCloud', 'user_dict.txt').exists():
-        f = open(Path(data_path, 'WordCloud', 'user_dict.txt'), 'a+')
-        f.close()
+        Path(data_path, 'WordCloud', 'user_dict.txt').touch()
     load_userdict(str(Path(data_path, 'WordCloud', 'user_dict.txt')))
     words = jieba.analyse.extract_tags(text, topK=700, withWeight=True)
     return dict(words)
