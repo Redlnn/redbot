@@ -14,10 +14,10 @@ from graia.ariadne.exception import (
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.model import Group
-from graiax.shortcut.saya import decorate, listen
 from graia.saya import Channel
 from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
+from graiax.shortcut.saya import decorate, listen
 
 from util.config import basic_cfg
 from util.control import require_disable
@@ -77,8 +77,9 @@ async def listener(source: Source, memcache: Memcache):
 
 
 @channel.use(SchedulerSchema(crontabify('0/2 * * * *')))
-async def clear_outdated(memcache: Memcache):
+async def clear_outdated(app: Ariadne):
     time_now = time.time()
+    memcache = app.launch_manager.get_interface(Memcache)
     recent_msg: list[dict] = await memcache.get('recent_msg', [])
     for item in recent_msg:
         if (time_now - item['time']) > 120:

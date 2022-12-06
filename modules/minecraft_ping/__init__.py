@@ -14,8 +14,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, RegexResult, Twilight
 from graia.ariadne.model import Group
-from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
+from graiax.shortcut.saya import decorate, dispatch, listen
 from loguru import logger
 
 from util.config import RConfig

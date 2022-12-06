@@ -16,8 +16,8 @@ from graia.ariadne.message.parser.twilight import (
     Twilight,
 )
 from graia.ariadne.model import Group, Member, MemberPerm
-from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
+from graiax.shortcut.saya import decorate, dispatch, listen
 
 from util.control import require_disable
 from util.control.permission import GroupPermission

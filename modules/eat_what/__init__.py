@@ -8,8 +8,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.message.parser.twilight import RegexMatch, SpacePolicy, Twilight
 from graia.ariadne.model import Group
-from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
+from graiax.shortcut.saya import decorate, dispatch, listen
 
 from util.control import require_disable
 from util.control.permission import GroupPermission

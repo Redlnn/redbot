@@ -6,8 +6,8 @@ from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Quote
 from graia.ariadne.model import Group, MemberPerm
-from graiax.shortcut.saya import decorate, listen
 from graia.saya import Channel
+from graiax.shortcut.saya import decorate, listen
 
 from util.control import require_disable
 from util.control.permission import GroupPermission
@@ -27,7 +27,9 @@ channel.meta['description'] = (
 
 @listen(GroupMessage)
 @decorate(GroupPermission.require(MemberPerm.Administrator, send_alert=False), require_disable(channel.module))
-async def main(app: Ariadne, group: Group, message: MessageChain, quote: Quote):
+async def main(app: Ariadne, group: Group, message: MessageChain, quote: Quote | None):
+    if quote is None:
+        return
     if re.match(r'^[!！.]读取消息$', str(message)):
         try:
             message_event = await app.get_message_from_id(quote.id)

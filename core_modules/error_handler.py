@@ -4,9 +4,9 @@ from io import StringIO
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
-from graiax.shortcut.saya import listen
 from graia.broadcast.builtin.event import ExceptionThrowed
 from graia.saya import Channel
+from graiax.shortcut.saya import listen
 
 from util.config import basic_cfg
 from util.text2img import md2img

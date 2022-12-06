@@ -19,8 +19,8 @@ from graia.ariadne.message.parser.twilight import (
     Twilight,
 )
 from graia.ariadne.model import Group
-from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
+from graiax.shortcut.saya import decorate, dispatch, listen
 from lxml import etree
 
 from util.control import require_disable

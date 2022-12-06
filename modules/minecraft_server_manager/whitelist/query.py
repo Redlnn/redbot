@@ -47,7 +47,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
         return MessageChain(At(int(player.qq)), Plain(f' 已被封禁，封禁原因：{player.block_reason}'))
     if player.uuid1 is None and player.uuid2 is None:
         return MessageChain(At(int(player.qq)), Plain(' 一个白名单都没有呢'))
-    info_text = f'({player.qq}) 的白名单信息如下：\n | 入群时间: {player.join_time}\n'
+    info_text = f'({player.qq}) 的白名单信息如下：\n | 入群时间: {format_time(player.join_time or 0)}\n'
     if player.leave_time:
         info_text += f' | 退群时间: {player.leave_time}\n'
     if player.uuid1 is not None and player.uuid2 is None:
@@ -58,7 +58,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
         else:
             info_text += f' | ID: {mc_id}\n' if isinstance(mc_id, str) else f' | UUID: {player.uuid1}\n'
 
-        info_text += f' | 添加时间：{format_time(player.uuid1_add_time)}\n'  # type: ignore
+        info_text += f' | 添加时间：{format_time(player.uuid1_add_time or 0)}\n'
     elif player.uuid2 is not None and player.uuid1 is None:
         try:
             mc_id = await get_mc_id(player.uuid2)
@@ -67,7 +67,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
         else:
             info_text += f' | ID: {mc_id}\n' if isinstance(mc_id, str) else f' | UUID: {player.uuid2}\n'
 
-        info_text += f' | 添加时间：{format_time(player.uuid2_add_time)}'  # type: ignore
+        info_text += f' | 添加时间：{format_time(player.uuid2_add_time or 0)}'
     elif bool(player.uuid1 and player.uuid2):
         try:
             mc_id1 = await get_mc_id(player.uuid1)  # type: ignore
@@ -76,7 +76,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
         else:
             info_text += f' | ID 1: {mc_id1}\n' if isinstance(mc_id1, str) else f' | UUID 1: {player.uuid1}\n'
 
-        info_text += f' | ID 1添加时间：{format_time(player.uuid1_add_time)}\n'  # type: ignore
+        info_text += f' | ID 1添加时间：{format_time(player.uuid1_add_time or 0)}\n'
         try:
             mc_id2 = await get_mc_id(player.uuid2)  # type: ignore
         except AsyncIOTimeoutError:
@@ -84,6 +84,6 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
         else:
             info_text += f' | ID 2: {mc_id2}\n' if isinstance(mc_id2, str) else f' | UUID 2: {player.uuid2}\n'
 
-        info_text += f' | ID 2添加时间：{format_time(player.uuid2_add_time)}'  # type: ignore
+        info_text += f' | ID 2添加时间：{format_time(player.uuid2_add_time or 0)}'
 
     return MessageChain(At(int(player.qq)), Plain(info_text))

@@ -7,9 +7,9 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, AtAll, Image, Plain, Source
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Group, Member
+from graia.saya import Channel
 from graiax.shortcut.interrupt import FunctionWaiter
 from graiax.shortcut.saya import decorate, dispatch, listen
-from graia.saya import Channel
 
 from util.control import require_disable
 from util.control.interval import GroupInterval

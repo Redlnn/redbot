@@ -19,9 +19,9 @@ from graia.ariadne.message.parser.twilight import (
     WildcardMatch,
 )
 from graia.ariadne.model import Group, Member, MemberInfo, MemberPerm
+from graia.saya import Channel, Saya
 from graiax.shortcut.interrupt import FunctionWaiter
 from graiax.shortcut.saya import decorate, dispatch, listen
-from graia.saya import Channel, Saya
 from loguru import logger
 from sqlalchemy import select, update
 

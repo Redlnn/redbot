@@ -27,8 +27,8 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Group, Member
-from graiax.shortcut.saya import decorate, listen
 from graia.saya import Channel
+from graiax.shortcut.saya import decorate, listen
 from graiax.text2img.playwright import PageOption
 from launart import Launart
 from loguru import logger
@@ -39,8 +39,7 @@ from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
 from util.path import root_path
-
-from ..util.text2img import template2img
+from util.text2img import template2img
 
 channel = Channel.current()
 
