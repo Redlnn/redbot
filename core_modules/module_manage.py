@@ -12,8 +12,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, RegexResult, Twilight
 from graia.ariadne.model import Group, Member, MemberPerm
-from graia.ariadne.util.interrupt import FunctionWaiter
-from graia.ariadne.util.saya import decorate, dispatch, listen
+from graiax.shortcut.interrupt import FunctionWaiter
+from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel, Saya
 from loguru import logger
 

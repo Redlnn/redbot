@@ -9,7 +9,7 @@ from graia.ariadne.event.mirai import NudgeEvent
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
-from graia.ariadne.util.saya import decorate, listen
+from graiax.shortcut.saya import decorate, listen
 from graia.saya import Channel
 
 from util.config import basic_cfg

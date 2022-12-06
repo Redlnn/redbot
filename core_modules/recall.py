@@ -14,7 +14,7 @@ from graia.ariadne.exception import (
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.model import Group
-from graia.ariadne.util.saya import decorate, listen
+from graiax.shortcut.saya import decorate, listen
 from graia.saya import Channel
 from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify

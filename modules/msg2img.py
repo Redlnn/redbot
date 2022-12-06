@@ -7,8 +7,8 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, AtAll, Image, Plain, Source
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Group, Member
-from graia.ariadne.util.interrupt import FunctionWaiter
-from graia.ariadne.util.saya import decorate, dispatch, listen
+from graiax.shortcut.interrupt import FunctionWaiter
+from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
 
 from util.control import require_disable

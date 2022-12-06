@@ -6,7 +6,7 @@ from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Quote
 from graia.ariadne.model import Group, MemberPerm
-from graia.ariadne.util.saya import decorate, listen
+from graiax.shortcut.saya import decorate, listen
 from graia.saya import Channel
 
 from util.control import require_disable
@@ -27,19 +27,15 @@ channel.meta['description'] = (
 
 @listen(GroupMessage)
 @decorate(GroupPermission.require(MemberPerm.Administrator, send_alert=False), require_disable(channel.module))
-async def main(app: Ariadne, group: Group, message: MessageChain):
+async def main(app: Ariadne, group: Group, message: MessageChain, quote: Quote):
     if re.match(r'^[!！.]读取消息$', str(message)):
         try:
-            quote_id = message.include(Quote).get_first(Quote).id
-        except IndexError:
-            return
-        try:
-            message_event = await app.get_message_from_id(quote_id)
+            message_event = await app.get_message_from_id(quote.id)
         except UnknownTarget:
             await app.send_message(group, MessageChain(Plain('找不到该消息，对象不存在')))
             return
         chain = message_event.message_chain
-        await app.send_message(group, MessageChain(Plain(f'消息ID: {quote_id}\n消息内容：{chain.as_persistent_string()}')))
+        await app.send_message(group, MessageChain(Plain(f'消息ID: {quote.id}\n消息内容：{chain.as_persistent_string()}')))
     elif re.match(r'^[!！.]发送消息 .+', str(message)):
         if msg := re.sub(r'[!！.]发送消息 ', '', str(message), count=1):
             await app.send_message(group, MessageChain.from_persistent_string(msg))

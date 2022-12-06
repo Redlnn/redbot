@@ -19,7 +19,7 @@ from graia.ariadne.message.parser.twilight import (
     Twilight,
 )
 from graia.ariadne.model import Group
-from graia.ariadne.util.saya import decorate, dispatch, listen
+from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
 from lxml import etree
 

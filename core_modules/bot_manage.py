@@ -23,8 +23,8 @@ from graia.ariadne.message.parser.twilight import (
     Twilight,
 )
 from graia.ariadne.model import Friend
-from graia.ariadne.util.interrupt import FunctionWaiter
-from graia.ariadne.util.saya import decorate, dispatch, listen
+from graiax.shortcut.interrupt import FunctionWaiter
+from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
 from loguru import logger
 

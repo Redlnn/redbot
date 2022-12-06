@@ -5,7 +5,7 @@ from graia.ariadne.app import Ariadne
 from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
-from graia.ariadne.util.saya import listen
+from graiax.shortcut.saya import listen
 from graia.broadcast import Broadcast
 from graia.saya import Channel
 from loguru import logger

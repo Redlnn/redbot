@@ -29,7 +29,7 @@ from graia.ariadne.message.parser.twilight import (
 )
 from graia.ariadne.model import Group, Member
 from graia.ariadne.util.async_exec import cpu_bound
-from graia.ariadne.util.saya import decorate, dispatch, listen
+from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
 from jieba import load_userdict
 from PIL import Image as Img

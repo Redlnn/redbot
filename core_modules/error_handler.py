@@ -4,7 +4,7 @@ from io import StringIO
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
-from graia.ariadne.util.saya import listen
+from graiax.shortcut.saya import listen
 from graia.broadcast.builtin.event import ExceptionThrowed
 from graia.saya import Channel
 

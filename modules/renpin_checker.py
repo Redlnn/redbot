@@ -20,7 +20,7 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Image, Plain
 from graia.ariadne.message.parser.twilight import RegexMatch, Twilight
 from graia.ariadne.model import Group, Member
-from graia.ariadne.util.saya import decorate, dispatch, listen
+from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
 from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify

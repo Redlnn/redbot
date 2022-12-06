@@ -8,7 +8,7 @@ from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Source
 from graia.ariadne.message.parser.twilight import RegexMatch, SpacePolicy, Twilight
 from graia.ariadne.model import Group
-from graia.ariadne.util.saya import decorate, dispatch, listen
+from graiax.shortcut.saya import decorate, dispatch, listen
 from graia.saya import Channel
 
 from util.control import require_disable

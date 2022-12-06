@@ -27,7 +27,7 @@ from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
 from graia.ariadne.model import Group, Member
-from graia.ariadne.util.saya import decorate, listen
+from graiax.shortcut.saya import decorate, listen
 from graia.saya import Channel
 from graiax.text2img.playwright import PageOption
 from launart import Launart
