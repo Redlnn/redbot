@@ -51,7 +51,7 @@ ASCII_LOGO = r'''_____   _____  _____  _____  _____  _____
 async def send_to_admin(message: MessageChain):
     app = Ariadne.current()
     for admin in basic_cfg.admin.admins:
-        with contextlib.suppress(UnknownTarget):
+        with contextlib.suppress(UnknownTarget, ValueError):
             await app.send_friend_message(admin, message)
             await asyncio.sleep(uniform(0.5, 1.5))
 
