@@ -1,90 +1,58 @@
-from pathlib import Path
+from dataclasses import dataclass, field
 
-import orjson
-from pydantic import AnyHttpUrl
-
-from util.better_pydantic import BaseModel
-
-from .path import config_path, data_path
+from kayaku import config, create
 
 
-class RConfig(BaseModel):
-    __filename__: str | None = None  # 无需指定后缀，当实例化时不传入该参数则与 BaseModel 无异
-    __in_data_folder__: bool = False
-
-    def __init__(self, **data) -> None:
-        if self.__filename__ is None:
-            super().__init__(**data)
-            return
-        elif self.__in_data_folder__:
-            path = Path(data_path, f'{self.__filename__}.json')
-        else:
-            path = Path(config_path, f'{self.__filename__}.json')
-
-        if not path.exists():
-            super().__init__(**data)
-            with open(path, 'w') as f:
-                f.write(self.json(option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE))
-        else:
-            with open(path, 'rb') as fb:
-                file_data = orjson.loads(fb.read())
-            if data:
-                for key, item in data.items():
-                    file_data[key] = item
-            super().__init__(**file_data)
-
-    def save(self) -> None:
-        if self.__filename__ is None:
-            raise ValueError('__filename__ is not defined')
-        elif self.__in_data_folder__:
-            path = Path(data_path, f'{self.__filename__}.json')
-        else:
-            path = Path(config_path, f'{self.__filename__}.json')
-        with open(path, 'w') as f:
-            f.write(self.json(option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE))
-
-    def reload(self) -> None:
-        if self.__filename__ is None:
-            raise ValueError('__filename__ is not defined')
-        elif self.__in_data_folder__:
-            path = Path(data_path, f'{self.__filename__}.json')
-        else:
-            path = Path(config_path, f'{self.__filename__}.json')
-        with open(path, 'rb') as fb:
-            data = orjson.loads(fb.read())
-        super().__init__(**data)
+@dataclass
+class MAHConfig:
+    account: int = 123456789
+    """Mirai Api Http 已登录的账号"""
+    host: str = 'http://localhost:8080'
+    """Mirai Api Http 地址"""
+    verifyKey: str = 'VerifyKey'
+    """Mirai Api Http 的 verifyKey"""
 
 
-class MAHConfig(RConfig):
-    account: int
-    host: AnyHttpUrl = 'http://localhost:8080'  # type: ignore
-    verifyKey: str
-
-
-class AdminConfig(RConfig):
-    masterId: int = 731347477  # 机器人主人的QQ号
+@dataclass
+class AdminConfig:
+    masterId: int = 731347477
+    """机器人主人的QQ号"""
     masterName: str = 'Red_lnn'
-    admins: list[int] = [731347477]
+    """机器人主人的称呼"""
+    admins: list[int] = field(default_factory=lambda: [731347477])
+    """机器人管理员列表"""
 
 
-class BasicConfig(RConfig):
-    __filename__: str = 'redbot'
+@config('redbot')
+class BasicConfig:
     botName: str = 'RedBot'
+    """机器人的QQ号"""
     logChat: bool = True
-    console: bool = False
+    """是否将聊天信息打印在日志中"""
     debug: bool = False
+    """是否启用调试模式"""
     databaseUrl: str = 'sqlite+aiosqlite:///data/database.db'
-    # mysql+aiomysql://user:pass@hostname/dbname?charset=utf8mb4
+    """数据库地址
+
+    MySQL示例：mysql+aiomysql://user:pass@hostname/dbname?charset=utf8mb4
+    """
     miraiApiHttp: MAHConfig = MAHConfig(account=123456789, verifyKey='VerifyKey')
+    """Mirai Api Http 配置"""
     admin: AdminConfig = AdminConfig()
+    """机器人管理相关配置"""
 
 
-class ModulesConfig(RConfig):
-    __filename__: str = 'modules'
-    enabled: bool = True  # 是否允许加载模块
-    globalDisabledModules: list[str] = []  # 全局禁用的模块列表
-    disabledGroups: dict[str, list[int]] = {'core_modules.bot_manage': [123456789, 123456780]}  # 分群禁用模块的列表
+@config('modules')
+class ModulesConfig:
+    enabled: bool = True
+    """是否允许加载模块"""
+    globalDisabledModules: list[str] = field(default_factory=lambda: [])
+    """全局禁用的模块列表"""
+    disabledGroups: dict[str, list[int]] = field(
+        default_factory=lambda: {'core_modules.bot_manage': [123456789, 123456780]}
+    )
+    """分群禁用模块的列表"""
 
 
-basic_cfg = BasicConfig()
-modules_cfg = ModulesConfig()
+basic_cfg = create(BasicConfig)
+modules_cfg = create(ModulesConfig, flush=True)

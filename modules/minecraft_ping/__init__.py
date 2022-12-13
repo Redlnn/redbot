@@ -7,6 +7,7 @@ Ping mc服务器
 """
 
 import socket
+from dataclasses import field
 
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
@@ -16,9 +17,9 @@ from graia.ariadne.message.parser.twilight import RegexMatch, RegexResult, Twili
 from graia.ariadne.model import Group
 from graia.saya import Channel
 from graiax.shortcut.saya import decorate, dispatch, listen
+from kayaku import config, create
 from loguru import logger
 
-from util.config import RConfig
 from util.control import require_disable
 from util.control.interval import MemberInterval
 from util.control.permission import GroupPermission
@@ -33,12 +34,13 @@ channel.meta['author'] = ['Red_lnn']
 channel.meta['description'] = '获取指定mc服务器的信息\n用法：\n[!！.]ping {mc服务器地址}'
 
 
-class McServerPingConfig(RConfig):
-    __filename__: str = 'mc_server_ping'
-    servers: dict[str, str] = {'123456789': 'localhost:25565'}
+@config(channel.module)
+class McServerPingConfig:
+    servers: dict[str, str] = field(default_factory=lambda: {'123456789': 'localhost:25565'})
+    """指定群组的默认服务器"""
 
 
-ping_cfg = McServerPingConfig()
+ping_cfg = create(McServerPingConfig)
 
 
 @listen(GroupMessage)

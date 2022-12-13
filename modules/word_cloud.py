@@ -6,6 +6,7 @@ import datetime
 import random
 import re
 import time
+from dataclasses import field
 from io import BytesIO
 from os import listdir
 from pathlib import Path
@@ -32,10 +33,10 @@ from graia.ariadne.util.async_exec import cpu_bound
 from graia.saya import Channel
 from graiax.shortcut.saya import decorate, dispatch, listen
 from jieba import load_userdict
+from kayaku import config, create
 from PIL import Image as Img
 from wordcloud import ImageColorGenerator, WordCloud
 
-from util.config import RConfig
 from util.control import require_disable
 from util.control.interval import ManualInterval
 from util.control.permission import GroupPermission
@@ -59,13 +60,18 @@ channel.meta['description'] = (
 )
 
 
-class WordCloudConfig(RConfig):
-    __filename__: str = 'wordcloud'
-    blacklistWord: list[str] = []
-    fontName: str = 'OPPOSans-B.ttf'
+@config(channel.module)
+class WordCloudConfig:
+    blacklistWord: list[str] = field(default_factory=lambda: [])
+    """黑名单词汇
+
+    当聊天记录中出现其中一个词时会忽略整句话
+    """
+    fontName: str = 'HarmonyOS_Sans_SC_Bold.ttf'
+    """用于生成词云的字体文件"""
 
 
-config = WordCloudConfig()
+cfg = create(WordCloudConfig)
 
 
 @listen(GroupMessage)
@@ -179,7 +185,8 @@ async def main(app: Ariadne, group: Group, member: Member, target: RegexResult, 
 
 
 async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int, me: bool) -> None | Image:
-    process_list = await app.launch_manager.get_interface(Memcache).get('wordcloud_process_list', [])
+    memcache = app.launch_manager.get_interface(Memcache)
+    process_list = await memcache.get('wordcloud_process_list', [])
     if target in process_list:
         await app.send_message(group, MessageChain(Plain('你') if me else At(target), Plain('的词云已在生成中，请稍后...')))
         return
@@ -202,12 +209,13 @@ async def gen_wordcloud_member(app: Ariadne, group: Group, target: int, day: int
     words = await get_frequencies(msg_list)
     image_bytes = await gen_wordcloud(words)
     process_list.remove(target)
-    await app.launch_manager.get_interface(Memcache).set('wordcloud_process_list', process_list)
+    await memcache.set('wordcloud_process_list', process_list)
     return Image(data_bytes=image_bytes)
 
 
 async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Image:
-    process_list = await app.launch_manager.get_interface(Memcache).get('wordcloud_process_list', [])
+    memcache = app.launch_manager.get_interface(Memcache)
+    process_list = await memcache.get('wordcloud_process_list', [])
     if group.id in process_list:
         await app.send_message(group, MessageChain(Plain('本群词云已在生成中，请稍后...')))
         return
@@ -226,12 +234,12 @@ async def gen_wordcloud_group(app: Ariadne, group: Group, day: int) -> None | Im
     words = await get_frequencies(msg_list)
     image_bytes = await gen_wordcloud(words)
     process_list.remove(group.id)
-    await app.launch_manager.get_interface(Memcache).set('wordcloud_process_list', process_list)
+    await memcache.set('wordcloud_process_list', process_list)
     return Image(data_bytes=image_bytes)
 
 
 def skip(persistent_string: str):
-    return any(word in persistent_string for word in config.blacklistWord)
+    return any(word in persistent_string for word in cfg.blacklistWord)
 
 
 @cpu_bound
@@ -257,7 +265,7 @@ def gen_wordcloud(words: dict) -> bytes:
         raise ValueError('找不到可用的词云遮罩图，请在 data/WordCloud/mask 文件夹内放置图片文件')
     bg_list = listdir(Path(data_path, 'WordCloud', 'mask'))
     mask = numpy.array(Img.open(Path(data_path, 'WordCloud', 'mask', random.choice(bg_list))))
-    font_path = str(Path(Path.cwd(), 'fonts', config.fontName))
+    font_path = str(Path(Path.cwd(), 'libs', 'fonts', cfg.fontName))
     wordcloud = WordCloud(font_path=font_path, background_color='#f0f0f0', mask=mask, max_words=700, scale=2)
     wordcloud.generate_from_frequencies(words)
     image_colors = ImageColorGenerator(mask, default_color=(255, 255, 255))

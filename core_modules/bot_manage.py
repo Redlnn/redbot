@@ -2,8 +2,9 @@ import asyncio
 import contextlib
 from random import uniform
 
+import kayaku
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.lifecycle import ApplicationLaunched, ApplicationShutdowned
+from graia.ariadne.event.lifecycle import ApplicationLaunched
 from graia.ariadne.event.message import FriendMessage
 from graia.ariadne.event.mirai import (
     BotGroupPermissionChangeEvent,
@@ -200,7 +201,7 @@ async def invited_join_group(app: Ariadne, event: BotInvitedJoinGroupRequestEven
         await event.accept()
         if event.source_group:
             perm_cfg.group_whitelist.append(event.source_group)
-            perm_cfg.save()
+            kayaku.save(perm_cfg)
         await send_to_admin(
             MessageChain(
                 Plain(
@@ -261,7 +262,7 @@ async def kick_group(event: BotLeaveEventKick):
     被踢出群
     """
     perm_cfg.group_whitelist.remove(event.group.id)
-    perm_cfg.save()
+    kayaku.save(perm_cfg)
 
     await send_to_admin(
         MessageChain(f'收到被踢出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
@@ -275,7 +276,7 @@ async def leave_group(event: BotLeaveEventActive):
     主动退群
     """
     perm_cfg.group_whitelist.remove(event.group.id)
-    perm_cfg.save()
+    kayaku.save(perm_cfg)
 
     await send_to_admin(
         MessageChain(f'收到主动退出群聊事件\n群号：{event.group.id}\n群名：{event.group.name}\n已移出白名单'),
@@ -303,7 +304,7 @@ async def add_group_whitelist(app: Ariadne, friend: Friend, group: RegexResult):
     if friend.id not in basic_cfg.admin.admins or group.result is None:
         return
     perm_cfg.group_whitelist.append(int(str(group.result)))
-    perm_cfg.save()
+    kayaku.save(perm_cfg)
 
     await app.send_friend_message(
         friend,
@@ -323,7 +324,7 @@ async def add_qq_blacklist(app: Ariadne, friend: Friend, qq: RegexResult):
     if friend.id not in basic_cfg.admin.admins or qq.result is None:
         return
     perm_cfg.user_blacklist.append(int(str(qq.result)))
-    perm_cfg.save()
+    kayaku.save(perm_cfg)
 
     await app.send_friend_message(
         friend,

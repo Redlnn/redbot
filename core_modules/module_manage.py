@@ -6,6 +6,7 @@ Bot 管理
 import os
 from pathlib import Path
 
+import kayaku
 from graia.ariadne.app import Ariadne
 from graia.ariadne.event.message import GroupMessage
 from graia.ariadne.message.chain import MessageChain
@@ -111,7 +112,7 @@ async def enable_module(app: Ariadne, group: Group, module_id: RegexResult):
     elif group.id in disabled_groups:
         disabled_groups.remove(group.id)
         modules_cfg.disabledGroups[target_module.module] = disabled_groups
-        modules_cfg.save()
+        kayaku.save(modules_cfg)
         await app.send_message(group, MessageChain(Plain('模块已启用')))
     else:
         await app.send_message(group, MessageChain(Plain('无变化，模块已处于开启状态')))
@@ -135,7 +136,7 @@ async def disable_module(app: Ariadne, group: Group, module_id: RegexResult):
     elif group.id not in disabled_groups:
         disabled_groups.append(group.id)
         modules_cfg.disabledGroups[target_module.module] = disabled_groups
-        modules_cfg.save()
+        kayaku.save(modules_cfg)
         await app.send_message(group, MessageChain(Plain('模块已禁用')))
     else:
         await app.send_message(group, MessageChain(Plain('无变化，模块已处于禁用状态')))
@@ -155,7 +156,7 @@ async def global_enable_module(app: Ariadne, group: Group, module_id: RegexResul
         await app.send_message(group, MessageChain(Plain('无变化，模块已处于全局开启状态')))
     else:
         modules_cfg.globalDisabledModules.remove(target_module.module)
-        modules_cfg.save()
+        kayaku.save(modules_cfg)
         await app.send_message(group, MessageChain(Plain('模块已全局启用')))
 
 
@@ -173,7 +174,7 @@ async def global_disable_module(app: Ariadne, group: Group, module_id: RegexResu
         await app.send_message(group, MessageChain(Plain('你指定的模块不允许禁用')))
     elif target_module.module not in modules_cfg.globalDisabledModules:
         modules_cfg.globalDisabledModules.append(target_module.module)
-        modules_cfg.save()
+        kayaku.save(modules_cfg)
         await app.send_message(group, MessageChain(Plain('模块已全局禁用')))
     else:
         await app.send_message(group, MessageChain(Plain('无变化，模块已处于全局禁用状态')))

@@ -4,23 +4,28 @@
 移植自 Xenon：https://github.com/McZoo/Xenon/blob/master/lib/control.py
 """
 
+from dataclasses import field
+
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Group, Member, MemberPerm
 from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
+from kayaku import config, create
 
-from ..config import RConfig, basic_cfg
-
-
-class PermConfig(RConfig):
-    __filename__: str = 'permission'
-    group_whitelist: list[int] = []
-    user_blacklist: list[int] = []
+from ..config import basic_cfg
 
 
-perm_cfg = PermConfig()
+@config('permission')
+class PermConfig:
+    group_whitelist: list[int] = field(default_factory=lambda: [])
+    """白名单群组列表"""
+    user_blacklist: list[int] = field(default_factory=lambda: [])
+    """用户黑名单列表"""
+
+
+perm_cfg = create(PermConfig)
 
 
 class GroupPermission:
