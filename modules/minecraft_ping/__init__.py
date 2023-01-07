@@ -107,13 +107,13 @@ async def main(app: Ariadne, group: Group, ping_target: RegexResult):
             motd += f'\n | {motd_list[1].strip()}'
     else:
         motd = None
-    msg_send = f'咕？咕咕？咕咕咕！！\n服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
+    msg_send = f'咕咕咕！🎉\n服务器版本: [{ping_result["protocol"]}] {ping_result["version"]}\n'
     msg_send += f'MOTD:\n{motd}\n' if motd is not None else ''
     msg_send += f'延迟: {ping_result["delay"]}ms\n在线人数: {ping_result["online_player"]}/{ping_result["max_player"]}'
     if ping_result['online_player'] != '0' and ping_result['player_list']:
         players_list = ''.join(f' | {_["name"]}\n' for _ in ping_result['player_list'])
-        if int(ping_result['online_player']) <= 10:
-            msg_send += f'\n在线列表（不完整）：\n{players_list.rstrip()}'
+        if int(ping_result['online_player']) != len(ping_result['player_list']):
+            msg_send += f'\n在线列表：\n{players_list.rstrip()}\n | ...'
         else:
             msg_send += f'\n在线列表：\n{players_list.rstrip()}'
 
