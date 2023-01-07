@@ -58,7 +58,7 @@ async def gen_query_info_text(player: PlayerInfo) -> MessageChain:
         else:
             info_text += f' | ID: {mc_id}\n' if isinstance(mc_id, str) else f' | UUID: {player.uuid1}\n'
 
-        info_text += f' | 添加时间：{format_time(player.uuid1_add_time or 0)}\n'
+        info_text += f' | 添加时间：{format_time(player.uuid1_add_time or 0)}'
     elif player.uuid2 is not None and player.uuid1 is None:
         try:
             mc_id = await get_mc_id(player.uuid2)
