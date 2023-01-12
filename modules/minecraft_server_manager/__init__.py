@@ -492,7 +492,9 @@ async def member_leave(app: Ariadne, group: Group, member: Member):
     else:
         result[0].leave_time = int(time.time())
         await Database.update_exist(result[0])
-        await app.send_message(group, await del_whitelist_by_qq(member.id))
+        await app.send_message(
+            group, MessageChain(f'{member.name}({member.id})退群了') + await del_whitelist_by_qq(member.id)
+        )
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -510,7 +512,9 @@ async def member_kick(app: Ariadne, group: Group, target: Member):
         result[0].blocked = True
         result[0].block_reason = 'Kick'
         await Database.update_exist(result[0])
-        await app.send_message(group, await del_whitelist_by_qq(target.id))
+        await app.send_message(
+            group, MessageChain(f'{target.name}({target.id})被踢了') + await del_whitelist_by_qq(target.id)
+        )
 
 
 # ---------------------------------------------------------------------------------------------------------------------

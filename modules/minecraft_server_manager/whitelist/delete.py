@@ -48,11 +48,15 @@ async def del_whitelist_by_qq(qq: int) -> MessageChain:
         .where(PlayerInfo.qq == str(qq))
         .values(uuid1=None, uuid1_add_time=None, uuid2=None, uuid2_add_time=None)
     )
-    flag1 = flag2 = False
+    flag1 = False
+    flag2 = False
     if player.uuid1:
         flag1 = await del_whitelist_from_server(player.uuid1)
     if player.uuid2:
         flag2 = await del_whitelist_from_server(player.uuid2)
+    if player.uuid1 is None and player.uuid2 is None:
+        return MessageChain('该QQ号没有申请白名单')
+
     if flag1 is True and isinstance(flag2, MessageChain):
         return MessageChain(Plain('只从服务器上删除了 '), At(qq), Plain(' 的部分白名单 👇\n')) + flag2
     elif flag2 is True and isinstance(flag1, MessageChain):
