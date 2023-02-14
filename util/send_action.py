@@ -64,7 +64,7 @@ class Safe(SendMessageAction):
         ...
 
     @overload
-    async def exception(s, i):  # sourcery skip: instance-method-first-arg-name
+    async def exception(s, i):  # sourcery skip: instance-method-first-arg-name #type: ignore
         ...
 
     async def exception(s: 'Safe' | Exc_T, i: Exc_T | None = None):  # type: ignore # noqa

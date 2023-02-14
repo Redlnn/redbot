@@ -1,7 +1,7 @@
 import re
 
 from graia.ariadne.app import Ariadne
-from graia.ariadne.event.message import GroupMessage
+from graia.ariadne.event.message import ActiveMessage, GroupMessage, MessageEvent
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Plain, Quote
@@ -32,12 +32,13 @@ async def main(app: Ariadne, group: Group, message: MessageChain, quote: Quote |
         return
     if re.match(r'^[!！.]读取消息$', str(message)):
         try:
-            message_event = await app.get_message_from_id(quote.id)
+            msg = await app.get_message_from_id(quote.id)
         except UnknownTarget:
             await app.send_message(group, MessageChain(Plain('找不到该消息，对象不存在')))
             return
-        chain = message_event.message_chain
-        await app.send_message(group, MessageChain(Plain(f'消息ID: {quote.id}\n消息内容：{chain.as_persistent_string()}')))
+        if isinstance(msg, (MessageEvent, ActiveMessage)):
+            chain = msg.message_chain
+            await app.send_message(group, MessageChain(Plain(f'消息ID: {quote.id}\n消息内容：{chain.as_persistent_string()}')))
     elif re.match(r'^[!！.]发送消息 .+', str(message)):
         if msg := re.sub(r'[!！.]发送消息 ', '', str(message), count=1):
             await app.send_message(group, MessageChain.from_persistent_string(msg))
