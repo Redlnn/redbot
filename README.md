@@ -27,7 +27,7 @@
 ## 注意事项
 
 1. **本仓库经常 Force Push，不建议 Fork 和 Clone**
-2. 本 Bot 的设计只考虑本人需求随时可能大改，推荐使用 [`ABot`](https://github.com/djkcyl/ABot-Graia/) 和 [`sagiri-bot`](https://github.com/SAGIRI-kawaii/sagiri-bot)
+2. 本 Bot 的设计只考虑本人需求随时可能大改，推荐使用 [`BBot`](https://github.com/djkcyl/BBot-Graia/) 和 [`sagiri-bot`](https://github.com/SAGIRI-kawaii/sagiri-bot)
 
 ## 功能列表
 
@@ -40,12 +40,10 @@
 - 我的世界中文 Wiki 搜索
 - BiliBili 视频分享解析：支持小程序、卡片分享、av号、BV号、B站链接
 - 别戳我
-- 消息转图片（支持纯文本和静态图像）
+- 文本转图片
 - 历史聊天数据记录
-- 读取被回复消息的<可持久化字符串>及使用<可持久化字符串>发送消息
 - 每日抽签（人品检测）：~~狗屁不通的签文生成~~
 - 随机数抽取
-- 聊天历史词云生成
 
 ## 部署
 

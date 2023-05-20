@@ -68,7 +68,8 @@ async def main(
         cn_1, text2, en_1, en_2 = str(target.result).split('\n')
         prefix, number, suffix = text2.split(' ')
     except ValueError as e:
-        raise ValueError('输入格式不正确') from e
+        await app.send_message(group, MessageChain('格式错误，注意空格和换行，参考：\n.倒计时 距月球危机\n还剩 16 秒\nTHE LUNAR CRISIS\nIN 16 SECONDS'))
+        return
 
     cn_font = ImageFont.truetype(str(lib_path / 'fonts' / 'HarmonyOS_Sans_SC_Bold.ttf'), 100)
     number_font = ImageFont.truetype(str(lib_path / 'fonts' / 'HarmonyOS_Sans_SC_Bold.ttf'), 285)
@@ -142,6 +143,9 @@ def the_wondering_earth_counting_down(
     Returns:
         PILImage.Image: 图片生成结果的PILImage
     """
+
+    en_1 = en_1.upper()
+    en_2 = en_2.upper()
 
     box1 = get_box(cn_1, cn_font)
     box_prefix = get_box(prefix, cn_font)
