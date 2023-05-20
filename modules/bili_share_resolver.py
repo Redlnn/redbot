@@ -185,7 +185,7 @@ def math(num: int):
         return ('%.2f' % (num / 100000000)) + '亿'
 
 
-template = Path(root_path, 'libs', 'jinja2_templates', 'bili_video.html').read_text(encoding='utf-8')
+template = Path(root_path, 'static', 'jinja2_templates', 'bili_video.html').read_text(encoding='utf-8')
 
 
 async def gen_img(data: VideoInfo) -> bytes:

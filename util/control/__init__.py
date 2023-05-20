@@ -17,7 +17,7 @@ def require_disable(module_name: str) -> Depend:
                     raise ExecutionStop
                 elif event.sender.id in modules_cfg.disabledGroups[module_name]:
                     raise ExecutionStop
-            elif isinstance(event, NudgeEvent) and event.group_id in modules_cfg.disabledGroups[module_name]:
+            elif isinstance(event, NudgeEvent) and event.target in modules_cfg.disabledGroups[module_name]:
                 raise ExecutionStop
             elif hasattr(event, 'group') and getattr(event, 'group') in modules_cfg.disabledGroups[module_name]:
                 raise ExecutionStop

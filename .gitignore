@@ -5,8 +5,8 @@ test/
 test.py
 alembic_data/
 alembic.ini
-libs/fonts/*
-!libs/fonts/.gitkeep
+static/fonts/*
+!static/fonts/.gitkeep
 
 # VSCode
 .vscode

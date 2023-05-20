@@ -9,6 +9,7 @@ from graia.ariadne.event.mirai import NudgeEvent
 from graia.ariadne.exception import UnknownTarget
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import Image, Plain
+from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from graiax.shortcut.saya import decorate, listen
 
@@ -56,13 +57,11 @@ async def get_message(event: NudgeEvent):
 async def main(app: Ariadne, event: NudgeEvent):
     if event.target != basic_cfg.miraiApiHttp.account:
         return
-    elif not ManualInterval.require(f'{event.supplicant}_{event.group_id if event.friend_id is not None else None}', 3):
+    elif not ManualInterval.require(f'{event.supplicant}_{event.target}', 3):
         return
     await asyncio.sleep(uniform(0.2, 0.6))
     with contextlib.suppress(UnknownTarget):
-        await app.send_nudge(event.supplicant, event.group_id)  # 当戳一戳来自好友时 event.group_id 为 None，因此这里不判断也可以
+        await app.send_nudge(event.supplicant, event.target)
         await asyncio.sleep(uniform(0.2, 0.6))
-        if event.context_type == 'friend' and event.friend_id:
-            await app.send_friend_message(event.friend_id, (await get_message(event)))
-        elif event.context_type == 'group' and event.group_id:
-            await app.send_group_message(event.group_id, (await get_message(event)))
+        if isinstance(event.subject, Group | Friend):
+            await app.send_message(event.subject, (await get_message(event)))

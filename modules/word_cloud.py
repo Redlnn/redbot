@@ -265,7 +265,7 @@ def gen_wordcloud(words: dict) -> bytes:
         raise ValueError('找不到可用的词云遮罩图，请在 data/WordCloud/mask 文件夹内放置图片文件')
     bg_list = listdir(Path(data_path, 'WordCloud', 'mask'))
     mask = numpy.array(Img.open(Path(data_path, 'WordCloud', 'mask', random.choice(bg_list))))
-    font_path = str(Path(Path.cwd(), 'libs', 'fonts', cfg.fontName))
+    font_path = str(Path(Path.cwd(), 'static', 'fonts', cfg.fontName))
     wordcloud = WordCloud(font_path=font_path, background_color='#f0f0f0', mask=mask, max_words=700, scale=2)
     wordcloud.generate_from_frequencies(words)
     image_colors = ImageColorGenerator(mask, default_color=(255, 255, 255))
