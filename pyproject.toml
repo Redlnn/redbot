@@ -9,7 +9,7 @@ dependencies = [
     "aio-mc-rcon",
     "aiofile",
     "aiohttp[speedups]",
-    "aiomysql",
+    "asyncmy",
     "aiosqlite",
     "graia-ariadne[full]",
     "graiax-fastapi",
@@ -27,7 +27,7 @@ dependencies = [
     "python-jose[cryptography]",
     "python-multipart",
     "qrcode",
-    "sqlmodel",
+    "sqlalchemy[asyncio]",
     "uvicorn[standard]",
     "wordcloud",
     "kayaku",
@@ -38,8 +38,6 @@ readme = "README.md"
 
 [project.urls]
 repository = "https://github.com/Redlnn/redbot"
-
-[project.optional-dependencies]
 
 [tool.pdm]
 [tool.pdm.dev-dependencies]

@@ -11,7 +11,7 @@ from graiax.text2img.playwright import (
 from graiax.text2img.playwright.renderer import BuiltinCSS
 from jinja2 import Template
 
-from util.fonts_provider import fill_font
+from libs.fonts_provider import fill_font
 
 footer = (
     '<style>.footer{box-sizing:border-box;position:absolute;left:0;width:100%;background:#eee;'

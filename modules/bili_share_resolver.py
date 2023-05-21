@@ -35,11 +35,11 @@ from loguru import logger
 from PIL.Image import Image as PILImage
 from qrcode import QRCode
 
-from util.control import require_disable
-from util.control.interval import ManualInterval
-from util.control.permission import GroupPermission
-from util.path import root_path
-from util.text2img import template2img
+from libs.control import require_disable
+from libs.control.interval import ManualInterval
+from libs.control.permission import GroupPermission
+from libs.text2img import template2img
+from static.path import root_path
 
 channel = Channel.current()
 

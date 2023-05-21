@@ -19,8 +19,8 @@ from graia.scheduler.saya import SchedulerSchema
 from graia.scheduler.timers import crontabify
 from graiax.shortcut.saya import decorate, listen
 
-from util.config import basic_cfg
-from util.control import require_disable
+from libs.config import basic_cfg
+from libs.control import require_disable
 
 channel = Channel.current()
 

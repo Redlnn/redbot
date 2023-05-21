@@ -3,7 +3,7 @@ from typing import Literal
 from launart import ExportInterface, Launchable
 from loguru import logger
 
-from util.database import Database
+from libs import db
 
 
 class DatabaseInitService(Launchable):
@@ -19,4 +19,4 @@ class DatabaseInitService(Launchable):
 
     async def launch(self, _):
         logger.info('Initializing database...')
-        await Database.init()
+        await db.initialize()

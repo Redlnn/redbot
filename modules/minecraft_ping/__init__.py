@@ -20,9 +20,9 @@ from graiax.shortcut.saya import decorate, dispatch, listen
 from kayaku import config, create
 from loguru import logger
 
-from util.control import require_disable
-from util.control.interval import MemberInterval
-from util.control.permission import GroupPermission
+from libs.control import require_disable
+from libs.control.interval import MemberInterval
+from libs.control.permission import GroupPermission
 
 from .ping_client import ping
 from .utils import is_domain, is_ip

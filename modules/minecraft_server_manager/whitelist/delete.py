@@ -1,15 +1,14 @@
 from asyncio.exceptions import TimeoutError as AsyncIOTimeoutError
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 from uuid import UUID
 
+from aiohttp import ClientResponse
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from loguru import logger
-from sqlalchemy import update
 
-from util.database import Database
+from libs import db
 
-from ..model import PlayerInfo
 from ..rcon import execute_command
 from ..utils import get_mc_id, get_uuid
 from .query import query_uuid_by_qq, query_whitelist_by_uuid
@@ -39,32 +38,23 @@ async def del_whitelist_from_server(mc_uuid: str | UUID) -> Literal[True] | Mess
 
 
 async def del_whitelist_by_qq(qq: int) -> MessageChain:
-    player = await query_uuid_by_qq(qq)
-    if player is None:
+    uuid_ = await query_uuid_by_qq(qq)
+    if uuid_ is None:
         return MessageChain(At(qq), Plain(' 好像一个白名单都没有呢~'))
 
-    await Database.exec(
-        update(PlayerInfo)
-        .where(PlayerInfo.qq == str(qq))
-        .values(uuid1=None, uuid1_add_time=None, uuid2=None, uuid2_add_time=None)
-    )
-    flag1 = False
-    flag2 = False
-    if player.uuid1:
-        flag1 = await del_whitelist_from_server(player.uuid1)
-    if player.uuid2:
-        flag2 = await del_whitelist_from_server(player.uuid2)
-    if player.uuid1 is None and player.uuid2 is None:
-        return MessageChain('该QQ号没有申请白名单')
+    await db.delete_many_exist(uuid_)
+    flags = []
+    for _ in uuid_:
+        flags.append(await del_whitelist_from_server(_.uuid))
 
-    if flag1 is True and isinstance(flag2, MessageChain):
-        return MessageChain(Plain('只从服务器上删除了 '), At(qq), Plain(' 的部分白名单 👇\n')) + flag2
-    elif flag2 is True and isinstance(flag1, MessageChain):
-        return MessageChain(Plain('只从服务器上删除了 '), At(qq), Plain(' 的部分白名单 👇\n')) + flag1
-    elif isinstance(flag1, MessageChain) and isinstance(flag2, MessageChain):
-        return MessageChain(Plain('从服务器上删除 '), At(qq), Plain(' 的白名单时失败 👇\n\n')) + flag1 + MessageChain('\n') + flag2
-    else:
+    if all(map((lambda _: _ and isinstance(_, bool)), flags)):
         return MessageChain(At(qq), Plain(' 的白名单都删掉啦~'))
+
+    tmp = MessageChain(Plain('只从服务器上删除了 '), At(qq), Plain(' 的部分白名单 👇\n'))
+    for _ in flags:
+        if isinstance(_, MessageChain):
+            tmp += _ + '\n'
+    return tmp
 
 
 async def del_whitelist_by_id(mc_id: str) -> MessageChain:
@@ -74,35 +64,27 @@ async def del_whitelist_by_id(mc_id: str) -> MessageChain:
         logger.error(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误')
         logger.exception(e)
         return MessageChain(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误:  👇\n{e}'))
-    if not isinstance(real_mc_id, str):
+    if isinstance(real_mc_id, ClientResponse):
         if real_mc_id.status == 204:
             return MessageChain(Plain('你选择的不是一个正版ID'))
         else:
             return MessageChain(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时获得意外内容:  👇\n{await real_mc_id.text()}'))
+
+    # 进入 isinstance(real_mc_id, ClientResponse) 并 return 后 mc_uuid 必不为 None
+    if TYPE_CHECKING and mc_uuid is None:
+        return MessageChain('bug')
+
     return await del_whitelist_by_uuid(mc_uuid)
 
 
-async def del_whitelist_by_uuid(mc_uuid: str) -> MessageChain:
+async def del_whitelist_by_uuid(mc_uuid: UUID) -> MessageChain:
     player = await query_whitelist_by_uuid(mc_uuid)
     if player is None:
         return MessageChain(Plain('没有使用这个 uuid 的玩家'))
-    if str(player.uuid1).replace('-', '') == mc_uuid.replace('-', ''):
-        await Database.exec(
-            update(PlayerInfo).where(PlayerInfo.qq == player.qq).values(uuid1=None, uuid1_add_time=None)
-        )
-        del_result = await del_whitelist_from_server(mc_uuid)
-        if del_result is True:
-            return MessageChain(Plain('已从服务器删除 '), At(int(player.qq)), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
-        else:
-            return del_result
-    elif str(player.uuid2).replace('-', '') == mc_uuid.replace('-', ''):
-        await Database.exec(
-            update(PlayerInfo).where(PlayerInfo.qq == player.qq).values(uuid2=None, uuid2_add_time=None)
-        )
-        del_result = await del_whitelist_from_server(mc_uuid)
-        if del_result is True:
-            return MessageChain(Plain('已从服务器删除 '), At(int(player.qq)), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
-        else:
-            return del_result
+
+    await db.delete_exist(await query_whitelist_by_uuid(mc_uuid))
+    del_result = await del_whitelist_from_server(mc_uuid)
+    if del_result is True:
+        return MessageChain(Plain('已从服务器删除 '), At(int(player.qq)), Plain(f' 的 uuid 为 {mc_uuid} 的白名单'))
     else:
-        return MessageChain('发生了异常的内部逻辑错误，请联系管理员')
+        return del_result

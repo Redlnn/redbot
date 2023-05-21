@@ -4,7 +4,7 @@ from graia.broadcast import ExecutionStop
 from graia.broadcast.builtin.decorators import Depend
 from graia.broadcast.entities.event import Dispatchable
 
-from util.config import modules_cfg
+from libs.config import modules_cfg
 
 
 def require_disable(module_name: str) -> Depend:

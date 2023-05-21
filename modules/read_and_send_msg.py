@@ -9,8 +9,8 @@ from graia.ariadne.model import Group, MemberPerm
 from graia.saya import Channel
 from graiax.shortcut.saya import decorate, listen
 
-from util.control import require_disable
-from util.control.permission import GroupPermission
+from libs.control import require_disable
+from libs.control.permission import GroupPermission
 
 channel = Channel.current()
 

@@ -1,21 +1,22 @@
 import time
 from asyncio.exceptions import TimeoutError as AsyncIOTimeoutError
-from uuid import UUID
+from typing import TYPE_CHECKING
 
+from aiohttp import ClientResponse
 from graia.ariadne.app import Ariadne
 from graia.ariadne.message.chain import MessageChain
 from graia.ariadne.message.element import At, Plain
 from graia.ariadne.model import Member
 from loguru import logger
-from sqlalchemy import update
+from sqlalchemy.sql import func
 
-from util.database import Database
+from libs import db
 
 from ..config import config
-from ..model import PlayerInfo
+from ..model import Player, UUIDList
 from ..rcon import execute_command
 from ..utils import get_uuid
-from .query import query_uuid_by_qq, query_whitelist_by_uuid
+from .query import query_banned_player_by_qq, query_banned_uuid, query_player_by_qq, query_whitelist_by_uuid
 
 
 async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> tuple[MessageChain, bool]:
@@ -25,57 +26,51 @@ async def add_whitelist_to_qq(qq: int, mc_id: str, admin: bool) -> tuple[Message
         logger.error(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误')
         logger.exception(e)
         return MessageChain(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时发生了意料之外的错误:  👇\n{e}')), False
-    if not isinstance(real_mc_id, str):
+    if isinstance(real_mc_id, ClientResponse):
         if real_mc_id.status == 204:
             return MessageChain(Plain('你选择的不是一个正版ID')), False
         else:
             return MessageChain(Plain(f'向 mojang 查询【{mc_id}】的 uuid 时获得意外内容:  👇\n{await real_mc_id.text()}')), False
 
-    player = await query_whitelist_by_uuid(mc_uuid)
-    if player is None:
+    # 进入 isinstance(real_mc_id, ClientResponse) 并 return 后 mc_uuid 必不为 None
+    if TYPE_CHECKING and mc_uuid is None:
+        return MessageChain('bug'), False
+
+    uuid_ = await query_whitelist_by_uuid(mc_uuid)
+    if uuid_ is None:
         pass
-    elif int(player.qq) == qq:
+    elif uuid_.qq == qq:
         return MessageChain(Plain('这个id本来就是你哒')), False
     else:
-        return MessageChain(Plain('你想要这个吗？\n这个是 '), At(int(player.qq)), Plain(' 哒~')), False
+        return MessageChain(Plain('你想要这个吗？\n这个是 '), At(uuid_.qq), Plain(' 哒~')), False
 
-    player = await query_uuid_by_qq(qq)
+    banned_uuid = await query_banned_uuid(mc_uuid)
+    if banned_uuid is None:
+        pass
+    elif banned_uuid.uuid == mc_uuid:
+        return MessageChain(Plain(f'该UUID已被封禁，封禁原因：{banned_uuid.banReason}')), False
+
+    banned_player = await query_banned_player_by_qq(qq)
+    if banned_player is not None:
+        return MessageChain(Plain(f'你的账号已被封禁，封禁原因：{banned_player.banReason}')), False
+
+    player = await query_player_by_qq(qq)
     if player is None:
         app = Ariadne.current()
         member: Member = await app.get_member(config.serverGroup, qq)
-        player = PlayerInfo(qq=str(member.id), join_time=member.join_timestamp)
-        await Database.add(player)
-    elif player.blocked:
-        return MessageChain(Plain(f'你的账号已被封禁，封禁原因：{player.block_reason}')), False
-
-    if player.uuid1 is None and player.uuid2 is None:
-        await Database.exec(
-            update(PlayerInfo)
-            .where(PlayerInfo.qq == str(qq))
-            .values(uuid1=UUID(mc_uuid).hex, uuid1_add_time=int(time.time()))
+        await db.add(
+            Player(
+                qq=member.id,
+                joinTime=(member.join_timestamp * 1000) if member.join_timestamp else None,
+                hadWhitelist=True,
+            )
         )
-    elif player.uuid1 is not None and player.uuid2 is None:
-        if admin:
-            await Database.exec(
-                update(PlayerInfo)
-                .where(PlayerInfo.qq == str(qq))
-                .values(uuid2=UUID(mc_uuid).hex, uuid2_add_time=int(time.time()))
-            )
-        else:
-            return MessageChain(Plain('你已有一个白名单，如要申请第二个白名单请联系管理员')), False
-    elif player.uuid1 is None:
-        if admin:
-            await Database.exec(
-                update(PlayerInfo)
-                .where(PlayerInfo.qq == str(qq))
-                .values(uuid1=UUID(mc_uuid).hex, uuid1_add_time=int(time.time()))
-            )
-        else:
-            return MessageChain(Plain('你已有一个白名单，如要申请第二个白名单请联系管理员')), False
-    elif admin:
-        return MessageChain(Plain('目标玩家已有两个白名单，如需添加白名单请删除至少一个')), False
+
+    wl_count: int = (await db.exec(func.count(UUIDList.id))).scalar()  # type: ignore
+    if wl_count > 0 and not admin:
+        return MessageChain(Plain(f'你已有{wl_count}个白名单，如要申请新白名单请联系管理员')), False
     else:
-        return MessageChain(Plain('你已经有两个白名单了噢')), False
+        await db.add(UUIDList(uuid=mc_uuid, wlAddTime=int(time.time() * 1000), operater=10086))
 
     try:
         res: str = await execute_command(f'whitelist add {real_mc_id}')

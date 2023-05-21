@@ -18,10 +18,10 @@ from graiax.shortcut.interrupt import FunctionWaiter
 from graiax.shortcut.saya import decorate, dispatch, listen
 from loguru import logger
 
-from util.config import basic_cfg, modules_cfg
-from util.control import require_disable
-from util.control.permission import GroupPermission
-from util.text2img import md2img
+from libs.config import basic_cfg, modules_cfg
+from libs.control import require_disable
+from libs.control.permission import GroupPermission
+from libs.text2img import md2img
 
 saya = Saya.current()
 channel = Channel.current()
@@ -83,10 +83,10 @@ for {group.name}({group.id})
     md += f'''
 ---
 
-私は {basic_cfg.admin.masterName} の {basic_cfg.botName} です www  
-群管理员要想配置模块开关请发送【.启用/禁用 <id>】  
-要想查询某模块的用法和介绍请发送【.用法 <id>】  
-若无法触发，请检查前缀符号是否正确如！与!  
+私は {basic_cfg.admin.masterName} の {basic_cfg.botName} です www
+群管理员要想配置模块开关请发送【.启用/禁用 <id>】
+要想查询某模块的用法和介绍请发送【.用法 <id>】
+若无法触发，请检查前缀符号是否正确如！与!
 或是命令中有无多余空格，除特别说明外均不需要 @bot
 
 </div>'''

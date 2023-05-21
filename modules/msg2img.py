@@ -11,10 +11,10 @@ from graia.saya import Channel
 from graiax.shortcut.interrupt import FunctionWaiter
 from graiax.shortcut.saya import decorate, dispatch, listen
 
-from util.control import require_disable
-from util.control.interval import GroupInterval
-from util.control.permission import GroupPermission
-from util.text2img import md2img
+from libs.control import require_disable
+from libs.control.interval import GroupInterval
+from libs.control.permission import GroupPermission
+from libs.text2img import md2img
 
 channel = Channel.current()
 

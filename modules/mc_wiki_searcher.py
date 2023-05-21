@@ -23,8 +23,8 @@ from graia.saya import Channel
 from graiax.shortcut.saya import decorate, dispatch, listen
 from lxml import etree
 
-from util.control import require_disable
-from util.control.permission import GroupPermission
+from libs.control import require_disable
+from libs.control.permission import GroupPermission
 
 channel = Channel.current()
 

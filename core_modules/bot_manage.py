@@ -29,9 +29,9 @@ from graiax.shortcut.interrupt import FunctionWaiter
 from graiax.shortcut.saya import decorate, dispatch, listen
 from loguru import logger
 
-from util.config import basic_cfg
-from util.control import require_disable
-from util.control.permission import perm_cfg
+from libs.config import basic_cfg
+from libs.control import require_disable
+from libs.control.permission import perm_cfg
 
 channel = Channel.current()
 

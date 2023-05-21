@@ -8,8 +8,8 @@ from graia.broadcast.builtin.event import ExceptionThrowed
 from graia.saya import Channel
 from graiax.shortcut.saya import listen
 
-from util.config import basic_cfg
-from util.text2img import md2img
+from libs.config import basic_cfg
+from libs.text2img import md2img
 
 channel = Channel.current()
 channel.meta['can_disable'] = False

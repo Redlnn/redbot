@@ -21,9 +21,9 @@ from PIL import Image as PILImage
 from PIL import ImageDraw, ImageFilter, ImageFont
 from PIL.ImageFont import FreeTypeFont
 
-from util.control import require_disable
-from util.control.permission import GroupPermission
-from util.path import lib_path
+from libs.control import require_disable
+from libs.control.permission import GroupPermission
+from static.path import lib_path
 
 channel = Channel.current()
 
@@ -67,8 +67,10 @@ async def main(
     try:
         cn_1, text2, en_1, en_2 = str(target.result).split('\n')
         prefix, number, suffix = text2.split(' ')
-    except ValueError as e:
-        await app.send_message(group, MessageChain('格式错误，注意空格和换行，参考：\n.倒计时 距月球危机\n还剩 16 秒\nTHE LUNAR CRISIS\nIN 16 SECONDS'))
+    except ValueError:
+        await app.send_message(
+            group, MessageChain('格式错误，注意空格和换行，参考：\n.倒计时 距月球危机\n还剩 16 秒\nTHE LUNAR CRISIS\nIN 16 SECONDS')
+        )
         return
 
     cn_font = ImageFont.truetype(str(lib_path / 'fonts' / 'HarmonyOS_Sans_SC_Bold.ttf'), 100)

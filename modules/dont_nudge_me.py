@@ -13,10 +13,10 @@ from graia.ariadne.model import Friend, Group
 from graia.saya import Channel
 from graiax.shortcut.saya import decorate, listen
 
-from util.config import basic_cfg
-from util.control import require_disable
-from util.control.interval import ManualInterval
-from util.path import data_path
+from libs.config import basic_cfg
+from libs.control import require_disable
+from libs.control.interval import ManualInterval
+from static.path import data_path
 
 channel = Channel.current()
 

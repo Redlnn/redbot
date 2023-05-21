@@ -7,15 +7,17 @@ from typing import TYPE_CHECKING
 from loguru import logger
 from richuru import LoguruHandler, install
 
-from util.config import basic_cfg
-from util.path import logs_path
+from libs.config import basic_cfg
+from libs.database import DatabaseManager
+from static.path import logs_path
+
+db = DatabaseManager(basic_cfg.databaseUrl)
 
 if TYPE_CHECKING:
     from graia.ariadne.event import MiraiEvent
 
 
 def get_graia_version():
-
     extra: list[tuple[str, str]] = []
     official: list[tuple[str, str]] = []
     community: list[tuple[str, str]] = []

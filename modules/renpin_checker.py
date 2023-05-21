@@ -26,11 +26,11 @@ from graia.scheduler.timers import crontabify
 from graiax.shortcut.saya import decorate, dispatch, listen
 from loguru import logger
 
-from util.control import require_disable
-from util.control.interval import MemberInterval
-from util.control.permission import GroupPermission
-from util.path import data_path
-from util.text2img import md2img
+from libs.control import require_disable
+from libs.control.interval import MemberInterval
+from libs.control.permission import GroupPermission
+from libs.text2img import md2img
+from static.path import data_path
 
 channel = Channel.current()
 
@@ -44,7 +44,8 @@ qianwens = {
         '会起风的日子，无论干什么都会很顺利的一天。  \n'
         '周围的人心情也非常愉快，绝对不会发生冲突，  \n还可以吃到一直想吃，但没机会吃的美味佳肴。  \n无论是工作，还是旅行，都一定会十分顺利吧。  \n那么，应当在这样的好时辰里，一鼓作气前进…',
         '宝剑出匣来，无往不利。出匣之光，亦能照亮他人。  \n今日能一箭射中空中的幻翼，能一击命中敌人的胸膛。  \n若没有目标，不妨四处转转，说不定会有意外之喜。  \n同时，也不要忘记和倒霉的同伴分享一下好运气哦。',
-        '失而复得的一天。  \n原本以为石沉大海的事情有了好的回应，  \n原本分道扬镳的朋友或许可以再度和好，  \n不经意间想起了原本已经忘记了的事情。  \n世界上没有什么是永远无法挽回的，  \n今天就是能够挽回失去事物的日子。',
+        '失而复得的一天。  \n原本以为石沉大海的事情有了好的回应，  \n原本分道扬镳的朋友或许可以再度和好，  \n不经意间想起了原本已经忘记了的事情。  \n世界上没有什么是永远无法挽回的，  \n'
+        '今天就是能够挽回失去事物的日子。',
         '浮云散尽月当空，逢此签者皆为上吉。  \n明镜在心清如许，所求之事心想则成。  \n合适顺心而为的一天，不管是想做的事情，  \n还是想见的人，现在是行动起来的好时机。',
     ],
     '吉': [

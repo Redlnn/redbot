@@ -1,5 +1,6 @@
 import re
 import time
+from typing import Literal
 from uuid import UUID
 
 from aiohttp import ClientResponse
@@ -27,19 +28,19 @@ async def is_mc_id(mc_id: str) -> bool:
     return bool(1 <= len(mc_id) <= 16 and re.match(r'^[0-9a-zA-Z_]+$', mc_id))
 
 
-async def is_uuid(mc_uuid: str) -> bool:
+async def is_uuid(mc_uuid: str) -> Literal[False] | UUID:
     """
     判断是否为合法uuid
     """
     try:
-        UUID(mc_uuid)
+        _ = UUID(mc_uuid)
     except ValueError:
         return False
     else:
-        return True
+        return _
 
 
-async def get_uuid(mc_id: str) -> tuple[str | ClientResponse, str]:
+async def get_uuid(mc_id: str) -> tuple[str, UUID] | tuple[ClientResponse, None]:
     """
     通过 id 从 Mojang 获取 uuid
 
@@ -50,9 +51,9 @@ async def get_uuid(mc_id: str) -> tuple[str | ClientResponse, str]:
 
     async with session.get(f'https://api.mojang.com/users/profiles/minecraft/{mc_id}') as resp:
         if resp.status != 200:
-            return resp, ''
+            return resp, None
         resp_json = await resp.json()
-        return resp_json['name'], resp_json['id']
+        return resp_json['name'], UUID(resp_json['id'])
 
 
 async def get_mc_id(mc_uuid: str | UUID) -> str | ClientResponse:

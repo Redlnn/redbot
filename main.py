@@ -17,13 +17,13 @@ from graiax.playwright import PlaywrightService
 
 kayaku.initialize({"{**}": "./config/{**}"})
 
-from util import log_level_handler, replace_logger  # noqa: E402
-from util.config import basic_cfg, modules_cfg  # noqa: E402
+from libs import log_level_handler, replace_logger  # noqa: E402
+from libs.config import basic_cfg, modules_cfg  # noqa: E402
 
-# from util.fastapi_service import FastAPIStarletteService  # noqa: E402
-from util.launart_services import DatabaseInitService  # noqa: E402
-from util.path import modules_path, root_path  # noqa: E402
-from util.send_action import Safe  # noqa: E402
+# from libs.fastapi_service import FastAPIStarletteService  # noqa: E402
+from libs.launart_services import DatabaseInitService  # noqa: E402
+from libs.send_action import Safe  # noqa: E402
+from static.path import modules_path, root_path  # noqa: E402
 
 kayaku.bootstrap()
 

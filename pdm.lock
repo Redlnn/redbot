@@ -52,15 +52,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "aiomysql"
-version = "0.1.1"
-requires_python = ">=3.7"
-summary = "MySQL driver for asyncio."
-dependencies = [
-    "PyMySQL>=1.0",
-]
-
-[[package]]
 name = "aiosignal"
 version = "1.3.1"
 requires_python = ">=3.7"
@@ -90,6 +81,12 @@ name = "async-timeout"
 version = "4.0.2"
 requires_python = ">=3.6"
 summary = "Timeout context manager for asyncio programs"
+
+[[package]]
+name = "asyncmy"
+version = "0.2.7"
+requires_python = ">=3.7,<4.0"
+summary = "A fast asyncio MySQL driver"
 
 [[package]]
 name = "attrs"
@@ -712,12 +709,6 @@ requires_python = ">=3.7"
 summary = "Pygments is a syntax highlighting package written in Python."
 
 [[package]]
-name = "pymysql"
-version = "1.0.3"
-requires_python = ">=3.7"
-summary = "Pure Python MySQL Driver"
-
-[[package]]
 name = "pyparsing"
 version = "3.0.9"
 requires_python = ">=3.6.8"
@@ -841,31 +832,23 @@ summary = "Sniff out which async library your code is running under"
 
 [[package]]
 name = "sqlalchemy"
-version = "1.4.41"
-requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
+version = "2.0.15"
+requires_python = ">=3.7"
 summary = "Database Abstraction Library"
 dependencies = [
-    "greenlet!=0.4.17; python_version >= \"3\" and (platform_machine == \"aarch64\" or (platform_machine == \"ppc64le\" or (platform_machine == \"x86_64\" or (platform_machine == \"amd64\" or (platform_machine == \"AMD64\" or (platform_machine == \"win32\" or platform_machine == \"WIN32\"))))))",
+    "greenlet!=0.4.17; platform_machine == \"aarch64\" or (platform_machine == \"ppc64le\" or (platform_machine == \"x86_64\" or (platform_machine == \"amd64\" or (platform_machine == \"AMD64\" or (platform_machine == \"win32\" or platform_machine == \"WIN32\")))))",
+    "typing-extensions>=4.2.0",
 ]
 
 [[package]]
-name = "sqlalchemy2-stubs"
-version = "0.0.2a34"
-requires_python = ">=3.6"
-summary = "Typing Stubs for SQLAlchemy 1.4"
+name = "sqlalchemy"
+version = "2.0.15"
+extras = ["asyncio"]
+requires_python = ">=3.7"
+summary = "Database Abstraction Library"
 dependencies = [
-    "typing-extensions>=3.7.4",
-]
-
-[[package]]
-name = "sqlmodel"
-version = "0.0.8"
-requires_python = ">=3.6.1,<4.0.0"
-summary = "SQLModel, SQL databases in Python, designed for simplicity, compatibility, and robustness."
-dependencies = [
-    "SQLAlchemy<=1.4.41,>=1.4.17",
-    "pydantic<2.0.0,>=1.8.2",
-    "sqlalchemy2-stubs",
+    "greenlet!=0.4.17",
+    "sqlalchemy==2.0.15",
 ]
 
 [[package]]
@@ -991,7 +974,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "dev"]
-content_hash = "sha256:203cf7b379f26cdabcdac831c6e0ca66ecd15dfe9a313fb2c01fba34bbeca119"
+content_hash = "sha256:8ed8da96c0b6e58620519009b77f41e82c1d3e8bbaee511a2bc131ab80f575ac"
 
 [metadata.files]
 "aio-mc-rcon 3.2.0" = [
@@ -1095,10 +1078,6 @@ content_hash = "sha256:203cf7b379f26cdabcdac831c6e0ca66ecd15dfe9a313fb2c01fba34b
     {url = "https://mirrors.aliyun.com/pypi/packages/f0/56/8b005d90ba0f40d0076978d30b20922440afdc4964b50a7429a0e2024d56/aiohttp-3.8.4-cp38-cp38-win32.whl", hash = "sha256:33587f26dcee66efb2fff3c177547bd0449ab7edf1b73a7f5dea1e38609a0c54"},
     {url = "https://mirrors.aliyun.com/pypi/packages/fc/51/962b938a296eaf08d1cfa80ad5d42670b15aa868f897c0e71ea1cf9d1f0e/aiohttp-3.8.4-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:3f43255086fe25e36fd5ed8f2ee47477408a73ef00e804cb2b5cba4bf2ac7f5e"},
 ]
-"aiomysql 0.1.1" = [
-    {url = "https://mirrors.aliyun.com/pypi/packages/31/03/1a112200f689892e0faa60d6fa8bff4fffc1d5fa29833c5d1439de808628/aiomysql-0.1.1.tar.gz", hash = "sha256:0d686c4fdae6b67d1825d8be60fa3b0e644fca2c84d3c936d850fc259c8e107e"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/92/09/4be9cda17cfb0334e15df26f52f580e5611457a41cf972c1e31aa7e0ceeb/aiomysql-0.1.1-py3-none-any.whl", hash = "sha256:b66fa1481ca71c5ee0d933ec3abf51f6136543a3710ba80b134eb33da7ed6f13"},
-]
 "aiosignal 1.3.1" = [
     {url = "https://mirrors.aliyun.com/pypi/packages/76/ac/a7305707cb852b7e16ff80eaf5692309bde30e2b1100a1fcacdc8f731d97/aiosignal-1.3.1-py3-none-any.whl", hash = "sha256:f8376fb07dd1e86a584e4fcdec80b36b7f81aac666ebc724e2c090300dd83b17"},
     {url = "https://mirrors.aliyun.com/pypi/packages/ae/67/0952ed97a9793b4958e5736f6d2b346b414a2cd63e82d05940032f45b32f/aiosignal-1.3.1.tar.gz", hash = "sha256:54cd96e15e1649b75d6c87526a6ff0b6c1b0dd3459f43d9ca11d48c339b68cfc"},
@@ -1114,6 +1093,56 @@ content_hash = "sha256:203cf7b379f26cdabcdac831c6e0ca66ecd15dfe9a313fb2c01fba34b
 "async-timeout 4.0.2" = [
     {url = "https://mirrors.aliyun.com/pypi/packages/54/6e/9678f7b2993537452710ffb1750c62d2c26df438aa621ad5fa9d1507a43a/async-timeout-4.0.2.tar.gz", hash = "sha256:2163e1640ddb52b7a8c80d0a67a08587e5d245cc9c553a74a847056bc2976b15"},
     {url = "https://mirrors.aliyun.com/pypi/packages/d6/c1/8991e7c5385b897b8c020cdaad718c5b087a6626d1d11a23e1ea87e325a7/async_timeout-4.0.2-py3-none-any.whl", hash = "sha256:8ca1e4fcf50d07413d66d1a5e416e42cfdf5851c981d679a09851a6853383b3c"},
+]
+"asyncmy 0.2.7" = [
+    {url = "https://mirrors.aliyun.com/pypi/packages/01/e6/9877f324bf7b68502d066a30a42c40fc7e2a186c6b5cc36ea9892e75c3bb/asyncmy-0.2.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a0ce331a6b093b67d0646f7c807cfbef0b62d3166b22cab0d7c4bb7c6963ae0e"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/14/43/b217c6dbc9cf9eaa7d703341e2ed2eeceee608e8c2a193054f3fbf9c7a97/asyncmy-0.2.7-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:7d7697e5db6d27296d190b0c174af5b81f597bdbc76b86e782d94d2793820cbd"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/15/5d/dab15d76cebce76de90f357bece94ea207a3469951d077f3100e350354d0/asyncmy-0.2.7-cp38-cp38-win32.whl", hash = "sha256:108e04113b49113b786cfe906131a72a4b453d6157cd30f0bde6beef3dae07a9"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/16/83/08c08fe7a0345cbd263e29d5502164399d1e7b956a0ebce7b468da2fe2bd/asyncmy-0.2.7-cp37-cp37m-macosx_12_0_x86_64.whl", hash = "sha256:f06992591a7809d67119bd202d86cb8f851f4f05b85da2e909896d4c1742f7ac"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/1a/75/22be9f942ba826317692f0c07567d2eb0a108477dc1a900be51249c2251a/asyncmy-0.2.7-cp39-cp39-win_amd64.whl", hash = "sha256:6c885ae646f288bf3e130babb06bbe2a536975eb3bf16a340e4376bfa81e1107"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/1f/bb/ec9329b395938543e21318b06b039fbb06b6a5ae037bee2f580ebdae1b2a/asyncmy-0.2.7-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:5042879e22bb6a9c7d52562e0cb0d4560225846f2c38da983f8cd3094f8223e1"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/21/69/16279ede6ac55bed096f7e439563a3126b7dd1d528aaa033ddf8dd3f6e0b/asyncmy-0.2.7-cp311-cp311-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:15fbd1358480b38c157307dae92cd7cf6204dcd77b6456c0516da78d5f40da95"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/2b/05/c80894bc58cc831d5cd84ed35f327d331adc943f90789f42521baf25fc9f/asyncmy-0.2.7-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:0a18d8658e5fd7568448749f3cf1e2ced5e98eeade8146106f788f8d0c059729"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/34/d6/f6c52ccf9ca559e62327bc7e3037927d42e5c4758c67e048aec38b106f8c/asyncmy-0.2.7-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:3948ed5801aafb4449d8f1c9443e14a45103cf3d326ffcd4378b5fff532670b2"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/34/d7/f28c25641e6502bd7bd36105674bf3d47135b267dfdd2bd404090eea70f8/asyncmy-0.2.7-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:707c55b286d6d6d1e0e3ccbe5fbf5be24ea320d75fd61eec65cccd323d29ee8a"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/35/0f/5243d57bf62e83d4098a0cd3a2974bbfaa81fd046dd0dbd6710f0df90ac2/asyncmy-0.2.7-cp311-cp311-win_amd64.whl", hash = "sha256:80efebee605f98dfd11a3deb1e0c0e278edb1b22e65a555b0cc9a49718fe6d87"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/3b/71/7aed380a374ff713fac72b96a07afab28a36ad343ed4749d40583fca4b4d/asyncmy-0.2.7-pp37-pypy37_pp73-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:3d5250e767192e8c3c428b1771bb4bc0f8b1d487c5c134747495c8e3ad46c32f"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/42/a8/90ceec7fa6c6c8b93382ae1956425612b73b9cfd33deeede1b89ead1e094/asyncmy-0.2.7-pp39-pypy39_pp73-macosx_12_0_x86_64.whl", hash = "sha256:69c17bfbf22ba125b76c08c79118d043b4b4076369800b7ecef09cedf15466a0"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/43/3e/62e13c7486ec3ef11f7dfeca75dd9c0229cd039a07afb0ac0ef0e0980a9d/asyncmy-0.2.7-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1324af3d552aa2833f45ae6330f98a2f243d37aa49ca3a92bde4e72f6e2603a4"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/4a/14/5cc52aecb9b73a8449c0356bb11e462289845b8e8dccf9a1f9a8919df052/asyncmy-0.2.7-cp37-cp37m-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:b6db65395357b49a4a57d072f09fca4613fcaec887e8859b092217c65d49f770"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/52/71/dcc4c996789db9a4715caf2ae30bb26f796960a63ae3ca30419cefe841cd/asyncmy-0.2.7-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:ff0f1e806d01a1d41c400a161b0d43f208b04f5dd0478a888741edaa2cbd4ac1"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/57/fc/cc478b91df100a00f3ca19d1530134c903e4ee0351c35247df5be02d23b1/asyncmy-0.2.7-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:64882024cddf4b94538fc96c52d15dc38ffd8f464e714e49a8779e0169d923e2"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/59/bf/09a51134537190cd259fc18bc71edfa432e6e909fda12cf8f84ca419cf1c/asyncmy-0.2.7-cp39-cp39-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:d0b8e60a43edeac8c47046b1a29c379c4d714e0ace3f0ae8c39bdef9c4bad7fb"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/5b/24/34990aee81f26cb28f273767af9edc4e4b50343c771bee2a34b6f172a98b/asyncmy-0.2.7-cp310-cp310-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:64ce7a0ab89bbf87a33c2ed66709f438bf1f64feb5ebe24169d8435965ac2171"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/5c/eb/c28cab409d4e7fa7bc7fa98904834dbbba3ee0215ebb2d3223e0626d04b7/asyncmy-0.2.7.tar.gz", hash = "sha256:4a99d5242e5b9d7aee9e743ba13f6ec6465ef60bd79a91cc2ad5f286b6c51b6d"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/63/a1/265054e25cae910e53e1b9a7ee6b074633eaa17143e6e96a2a8dfc9165f1/asyncmy-0.2.7-cp310-cp310-macosx_12_0_x86_64.whl", hash = "sha256:fce60ed7f065cb857f540bfdcb9799bbde17d7d3e66640e52e009c8ad823f2c2"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/64/bf/d1d0daecc5c59a615e5699ab3cb2cdb35724d6e950086234d47e55ac27df/asyncmy-0.2.7-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2a80b5912167b0163845e62f3a9a1f9c9b269bacff01011c6e1222ca06f8af09"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/69/58/2d1b370f9867548ec870ccc7f861551b7f0c8cdb387b8df6b9a1d9c5788a/asyncmy-0.2.7-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:641c49117522f7fa415786181d52ef0f9a1bc477390960574c3275ecdfd894aa"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/6a/ff/f4d7cf02603db6540aeacafe686e92e72052c367ae5b4c94d49b7d870c00/asyncmy-0.2.7-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:a857d36f3a271870a1f64577ccc6e8d917737b2d2ab4dbfbecbff4208f991d69"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/77/f8/0181e0883fb8774cbe83972bcf939b7f0e07aefa878a83ff62797ff5547e/asyncmy-0.2.7-cp38-cp38-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:595dab7760d8cc38b93b0bd348083ea152b5ea6eac989e4a866e16c48ec3a6e5"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/81/b5/9bc8b930de939614bf2500229132af16f4351e3b41bbebcf082e89248ebf/asyncmy-0.2.7-cp39-cp39-win32.whl", hash = "sha256:13318e54acabb6759eabf2af2113398ed0de93826416c2cdbf39490c80256ae0"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/84/94/fc369975a21ce024e0f4e2b667159c5a0051409b3a7d3bcf51a991cc0d44/asyncmy-0.2.7-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux_2_5_x86_64.manylinux1_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ae056f3ea4e3379491a73311fe2032b38ad46f87c5b28d43feb347eb2dc875c6"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/8f/dc/a438318b91a35dad51b2b8f8a9e5ad29961838d061a750e890460136d8c9/asyncmy-0.2.7-cp37-cp37m-win32.whl", hash = "sha256:7a56ef1df9a4ffb984439fc211a66a508faf22eb20a013d2c15f663c7e835ff6"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/90/ba/6209641bed63da8cf9088ab46a931a8ebd43c92609159743fc6af239a746/asyncmy-0.2.7-cp37-cp37m-win_amd64.whl", hash = "sha256:2bd4f8721308cf8d33b2af0edaf7df50082371925111966d639807addcf47bd3"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/95/cb/c1207c61f52d8170babf879f6156522910ea9f938d8de62428195fa7bad4/asyncmy-0.2.7-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:128a08661c3243d1799776c1ff1b6024fb063bdfefe1b1debc10d65887a69562"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/9c/e7/82e79088805068ac17e309066cb25a0158064567846f5dd7d11fdb811fd3/asyncmy-0.2.7-cp310-cp310-win_amd64.whl", hash = "sha256:b664b9304fe21f5719442eafbfbb344df599ccd0956371cbc3e2eeee4938ce7c"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/9c/ef/9b007cbf6fe8232e5d24360fbcda5b4ee58c9254c19b24bf1f6550e8a8f1/asyncmy-0.2.7-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:71b02357570f990b8b46b085f1eb6265470be7b1dab15171bc4d01c3a5d9f437"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/a0/41/66335209075b55b65058cd8d9de478d473d37977a748e4228c539daa53ed/asyncmy-0.2.7-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:772ab5f400e15ee26515b874b10ac038bb4685d30f253bef134925391be91ed6"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/a0/fe/23d85bd15589ffef10a06e3c17f7fab2e5fcae599e0785311fabee2eae3e/asyncmy-0.2.7-cp311-cp311-macosx_12_0_x86_64.whl", hash = "sha256:f15281b23682aceb30f01f51b5018be41328d64dc557f10e51ba994289bbe939"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/a5/a3/9f72c322842bf329ae0e8546f52d789045da41d5f6e68578a75c9dc6ab89/asyncmy-0.2.7-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:6a2c65e3c8c9506980903639b4190f90e7dda29c4e963187fc14941d1f8ccff0"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/ac/21/2982ec4dfa1597fe4d33c47ee455d48bc1b3cb47e80a77f7db05be73ec50/asyncmy-0.2.7-cp39-cp39-macosx_12_0_x86_64.whl", hash = "sha256:07285d782e2aa19a5a2b9ac13471f4d511959bee1d4bfb6cc71566de92236969"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/ae/94/3a53fe11de311834d1b095eef097fb0a9ad41f05d5d3eef1c4d63764e722/asyncmy-0.2.7-pp37-pypy37_pp73-macosx_12_0_x86_64.whl", hash = "sha256:652c7dc1cfbd5d3a341aa9a4981435f6d87d105c8ea31e0acd817dea3447f8f3"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/b1/13/4e2f83628546e49499df8a2120ce7e1bd8de787c695cc666b61ea885755b/asyncmy-0.2.7-pp39-pypy39_pp73-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:799368f91f28fb21327bd0ca0875fa0b509d7f256476f083dc66805d26551321"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/c3/c2/1920eed4ddcbf3c020a359edac6b83e6d8180010aaf79af3dca746e357de/asyncmy-0.2.7-cp38-cp38-win_amd64.whl", hash = "sha256:5d4ecc3afd1b80e98cf0de7ef168eb97159e3ad45d6aca989befd58e9fb977e9"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/c9/1a/5adf28ba84772e5116ac7a1e1277aa21b491e1f130c7bd5d9ed746f1ac9f/asyncmy-0.2.7-pp38-pypy38_pp73-macosx_12_0_x86_64.whl", hash = "sha256:5fe7cc5914a3264a18bf9513a82ed6aa94cebde02d6cab3da992b0e4c30f1897"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/d5/a1/2f8bc773070a492b4a6ea999afac6d1adf1e0a88d77cd1da09fed65e68e2/asyncmy-0.2.7-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux_2_5_x86_64.manylinux1_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8a02cedca52cb4988fe2a07527351fd3d90b5a88cdd4dcc88d924fbe2dd36fee"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/e4/ae/a5b744fbfd22ebf22a9771e831565efb7a290da385f2d3aab2137e1f5dc5/asyncmy-0.2.7-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:cf96e2afe55fc3fd5e71995ccbb0047f6666416e662e1a5610095b717ce5863b"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/e7/00/44d64140ac25f0aeb9fb5c90bb22c495b56df87495af72cce8565289a599/asyncmy-0.2.7-cp310-cp310-win32.whl", hash = "sha256:bab893f4e800eaaee2c0667c5ceac25873e7d801226f011cf24f52c73fb16274"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/e9/58/a47a728d00cafb155f9253ed4c211fb6f027b269aa1d84258210138e0cb5/asyncmy-0.2.7-cp38-cp38-macosx_12_0_x86_64.whl", hash = "sha256:097977b83e02d6fabdb26bfc3b574b1ee43aaf99f97f9d04214f081f7809be87"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/ea/be/50526ac3487253b012280e8c3cb0934399aa189e8049970b0da47250b15c/asyncmy-0.2.7-pp38-pypy38_pp73-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:103b16771b253e634e59987412dfe914e0191b259c003b0b390caf3db0f8c090"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/f5/e4/c82b24b20179cab7469d946ad188cf7915f11f9538b1cbb11f73a0991c84/asyncmy-0.2.7-cp311-cp311-win32.whl", hash = "sha256:21619f0907ce759337e8ed422983614ace1fccdf63520371171681664c60a376"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/f7/a4/7a53e7fcb1de8f602f7e59b8ea7688d23e5fb85600f86b564471d92ef804/asyncmy-0.2.7-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux_2_5_x86_64.manylinux1_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ce6b36bc642be802a20c29f296590bf1cfbc9a12e7e622665fe70b5d508ed281"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/fa/9e/8d09e293acd1a300f078d35104df48e07be717947ebd97b7d0641ce2867d/asyncmy-0.2.7-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:55f8290cd5e567051bbaf2c4a08563af91275f442030b8e0ad456d24c83a4011"},
 ]
 "attrs 23.1.0" = [
     {url = "https://mirrors.aliyun.com/pypi/packages/97/90/81f95d5f705be17872843536b1868f351805acf6971251ff07c1b8334dbb/attrs-23.1.0.tar.gz", hash = "sha256:6279836d581513a26f1bf235f9acd333bc9115683f14f7e8fae46c98fc50e015"},
@@ -2451,10 +2480,6 @@ content_hash = "sha256:203cf7b379f26cdabcdac831c6e0ca66ecd15dfe9a313fb2c01fba34b
     {url = "https://mirrors.aliyun.com/pypi/packages/34/a7/37c8d68532ba71549db4212cb036dbd6161b40e463aba336770e80c72f84/Pygments-2.15.1-py3-none-any.whl", hash = "sha256:db2db3deb4b4179f399a09054b023b6a586b76499d36965813c71aa8ed7b5fd1"},
     {url = "https://mirrors.aliyun.com/pypi/packages/89/6b/2114e54b290824197006e41be3f9bbe1a26e9c39d1f5fa20a6d62945a0b3/Pygments-2.15.1.tar.gz", hash = "sha256:8ace4d3c1dd481894b2005f560ead0f9f19ee64fe983366be1a21e171d12775c"},
 ]
-"pymysql 1.0.3" = [
-    {url = "https://mirrors.aliyun.com/pypi/packages/5b/b1/bb485db528749f07d6f11aa123e5f931f2e465a9c27945d6122bae5f7df7/PyMySQL-1.0.3-py3-none-any.whl", hash = "sha256:89fc6ae41c0aeb6e1f7710cdd623702ea2c54d040565767a78b00a5ebb12f4e5"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/7a/6f/b3fadf41239b9ca7ea3857c440c499fd2e9e0f410bb942bd8d593dce4bd6/PyMySQL-1.0.3.tar.gz", hash = "sha256:3dda943ef3694068a75d69d071755dbecacee1adf9a1fc5b206830d2b67d25e8"},
-]
 "pyparsing 3.0.9" = [
     {url = "https://mirrors.aliyun.com/pypi/packages/6c/10/a7d0fa5baea8fe7b50f448ab742f26f52b80bfca85ac2be9d35cdd9a3246/pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
     {url = "https://mirrors.aliyun.com/pypi/packages/71/22/207523d16464c40a0310d2d4d8926daffa00ac1f5b1576170a32db749636/pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
@@ -2639,56 +2664,48 @@ content_hash = "sha256:203cf7b379f26cdabcdac831c6e0ca66ecd15dfe9a313fb2c01fba34b
     {url = "https://mirrors.aliyun.com/pypi/packages/c3/a0/5dba8ed157b0136607c7f2151db695885606968d1fae123dc3391e0cfdbf/sniffio-1.3.0-py3-none-any.whl", hash = "sha256:eecefdce1e5bbfb7ad2eeaabf7c1eeb404d7757c379bd1f7e5cce9d8bf425384"},
     {url = "https://mirrors.aliyun.com/pypi/packages/cd/50/d49c388cae4ec10e8109b1b833fd265511840706808576df3ada99ecb0ac/sniffio-1.3.0.tar.gz", hash = "sha256:e60305c5e5d314f5389259b7f22aaa33d8f7dee49763119234af3755c55b9101"},
 ]
-"sqlalchemy 1.4.41" = [
-    {url = "https://mirrors.aliyun.com/pypi/packages/05/f5/23735f8e87c4c66058b327773654930898cdb3e206a8ddb22aadc2e54cea/SQLAlchemy-1.4.41-cp36-cp36m-win32.whl", hash = "sha256:3e2ef592ac3693c65210f8b53d0edcf9f4405925adcfc031ff495e8d18169682"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/07/0d/46d1a6c25fce13d2c6892e9a203d4baae3058cb04396915365d621965f95/SQLAlchemy-1.4.41-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:639e1ae8d48b3c86ffe59c0daa9a02e2bfe17ca3d2b41611b30a0073937d4497"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/08/a8/8146793f1cbe0b7753463e885dd30ad2f647d700530625598355863397b5/SQLAlchemy-1.4.41-cp37-cp37m-win_amd64.whl", hash = "sha256:5323252be2bd261e0aa3f33cb3a64c45d76829989fa3ce90652838397d84197d"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/10/60/e891b496ca0bbbabedcb387d43be52b6b59dfb902a0e2df26d1cc43caf4c/SQLAlchemy-1.4.41-cp27-cp27m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:2d6495f84c4fd11584f34e62f9feec81bf373787b3942270487074e35cbe5330"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/1b/82/53cc4c827ce330ce97767a3536e320e58f8803da3255ba4752ca20d8f376/SQLAlchemy-1.4.41-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:036d8472356e1d5f096c5e0e1a7e0f9182140ada3602f8fff6b7329e9e7cfbcd"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/1d/46/208bb085d3405eaec7aa41e8b3eda0c3aa596169e0d31c7bcc75ad1b9abc/SQLAlchemy-1.4.41-cp37-cp37m-win32.whl", hash = "sha256:0005bd73026cd239fc1e8ccdf54db58b6193be9a02b3f0c5983808f84862c767"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/37/b5/136c78031fb88f3f79fa1090c339f36a7b9bbb359651767b617f2bbf655a/SQLAlchemy-1.4.41-cp311-cp311-win_amd64.whl", hash = "sha256:d2e054aed4645f9b755db85bc69fc4ed2c9020c19c8027976f66576b906a74f1"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/39/ec/02955ea76aca27cba7b280cea29f7952133f154b3a0be50281f125a4c753/SQLAlchemy-1.4.41-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:c23d64a0b28fc78c96289ffbd0d9d1abd48d267269b27f2d34e430ea73ce4b26"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/42/8b/4ddf009cb17231471419d9e31dd03005c0b31f8a4e94a9cd1a0b4ade44d4/SQLAlchemy-1.4.41-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:4ba7e122510bbc07258dc42be6ed45997efdf38129bde3e3f12649be70683546"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/5b/05/0344b99768d345cd92785949a3dac38bfb7059b3b4dc6ae1e55ea842c772/SQLAlchemy-1.4.41-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:361f6b5e3f659e3c56ea3518cf85fbdae1b9e788ade0219a67eeaaea8a4e4d2a"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/5b/3d/4c6da7a76f850c55e9115d5bcf2f90509a8617f4e955d9bd82f23008e029/SQLAlchemy-1.4.41-cp38-cp38-win32.whl", hash = "sha256:58bb65b3274b0c8a02cea9f91d6f44d0da79abc993b33bdedbfec98c8440175a"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/5c/0c/4256c722fc41e7f581776ac05af9b5db5c304c7888d625e47d079024c7b8/SQLAlchemy-1.4.41-cp38-cp38-win_amd64.whl", hash = "sha256:ce8feaa52c1640de9541eeaaa8b5fb632d9d66249c947bb0d89dd01f87c7c288"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/67/a0/97da2cb07e013fd6c37fd896a86b374aa726e4161cafd57185e8418d59aa/SQLAlchemy-1.4.41.tar.gz", hash = "sha256:0292f70d1797e3c54e862e6f30ae474014648bc9c723e14a2fda730adb0a9791"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/73/2e/d61aeec5580ae1841508c39ac63a9a8cfb8200d88f3d9b7d57607ab2f245/SQLAlchemy-1.4.41-cp39-cp39-win_amd64.whl", hash = "sha256:f5fa526d027d804b1f85cdda1eb091f70bde6fb7d87892f6dd5a48925bc88898"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/79/5f/cf2664ea15b04cfacab5f9ed791741874c67d58f69ad86c22488bc53a2f0/SQLAlchemy-1.4.41-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:14576238a5f89bcf504c5f0a388d0ca78df61fb42cb2af0efe239dc965d4f5c9"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/7e/7f/0693241547e0b8534600e831dfe0a8bbcb29a60c53925ed604a747a00bb8/SQLAlchemy-1.4.41-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:e16c2be5cb19e2c08da7bd3a87fed2a0d4e90065ee553a940c4fc1a0fb1ab72b"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/85/8a/83f1056449d819532c337a4a1b709a8e6291b9398340c0b2c00d5fdc7589/SQLAlchemy-1.4.41-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:05f0de3a1dc3810a776275763764bb0015a02ae0f698a794646ebc5fb06fad33"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/93/0c/377daa276fa54ad65a6dbd0323285cf0892972fa88a4dbe17113ec440c32/SQLAlchemy-1.4.41-cp311-cp311-win32.whl", hash = "sha256:59bdc291165b6119fc6cdbc287c36f7f2859e6051dd923bdf47b4c55fd2f8bd0"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/a8/62/9f74f13f3907ca416d8fc7b1c33a8137717a2a2d42364038b9437dcc8040/SQLAlchemy-1.4.41-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0002e829142b2af00b4eaa26c51728f3ea68235f232a2e72a9508a3116bd6ed0"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/b1/1a/e0c11a28c2d2c3c1e74705d4fcb2246434050eed69b70e6acf0ef88adbb0/SQLAlchemy-1.4.41-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:22ff16cedab5b16a0db79f1bc99e46a6ddececb60c396562e50aab58ddb2871c"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/b6/df/51a99ba9b419e15aa39948756f79d6ef2df9ede3288799c1deb43b618799/SQLAlchemy-1.4.41-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5102fb9ee2c258a2218281adcb3e1918b793c51d6c2b4666ce38c35101bb940e"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/bc/a9/f9eb3d4952bfa67f7489732af8db2c31b2e99b6b2f70f786fb6d92b18ebb/SQLAlchemy-1.4.41-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:199a73c31ac8ea59937cc0bf3dfc04392e81afe2ec8a74f26f489d268867846c"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/be/76/912622f9e0b87a9fc58d4d58e9ce459bbd9cd83021c51989afb1839d2162/SQLAlchemy-1.4.41-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0990932f7cca97fece8017414f57fdd80db506a045869d7ddf2dda1d7cf69ecc"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/bf/ed/443a8584b15cbab97f0a5e5ba4974c7b6c989d2ec5a37423946a24619bcf/SQLAlchemy-1.4.41-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8eb8897367a21b578b26f5713833836f886817ee2ffba1177d446fa3f77e67c8"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/bf/f2/69c9f96515b4eb65fac522c8b81ec10666ee4789484b0c123452c1f22505/SQLAlchemy-1.4.41-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2ad2b727fc41c7f8757098903f85fafb4bf587ca6605f82d9bf5604bd9c7cded"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/ce/b7/1b65516236b36b55624768f7923c9a8d55ca4ba239b795ea84cb82086718/SQLAlchemy-1.4.41-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2307495d9e0ea00d0c726be97a5b96615035854972cc538f6e7eaed23a35886c"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/d0/ea/86e73fb946694c491a332710d0686f3260b941b3af43502457d3a62512dd/SQLAlchemy-1.4.41-cp310-cp310-win32.whl", hash = "sha256:2082a2d2fca363a3ce21cfa3d068c5a1ce4bf720cf6497fb3a9fc643a8ee4ddd"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/d5/4a/29ce9d2ec5bb2d3e83ad387b956defde6229252259795cd28210a5020740/SQLAlchemy-1.4.41-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f5ebeeec5c14533221eb30bad716bc1fd32f509196318fb9caa7002c4a364e4c"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/d6/b7/78d3425a6b3aa486c46259228c1933a22ac4d48b0e6220930973ac852091/SQLAlchemy-1.4.41-cp310-cp310-win_amd64.whl", hash = "sha256:e4b12e3d88a8fffd0b4ca559f6d4957ed91bd4c0613a4e13846ab8729dc5c251"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/de/c2/cb1e60fee76b253b396e31a641e117ba689437b1d9dbecfe8415cb0e8b43/SQLAlchemy-1.4.41-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:13e397a9371ecd25573a7b90bd037db604331cf403f5318038c46ee44908c44d"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/e4/3c/b37bbfe25ebfe129cfa7843e74af3081cca6ae9a893869ba82639479fdf9/SQLAlchemy-1.4.41-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c0dcf127bb99458a9d211e6e1f0f3edb96c874dd12f2503d4d8e4f1fd103790b"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/e5/5b/fbaf9a5f3ef900f9eb30644cb74520a7771250a1d0b26a44ca053d3ef4fe/SQLAlchemy-1.4.41-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4676d51c9f6f6226ae8f26dc83ec291c088fe7633269757d333978df78d931ab"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/ea/4e/4bcd7e756fa2e989e7eed239bca3c3fc57101b7d0c49864f8e41d202d1ce/SQLAlchemy-1.4.41-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b67fc780cfe2b306180e56daaa411dd3186bf979d50a6a7c2a5b5036575cbdbb"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/f0/97/c6a1bc6e80844c10ee1cb599fa5d8c919fc68b9d9ebed22217cadcfca4c8/SQLAlchemy-1.4.41-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:cd767cf5d7252b1c88fcfb58426a32d7bd14a7e4942497e15b68ff5d822b41ad"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/f1/81/638d6bd19baf595959c42c154d83262d609140898eb88866db2f024fcc00/SQLAlchemy-1.4.41-cp39-cp39-win32.whl", hash = "sha256:9c56e19780cd1344fcd362fd6265a15f48aa8d365996a37fab1495cae8fcd97d"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/f4/06/78ab18ec859c7dbdb5182b8463ebb3abac932ad086b9dd15fb60958f9a4f/SQLAlchemy-1.4.41-cp27-cp27m-win_amd64.whl", hash = "sha256:5facb7fd6fa8a7353bbe88b95695e555338fb038ad19ceb29c82d94f62775a05"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/f6/ca/6d666434176ff264e750d14b833a7f2243183a8a69f3a25253f1f0052f09/SQLAlchemy-1.4.41-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ccfd238f766a5bb5ee5545a62dd03f316ac67966a6a658efb63eeff8158a4bbf"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/f8/84/f92a2de0e4a7e82acca2bc74c75295fe5f141ea8ba002e2218cea41d2245/SQLAlchemy-1.4.41-cp36-cp36m-win_amd64.whl", hash = "sha256:eb30cf008850c0a26b72bd1b9be6730830165ce049d239cfdccd906f2685f892"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/fa/5f/150ca2e971231624041de73fbc61b0b16f5139530cbff889213cc00f83f8/SQLAlchemy-1.4.41-cp27-cp27m-win32.whl", hash = "sha256:e570cfc40a29d6ad46c9aeaddbdcee687880940a3a327f2c668dd0e4ef0a441d"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/fe/28/f22792eee334cd83a15ef34b825761ee057d330b9b24d3f1496b95faa557/SQLAlchemy-1.4.41-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:90484a2b00baedad361402c257895b13faa3f01780f18f4a104a2f5c413e4536"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/ff/1c/55bf52c1961ce01164835047ed2c09e44b76d1f18a75841715626f2786b1/SQLAlchemy-1.4.41-cp27-cp27mu-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:f37fa70d95658763254941ddd30ecb23fc4ec0c5a788a7c21034fc2305dab7cc"},
-]
-"sqlalchemy2-stubs 0.0.2a34" = [
-    {url = "https://mirrors.aliyun.com/pypi/packages/32/12/ecfcbe41207a2c6d8b9a9cbb62f80f398de3a2d426355fc568665c8ae2d3/sqlalchemy2_stubs-0.0.2a34-py3-none-any.whl", hash = "sha256:a313220ac793404349899faf1272e821a62dbe1d3a029bd444faa8d3e966cd07"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/7c/d9/c22d5ea650badce160cfaebf24b05eb265b13309fb2a5912b374ce83fb51/sqlalchemy2-stubs-0.0.2a34.tar.gz", hash = "sha256:2432137ab2fde1a608df4544f6712427b0b7ff25990cfbbc5a9d1db6c8c6f489"},
-]
-"sqlmodel 0.0.8" = [
-    {url = "https://mirrors.aliyun.com/pypi/packages/64/ba/ad07004536e94e71f99aaae5e667bb6f7230f7e0fbc0b0266e88960dda5f/sqlmodel-0.0.8.tar.gz", hash = "sha256:3371b4d1ad59d2ffd0c530582c2140b6c06b090b32af9b9c6412986d7b117036"},
-    {url = "https://mirrors.aliyun.com/pypi/packages/90/63/65f95cf5902ccdfccec99de87666b5e039589c19db7ab62b3770171e5685/sqlmodel-0.0.8-py3-none-any.whl", hash = "sha256:0fd805719e0c5d4f22be32eb3ffc856eca3f7f20e8c7aa3e117ad91684b518ee"},
+"sqlalchemy 2.0.15" = [
+    {url = "https://mirrors.aliyun.com/pypi/packages/00/6f/28c8fd3a12f7930442422f5fa7c3a9a6b6d5da749fb468648cda8813b5a8/SQLAlchemy-2.0.15-cp310-cp310-win32.whl", hash = "sha256:55ec62ddc0200b4fee94d11abbec7aa25948d5d21cb8df8807f4bdd3c51ba44b"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/02/bd/480a2b5253f8018090fb504de7b1057ce9a1bfd3004590d8ab227baad2db/SQLAlchemy-2.0.15-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:78303719c6f72af97814b0072ad18bee72e70adca8d95cf8fecd59c5e1ddb040"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/18/38/91e21df18b6a38d2da73b9aa4fdaada6aaecd1b196fae900fd16a28e60a9/SQLAlchemy-2.0.15-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:435f6807fa6a0597d84741470f19db204a7d34625ea121abd63e8d95f673f0c4"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/18/7f/b177782de8223fd3d99539902c0139cdf4a87d7a0a2e228bf579510e7b51/SQLAlchemy-2.0.15-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1e885dacb167077df15af2f9ccdacbd7f5dd0d538a6d74b94074f2cefc7bb589"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/20/a7/23944d6fabb4314a95daa029ef482dcd5ea6e7bbb431e05e9bdc6d63b1e0/SQLAlchemy-2.0.15-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:4670ce853cb25f72115a1bbe366ae13cf3f28fc5c87222df14f8d3d55d51816e"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/27/4f/7fcde5153d793e69fc6a469223ff7e06df523fd4b62037befec65fa063cd/SQLAlchemy-2.0.15-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:4a75fdb9a84072521bb2ebd31eefe1165d4dccea3039dda701a864f4b5daa17f"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/28/1c/05d8a51028efbbcefbb75bcf8d36e6622de7bc8f8518892237a6418b2022/SQLAlchemy-2.0.15-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:db269f67ed17b07e80aaa8fba1f650c0d84aa0bdd9d5352e4ac38d5bf47ac568"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/30/e5/20cc34090c68d4626081534cbf4ec9f652261da376eee484d98af68d41fa/SQLAlchemy-2.0.15-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:21c89044fc48a25c2184eba332edeffbbf9367913bb065cd31538235d828f06f"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/37/6e/847244e804e1ef98537104d84b8dedeb2a4bef9b7c218bbdc0f55151f72d/SQLAlchemy-2.0.15-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:df25052b92bd514357a9b370d74f240db890ea79aaa428fb893520e10ee5bc18"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/38/44/6ab86b2984a9a925bccbe9eae3b5906f59e33a3d807904039a041acba087/SQLAlchemy-2.0.15-cp37-cp37m-win_amd64.whl", hash = "sha256:4d61731a35eddb0f667774fe15e5a4831e444d066081d1e809e1b8a0e3f97cae"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/3f/09/a24cbb86c099c1985e95b25b1fdaade896c44fe9108bd34d1e9371d38af0/SQLAlchemy-2.0.15-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:6a3f8020e013e9b3b7941dcf20b0fc8f7429daaf7158760846731cbd8caa5e45"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/41/d0/188e2018001a25e54d73fa98c7f8ade2cb241523f0de8f77d826e09676fd/SQLAlchemy-2.0.15-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6f5784dfb2d45c19cde03c45c04a54bf47428610106197ed6e6fa79f33bc63d3"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/49/e6/978e19d89ce10e419dc5e004397df29f0ccda5098e677f6026af50813d22/SQLAlchemy-2.0.15-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:79bfe728219239bdc493950ea4a4d15b02138ecb304771f9024d0d6f5f4e3706"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/4b/47/4dc88568a44d2a824c5d5ba9d57f89b5d13cb17096e55c1b052130b7c7f7/SQLAlchemy-2.0.15-cp310-cp310-win_amd64.whl", hash = "sha256:ae1d8deb391ab39cc8f0d5844e588a115ae3717e607d91482023917f920f777f"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/4c/98/2a56ffd5cd687975d46c6968759f03b1881b1bc46de169d03e92bad2ac29/SQLAlchemy-2.0.15-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:670ecf74ee2e70b917028a06446ad26ff9b1195e84b09c3139c215123d57dc30"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/50/6d/07e058ef97765851fc219397956c15cd98125a03674b58e8b97ad362c11b/SQLAlchemy-2.0.15-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:cea7c4a3dfc2ca61f88a2b1ddd6b0bfbd116c9b1a361b3b66fd826034b833142"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/5a/df/7ae4eeaeb02526feaff886268ce20908cb9a68cb5c4dc32a439e756eec88/SQLAlchemy-2.0.15-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1d6320a1d175447dce63618ec997a53836de48ed3b44bbe952f0b4b399b19941"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/6b/23/2e4895268d7ec2527fdf3789329f213722287439052a78bc9d0b193b57a5/SQLAlchemy-2.0.15-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:256b2b9660e51ad7055a9835b12717416cf7288afcf465107413917b6bb2316f"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/6c/af/da6cb7709fcc611941ea34f3e7843d578236cf5b65ecdd03c97fbfd5b6ca/SQLAlchemy-2.0.15-cp311-cp311-win_amd64.whl", hash = "sha256:5cc48a7fda2b5c5b8860494d6c575db3a101a68416492105fed6591dc8a2728a"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/75/8c/4d02bd16ac6221ab8aab3703242de2211a1d07581e2a0395fff02c27282f/SQLAlchemy-2.0.15-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:d14282bf5b4de87f922db3c70858953fd081ef4f05dba6cca3dd705daffe1cc9"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/76/14/683209e755674a1ca96c6179fa2385dca18dac6bd95d7bc462d728b35466/SQLAlchemy-2.0.15-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:d6b17cb86908e7f88be14007d6afe7d2ab11966e373044137f96a6a4d83eb21c"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/79/b6/b8f48ed16b463e31a1d125a068b626986b9bb832984419b3c214544546b6/SQLAlchemy-2.0.15-cp39-cp39-win_amd64.whl", hash = "sha256:788d1772fb8dcd12091ca82809eef504ce0f2c423e45284bc351b872966ff554"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/85/6a/504a1be40ea510f452691f13e3035a12b9904d5382ddc83e0483518cb591/SQLAlchemy-2.0.15-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:e17fdcb8971e77c439113642ca8861f9465e21fc693bd3916654ceef3ac26883"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/8c/90/f97256025a1e9da3ed0fedb32f2df2d2d28b601063b99900954abda79eb1/SQLAlchemy-2.0.15-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9b31ebde27575b3b0708673ec14f0c305c4564d995b545148ab7ac0f4d9b847a"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/98/fc/72dad1aaf9fb88be3d0c9e1eb7dbfaa43b1f537dd009f84b62dec6568679/SQLAlchemy-2.0.15-cp37-cp37m-win32.whl", hash = "sha256:994a75b197662e0608b6a76935d7c345f7fd874eac0b7093d561033db61b0e8c"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/a9/a3/54b74820cc862008ab28fe47c650be02d9a650d4f4c4c5194f7e69629212/SQLAlchemy-2.0.15-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9d810b4aacd5ef4e293aa4ea01f19fca53999e9edcfc4a8ef1146238b30bdc28"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/b2/c4/cf006daa1ed7592dd0740e642cbfaadd639b936e0bb50104d3d235482e46/SQLAlchemy-2.0.15-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:51b19887c96d405599880da6a7cbdf8545a7e78ec5683e46a43bac8885e32d0f"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/b6/0f/a6ec838b7fa20fdde9d31f39f02b4828990c829c7b63d21bdedc88f05118/SQLAlchemy-2.0.15-cp38-cp38-win32.whl", hash = "sha256:1a0754c2d9f0c7982bec0a31138e495ed1f6b8435d7e677c45be60ec18370acf"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/b7/d2/2f625b4d165432cbb6f4e91e0cb19b5d860d0095430658ea168c87f8c14c/SQLAlchemy-2.0.15-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3fb5d09f1d51480f711b69fe28ad42e4f8b08600a85ab2473baee669e1257800"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/be/dd/54b611fef018c01c7f1db8d82d1f760f057efc4573315f3eb03cc1d13d69/SQLAlchemy-2.0.15-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6f80a9c9a9af0e4bd5080cc0955ce70274c28e9b931ad7e0fb07021afcd32af6"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/bf/1a/9925a46d7a8910b75b85887b873af5f97c5cd405b0a0402d3a04260d6ca8/SQLAlchemy-2.0.15-cp39-cp39-win32.whl", hash = "sha256:da7381a883aee20b7d2ffda17d909b38134b6a625920e65239a1c681881df800"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/c0/b1/127b7612dc8625dd34eb202efc594dac86f5208aef4ff467dfd630e76f9d/SQLAlchemy-2.0.15.tar.gz", hash = "sha256:2e940a8659ef870ae10e0d9e2a6d5aaddf0ff6e91f7d0d7732afc9e8c4be9bbc"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/c2/e7/e1ff8d966e5102d4e66b11caba85725ca0f96a34588131a8fc288e7906ad/SQLAlchemy-2.0.15-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:201a99f922ac8c780b3929128fbd9df901418877c70e160e19adb05665e51c31"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/c5/d9/8a2d3eaba6fc295da102dacb39d695b94b7b7d1a02b9f8a9b3b2c73beada/SQLAlchemy-2.0.15-py3-none-any.whl", hash = "sha256:933d30273861fe61f014ce2a7e3c364915f5efe9ed250ec1066ca6ea5942c0bd"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/d1/e1/1a569f9973814663a6fd64467a3eb6d4d468aa7eae8fe47d57571c933d3c/SQLAlchemy-2.0.15-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:f7f994a53c0e6b44a2966fd6bfc53e37d34b7dca34e75b6be295de6db598255e"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/d7/04/882b93c2ae930363195f63c4c1bcddd0e9d5e18a42d5a022302df92c2b5d/SQLAlchemy-2.0.15-cp38-cp38-win_amd64.whl", hash = "sha256:bc5c2b0da46c26c5f73f700834f871d0723e1e882641932468d56833bab09775"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/d7/8b/ab36888ec70bc007ca60ae89dc42a3be8b084360b08df78380ad10ad092e/SQLAlchemy-2.0.15-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:810199d1c5b43603a9e815ae9487aef3ab1ade7ed9c0c485e12519358929fbfe"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/d7/c8/d138f37b5431d2c833023fadb8ab014a08ef1cae41ba157f535eb3e60716/SQLAlchemy-2.0.15-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:536c86ec81ca89291d533ff41a3a05f9e4e88e01906dcee0751fc7082f3e8d6c"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/ee/4d/a236fa0f28b40ba60ecd49585c1d99b29811b701a258d9c329982cea43c1/SQLAlchemy-2.0.15-cp311-cp311-win32.whl", hash = "sha256:88ab245ed2c96265441ed2818977be28c840cfa5204ba167425d6c26eb67b7e7"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/f6/a2/34fbd4540d03da565721fe234565ec615792cb36a471abbee9026663d989/SQLAlchemy-2.0.15-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:f6fd3c88ea4b170d13527e93be1945e69facd917661d3725a63470eb683fbffe"},
+    {url = "https://mirrors.aliyun.com/pypi/packages/f7/84/0c44149afc434bbb5bb8e53fc096778d6e28a28f2f6a456fc2210070efa6/SQLAlchemy-2.0.15-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:6b42913a0259267e9ee335da0c36498077799e59c5e332d506e72b4f32de781d"},
 ]
 "starlette 0.27.0" = [
     {url = "https://mirrors.aliyun.com/pypi/packages/06/68/559bed5484e746f1ab2ebbe22312f2c25ec62e4b534916d41a8c21147bf8/starlette-0.27.0.tar.gz", hash = "sha256:6a6b0d042acb8d469a01eba54e9cda6cbd24ac602c4cd016723117d6a7e73b75"},

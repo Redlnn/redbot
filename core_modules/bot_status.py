@@ -12,10 +12,10 @@ from graia.ariadne.model import Group
 from graia.saya import Channel
 from graiax.shortcut.saya import decorate, dispatch, listen
 
-from util import get_graia_version
-from util.control import require_disable
-from util.control.permission import GroupPermission
-from util.text2img import md2img
+from libs import get_graia_version
+from libs.control import require_disable
+from libs.control.permission import GroupPermission
+from libs.text2img import md2img
 
 channel = Channel.current()
 
@@ -56,19 +56,19 @@ async def main(app: Ariadne, group: Group):
 </div>
 
 ## 基本信息
-**PID**: {pid}  
-**启动时间**：{time.strftime("%Y-%m-%d %p %I:%M:%S", started_time)}  
-**已运行时长**：{running_time}  
+**PID**: {pid}
+**启动时间**：{time.strftime("%Y-%m-%d %p %I:%M:%S", started_time)}
+**已运行时长**：{running_time}
 
 ## 运行环境
-**Python 版本**：{python_version}  
-**系统版本**：{system_version}  
-**CPU 核心数**：{psutil.cpu_count()}  
-**CPU 占用率**：{psutil.cpu_percent()}%  
+**Python 版本**：{python_version}
+**系统版本**：{system_version}
+**CPU 核心数**：{psutil.cpu_count()}
+**CPU 占用率**：{psutil.cpu_percent()}%
 **系统内存占用**：{"%.1f" % (psutil.virtual_memory().available / 1073741824)}G / {total_memory}G
 
 ## 依赖版本
-**Mirai Api Http**：{await app.get_version()}  
+**Mirai Api Http**：{await app.get_version()}
 **Graia 相关**：
 '''
     if extra:

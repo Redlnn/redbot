@@ -34,7 +34,7 @@ class BasicConfig:
     databaseUrl: str = 'sqlite+aiosqlite:///data/database.db'
     """数据库地址
 
-    MySQL示例：mysql+aiomysql://user:pass@hostname/dbname?charset=utf8mb4
+    MySQL示例：mysql+asyncmy://user:pass@hostname/dbname?charset=utf8mb4
     """
     miraiApiHttp: MAHConfig = MAHConfig(account=123456789, verifyKey='VerifyKey')
     """Mirai Api Http 配置"""
