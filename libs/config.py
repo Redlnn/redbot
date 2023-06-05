@@ -36,7 +36,7 @@ class BasicConfig:
 
     MySQL示例：mysql+asyncmy://user:pass@hostname/dbname?charset=utf8mb4
     """
-    miraiApiHttp: MAHConfig = MAHConfig(account=123456789, verifyKey='VerifyKey')
+    miraiApiHttp: MAHConfig = field(default_factory=lambda: MAHConfig(account=123456789, verifyKey='VerifyKey'))
     """Mirai Api Http 配置"""
     admin: AdminConfig = AdminConfig()
     """机器人管理相关配置"""
