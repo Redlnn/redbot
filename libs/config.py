@@ -38,7 +38,7 @@ class BasicConfig:
     """
     miraiApiHttp: MAHConfig = field(default_factory=lambda: MAHConfig(account=123456789, verifyKey='VerifyKey'))
     """Mirai Api Http 配置"""
-    admin: AdminConfig = AdminConfig()
+    admin: AdminConfig = field(default_factory=lambda: AdminConfig())
     """机器人管理相关配置"""
 
 
