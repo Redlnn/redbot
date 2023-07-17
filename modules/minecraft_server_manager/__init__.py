@@ -662,10 +662,15 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
     elif group.id not in module_config.activeGroups:
         return
     msg = message.split(' ')
-    if not 2 <= len(msg) <= 3:
+    if (
+        not 2 <= len(msg) <= 3
+        or 2 <= len(msg) <= 3
+        and not msg[1].only(At)
+        and not msg[1].only(Plain)
+    ):
         await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
         return
-    elif msg[1].only(At):
+    elif 2 <= len(msg) <= 3 and msg[1].only(At):
         block_reason = str(msg[2].include(Plain).merge()) if len(msg) == 3 else 'None'
         target = msg[1].get_first(At).target
         await db.add(
@@ -679,7 +684,7 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
             )
         )
         await del_whitelist_by_qq(target)
-    elif msg[1].only(Plain):
+    else:
         block_reason = str(msg[2].include(Plain).merge()) if len(msg) == 3 else 'None'
         target = str(msg[1])
         if not target.isdigit():
@@ -696,6 +701,3 @@ async def ban(app: Ariadne, group: Group, message: MessageChain, source: Source)
             )
         )
         await del_whitelist_by_qq(int(target))
-    else:
-        await app.send_message(group, MessageChain(Plain('参数错误，无效的命令')), quote=source)
-        return
