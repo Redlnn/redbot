@@ -33,7 +33,7 @@ from graiax.text2img.playwright import PageOption
 from launart import Launart
 from loguru import logger
 from PIL.Image import Image as PILImage
-from qrcode import QRCode
+from qrcode.main import QRCode
 
 from libs.control import require_disable
 from libs.control.interval import ManualInterval
